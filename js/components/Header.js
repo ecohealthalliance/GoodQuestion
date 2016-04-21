@@ -1,16 +1,16 @@
-
 import React, {
+  Navigator,
+  ScrollView,
   StyleSheet,
-  TouchableHighlight,
   Text,
-  TextInput,
-  View
+  TouchableHighlight,
+  TouchableOpacity,
 } from 'react-native'
 
 import { verifyEmail } from '../api/Email'
 
 
-const EmailView = React.createClass ({
+const Header = React.createClass ({
   
   getInitialState() {
     return {
@@ -38,7 +38,6 @@ const EmailView = React.createClass ({
 
   /* Render */
   render() {
-    console.log(this)
     return (
       <View style={styles.container}>
         <Text style={styles.heading}>
@@ -60,23 +59,4 @@ const EmailView = React.createClass ({
   }
 })
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  heading: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-})
-
-module.exports = EmailView
+module.exports = Header

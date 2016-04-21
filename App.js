@@ -1,66 +1,13 @@
-import React, {
-  AppRegistry,
-  Component,
-  StyleSheet,
-  Navigator,
-  Text,
-  View
-} from 'react-native'
-
+import React from 'react-native'
 
 const App = React.createClass ({
   propTypes: {
     platform: React.PropTypes.string.isRequired,
   },
 
-  getInitialState() {
-    return {
-      view: 'email',
-      tab: '',
-    }
-  },
-
-  /* Methods */
-  navigate(view, tab) {
-    this.setState({
-      view: view,
-      tab: tab ? tab : '',
-    })
-  },
-
-  /* Render */
-
-  renderView() {
-    switch (this.state.view) {
-      case 'email': return <EmailView />
-    }
-  },
-
   render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Header
-        </Text>
-
-        {this.renderView()}
-      </View>
-    )
+    return this.props.children
   }
-})
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
 })
 
 module.exports = App
