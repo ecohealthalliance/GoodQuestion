@@ -7,6 +7,8 @@ import React, {
   View
 } from 'react-native'
 
+import { verifyEmail } from '../api/Email'
+
 
 const EmailView = React.createClass ({
   
@@ -21,6 +23,14 @@ const EmailView = React.createClass ({
   handleVerifyEmail(event) {
     event.preventDefault()
 
+    this.setState({
+      click_text: 'Verifying...'
+    })
+
+    verifyEmail(this.state.text, this.handleVerifyEmailResponse)
+  },
+
+  handleVerifyEmailResponse(response) {
     this.setState({
       click_text: 'Email Verified'
     })
