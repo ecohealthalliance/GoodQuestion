@@ -8,26 +8,46 @@ import React, {
   Component,
   StyleSheet,
   Text,
+  TextInput,
   View
-} from 'react-native';
+} from 'react-native'
 
-class GoodQuestion extends Component {
+import { Provider } from 'react-redux'
+import configureStore from './js/store/configureStore'
+
+const store = configureStore()
+
+const GoodQuestion = React.createClass ({
+  getInitialState() {
+    return {
+      text: 'Email?'
+    }
+  },
+
+  /* Methods */
+  handleVerifyEmail() {
+
+  },
+
+  /* Render */
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
-    );
+      <Provider store={store}>
+        <View style={styles.container}>
+          <Text style={styles.welcome}>
+            A React Native test !
+          </Text>
+
+          <TextInput
+            style={{height: 40, borderColor: 'gray', borderWidth: 1, margin: 20}}
+            onChangeText={(text) => this.setState({text})}
+            value={this.state.text}
+          />
+        </View>
+      </Provider>
+    )
   }
-}
+})
 
 const styles = StyleSheet.create({
   container: {
@@ -46,6 +66,6 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
-});
+})
 
-AppRegistry.registerComponent('GoodQuestion', () => GoodQuestion);
+AppRegistry.registerComponent('GoodQuestion', () => GoodQuestion)
