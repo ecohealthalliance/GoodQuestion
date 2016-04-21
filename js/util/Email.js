@@ -37,6 +37,4 @@ export function verifyEmail(email_string) {
     type: 'EMAIL_FETCH_VERIFY',
     email: email_string
   }
-
-  
 }
