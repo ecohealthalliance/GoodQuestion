@@ -65,11 +65,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 10,
   },
-  button: {
-    textAlign: 'center',
-    color: '#3333DD',
-    marginBottom: 5,
-  },
 })
 
 module.exports = App

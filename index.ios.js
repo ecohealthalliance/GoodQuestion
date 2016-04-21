@@ -10,14 +10,14 @@ import React, {
   StyleSheet,
   Text,
   View
-} from 'react-native';
+} from 'react-native'
 
 class GoodQuestion extends Component {
   render() {
     return (
       <App platform="ios" />
-    );
+    )
   }
 }
 
-AppRegistry.registerComponent('GoodQuestion', () => GoodQuestion);
+AppRegistry.registerComponent('GoodQuestion', () => GoodQuestion)
