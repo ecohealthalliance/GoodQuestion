@@ -2,14 +2,10 @@ import React, {
   AppRegistry,
   Component,
   StyleSheet,
-  TouchableHighlight,
+  Navigator,
   Text,
-  TextInput,
   View
 } from 'react-native'
-
-// Views
-import EmailView from './js/views/EmailView'
 
 
 const App = React.createClass ({

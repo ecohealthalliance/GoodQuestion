@@ -40,7 +40,7 @@ const EmailView = React.createClass ({
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
+        <Text style={styles.heading}>
           Enter your email
         </Text>
         <TextInput
@@ -50,7 +50,7 @@ const EmailView = React.createClass ({
           placeholder="enter your email"
         />
         <TouchableHighlight onPress={this.handleVerifyEmail}>
-          <Text style={styles.welcome}>
+          <Text style={styles.heading}>
             {this.state.click_text}
           </Text>
         </TouchableHighlight>
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
-  welcome: {
+  heading: {
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
