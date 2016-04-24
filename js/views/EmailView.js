@@ -8,6 +8,7 @@ import React, {
 } from 'react-native'
 
 import { verifyEmail } from '../api/Email'
+import Styles from '../../styles/Styles'
 
 
 const EmailView = React.createClass ({
@@ -38,11 +39,10 @@ const EmailView = React.createClass ({
 
   /* Render */
   render() {
-    console.log(this)
     return (
       <View style={styles.container}>
         <Text style={styles.heading}>
-          Enter your email
+          Login Page
         </Text>
         <TextInput
           style={{height: 40, borderColor: 'gray', borderWidth: 1, margin: 20}}

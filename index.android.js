@@ -11,9 +11,7 @@ import React, {
   StyleSheet,
   TouchableHighlight,
   TouchableOpacity,
-  Text,
-  TextInput,
-  View
+  Text
 } from 'react-native'
 
 // Views
@@ -87,12 +85,11 @@ const NavigationBarRouteMapper = {
 }
 
 /* Android App */
-
 const GoodQuestion = React.createClass ({
   render() {
     const initialRoute = {name: 'email'}
     return (
-      <App platform="android">
+      <App platform="android" style={styles.scene}>
         <Navigator
           style={styles.container}
           initialRoute={initialRoute}
@@ -112,10 +109,6 @@ const GoodQuestion = React.createClass ({
 })
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5FCFF',
-  },
   messageText: {
     fontSize: 17,
     fontWeight: '500',
