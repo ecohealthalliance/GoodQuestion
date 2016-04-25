@@ -69,11 +69,11 @@ const RouteMapper = function(route, navigationOperations, onComponentRef) {
   navigator = navigationOperations
   let view
   switch (route.name) {
-    case 'email': view = <EmailView />
-    case 'one': view = <PlaceholderViewOne />
-    case 'two': view = <PlaceholderViewTwo />
+    case 'email': view = <EmailView />; break;
+    case 'one': view = <PlaceholderViewOne />; break;
+    case 'two': view = <PlaceholderViewTwo />; break;
 
-    default: view = <EmailView />
+    default: view = <EmailView />; break;
   }
 
   return (
