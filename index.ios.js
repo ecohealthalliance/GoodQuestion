@@ -15,6 +15,9 @@ import React, {
   Text
 } from 'react-native'
 
+// Model
+import Store from './js/Store'
+
 // Views
 import App from './App'
 import EmailView from './js/views/EmailView'
@@ -22,23 +25,66 @@ import PlaceholderViewOne from './js/views/PlaceholderViewOne'
 import PlaceholderViewTwo from './js/views/PlaceholderViewTwo'
 
 
+/* Configuration */
+Store.platform = 'ios'
+
+
+/* iOS App */
+const GoodQuestion = React.createClass ({
+  /* Life Cycle */
+  getInitialState() {
+    return {
+      store: Store
+    }
+  },
+
+  /* Methods */
+
+
+  /* Render */
+  render() {
+    const initialRoute = {name: 'email'}
+    return (
+      <Navigator
+        style={styles.container}
+        initialRoute={initialRoute}
+        configureScene={() => Navigator.SceneConfigs.FadeAndroid}
+        renderScene={RouteMapper}
+        configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
+        navigationBar={
+          <Navigator.NavigationBar
+            routeMapper={NavigationBarConfig}
+            style={styles.navBar}
+          />
+        }
+      />
+    )
+  }
+})
+
 
 /* Routing & Navigation */
 let navigator
-let RouteMapper = function(route, navigationOperations, onComponentRef) {
+const RouteMapper = function(route, navigationOperations, onComponentRef) {
   navigator = navigationOperations
-
+  let view
   switch (route.name) {
-    case 'email': return <EmailView />
-    case 'one': return <PlaceholderViewOne />
-    case 'two': return <PlaceholderViewTwo />
+    case 'email': view = <EmailView />
+    case 'one': view = <PlaceholderViewOne />
+    case 'two': view = <PlaceholderViewTwo />
 
-    default: return <EmailView />
+    default: view = <EmailView />
   }
+
+  return (
+    <App platform="android" style={styles.scene}>
+      {view}
+    </App>
+  )
 }
 
 
-const NavigationBarRouteMapper = {
+const NavigationBarConfig = {
   LeftButton: function(route, navigator, index, navState) {
     if (index === 0) {
       return null
@@ -77,31 +123,6 @@ const NavigationBarRouteMapper = {
       </Text>
     )
   },
-}
-
-
-/* iOS App */
-class GoodQuestion extends Component {
-  render() {
-    const initialRoute = {name: 'email'}
-    return (
-      <App platform="android" style={styles.scene}>
-        <Navigator
-          style={styles.container}
-          initialRoute={initialRoute}
-          configureScene={() => Navigator.SceneConfigs.FadeAndroid}
-          renderScene={RouteMapper}
-          configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
-          navigationBar={
-            <Navigator.NavigationBar
-              routeMapper={NavigationBarRouteMapper}
-              style={styles.navBar}
-            />
-          }
-        />
-      </App>
-    )
-  }
 }
 
 

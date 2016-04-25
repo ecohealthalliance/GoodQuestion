@@ -8,7 +8,7 @@ import React, {
 } from 'react-native'
 
 import { verifyEmail } from '../api/Email'
-import Styles from '../../styles/Styles'
+import Styles from '../styles/Styles'
 
 
 const EmailView = React.createClass ({
