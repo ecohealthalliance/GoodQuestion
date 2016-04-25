@@ -1,5 +1,6 @@
 
-// This is an organized 
+// An organized component structure ordered in 3 different sections: Life cycle, Methods, and Render.
+// This uses the ES5 version of the React Component class and provides a more predictable pattern for developing components.
 
 const DemoComponentAnnotated = React.createClass({
   ////////////////   React Life cycle:
