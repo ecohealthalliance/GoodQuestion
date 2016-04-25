@@ -10,7 +10,7 @@ import React, {
 import Styles from '../../styles/Styles'
 
 
-const LoginPage = React.createClass ({
+const ProfilePage = React.createClass ({
 
   /* Methods */
 
@@ -26,4 +26,4 @@ const LoginPage = React.createClass ({
 const styles = StyleSheet.create({
 })
 
-module.exports = LoginPage
+module.exports = ProfilePage

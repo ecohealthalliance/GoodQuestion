@@ -10,7 +10,6 @@ import React, {
 import { verifyEmail } from '../api/Email'
 import Styles from '../styles/Styles'
 
-
 const EmailView = React.createClass ({
   
   getInitialState() {

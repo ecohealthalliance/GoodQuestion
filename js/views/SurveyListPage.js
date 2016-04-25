@@ -4,13 +4,21 @@ import React, {
   TouchableHighlight,
   Text,
   TextInput,
-  View
+  View,
+  ListView,
 } from 'react-native'
 
 import Styles from '../../styles/Styles'
 
 
-const LoginPage = React.createClass ({
+const SurveyListPage = React.createClass ({
+  getInitialState() {
+    return {
+      dataSource: new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2,
+      })
+    }
+  },
 
   /* Methods */
 
@@ -26,4 +34,4 @@ const LoginPage = React.createClass ({
 const styles = StyleSheet.create({
 })
 
-module.exports = LoginPage
+module.exports = SurveyListPage
