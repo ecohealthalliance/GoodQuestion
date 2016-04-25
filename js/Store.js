@@ -1,10 +1,15 @@
 const Store = {
   platform: 'android',
-  
-  user: false,
-  email: '',
-  email_verified: false,
 
+  logged_in: false,
+  user: {
+    name: '',
+    username: '',
+    last_session: '',
+    email: '',
+    email_verified: false,
+  },
+  
   surveys: [],
 }
 
