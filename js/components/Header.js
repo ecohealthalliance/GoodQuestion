@@ -31,7 +31,6 @@ const Header = React.createClass ({
 
   /* Methods */
   handleTouch(route) {
-    // let tabIndex = ROUTE_STACK.indexOf(route)
     let tabIndex = 0
     this.setState({
       tabIndex: tabIndex

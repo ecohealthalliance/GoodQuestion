@@ -8,7 +8,7 @@ import React, {
   ListView,
 } from 'react-native'
 
-import Store from '../Store'
+import Store from '../data/Store'
 import Styles from '../styles/Styles'
 
 

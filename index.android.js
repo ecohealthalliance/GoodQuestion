@@ -14,7 +14,7 @@ import React, {
 } from 'react-native'
 
 // Model
-import Store from './js/Store'
+import Store from './js/data/Store'
 
 // Components
 import Header from './js/components/Header'

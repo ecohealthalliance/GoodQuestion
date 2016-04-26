@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native'
 import Color from './Color'
 
 
-const SurveyStyles = {
+const SurveyStyles = StyleSheet.create({
   list: {
     flex: 1,
     justifyContent: 'flex-start',
@@ -16,6 +16,6 @@ const SurveyStyles = {
     borderBottomWidth: 1,
     borderColor: Color.background1,
   },
-}
+})
 
 module.exports = SurveyStyles

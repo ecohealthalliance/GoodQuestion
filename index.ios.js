@@ -15,7 +15,7 @@ import React, {
 } from 'react-native'
 
 // Model
-import Store from './js/Store'
+import Store from './js/data/Store'
 
 // Components
 import Header from './js/components/Header'
@@ -25,6 +25,8 @@ import App from './App'
 import WelcomePage from './js/views/WelcomePage'
 import LoginPage from './js/views/LoginPage'
 import SurveyListPage from './js/views/SurveyListPage'
+import TermsOfServicePage from './js/views/TermsOfServicePage'
+import RegistrationPagePart1 from './js/views/RegistrationPagePart1'
 
 // Style
 import Styles from './js/styles/Styles'
@@ -47,7 +49,7 @@ const GoodQuestion = React.createClass ({
 
   /* Render */
   render() {
-    const initialRoute = {name: 'welcome'}
+    const initialRoute = {name: 'registration1'}
     return (
       <Navigator
         initialRoute={initialRoute}
@@ -79,6 +81,12 @@ const RouteMapper = function(route, navigationOperations, onComponentRef) {
     case 'welcome': view = <WelcomePage />; break;
     case 'login': view = <LoginPage />; break;
     case 'surveylist': view = <SurveyListPage />; break;
+    case 'terms': view = <TermsOfServicePage />; break;
+
+    case 'registration1': view = <RegistrationPagePart1 />; break;
+    case 'registration2': view = <RegistrationPagePart1 />; break;
+    case 'registration3': view = <RegistrationPagePart1 />; break;
+    case 'registration4': view = <RegistrationPagePart1 />; break;
 
     default: view = <WelcomePage />; break;
   }
@@ -111,8 +119,16 @@ const NavigationBarConfig = {
   RightButton: function(route, navigator, index, navState) {
     let next_route = {name: 'welcome'}
     let routes = navigator.getCurrentRoutes()
+
     if (routes[routes.length-1].name === 'welcome') next_route = {name: 'login'}
-    if (routes[routes.length-1].name === 'login') next_route = {name: 'surveylist'}
+    else if (routes[routes.length-1].name === 'login') next_route = {name: 'surveylist'}
+    else if (routes[routes.length-1].name === 'surveylist') next_route = {name: 'terms'}
+    else if (routes[routes.length-1].name === 'terms') next_route = {name: 'registration1'}
+    else if (routes[routes.length-1].name === 'registration1') next_route = {name: 'registration2'}
+    else if (routes[routes.length-1].name === 'registration2') next_route = {name: 'registration3'}
+    else if (routes[routes.length-1].name === 'registration3') next_route = {name: 'registration4'}
+
+
     return (
       <TouchableOpacity
         onPress={() => navigator.push(next_route)}

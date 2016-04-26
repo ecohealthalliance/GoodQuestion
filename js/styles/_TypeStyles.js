@@ -1,7 +1,11 @@
-const TypeStyles = {
+import { StyleSheet } from 'react-native'
+import Color from './Color'
+
+const TypeStyles = StyleSheet.create({
 
   // Headings & Sub-headings
   h1: {
+    color: Color.primary,
     fontSize: 24,
     margin: 10,
   },
@@ -10,7 +14,7 @@ const TypeStyles = {
     margin: 10,
   },
   h3: {
-    fontSize: 18,
+    fontSize: 16,
     margin: 10,
   },
 
@@ -19,6 +23,6 @@ const TypeStyles = {
     color: '#333333',
     marginBottom: 5,
   },
-}
+})
 
 module.exports = TypeStyles
