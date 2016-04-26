@@ -1,4 +1,4 @@
-const Type = {
+const TypeStyles = {
 
   // Headings & Sub-headings
   h1: {
@@ -21,4 +21,4 @@ const Type = {
   },
 }
 
-module.exports = Type
+module.exports = TypeStyles

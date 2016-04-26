@@ -1,6 +1,5 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
+ * Good Question
  */
 
 import React, {
@@ -22,6 +21,9 @@ import App from './App'
 import EmailView from './js/views/EmailView'
 import PlaceholderViewOne from './js/views/PlaceholderViewOne'
 import PlaceholderViewTwo from './js/views/PlaceholderViewTwo'
+
+// Style
+import Color from './js/styles/Color'
 
 /* Configuration */
 // Leave store as default
@@ -136,14 +138,15 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   navBar: {
-    backgroundColor: 'white',
+    backgroundColor: Color.background1,
   },
   navBarText: {
+    color: Color.background2,
     fontSize: 16,
     marginVertical: 10,
   },
   navBarTitleText: {
-    color: '#373E4D',
+    color: Color.background2,
     fontWeight: '500',
     marginVertical: 9,
   },
@@ -153,13 +156,10 @@ const styles = StyleSheet.create({
   navBarRightButton: {
     paddingRight: 10,
   },
-  navBarButtonText: {
-    color: '#5890FF',
-  },
   scene: {
     flex: 1,
     paddingTop: 20,
-    backgroundColor: '#EAEAEA',
+    backgroundColor: Color.background2,
   },
 })
 

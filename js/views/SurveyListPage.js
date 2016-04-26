@@ -8,7 +8,8 @@ import React, {
   ListView,
 } from 'react-native'
 
-import Styles from '../../styles/Styles'
+import Store from '../Store'
+import Styles from '../styles/Styles'
 
 
 const SurveyListPage = React.createClass ({
@@ -20,18 +21,33 @@ const SurveyListPage = React.createClass ({
     }
   },
 
+  componentDidMount() {
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows(Store.surveys)
+    })
+  },
+
   /* Methods */
 
   /* Render */
-  render() {
+
+  renderItem(item) {
     return (
-      <View>
+      <View style={Styles.survey.listitem}>
+        <Text style={Styles.type.p}>{item.title}</Text>
       </View>
     )
-  }
-})
+  },
 
-const styles = StyleSheet.create({
+  render() {
+    return (
+      <ListView
+        dataSource={this.state.dataSource}
+        renderRow={this.renderItem}
+        contentContainerStyle={[Styles.container.default, Styles.survey.list]}
+      />
+    )
+  }
 })
 
 module.exports = SurveyListPage

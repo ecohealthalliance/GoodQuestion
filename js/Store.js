@@ -16,22 +16,39 @@ const Store = {
     isAdmin: false,
   },
 
-  surveys: {
-    sur1: {
+  surveys: [
+    {
       _id: 'sur1',
       title: 'Survey #1',
       user: 'user1',
       created: Date.now() - 10000,
       forms: [ 1 ],
     },
-    sur2: {
+    {
       _id: 'sur2',
       title: 'Survey #2',
       user: 'user1',
       created: Date.now() - 800000,
       forms: [ 'form1', 'form2' ],
     },
-  },
+    {
+      _id: 'sur2',
+      title: 'Survey #3',
+      user: 'user1',
+      created: Date.now() - 800000,
+      forms: [ 'form1', 'form2' ],
+    },
+
+    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
+    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
+    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
+    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
+    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
+    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
+    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
+    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
+    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
+  ],
 
   forms: {
     form1: {
@@ -66,7 +83,6 @@ const Store = {
         choices: ['red', 'blue', 'green']
       }
     },
-    
   },
 
 }

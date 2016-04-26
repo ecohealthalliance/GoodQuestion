@@ -1,6 +1,5 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
+ * Good Question
  * @flow
  */
 
@@ -18,12 +17,17 @@ import React, {
 // Model
 import Store from './js/Store'
 
+// Components
+import Header from './js/components/Header'
+
 // Views
 import App from './App'
-import EmailView from './js/views/EmailView'
-import PlaceholderViewOne from './js/views/PlaceholderViewOne'
-import PlaceholderViewTwo from './js/views/PlaceholderViewTwo'
+import WelcomePage from './js/views/WelcomePage'
+import LoginPage from './js/views/LoginPage'
+import SurveyListPage from './js/views/SurveyListPage'
 
+// Style
+import Color from './js/styles/Color'
 
 /* Configuration */
 Store.platform = 'ios'
@@ -43,7 +47,7 @@ const GoodQuestion = React.createClass ({
 
   /* Render */
   render() {
-    const initialRoute = {name: 'email'}
+    const initialRoute = {name: 'welcome'}
     return (
       <Navigator
         style={styles.container}
@@ -56,6 +60,10 @@ const GoodQuestion = React.createClass ({
             routeMapper={NavigationBarConfig}
             style={styles.navBar}
           />
+          // <Header 
+          //   navigator={navigator}
+          //   firstIndex={{name: 'login', index: 0}}
+          // />
         }
       />
     )
@@ -69,11 +77,11 @@ const RouteMapper = function(route, navigationOperations, onComponentRef) {
   navigator = navigationOperations
   let view
   switch (route.name) {
-    case 'email': view = <EmailView />; break;
-    case 'one': view = <PlaceholderViewOne />; break;
-    case 'two': view = <PlaceholderViewTwo />; break;
+    case 'welcome': view = <WelcomePage />; break;
+    case 'login': view = <LoginPage />; break;
+    case 'surveylist': view = <SurveyListPage />; break;
 
-    default: view = <EmailView />; break;
+    default: view = <WelcomePage />; break;
   }
 
   return (
@@ -102,10 +110,10 @@ const NavigationBarConfig = {
     )
   },
   RightButton: function(route, navigator, index, navState) {
-    let next_route = {name: 'email'}
+    let next_route = {name: 'welcome'}
     let routes = navigator.getCurrentRoutes()
-    if (routes[routes.length-1].name === 'email') next_route = {name: 'one'}
-    if (routes[routes.length-1].name === 'one') next_route = {name: 'two'}
+    if (routes[routes.length-1].name === 'welcome') next_route = {name: 'login'}
+    if (routes[routes.length-1].name === 'login') next_route = {name: 'surveylist'}
     return (
       <TouchableOpacity
         onPress={() => navigator.push(next_route)}
@@ -146,14 +154,15 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   navBar: {
-    backgroundColor: 'white',
+    backgroundColor: Color.background1,
   },
   navBarText: {
+    color: Color.background2,
     fontSize: 16,
     marginVertical: 10,
   },
   navBarTitleText: {
-    color: '#373E4D',
+    color: Color.background2,
     fontWeight: '500',
     marginVertical: 9,
   },
@@ -163,13 +172,10 @@ const styles = StyleSheet.create({
   navBarRightButton: {
     paddingRight: 10,
   },
-  navBarButtonText: {
-    color: '#5890FF',
-  },
   scene: {
     flex: 1,
     paddingTop: 20,
-    backgroundColor: '#EAEAEA',
+    backgroundColor: Color.background2,
   },
 })
 
