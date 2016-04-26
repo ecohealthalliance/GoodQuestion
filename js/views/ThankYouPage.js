@@ -23,7 +23,4 @@ const ThankYouPage = React.createClass ({
   }
 })
 
-const styles = StyleSheet.create({
-})
-
 module.exports = ThankYouPage

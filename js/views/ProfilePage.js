@@ -23,7 +23,4 @@ const ProfilePage = React.createClass ({
   }
 })
 
-const styles = StyleSheet.create({
-})
-
 module.exports = ProfilePage

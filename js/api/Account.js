@@ -6,7 +6,7 @@ let rest_config = {
   }
 }
 
-export function verifyEmail(email_string, callback) {
+export function verifyLogin(email_string, callback) {
   //TODO: Use the validateEmailString function for client-side validation before sending a request.
 
   rest_config.body = JSON.stringify({

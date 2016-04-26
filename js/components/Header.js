@@ -8,7 +8,6 @@ import React, {
   Text,
 } from 'react-native'
 
-import { verifyEmail } from '../api/Email'
 import Color from '../styles/Color'
 
 const Header = React.createClass ({

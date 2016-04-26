@@ -23,7 +23,4 @@ const EditProfilePage = React.createClass ({
   }
 })
 
-const styles = StyleSheet.create({
-})
-
 module.exports = EditProfilePage

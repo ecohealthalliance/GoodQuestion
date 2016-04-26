@@ -23,7 +23,4 @@ const FormPage = React.createClass ({
   }
 })
 
-const styles = StyleSheet.create({
-})
-
 module.exports = FormPage
