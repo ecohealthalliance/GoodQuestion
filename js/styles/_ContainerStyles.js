@@ -3,7 +3,7 @@ import Color from './Color'
 
 
 // Variables
-let HEADER_SIZE = 0
+let HEADER_SIZE = 64
 
 if ( Platform.OS === 'android' ) {
   HEADER_SIZE = 56
