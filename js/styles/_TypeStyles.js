@@ -10,6 +10,7 @@ const TypeStyles = StyleSheet.create({
     margin: 10,
   },
   h2: {
+    color: Color.faded,
     fontSize: 20,
     margin: 10,
   },

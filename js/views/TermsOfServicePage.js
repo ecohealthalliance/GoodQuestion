@@ -16,7 +16,7 @@ const TermsOfServicePage = React.createClass ({
 
   /* Methods */
   handleAccept() {
-
+    // Accept the terms of service
   },
 
   /* Render */

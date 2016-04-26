@@ -14,12 +14,18 @@ const FormStyles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.75)',
   },
+
   button: {
-    alignSelf: 'stretch',
     textAlign: 'center',
     backgroundColor: Color.positive,
     padding: 20,
+    margin: 10,
   },
+  wideButton: {
+    marginHorizontal: 0,
+    alignSelf: 'stretch',
+  },
+
   input: {
     height: 50,
     borderColor: 'gray',

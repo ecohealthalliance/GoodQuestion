@@ -27,6 +27,9 @@ import LoginPage from './js/views/LoginPage'
 import SurveyListPage from './js/views/SurveyListPage'
 import TermsOfServicePage from './js/views/TermsOfServicePage'
 import RegistrationPagePart1 from './js/views/RegistrationPagePart1'
+import RegistrationPagePart2 from './js/views/RegistrationPagePart2'
+import RegistrationPagePart3 from './js/views/RegistrationPagePart3'
+import RegistrationPagePart4 from './js/views/RegistrationPagePart4'
 
 // Style
 import Styles from './js/styles/Styles'
@@ -84,9 +87,9 @@ const RouteMapper = function(route, navigationOperations, onComponentRef) {
     case 'terms': view = <TermsOfServicePage />; break;
 
     case 'registration1': view = <RegistrationPagePart1 />; break;
-    case 'registration2': view = <RegistrationPagePart1 />; break;
-    case 'registration3': view = <RegistrationPagePart1 />; break;
-    case 'registration4': view = <RegistrationPagePart1 />; break;
+    case 'registration2': view = <RegistrationPagePart2 />; break;
+    case 'registration3': view = <RegistrationPagePart3 />; break;
+    case 'registration4': view = <RegistrationPagePart4 />; break;
 
     default: view = <WelcomePage />; break;
   }

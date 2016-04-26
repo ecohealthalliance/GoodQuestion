@@ -6,10 +6,11 @@ import React, {
 
 import Styles from '../styles/Styles'
 
-const Header = React.createClass ({
+const Button = React.createClass ({
   
   propTypes: {
     action: React.PropTypes.func.isRequired,
+    wide: React.PropTypes.bool,
   },
 
   /* Methods */
@@ -22,14 +23,16 @@ const Header = React.createClass ({
 
   /* Render */
   render() {
+    let buttonStyle = Styles.form.button
+    if (this.props.wide) buttonStyle = [Styles.form.button, Styles.form.wideButton]
+
+    debugger
     return (
-      <View>
-        <Text style={Styles.form.button}>
-          Accept
-        </Text>
-      </View>
+      <Text style={buttonStyle}>
+        Accept
+      </Text>
     )
   }
 })
 
-module.exports = Header
+module.exports = Button

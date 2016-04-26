@@ -1,6 +1,8 @@
 const Color = {
   primary: '#202A44',
 
+  faded: '#CCC',
+
   positive: '#A1D884',
   warning: '#FC5A5D',
 

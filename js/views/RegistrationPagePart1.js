@@ -1,11 +1,8 @@
 
 import React, {
-  StyleSheet,
-  TouchableHighlight,
   Text,
   TextInput,
   View,
-  TouchableOpacity,
 } from 'react-native'
 
 import Styles from '../styles/Styles'
@@ -17,7 +14,6 @@ const RegistrationPagePart1 = React.createClass ({
     return {
       emailInput: '',
       verificationCodeInput: '',
-      button_text: 'Verify',
     }
   },
 
