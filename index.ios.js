@@ -27,6 +27,7 @@ import LoginPage from './js/views/LoginPage'
 import SurveyListPage from './js/views/SurveyListPage'
 
 // Style
+import Styles from './js/styles/Styles'
 import Color from './js/styles/Color'
 
 /* Configuration */
@@ -44,13 +45,11 @@ const GoodQuestion = React.createClass ({
 
   /* Methods */
 
-
   /* Render */
   render() {
     const initialRoute = {name: 'welcome'}
     return (
       <Navigator
-        style={styles.container}
         initialRoute={initialRoute}
         configureScene={() => Navigator.SceneConfigs.FadeAndroid}
         renderScene={RouteMapper}
@@ -58,7 +57,7 @@ const GoodQuestion = React.createClass ({
         navigationBar={
           <Navigator.NavigationBar
             routeMapper={NavigationBarConfig}
-            style={styles.navBar}
+            style={Styles.header.navBar}
           />
           // <Header 
           //   navigator={navigator}
@@ -85,7 +84,7 @@ const RouteMapper = function(route, navigationOperations, onComponentRef) {
   }
 
   return (
-    <App platform="android" style={styles.scene}>
+    <App platform="android" style={Styles.container.wrapper}>
       {view}
     </App>
   )
@@ -102,8 +101,8 @@ const NavigationBarConfig = {
     return (
       <TouchableOpacity
         onPress={() => navigator.pop()}
-        style={styles.navBarLeftButton}>
-        <Text style={[styles.navBarText, styles.navBarButtonText]}>
+        style={Styles.header.navBarLeftButton}>
+        <Text style={[Styles.header.navBarText, Styles.header.navBarButtonText]}>
           Prev
         </Text>
       </TouchableOpacity>
@@ -117,8 +116,8 @@ const NavigationBarConfig = {
     return (
       <TouchableOpacity
         onPress={() => navigator.push(next_route)}
-        style={styles.navBarRightButton}>
-        <Text style={[styles.navBarText, styles.navBarButtonText]}>
+        style={Styles.header.navBarRightButton}>
+        <Text style={[Styles.header.navBarText, Styles.header.navBarButtonText]}>
           Next
         </Text>
       </TouchableOpacity>
@@ -126,57 +125,12 @@ const NavigationBarConfig = {
   },
   Title: function(route, navigator, index, navState) {
     return (
-      <Text style={[styles.navBarText, styles.navBarTitleText]}>
+      <Text style={[Styles.header.navBarText, Styles.header.navBarTitleText]}>
         {route.name} [{index}]
       </Text>
     )
   },
 }
 
-
-/* Styles */
-const styles = StyleSheet.create({
-  messageText: {
-    fontSize: 17,
-    fontWeight: '500',
-    padding: 15,
-    marginTop: 50,
-    marginLeft: 15,
-  },
-  button: {
-    backgroundColor: 'white',
-    padding: 15,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#CDCDCD',
-  },
-  buttonText: {
-    fontSize: 17,
-    fontWeight: '500',
-  },
-  navBar: {
-    backgroundColor: Color.background1,
-  },
-  navBarText: {
-    color: Color.background2,
-    fontSize: 16,
-    marginVertical: 10,
-  },
-  navBarTitleText: {
-    color: Color.background2,
-    fontWeight: '500',
-    marginVertical: 9,
-  },
-  navBarLeftButton: {
-    paddingLeft: 10,
-  },
-  navBarRightButton: {
-    paddingRight: 10,
-  },
-  scene: {
-    flex: 1,
-    paddingTop: 20,
-    backgroundColor: Color.background2,
-  },
-})
 
 AppRegistry.registerComponent('GoodQuestion', () => GoodQuestion)

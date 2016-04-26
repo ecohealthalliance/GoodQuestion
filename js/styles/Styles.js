@@ -8,12 +8,14 @@ import TypeStyles from './_TypeStyles'
 
 // Partials: Component specific
 import SurveyStyles from './_SurveyStyles'
+import HeaderStyles from './_HeaderStyles'
 
 
 const Styles = {
   container: ContainerStyles,
   type: TypeStyles,
 
+  header: HeaderStyles,
   survey: SurveyStyles,
 }
 

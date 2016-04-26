@@ -1,8 +1,21 @@
+import { Platform } from 'react-native'
 import Color from './Color'
 
-const HEADER_SIZE = 64
+
+// Variables
+let HEADER_SIZE = 0
+
+if ( Platform.OS === 'android' ) {
+  HEADER_SIZE = 56
+}
 
 const ContainerStyles = {
+  wrapper: {
+    flex: 1,
+    paddingTop: 20,
+    backgroundColor: Color.background2,
+  },
+
   default: {
     flex: 1,
     justifyContent: 'center',
