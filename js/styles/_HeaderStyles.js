@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native'
 import Color from './Color'
+import Variables from './Variables'
 
 
 const HeaderStyles = StyleSheet.create({
@@ -11,8 +12,8 @@ const HeaderStyles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 64,
-    paddingTop: 20,
+    height: 60,
+    paddingTop: Variables.HEADER_PADDING,
     backgroundColor: Color.background1,
   },
   navBarText: {

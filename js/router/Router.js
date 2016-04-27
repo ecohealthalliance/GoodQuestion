@@ -1,6 +1,7 @@
 import React, { 
   Platform,
   Navigator,
+  BackAndroid,
   TouchableOpacity,
   Text,
 } from 'react-native'

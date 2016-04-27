@@ -3,16 +3,7 @@
  * @flow
  */
 
-import React, {
-  AppRegistry,
-  BackAndroid,
-  Navigator,
-  Component,
-  StyleSheet,
-  TouchableHighlight,
-  TouchableOpacity,
-  Text
-} from 'react-native'
+import React, { AppRegistry } from 'react-native'
 
 // Model
 import Store from './js/data/Store'

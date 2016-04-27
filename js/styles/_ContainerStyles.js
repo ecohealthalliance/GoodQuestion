@@ -1,13 +1,7 @@
-import { StyleSheet, Platform } from 'react-native'
+import { StyleSheet } from 'react-native'
 import Color from './Color'
+import Variables from './Variables'
 
-
-// Variables
-let HEADER_SIZE = 64
-
-if ( Platform.OS === 'android' ) {
-  HEADER_SIZE = 56
-}
 
 const ContainerStyles = StyleSheet.create({
   wrapper: {
@@ -21,7 +15,7 @@ const ContainerStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'stretch',
-    marginTop: HEADER_SIZE,
+    marginTop: Variables.HEADER_SIZE,
     backgroundColor: Color.background2,
     borderLeftWidth: 1,
     borderRightWidth: 1,
@@ -33,7 +27,7 @@ const ContainerStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'stretch',
-    marginTop: HEADER_SIZE,
+    marginTop: Variables.HEADER_SIZE,
     backgroundColor: Color.background2,
     borderLeftWidth: 1,
     borderRightWidth: 1,
@@ -46,12 +40,12 @@ const ContainerStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'stretch',
-    marginTop: HEADER_SIZE,
+    marginTop: Variables.HEADER_SIZE,
     backgroundColor: Color.background1,
   },
 
   informational: {
-    marginTop: HEADER_SIZE,
+    marginTop: Variables.HEADER_SIZE,
     backgroundColor: Color.background2,
     paddingHorizontal: 30,
     paddingTop: 10,
