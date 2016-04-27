@@ -4,6 +4,15 @@ import Color from './Color'
 
 const HeaderStyles = StyleSheet.create({
   navBar: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 64,
+    paddingTop: 20,
     backgroundColor: Color.background1,
   },
   navBarText: {

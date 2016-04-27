@@ -6,7 +6,9 @@ const App = React.createClass ({
   },
 
   render() {
-    return this.props.children
+  	<App platform="android" style={Styles.container.wrapper}>
+      {view}
+    </App>
   }
 })
 
