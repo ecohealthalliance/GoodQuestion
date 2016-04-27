@@ -9,10 +9,7 @@ import React, { AppRegistry } from 'react-native'
 import Store from './js/data/Store'
 
 // Router
-import Router from './js/router/Router'
-
-/* Configuration */
-Store.platform = 'ios'
+import SharedNavigator from './js/router/SharedNavigator'
 
 
 /* iOS App */
@@ -27,7 +24,7 @@ const GoodQuestion = React.createClass ({
   /* Render */
   render() {
     const initialRoute = {name: 'registration1'}
-    return ( <Router /> )
+    return ( <SharedNavigator /> )
   }
 })
 

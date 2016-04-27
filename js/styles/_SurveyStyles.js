@@ -1,12 +1,10 @@
 import { StyleSheet } from 'react-native'
 import Color from './Color'
+import Variables from './Variables'
 
 
 const SurveyStyles = StyleSheet.create({
   list: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'stretch',
     alignSelf: 'stretch',
     backgroundColor: Color.background2,
   },

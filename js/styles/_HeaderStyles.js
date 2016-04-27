@@ -12,7 +12,7 @@ const HeaderStyles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 60,
+    height: Variables.HEADER_SIZE,
     paddingTop: Variables.HEADER_PADDING,
     backgroundColor: Color.background1,
   },

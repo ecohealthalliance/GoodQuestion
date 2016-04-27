@@ -6,16 +6,11 @@ import Variables from './Variables'
 const ContainerStyles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    paddingTop: 20,
+    paddingTop: Variables.HEADER_SIZE,
     backgroundColor: Color.background2,
   },
 
   default: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    marginTop: Variables.HEADER_SIZE,
     backgroundColor: Color.background2,
     borderLeftWidth: 1,
     borderRightWidth: 1,
@@ -27,7 +22,6 @@ const ContainerStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'stretch',
-    marginTop: Variables.HEADER_SIZE,
     backgroundColor: Color.background2,
     borderLeftWidth: 1,
     borderRightWidth: 1,
@@ -40,12 +34,10 @@ const ContainerStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'stretch',
-    marginTop: Variables.HEADER_SIZE,
     backgroundColor: Color.background1,
   },
 
   informational: {
-    marginTop: Variables.HEADER_SIZE,
     backgroundColor: Color.background2,
     paddingHorizontal: 30,
     paddingTop: 10,

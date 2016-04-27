@@ -8,10 +8,7 @@ import React, { AppRegistry } from 'react-native'
 import Store from './js/data/Store'
 
 // Router
-import Router from './js/router/Router'
-
-/* Configuration */
-Store.platform = 'android'
+import SharedNavigator from './js/router/SharedNavigator'
 
 
 /* Android App */
@@ -26,7 +23,7 @@ const GoodQuestion = React.createClass ({
   /* Render */
   render() {
     const initialRoute = {name: 'welcome'}
-    return ( <Router /> )
+    return ( <SharedNavigator /> )
   }
 })
 

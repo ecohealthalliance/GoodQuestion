@@ -38,7 +38,6 @@ const Store = {
       created: Date.now() - 800000,
       forms: [ 'form1', 'form2' ],
     },
-
     { title: 'Survey #' + Math.floor(Math.random() * 1000) },
     { title: 'Survey #' + Math.floor(Math.random() * 1000) },
     { title: 'Survey #' + Math.floor(Math.random() * 1000) },
@@ -48,6 +47,13 @@ const Store = {
     { title: 'Survey #' + Math.floor(Math.random() * 1000) },
     { title: 'Survey #' + Math.floor(Math.random() * 1000) },
     { title: 'Survey #' + Math.floor(Math.random() * 1000) },
+    {
+      _id: 'sur9',
+      title: 'Survey #Final',
+      user: 'user1',
+      created: Date.now() - 800000,
+      forms: [ 'form1', 'form2' ],
+    },
   ],
 
   forms: {
