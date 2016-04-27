@@ -10,27 +10,21 @@ const Button = React.createClass ({
   
   propTypes: {
     action: React.PropTypes.func.isRequired,
-    wide: React.PropTypes.bool,
   },
 
   /* Methods */
-  handleTouch(route) {
-    let tabIndex = 0
-    this.setState({
-      tabIndex: tabIndex
-    })
+  handleTouch() {
+    this.props.action()
   },
 
   /* Render */
   render() {
-    let buttonStyle = Styles.form.button
-    if (this.props.wide) buttonStyle = [Styles.form.button, Styles.form.wideButton]
-
-    debugger
     return (
-      <Text style={buttonStyle}>
-        Accept
-      </Text>
+      <TouchableHighlight onPress={this.handleTouch}>
+        <View style={Styles.type.link}>
+          {this.props.children}
+        </View>
+      </TouchableHighlight>
     )
   }
 })

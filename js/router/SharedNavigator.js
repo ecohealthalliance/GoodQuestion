@@ -54,13 +54,16 @@ const RouteMapper = function(route, navigationOperations, onComponentRef) {
     case 'surveylist': return <SurveyListPage navigator={navigator} />
     case 'terms': return <TermsOfServicePage navigator={navigator} />
 
+    case 'registration1': return <RegistrationPagePart1 navigator={navigator} />
+
     default: return <SurveyListPage navigator={navigator} />
   }
 }
 
 const SharedNavigator = React.createClass ({
   render() {
-    const initialRoute = {name: 'surveylist', prettyName: 'Survey List'}
+    // const initialRoute = {name: 'surveylist', prettyName: 'Survey List'}
+    const initialRoute = {name: 'registration1', prettyName: 'Survey List'}
     return (
       <Navigator
         ref={(nav) => { navigator = nav }}

@@ -24,6 +24,12 @@ const TypeStyles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
+
+  // Interactive
+  link: {
+    color: Color.primary,
+    fontWeight: 'bold',
+  },
 })
 
 module.exports = TypeStyles

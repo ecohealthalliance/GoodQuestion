@@ -3,10 +3,11 @@ import React, {
   Text,
   TextInput,
   View,
+  TouchableWithoutFeedback,
 } from 'react-native'
 
+import Link from '../components/Link'
 import Styles from '../styles/Styles'
-import Color from '../styles/Color'
 
 
 const RegistrationPagePart1 = React.createClass ({
@@ -18,6 +19,9 @@ const RegistrationPagePart1 = React.createClass ({
   },
 
   /* Methods */
+  goToTermsPage() {
+
+  },
 
   /* Render */
   render() {
@@ -38,9 +42,13 @@ const RegistrationPagePart1 = React.createClass ({
           value={this.state.verificationCodeInput}
           placeholder="Verification Code"
         />
-        <Text style={Styles.type.h3}>
-          By verifying your account you agree to GoodQuestion Terms of Service.
-        </Text>
+        <TouchableWithoutFeedback onPress={this.goToTermsPage}>
+          <Text style={Styles.type.h3}>
+            <Text>By verifying your account you agree to GoodQuestion </Text>
+            <Text style={Styles.type.link}>Terms of Service.</Text>
+          </Text>
+        </TouchableWithoutFeedback>
+        
       </View>
     )
   }
