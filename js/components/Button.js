@@ -21,9 +21,10 @@ const Button = React.createClass ({
   render() {
     return (
       <TouchableHighlight onPress={this.handleTouch}>
-        <View style={Styles.type.link}>
+        <Text style={Styles.form.button}>
           {this.props.children}
-        </View>
+        </Text>
+
       </TouchableHighlight>
     )
   }

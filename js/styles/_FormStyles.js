@@ -12,11 +12,12 @@ const FormStyles = StyleSheet.create({
     right: 0,
     bottom: 0,
     padding: 20,
-    backgroundColor: Color.background2,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
   },
 
   button: {
     textAlign: 'center',
+    fontWeight: 'bold',
     backgroundColor: Color.positive,
     padding: 20,
     margin: 10,
