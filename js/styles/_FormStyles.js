@@ -12,7 +12,7 @@ const FormStyles = StyleSheet.create({
     right: 0,
     bottom: 0,
     padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.75)',
+    backgroundColor: Color.background2,
   },
 
   button: {

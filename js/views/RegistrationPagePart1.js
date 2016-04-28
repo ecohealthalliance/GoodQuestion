@@ -6,11 +6,14 @@ import React, {
   TouchableWithoutFeedback,
 } from 'react-native'
 
-import Link from '../components/Link'
 import Styles from '../styles/Styles'
 
 
 const RegistrationPagePart1 = React.createClass ({
+  propTypes: {
+    navigator: React.PropTypes.object.isRequired,
+  },
+
   getInitialState() {
     return {
       emailInput: '',
@@ -20,7 +23,7 @@ const RegistrationPagePart1 = React.createClass ({
 
   /* Methods */
   goToTermsPage() {
-
+    this.props.navigator.push({name: 'terms'})
   },
 
   /* Render */

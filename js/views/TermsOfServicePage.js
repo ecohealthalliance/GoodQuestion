@@ -13,7 +13,10 @@ import TermsOfService from '../data/TermsOfService'
 import Styles from '../styles/Styles'
 
 const TermsOfServicePage = React.createClass ({
-
+  propTypes: {
+    navigator: React.PropTypes.object.isRequired,
+  },
+  
   /* Methods */
   handleAccept() {
     // Accept the terms of service
