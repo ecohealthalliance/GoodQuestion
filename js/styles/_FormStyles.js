@@ -14,6 +14,16 @@ const FormStyles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
   },
+  bottomForm: {
+    justifyContent: 'center',
+    alignItems: 'stretch',
+    height: 100,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: 20,
+    backgroundColor: Color.background2,
+  },
 
   button: {
     textAlign: 'center',

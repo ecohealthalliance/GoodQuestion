@@ -58,8 +58,8 @@ const RegistrationPagePart1 = React.createClass ({
             </Text>
           </TouchableWithoutFeedback> 
         </View>
-        <View style={Styles.form.fixedForm}>
-          <Button action={this.goToNextPage} color='primary'>
+        <View style={Styles.form.bottomForm}>
+          <Button action={this.goToNextPage} color='primary' wide>
             Next
           </Button>
         </View>

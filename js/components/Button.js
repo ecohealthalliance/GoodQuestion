@@ -1,5 +1,5 @@
 import React, {
-  TouchableHighlight,
+  TouchableWithoutFeedback,
   View,
   Text,
 } from 'react-native'
@@ -11,6 +11,7 @@ const Button = React.createClass ({
   propTypes: {
     action: React.PropTypes.func.isRequired,
     color: React.PropTypes.string,
+    wide: React.PropTypes.bool,
   },
 
   /* Methods */
@@ -22,13 +23,14 @@ const Button = React.createClass ({
   render() {
     const buttonStyle = [Styles.form.button]
     if (this.props.color === 'primary') buttonStyle.push(Styles.form.primaryButton)
+    if (this.props.wide) buttonStyle.push(Styles.form.wideButton)
 
     return (
-      <TouchableHighlight onPress={this.handleTouch}>
+      <TouchableWithoutFeedback onPress={this.handleTouch}>
         <Text style={buttonStyle}>
           {this.props.children}
         </Text>
-      </TouchableHighlight>
+      </TouchableWithoutFeedback>
     )
   }
 })
