@@ -63,8 +63,7 @@ const RouteMapper = function(route, navigationOperations, onComponentRef) {
 
 const SharedNavigator = React.createClass ({
   render() {
-    // const initialRoute = {name: 'surveylist', prettyName: 'Survey List'}
-    const initialRoute = {name: 'registration1', prettyName: 'Survey List'}
+    const initialRoute = {name: 'surveylist', prettyName: 'Survey List'}
     return (
       <Navigator
         ref={(nav) => { navigator = nav }}
