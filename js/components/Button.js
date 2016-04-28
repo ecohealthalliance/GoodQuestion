@@ -1,5 +1,5 @@
 import React, {
-  TouchableHighlight,
+  TouchableWithoutFeedback,
   View,
   Text,
 } from 'react-native'
@@ -10,27 +10,27 @@ const Button = React.createClass ({
   
   propTypes: {
     action: React.PropTypes.func.isRequired,
+    color: React.PropTypes.string,
     wide: React.PropTypes.bool,
   },
 
   /* Methods */
-  handleTouch(route) {
-    let tabIndex = 0
-    this.setState({
-      tabIndex: tabIndex
-    })
+  handleTouch() {
+    this.props.action()
   },
 
   /* Render */
   render() {
-    let buttonStyle = Styles.form.button
-    if (this.props.wide) buttonStyle = [Styles.form.button, Styles.form.wideButton]
+    const buttonStyle = [Styles.form.button]
+    if (this.props.color === 'primary') buttonStyle.push(Styles.form.primaryButton)
+    if (this.props.wide) buttonStyle.push(Styles.form.wideButton)
 
-    debugger
     return (
-      <Text style={buttonStyle}>
-        Accept
-      </Text>
+      <TouchableWithoutFeedback onPress={this.handleTouch}>
+        <Text style={buttonStyle}>
+          {this.props.children}
+        </Text>
+      </TouchableWithoutFeedback>
     )
   }
 })

@@ -23,7 +23,6 @@ const GoodQuestion = React.createClass ({
 
   /* Render */
   render() {
-    const initialRoute = {name: 'registration1'}
     return ( <SharedNavigator /> )
   }
 })

@@ -12,14 +12,29 @@ const FormStyles = StyleSheet.create({
     right: 0,
     bottom: 0,
     padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.75)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+  },
+  bottomForm: {
+    justifyContent: 'center',
+    alignItems: 'stretch',
+    height: 100,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: 20,
+    backgroundColor: Color.background2,
   },
 
   button: {
     textAlign: 'center',
+    fontWeight: 'bold',
     backgroundColor: Color.positive,
     padding: 20,
     margin: 10,
+  },
+  primaryButton: {
+    backgroundColor: Color.primary,
+    color: Color.background2,
   },
   wideButton: {
     marginHorizontal: 0,

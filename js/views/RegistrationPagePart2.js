@@ -10,6 +10,10 @@ import Color from '../styles/Color'
 
 
 const RegistrationPagePart2 = React.createClass ({
+  propTypes: {
+    navigator: React.PropTypes.object.isRequired,
+  },
+  
   getInitialState() {
     return {
       passwordInput: '',

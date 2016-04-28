@@ -54,6 +54,9 @@ const RouteMapper = function(route, navigationOperations, onComponentRef) {
     case 'surveylist': return <SurveyListPage navigator={navigator} />
     case 'terms': return <TermsOfServicePage navigator={navigator} />
 
+    case 'registration1': return <RegistrationPagePart1 navigator={navigator} />
+    case 'registration2': return <RegistrationPagePart2 navigator={navigator} />
+
     default: return <SurveyListPage navigator={navigator} />
   }
 }
