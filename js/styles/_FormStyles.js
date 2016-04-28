@@ -22,6 +22,10 @@ const FormStyles = StyleSheet.create({
     padding: 20,
     margin: 10,
   },
+  primaryButton: {
+    backgroundColor: Color.primary,
+    color: Color.background2,
+  },
   wideButton: {
     marginHorizontal: 0,
     alignSelf: 'stretch',

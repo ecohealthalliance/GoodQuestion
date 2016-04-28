@@ -10,6 +10,7 @@ const Button = React.createClass ({
   
   propTypes: {
     action: React.PropTypes.func.isRequired,
+    color: React.PropTypes.string,
   },
 
   /* Methods */
@@ -19,12 +20,14 @@ const Button = React.createClass ({
 
   /* Render */
   render() {
+    const buttonStyle = [Styles.form.button]
+    if (this.props.color === 'primary') buttonStyle.push(Styles.form.primaryButton)
+
     return (
       <TouchableHighlight onPress={this.handleTouch}>
-        <Text style={Styles.form.button}>
+        <Text style={buttonStyle}>
           {this.props.children}
         </Text>
-
       </TouchableHighlight>
     )
   }
