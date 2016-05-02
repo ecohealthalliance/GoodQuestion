@@ -8,7 +8,6 @@ import React, {
 } from 'react-native'
 
 import Parse from 'parse/react-native'
-import ParseReact from 'parse-react/react-native'
 import Store from '../data/Store'
 import Styles from '../styles/Styles'
 
@@ -25,11 +24,6 @@ const SurveyListPage = React.createClass({
         rowHasChanged: (row1, row2) => row1 !== row2,
       })
     }
-  },
-
-  observe: function() {
-    let surveysQuery = (new Parse.Query('Surveys')).ascending('createdAt')
-    return this.state.hasLoaded ? { surveys: surveysQuery } : []
   },
 
   componentDidMount() {
