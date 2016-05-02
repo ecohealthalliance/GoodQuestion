@@ -17,14 +17,7 @@ const Store = {
   },
 
   surveys: [],
-
-  forms: [{
-    "name": "Test form",
-    "triggers": [],
-    "questions": ["Zu4NSjytykfje3dH4", "wqzz4TBDvRYNrKXic", "RHxZwpGCxAjX5vFkQ"],
-    "order": 1
-  }],
-
+  forms: [],
   questions: [{
     survey: 'sur1',
     text: 'What is your favorite color?',
@@ -54,6 +47,7 @@ const Store = {
     "order": 3
   }, ],
 
+  triggers: [],
 }
 
 module.exports = Store

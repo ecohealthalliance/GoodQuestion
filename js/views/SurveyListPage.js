@@ -37,8 +37,6 @@ const SurveyListPage = React.createClass({
     if (error) {
       console.warn(error)
     } else {
-      console.log('loadList')
-      console.log(response)
       this.setState({
         isLoading: false,
         list: response,
