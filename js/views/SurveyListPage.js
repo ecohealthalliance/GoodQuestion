@@ -14,8 +14,6 @@ import Styles from '../styles/Styles'
 import { loadSurveyList } from '../api/Surveys'
 
 const SurveyListPage = React.createClass({
-  mixins: [ParseReact.Mixin], // Enable query subscriptions
-
   getInitialState() {
     return {
       isLoading: true,
@@ -27,7 +25,6 @@ const SurveyListPage = React.createClass({
   },
 
   componentDidMount() {
-    let surveyList = this.data.surveys ? this.data.surveys : []
     this.setState({
       dataSource: this.state.dataSource.cloneWithRows(Store.surveys)
     })
@@ -64,8 +61,8 @@ const SurveyListPage = React.createClass({
     return ( 
       <ListView dataSource = { this.state.dataSource }
         renderRow = { this.renderItem }
-        contentContainerStyle = {
-        [Styles.container.default, Styles.survey.list] }
+        contentContainerStyle = { [Styles.container.default, Styles.survey.list] }
+        enableEmptySections
       />
     )
   }
