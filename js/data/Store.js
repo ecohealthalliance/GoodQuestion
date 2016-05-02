@@ -16,80 +16,43 @@ const Store = {
     isAdmin: false,
   },
 
-  surveys: [
-    {
-      _id: 'sur1',
-      title: 'Survey #1',
-      user: 'user1',
-      created: Date.now() - 10000,
-      forms: [ 1 ],
-    },
-    {
-      _id: 'sur2',
-      title: 'Survey #2',
-      user: 'user1',
-      created: Date.now() - 800000,
-      forms: [ 'form1', 'form2' ],
-    },
-    {
-      _id: 'sur2',
-      title: 'Survey #3',
-      user: 'user1',
-      created: Date.now() - 800000,
-      forms: [ 'form1', 'form2' ],
-    },
-    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
-    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
-    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
-    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
-    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
-    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
-    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
-    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
-    { title: 'Survey #' + Math.floor(Math.random() * 1000) },
-    {
-      _id: 'sur9',
-      title: 'Survey #Final',
-      user: 'user1',
-      created: Date.now() - 800000,
-      forms: [ 'form1', 'form2' ],
-    },
-  ],
+  surveys: [],
 
-  forms: {
-    form1: {
-      _id: 'form1',
-      triggers: [ 't1' ],
-      questions: [ 'q1', 'q2', 'q3' ]
+  forms: [{
+    "name": "Test form",
+    "triggers": [],
+    "questions": ["Zu4NSjytykfje3dH4", "wqzz4TBDvRYNrKXic", "RHxZwpGCxAjX5vFkQ"],
+    "order": 1
+  }],
+
+  questions: [{
+    survey: 'sur1',
+    text: 'What is your favorite color?',
+    question_type: 'multi_choice',
+    properties: {
+      choices: ['red', 'blue', 'green']
     }
-  },
-
-  questions: {
-    q1: {
-      survey: 'sur1',
-      text: 'What is your favorite color?',
-      question_type: 'multi_choice',
-      properties: {
-        choices: ['red', 'blue', 'green']
-      }
+  }, {
+    "question_type": "inputText",
+    "text": "What is your name?",
+    "value": "John Doe",
+    "properties": {
+      "placeholder": "Please Specify Your Full Name",
+      "maxlength": 20,
+      "required": true
     },
-    q2: {
-      survey: 'sur1',
-      text: 'What is your favorite color?',
-      question_type: 'multi_choice',
-      properties: {
-        choices: ['red', 'blue', 'green']
-      }
-    },
-    q3: {
-      survey: 'sur1',
-      text: 'What is your favorite color?',
-      question_type: 'multi_choice',
-      properties: {
-        choices: ['red', 'blue', 'green']
-      }
-    },
-  },
+    "order": 1
+  }, {
+    "question_type": "textArea",
+    "text": "Short bio",
+    "properties": { "placeholder": "Tell a little about yourself", "maxlength": 20 },
+    "order": 2
+  }, {
+    "question_type": "inputText",
+    "text": "How did you find us?",
+    "properties": { "placeholder": "Web search/newspaper/a friend", "maxlength": 20 },
+    "order": 3
+  }, ],
 
 }
 

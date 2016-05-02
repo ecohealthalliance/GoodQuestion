@@ -17,7 +17,7 @@ import SharedNavigator from './js/router/SharedNavigator'
 
 /* Initialize Parse Server */
 connectToParseServer()
-initializeParseData()
+// initializeParseData()
 // loadSurveyList()
 
 
