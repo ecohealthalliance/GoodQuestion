@@ -20,7 +20,7 @@ export function loadTriggers(options, callback) {
   })
 }
 
-
-export function storeTriggers(list) {
-  Store.questions = _.unionBy(Store.triggers, list, 'id')
+export function storeTriggers(newTriggers) {
+  if (!Array.isArray(newTriggers)) newTriggers = [newTriggers]
+  Store.questions = _.unionBy(Store.triggers, newTriggers, 'id')
 }

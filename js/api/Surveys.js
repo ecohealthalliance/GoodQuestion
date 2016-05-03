@@ -2,7 +2,7 @@ import _ from 'lodash'
 import Parse from 'parse/react-native'
 import Store from '../data/Store'
 
-import { loadForms } from '../api/Forms'
+import { loadSurveys } from '../api/Surveys'
 
 
 export function loadCachedSurvey(id) {
@@ -22,7 +22,7 @@ export function loadSurveyList(options, callback) {
   query.find({
     success: function(results) {
       console.log("Successfully retrieved " + results.length + " surveys.")
-      storeSurveyList(results)
+      storeSurveys(results)
 
       loadForms()
 
@@ -37,6 +37,7 @@ export function loadSurveyList(options, callback) {
   setTimeout(function(){console.log(Store)}, 500)
 }
 
-export function storeSurveyList(list) {
-  Store.surveys = _.unionBy(Store.surveys, list, 'id')
+export function storeSurveys(newSurveys) {
+  if (!Array.isArray(newSurveys)) newSurveys = [newSurveys]
+  Store.surveys = _.unionBy(Store.surveys, newSurveys, 'id')
 }

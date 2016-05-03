@@ -21,6 +21,7 @@ export function loadQuestions(options, callback) {
 }
 
 
-export function storeQuestions(list) {
-  Store.questions = _.unionBy(Store.questions, list, 'id')
+export function storeQuestions(newQuestions) {
+  if (!Array.isArray(newQuestions)) newQuestions = [newQuestions]
+  Store.questions = _.unionBy(Store.questions, newQuestions, 'id')
 }

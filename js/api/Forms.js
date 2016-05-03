@@ -13,7 +13,7 @@ export function loadForms(options, callback) {
   query.find({
     success: function(results) {
       console.log("Successfully retrieved " + results.length + " forms.")
-      storeFormList(results)
+      storeForms(results)
 
       loadTriggers()
       loadQuestions()
@@ -27,6 +27,7 @@ export function loadForms(options, callback) {
 }
 
 
-export function storeFormList(list) {
-  Store.forms = _.unionBy(Store.forms, list, 'id')
+export function storeForms(newForms) {
+  if (!Array.isArray(newForms)) newForms = [newForms]
+  Store.forms = _.unionBy(Store.forms, newForms, 'id')
 }

@@ -7,8 +7,8 @@ import React, { AppRegistry } from 'react-native'
 
 // Model
 import Store from './js/data/Store'
-import { connectToParseServer } from './js/data/ParseServer'
-import { initializeParseData } from './js/data/PopulateParseServer'
+import { connectToParseServer } from './js/api/ParseServer'
+import { initializeParseData } from './js/api/PopulateLocalParseServer'
 import { loadSurveyList } from './js/api/Surveys'
 
 // Router

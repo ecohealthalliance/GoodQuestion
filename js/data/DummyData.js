@@ -1,18 +1,24 @@
 const DummyData = {
 
-  surveys: {
-    _id: 'sur1',
-    title: 'Survey #1',
-    user: 'user1',
-    created: Date.now() - 10000,
-  },
+  surveys: [
+    {
+      title: 'Survey #1',
+      user: 'user1',
+      created: Date.now() - 10000,
+    }, 
+    {
+      title: 'Survey #2',
+      user: 'user1',
+      created: Date.now() - 50000,
+    }, 
+    {
+      title: 'Survey #3',
+      user: 'user1',
+      created: Date.now() - 100000,
+    },
+  ],
 
-  form: {
-    name: 'Test form',
-    order: 1
-  },
-
-  triggers: {
+  trigger: {
     trigger_type: 'geo',
     properties: {
       lat: 40.767066,
@@ -22,9 +28,8 @@ const DummyData = {
 
   questions: [
     {
-      survey: 'sur1',
-      text: 'What is your favorite color?',
       question_type: 'multi_choice',
+      text: 'What is your favorite color?',
       properties: {
         choices: ['red', 'blue', 'green']
       },
@@ -33,7 +38,7 @@ const DummyData = {
       question_type: 'text_area',
       text: 'Describe any abnormalities in the location of the drag',
       properties: { 
-        placeholder: Long Text...,
+        placeholder: 'Long Text...',
         maxlength: 150,
       },
       order: 2,
@@ -41,7 +46,7 @@ const DummyData = {
       question_type: 'input_text',
       text: 'Describe any abnormalities in the location of the drag',
       properties: {
-        placeholder: Short Text...,
+        placeholder: 'Short Text...',
         maxlength: 20,
       },
       order: 3,
@@ -74,7 +79,6 @@ const DummyData = {
     },
   ],
 
-  
 }
 
 module.exports = DummyData
