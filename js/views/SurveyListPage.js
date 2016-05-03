@@ -11,12 +11,13 @@ import React, {
 import _ from 'lodash'
 import Store from '../data/Store'
 import Styles from '../styles/Styles'
+import Color from '../styles/Color'
 
 import CheckBox from 'react-native-checkbox'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
-let uncheckedImage = (<Icon name='circle-o' size={28} color='red' />);
-let checkedImage = (<Icon name='check-circle-o' size={28} color='green' />);
+let uncheckedComponent = (<Icon name='circle-o' size={28} color={Color.fadedRed} />);
+let checkedComponent = (<Icon name='check-circle' size={28} color={Color.fadedGreen} />);
 
 const SurveyListPage = React.createClass ({
   title: 'Surveys',
@@ -57,10 +58,9 @@ const SurveyListPage = React.createClass ({
           <CheckBox
             ref={item.objectId}
             checked={item.accepted}
-            uncheckedComponent={uncheckedImage}
-            checkedComponent={checkedImage}
+            uncheckedComponent={uncheckedComponent}
+            checkedComponent={checkedComponent}
             onChange={this.onChecked.bind(this, rowId)}
-            style={Styles.survey.checkbox}
           />
         </View>
       </View>
