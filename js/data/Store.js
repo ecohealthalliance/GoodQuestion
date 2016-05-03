@@ -22,7 +22,7 @@ const Store = {
       title: 'Survey #1',
       user: 'user1',
       created: Date.now() - 10000,
-      forms: [ 1 ],
+      forms: [ 'form0' ],
     },
     {
       _id: 'sur2',
@@ -57,6 +57,10 @@ const Store = {
   ],
 
   forms: {
+    form0: {
+      _id: 'form0',
+      questions: ['q0']
+    },
     form1: {
       _id: 'form1',
       triggers: [ 't1' ],
@@ -65,6 +69,10 @@ const Store = {
   },
 
   questions: {
+    q0: {
+      text: 'What is your name?',
+      question_type: 'shortAnswer'
+    },
     q1: {
       survey: 'sur1',
       text: 'What is your favorite color?',

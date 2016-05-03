@@ -7,7 +7,7 @@ import React, {
 import Styles from '../styles/Styles'
 
 const Button = React.createClass ({
-  
+
   propTypes: {
     action: React.PropTypes.func.isRequired,
     color: React.PropTypes.string,

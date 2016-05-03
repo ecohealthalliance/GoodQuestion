@@ -1,4 +1,4 @@
-import React, { 
+import React, {
   Platform,
   Navigator,
   BackAndroid,
@@ -23,6 +23,7 @@ import RegistrationPagePart1 from '../views/RegistrationPagePart1'
 import RegistrationPagePart2 from '../views/RegistrationPagePart2'
 import RegistrationPagePart3 from '../views/RegistrationPagePart3'
 import RegistrationPagePart4 from '../views/RegistrationPagePart4'
+import FormPage from '../views/FormPage'
 
 
 /* Configuration */
@@ -47,23 +48,23 @@ if ( Platform.OS === 'android' ) {
 }
 
 const RouteMapper = function(route, navigationOperations, onComponentRef) {
-  navigator = navigationOperations
-  let view
+  console.log(route, navigationOperations, onComponentRef);
+  navigator = navigationOperations;
   switch (route.name) {
     case 'login': return <LoginPage navigator={navigator} />
     case 'surveylist': return <SurveyListPage navigator={navigator} />
     case 'terms': return <TermsOfServicePage navigator={navigator} />
-
     case 'registration1': return <RegistrationPagePart1 navigator={navigator} />
     case 'registration2': return <RegistrationPagePart2 navigator={navigator} />
-
+    case 'form': return <FormPage navigator={navigator} form={route.form} />
     default: return <SurveyListPage navigator={navigator} />
   }
 }
 
+
 const SharedNavigator = React.createClass ({
   render() {
-    const initialRoute = {name: 'surveylist', prettyName: 'Survey List'}
+    const initialRoute = {name: 'surveylist', prettyName: 'Survey List'};
     return (
       <Navigator
         ref={(nav) => { navigator = nav }}

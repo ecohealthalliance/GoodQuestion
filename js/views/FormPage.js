@@ -1,25 +1,49 @@
-
 import React, {
   StyleSheet,
   TouchableHighlight,
   Text,
-  TextInput,
-  View
+  View,
+  ListView,
+  AsyncStorage
 } from 'react-native'
 
-import Styles from '../../styles/Styles'
-
+import Store from '../data/Store'
+import Styles from '../styles/Styles';
+import ShortAnswer from './QuestionTypes/ShortAnswer';
+import Button from 'apsl-react-native-button';
 
 const FormPage = React.createClass ({
-
-  /* Methods */
-
-  /* Render */
+  getInitialState() {
+    return {}
+  },
+  submit() {
+    let id = "submission_" + Number(new Date());
+    // TODO Get geolocation
+    AsyncStorage.setItem(id, JSON.stringify({
+      id: id,
+      formId: 'fakeId',
+      date: new Date(),
+      answers: this.state
+    })).then(()=>{
+      this.props.navigator.push({name: 'surveyList'});
+    }).catch((error)=>{
+      console.log(error);
+    });
+  },
   render() {
-    return (
-      <View>
-      </View>
-    )
+    let questions = this.props.form.questions.map((qId)=>Store.questions[qId]);
+    return (<View>
+      {questions.map((question)=>{
+        switch (question.question_type) {
+          case 'shortAnswer': return (<ShortAnswer
+            key={question._id}
+            question={question}
+            onChange={(value)=> this.setState({[question._id]: value})} />);
+          default: throw new Exception("Unknown question type.");
+        }
+      })}
+      <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
+    </View>)
   }
 })
 

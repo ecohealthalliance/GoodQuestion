@@ -6,6 +6,7 @@ import React, {
   TextInput,
   View,
   ListView,
+  Alert,
 } from 'react-native'
 
 import Store from '../data/Store'
@@ -28,13 +29,31 @@ const SurveyListPage = React.createClass ({
   },
 
   /* Methods */
-
+  getActiveForm(survey) {
+    // TODO return the the most recently triggered form that hasn't been filled out.
+    return Store.forms.form0;
+  },
   /* Render */
 
-  renderItem(item) {
+  renderItem(survey) {
     return (
       <View style={Styles.survey.listitem}>
-        <Text style={Styles.type.p}>{item.title}</Text>
+        <Text
+          style={Styles.type.p}
+          onPress={()=>{
+            let activeForm = this.getActiveForm(survey);
+            if(activeForm) {
+              this.props.navigator.push({
+                name: 'form',
+                form: activeForm
+              });
+            } else {
+              Alert.alert("There is no active form for this survey.");
+            }
+          }}
+        >
+        {survey.title}
+        </Text>
       </View>
     )
   },

@@ -70,8 +70,9 @@ const FormStyles = StyleSheet.create({
     paddingTop: 2,
     borderRadius: 5,
   },
+  submitBtn: {
+    margin: 5
+  }
 })
-
-
 
 module.exports = FormStyles
