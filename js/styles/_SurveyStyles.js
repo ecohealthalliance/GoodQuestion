@@ -13,7 +13,7 @@ const SurveyStyles = StyleSheet.create({
   	alignSelf: 'stretch',
     borderBottomWidth: 1,
     borderColor: Color.background1,
-  },
+  }
 })
 
 module.exports = SurveyStyles
