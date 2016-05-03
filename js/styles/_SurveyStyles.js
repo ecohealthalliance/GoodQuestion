@@ -16,8 +16,8 @@ const SurveyStyles = StyleSheet.create({
     borderColor: Color.background1,
   },
   checkbox: {
-   backgroundColor: '#eee',
-   borderRadius: 5,
+   backgroundColor: 'transparent',
+   borderRadius: 25,
    height: 25,
    width: 25,
    borderWidth: 2,

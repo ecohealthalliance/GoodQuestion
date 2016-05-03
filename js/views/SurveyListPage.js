@@ -13,6 +13,10 @@ import Store from '../data/Store'
 import Styles from '../styles/Styles'
 
 import CheckBox from 'react-native-checkbox'
+import Icon from 'react-native-vector-icons/FontAwesome'
+
+let uncheckedImage = (<Icon name='circle-o' size={28} color='red' />);
+let checkedImage = (<Icon name='check-circle-o' size={28} color='green' />);
 
 const SurveyListPage = React.createClass ({
   title: 'Surveys',
@@ -53,9 +57,10 @@ const SurveyListPage = React.createClass ({
           <CheckBox
             ref={item.objectId}
             checked={item.accepted}
-            checkImage={require('react-native-checkbox/example-custom-check.png')}
+            uncheckedComponent={uncheckedImage}
+            checkedComponent={checkedImage}
             onChange={this.onChecked.bind(this, rowId)}
-            style={Styles.survey.acceptedCheckbox}
+            style={Styles.survey.checkbox}
           />
         </View>
       </View>

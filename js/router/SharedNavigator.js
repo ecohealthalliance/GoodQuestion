@@ -24,7 +24,6 @@ import RegistrationPagePart2 from '../views/RegistrationPagePart2'
 import RegistrationPagePart3 from '../views/RegistrationPagePart3'
 import RegistrationPagePart4 from '../views/RegistrationPagePart4'
 
-
 /* Configuration */
 if (Platform.OS === 'ios') {
   Store.platform = 'ios'
