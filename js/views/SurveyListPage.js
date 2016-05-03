@@ -11,13 +11,8 @@ import React, {
 import _ from 'lodash'
 import Store from '../data/Store'
 import Styles from '../styles/Styles'
-import Color from '../styles/Color'
 
-import CheckBox from 'react-native-checkbox'
-import Icon from 'react-native-vector-icons/FontAwesome'
-
-let uncheckedComponent = (<Icon name='circle-o' size={28} color={Color.fadedRed} />);
-let checkedComponent = (<Icon name='check-circle' size={28} color={Color.fadedGreen} />);
+import SurveyListItem from '../components/SurveyListItem'
 
 const SurveyListPage = React.createClass ({
   title: 'Surveys',
@@ -28,6 +23,7 @@ const SurveyListPage = React.createClass ({
       })
     }
   },
+  
   componentDidMount() {
     this.props.setTitle(this.title);
     this.setState({
@@ -49,21 +45,7 @@ const SurveyListPage = React.createClass ({
   /* Render */
   renderItem(item, sectionId, rowId) {
     return (
-      <View style={Styles.survey.listitem}>
-        <View style={Styles.container.col75}>
-          <Text style={Styles.survey.title}>{item.title}</Text>
-          <Text style={Styles.survey.subtitle}>A subtitle</Text>
-        </View>
-        <View style={[Styles.container.col25, {alignItems: 'flex-end'}]}>
-          <CheckBox
-            ref={item.objectId}
-            checked={item.accepted}
-            uncheckedComponent={uncheckedComponent}
-            checkedComponent={checkedComponent}
-            onChange={this.onChecked.bind(this, rowId)}
-          />
-        </View>
-      </View>
+      <SurveyListItem item={item} onChecked={this.onChecked.bind(this, rowId)} />
     )
   },
 
