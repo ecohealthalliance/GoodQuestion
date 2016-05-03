@@ -1,12 +1,18 @@
 import Parse from 'parse/react-native'
+import Store from '../data/Store'
 
-const server = 'test'
+export function connectToParseServer(server) {
+  // Sync the Store variable and the new passed value, if any
+  if (!server) {
+    server = Store.server
+  } else {
+    Store.server = server
+  }
 
-
-export function connectToParseServer() {
-  switch (server) {
+  // Connect to the specified Parse server
+  switch (Store.server) {
     case 'local': connectToLocalServer(); break;
-    case 'test': connectToRemoteTestServer(); break;
+    case 'remote-test': connectToRemoteTestServer(); break;
   }
 }
 

@@ -9,7 +9,7 @@ export function loadTriggers(options, callback) {
 
   query.find({
     success: function(results) {
-      console.log("Successfully retrieved " + results.length + " triggers.")
+      console.log("Retrieved " + results.length + " triggers.")
       storeTriggers(results)
       if (callback) callback(null, results)
     },

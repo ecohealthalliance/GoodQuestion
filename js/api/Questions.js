@@ -9,7 +9,7 @@ export function loadQuestions(options, callback) {
 
   query.find({
     success: function(results) {
-      console.log("Successfully retrieved " + results.length + " questions.")
+      console.log("Retrieved " + results.length + " questions.")
       storeQuestions(results)
       if (callback) callback(null, results)
     },

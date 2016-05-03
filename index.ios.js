@@ -8,7 +8,7 @@ import React, { AppRegistry } from 'react-native'
 // Model
 import Store from './js/data/Store'
 import { connectToParseServer } from './js/api/ParseServer'
-import { initializeParseData } from './js/api/PopulateLocalParseServer'
+import { initializeParseData, resetLocalServer } from './js/api/PopulateLocalParseServer'
 import { loadSurveyList } from './js/api/Surveys'
 
 // Router
@@ -16,9 +16,9 @@ import SharedNavigator from './js/router/SharedNavigator'
 
 
 /* Initialize Parse Server */
-connectToParseServer()
-// initializeParseData()
-// loadSurveyList()
+connectToParseServer('local')
+// resetLocalServer()
+initializeParseData()
 
 
 /* iOS App */

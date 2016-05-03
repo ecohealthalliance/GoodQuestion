@@ -2,8 +2,8 @@ import _ from 'lodash'
 import Parse from 'parse/react-native'
 import Store from '../data/Store'
 
-import { loadQuestions } from '../api/Questions'
-import { loadTriggers } from '../api/Triggers'
+import { loadQuestions } from './Questions'
+import { loadTriggers } from './Triggers'
 
 
 export function loadForms(options, callback) {
@@ -12,7 +12,7 @@ export function loadForms(options, callback) {
 
   query.find({
     success: function(results) {
-      console.log("Successfully retrieved " + results.length + " forms.")
+      console.log("Retrieved " + results.length + " forms.")
       storeForms(results)
 
       loadTriggers()

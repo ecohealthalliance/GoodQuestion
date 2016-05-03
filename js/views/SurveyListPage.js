@@ -17,7 +17,7 @@ const SurveyListPage = React.createClass({
   getInitialState() {
     return {
       isLoading: true,
-      list: [],
+      list: Store.surveys,
       dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
       })
@@ -29,7 +29,8 @@ const SurveyListPage = React.createClass({
       dataSource: this.state.dataSource.cloneWithRows(Store.surveys)
     })
 
-    loadSurveyList({}, this.loadList)
+    if (this.state.list.length === 0)
+      loadSurveyList({}, this.loadList)
   },
 
   /* Methods */

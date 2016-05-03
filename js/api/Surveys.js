@@ -2,7 +2,7 @@ import _ from 'lodash'
 import Parse from 'parse/react-native'
 import Store from '../data/Store'
 
-import { loadSurveys } from '../api/Surveys'
+import { loadForms } from './Forms'
 
 
 export function loadCachedSurvey(id) {
@@ -21,7 +21,7 @@ export function loadSurveyList(options, callback) {
 
   query.find({
     success: function(results) {
-      console.log("Successfully retrieved " + results.length + " surveys.")
+      console.log("Retrieved " + results.length + " surveys.")
       storeSurveys(results)
 
       loadForms()
