@@ -1,67 +1,80 @@
-const Store = {
-  platform: 'android',
-  server: 'local',
+const DummyData = {
 
-  logged_in: false,
-  email_verified: false,
-
-  location: {
-    lat: 0,
-    long: 0,
-  },
-
-  user: {
-    _id: 'SoMeH4sH',
-    name: 'John Doe',
-    email: 'john@doe.com',
-    isAdmin: false,
-  },
-
-  surveys: [{
+  surveys: {
     _id: 'sur1',
     title: 'Survey #1',
     user: 'user1',
     created: Date.now() - 10000,
-    forms: [1],
-  }],
+  },
 
-  forms: [{
-    "name": "Test form",
-    "triggers": [],
-    "questions": ["Zu4NSjytykfje3dH4", "wqzz4TBDvRYNrKXic", "RHxZwpGCxAjX5vFkQ"],
-    "order": 1
-  }],
+  form: {
+    name: 'Test form',
+    order: 1
+  },
 
-  questions: [{
-    survey: 'sur1',
-    text: 'What is your favorite color?',
-    question_type: 'multi_choice',
+  triggers: {
+    trigger_type: 'geo',
     properties: {
-      choices: ['red', 'blue', 'green']
+      lat: 40.767066,
+      long: -73.978887,
     }
-  }, {
-    "question_type": "inputText",
-    "text": "What is your name?",
-    "value": "John Doe",
-    "properties": {
-      "placeholder": "Please Specify Your Full Name",
-      "maxlength": 20,
-      "required": true
-    },
-    "order": 1
-  }, {
-    "question_type": "textArea",
-    "text": "Short bio",
-    "properties": { "placeholder": "Tell a little about yourself", "maxlength": 20 },
-    "order": 2
-  }, {
-    "question_type": "inputText",
-    "text": "How did you find us?",
-    "properties": { "placeholder": "Web search/newspaper/a friend", "maxlength": 20 },
-    "order": 3
-  }, ],
+  },
 
-  triggers: [],
+  questions: [
+    {
+      survey: 'sur1',
+      text: 'What is your favorite color?',
+      question_type: 'multi_choice',
+      properties: {
+        choices: ['red', 'blue', 'green']
+      },
+      order: 1,
+    }, {
+      question_type: 'text_area',
+      text: 'Describe any abnormalities in the location of the drag',
+      properties: { 
+        placeholder: Long Text...,
+        maxlength: 150,
+      },
+      order: 2,
+    }, {
+      question_type: 'input_text',
+      text: 'Describe any abnormalities in the location of the drag',
+      properties: {
+        placeholder: Short Text...,
+        maxlength: 20,
+      },
+      order: 3,
+    }, {
+      question_type: 'date',
+      text: 'When do you plan on doing a follow-up darg?',
+      properties: {},
+      order: 4,
+    }, {
+      question_type: 'time',
+      text: 'When do you plan on doing a follow-up darg?',
+      properties: {},
+      order: 5,
+    }, {
+      question_type: 'number',
+      text: 'How many ticks have you found in this sector of the forest?',
+      properties: {
+        min: 0,
+        max: 999,
+      },
+      order: 6,
+    }, {
+      question_type: 'scale',
+      text: 'What is the likelyhood hikers in this forest will get bitten by a tick?',
+      properties: {
+        min: 1,
+        max: 5,
+      },
+      order: 7,
+    },
+  ],
+
+  
 }
 
-module.exports = Store
+module.exports = DummyData
