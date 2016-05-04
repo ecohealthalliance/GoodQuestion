@@ -20,10 +20,13 @@ import SharedNavigator from './js/router/SharedNavigator'
 //  CUSTOM IP: Your own parse server IP
 connectToParseServer('local')
 
-// Uncomment this next line to empty your local server. Removes all Survey, Form, Question, and Trigger objects.
+// Uncomment this following function to empty your local server when the App launches.
 // resetLocalServer()
 
+// For now, resetting and first-time initializing may require an App refresh to come into effect.
+// Be wary of running multiple emulators while resetting/initializing your data.
 initializeLocalParseData()
+
 
 /* Android App */
 const GoodQuestion = React.createClass ({

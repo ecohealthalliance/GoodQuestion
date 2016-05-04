@@ -10,11 +10,12 @@ import { loadForms, storeForms } from '../api/Forms'
 import { loadQuestions, storeQuestions } from '../api/Questions'
 import { loadTriggers, storeTriggers } from '../api/Triggers'
 
+// Attempts to create interactive dummy data in a local server.
 export function initializeLocalParseData () {
-  if ( Store.server === 'local' ) {
-    loadSurveyList({}, createInitialParseData)
-  } else {
+  if ( Store.server === 'remote-test' ) {
     loadSurveyList({})
+  } else {
+    loadSurveyList({}, createInitialParseData)
   }
 }
 
@@ -109,6 +110,10 @@ function createTriggers(parentForm) {
     })
 }
 
+// Queries a local Parse server and erases all fetched objects.
+// Currently works with Surveys, Forms, Questions, and Triggers.
+// May require an refresh to take effect.
+// For security, this function only works when the server is set to 'local'.
 export function resetLocalServer() {
   if (Store.server === 'local') {
     console.log('Destroying objects in local server...')
