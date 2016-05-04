@@ -25,5 +25,5 @@ export function loadTriggers(options, callback) {
 // Objects are unique and indentified by id, with the newest entries always replacing the oldest.
 export function storeTriggers(newTriggers) {
   if (!Array.isArray(newTriggers)) newTriggers = [newTriggers]
-  Store.questions = _.unionBy(Store.triggers, newTriggers, 'id')
+  Store.triggers = _.unionBy(Store.triggers, newTriggers, 'id')
 }
