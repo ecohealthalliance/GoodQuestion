@@ -22,6 +22,7 @@ const Store = {
       title: 'Survey #1',
       user: 'user1',
       created: Date.now() - 10000,
+
       accepted: false,
       forms: [ 'f1', 'f2' ],
     },
@@ -128,7 +129,6 @@ const Store = {
       objectId: 'q1',
       survey: 's1',
       text: 'Tell a little about yourself',
-      value: '',
       questionType: 'textArea',
       properties: {
         placeholder: 'Tell a little about yourself',
@@ -139,7 +139,6 @@ const Store = {
       objectId: 'q2',
       survey: 's1',
       text: 'What is your name?',
-      value: '',
       questionType: 'inputText',
       properties: {
         placeholder: 'Please specify your full name',
@@ -153,7 +152,6 @@ const Store = {
       survey: 's1',
       text: 'What is your favorite number?',
       questionType: 'multipleChoice',
-      value: '',
       properties: {
         choices: [1, 2, 3],
         required: false,
@@ -164,7 +162,6 @@ const Store = {
       objectId: 'q4',
       survey: 's2',
       text: 'Tell a little about yourself',
-      value: '',
       questionType: 'textArea',
       properties: {
         placeholder: 'Tell a little about yourself',
@@ -175,7 +172,6 @@ const Store = {
       objectId: 'q5',
       survey: 's2',
       text: 'What is your name?',
-      value: '',
       questionType: 'inputText',
       properties: {
         placeholder: 'Please specify your full name',
@@ -189,7 +185,6 @@ const Store = {
       survey: 's2',
       text: 'What is your favorite number?',
       questionType: 'multipleChoice',
-      value: '',
       properties: {
         choices: [1, 2, 3],
         required: false,

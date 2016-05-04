@@ -1,25 +1,68 @@
-
 import React, {
   StyleSheet,
   TouchableHighlight,
   Text,
-  TextInput,
-  View
+  View,
+  ListView,
+  AsyncStorage
 } from 'react-native'
 
-import Styles from '../../styles/Styles'
-
+import Store from '../data/Store'
+import Styles from '../styles/Styles';
+import ShortAnswer from './QuestionTypes/ShortAnswer';
+import Button from 'apsl-react-native-button';
 
 const FormPage = React.createClass ({
-
-  /* Methods */
-
-  /* Render */
+  propTypes: {
+    form: React.PropTypes.object.isRequired,
+    survey: React.PropTypes.object.isRequired,
+  },
+  genSubmissionKey() {
+   return "submission:" + this.props.survey.objectId + ":" + this.props.form.objectId;
+ },
+  getInitialState() {
+    return {answers: {}}
+  },
+  componentWillMount() {
+    let id = this.genSubmissionKey();
+    AsyncStorage.getItem(id, (err, res) => {
+      if (res) {
+        let submission = JSON.parse(res);
+        this.setState({answers: submission.answers})
+      }
+    });
+  },
+  submit() {
+    let id = this.genSubmissionKey();
+    // TODO Get geolocation
+    AsyncStorage.setItem(id, JSON.stringify({
+      id: id,
+      formId: this.props.form.objectId,
+      date: new Date(),
+      answers: this.state,
+    })).then(()=>{
+      this.props.navigator.push({name: 'surveyList'});
+    }).catch((error)=>{
+      console.log(error);
+    });
+  },
   render() {
-    return (
-      <View>
-      </View>
-    )
+    let questions = this.props.form.questions.map(function(qId) {
+       return Store.questions.find((q) => q.objectId === qId);
+    });
+    return (<View>
+      {questions.map((question)=>{
+        switch (question.questionType) {
+          case 'inputText': return (<ShortAnswer
+            key={question.objectId}
+            question={question}
+            value={this.state.answers[question.objectId]}
+            onChange={(value)=> this.setState({[question.objectId]: value})} />);
+          default: return;
+        }
+      })}
+      <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
+    </View>)
   }
 })
 

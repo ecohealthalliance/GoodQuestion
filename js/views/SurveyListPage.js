@@ -6,6 +6,7 @@ import React, {
   TextInput,
   View,
   ListView,
+  Alert,
 } from 'react-native'
 
 import _ from 'lodash'
@@ -23,7 +24,7 @@ const SurveyListPage = React.createClass ({
       })
     }
   },
-  
+
   componentDidMount() {
     this.props.setTitle(this.title);
     this.setState({
@@ -32,6 +33,10 @@ const SurveyListPage = React.createClass ({
   },
 
   /* Methods */
+  getActiveForm(survey) {
+    // TODO return the the most recently triggered form that hasn't been filled out.
+    return Store.forms.find((form) => form.objectId === survey.forms[0]);
+  },
   onChecked(rowId) {
     let newSource = Store.surveys.slice();
     let oldItem = Store.surveys[rowId];
@@ -41,12 +46,24 @@ const SurveyListPage = React.createClass ({
       dataSource: this.state.dataSource.cloneWithRows(newSource),
     });
   },
+  onPress(item) {
+    let activeForm = this.getActiveForm(item);
+    if(activeForm) {
+      this.props.navigator.push({
+        name: 'form',
+        form: activeForm,
+        survey: item,
+      });
+    } else {
+      Alert.alert('There is no active form for this survey.');
+    }
+  },
 
   /* Render */
   renderItem(item, sectionId, rowId) {
     return (
-      <SurveyListItem item={item} onChecked={this.onChecked.bind(this, rowId)} />
-    )
+      <SurveyListItem item={item} onPressed={this.onPress.bind(this, item)} onChecked={this.onChecked.bind(this, rowId)} />
+    );
   },
 
   render() {

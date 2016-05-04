@@ -23,6 +23,7 @@ import RegistrationPagePart1 from '../views/RegistrationPagePart1'
 import RegistrationPagePart2 from '../views/RegistrationPagePart2'
 import RegistrationPagePart3 from '../views/RegistrationPagePart3'
 import RegistrationPagePart4 from '../views/RegistrationPagePart4'
+import FormPage from '../views/FormPage'
 
 /* Configuration */
 if (Platform.OS === 'ios') {
@@ -58,13 +59,14 @@ const SharedNavigator = React.createClass ({
       case 'login': return <LoginPage navigator={nav} setTitle={this.setTitle} />
       case 'surveylist': return <SurveyListPage navigator={nav} setTitle={this.setTitle} />
       case 'terms': return <TermsOfServicePage navigator={nav} setTitle={this.setTitle} />
-      case 'registration1': return <RegistrationPagePart1 navigator={navigator} setTitle={this.setTitle}/>
-      case 'registration2': return <RegistrationPagePart2 navigator={navigator} setTitle={this.setTitle}/>
+      case 'registration1': return <RegistrationPagePart1 navigator={nav} setTitle={this.setTitle}/>
+      case 'registration2': return <RegistrationPagePart2 navigator={nav} setTitle={this.setTitle}/>
+      case 'form': return <FormPage navigator={nav} form={route.form} survey={route.survey} />
       default: return <SurveyListPage navigator={nav} setTitle={this.setTitle} />
     }
   },
   render() {
-    const initialRoute = {name: 'surveylist'}
+    const initialRoute = {name: 'registration1'}
     return (
       <Navigator
         ref={(nav) => { navigator = nav }}

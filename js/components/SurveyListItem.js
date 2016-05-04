@@ -1,6 +1,7 @@
 import React, {
   View,
   Text,
+  TouchableWithoutFeedback,
 } from 'react-native'
 
 import Styles from '../styles/Styles'
@@ -16,16 +17,19 @@ const SurveyListItem = React.createClass ({
   propTypes: {
     item: React.PropTypes.object.isRequired,
     onChecked: React.PropTypes.func.isRequired,
+    onPressed: React.PropTypes.func.isRequired,
   },
 
   /* Render */
   render() {
     return (
       <View style={Styles.survey.listitem}>
-        <View style={Styles.container.col75}>
-          <Text style={Styles.survey.title}>{this.props.item.title}</Text>
-          <Text style={Styles.survey.subtitle}>A subtitle</Text>
-        </View>
+        <TouchableWithoutFeedback onPress={this.props.onPressed}>
+          <View style={Styles.container.col75}>
+            <Text style={Styles.survey.title}>{this.props.item.title}</Text>
+            <Text style={Styles.survey.subtitle}>A subtitle</Text>
+          </View>
+        </TouchableWithoutFeedback>
         <View style={[Styles.container.col25, {alignItems: 'flex-end'}]}>
           <CheckBox
             ref={this.props.item.objectId}
@@ -38,6 +42,6 @@ const SurveyListItem = React.createClass ({
       </View>
     )
   }
-})
+});
 
 module.exports = SurveyListItem;
