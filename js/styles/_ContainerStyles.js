@@ -54,6 +54,10 @@ const ContainerStyles = StyleSheet.create({
     flexDirection: 'column',
   },
 
+  form: {
+    margin: 5,
+  }
+
 })
 
 module.exports = ContainerStyles

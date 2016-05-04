@@ -120,7 +120,7 @@ const Store = {
     {
       objectId: 'f1',
       triggers: [ 't1' ],
-      questions: [ 'q1', 'q2', 'q3' ]
+      questions: [ 'q1', 'q2', 'q3', 'q7' ]
     }
   ],
 
@@ -153,7 +153,7 @@ const Store = {
       text: 'What is your favorite number?',
       questionType: 'multipleChoice',
       properties: {
-        choices: [1, 2, 3],
+        choices: ["1", "2", "3"],
         required: false,
       },
       order: 3,
@@ -186,10 +186,21 @@ const Store = {
       text: 'What is your favorite number?',
       questionType: 'multipleChoice',
       properties: {
-        choices: [1, 2, 3],
+        choices: ["1", "2", "3"],
         required: false,
       },
       order: 3,
+    },
+    {
+      objectId: 'q7',
+      survey: 's1',
+      text: 'Which cities have you visited?',
+      questionType: 'checkboxes',
+      properties: {
+        choices: ["Seattle", "New York"],
+        required: false,
+      },
+      order: 2,
     },
   ],
 

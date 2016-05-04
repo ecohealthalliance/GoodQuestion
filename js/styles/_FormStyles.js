@@ -72,6 +72,10 @@ const FormStyles = StyleSheet.create({
   },
   submitBtn: {
     margin: 5
+  },
+  questionLabel: {
+    color: Color.primary,
+    fontSize: 20,
   }
 })
 

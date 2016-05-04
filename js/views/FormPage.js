@@ -10,6 +10,8 @@ import React, {
 import Store from '../data/Store'
 import Styles from '../styles/Styles';
 import ShortAnswer from './QuestionTypes/ShortAnswer';
+import Checkboxes from './QuestionTypes/Checkboxes';
+import MultipleChoice from './QuestionTypes/MultipleChoice';
 import Button from 'apsl-react-native-button';
 
 const FormPage = React.createClass ({
@@ -50,10 +52,20 @@ const FormPage = React.createClass ({
     let questions = this.props.form.questions.map(function(qId) {
        return Store.questions.find((q) => q.objectId === qId);
     });
-    return (<View>
+    return (<View style={Styles.container.form}>
       {questions.map((question)=>{
         switch (question.questionType) {
           case 'inputText': return (<ShortAnswer
+            key={question.objectId}
+            question={question}
+            value={this.state.answers[question.objectId]}
+            onChange={(value)=> this.setState({[question.objectId]: value})} />);
+          case 'checkboxes': return (<Checkboxes
+            key={question.objectId}
+            question={question}
+            value={this.state.answers[question.objectId]}
+            onChange={(value)=> this.setState({[question.objectId]: value})} />);
+          case 'multipleChoice': return (<MultipleChoice
             key={question.objectId}
             question={question}
             value={this.state.answers[question.objectId]}
