@@ -12,9 +12,7 @@ export function loadForms(options, callback) {
 
   query.find({
     success: function(results) {
-      console.log("Retrieved " + results.length + " forms.")
       storeForms(results)
-
       loadTriggers()
       loadQuestions()
       if (callback) callback(null, results)
