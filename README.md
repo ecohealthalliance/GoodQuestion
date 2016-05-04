@@ -2,7 +2,9 @@
 Mobile application for taking trigger based surveys.
 
 ### Technologies
-GoodQuestion is built using [react-native](https://facebook.github.io/react-native/).  In order to run GoodQuestion you will need to install react-native using the instructions [here](https://facebook.github.io/react-native/docs/getting-started.html#content).
+GoodQuestion is built using [react-native](https://facebook.github.io/react-native/).
+In order to run GoodQuestion you will need to install react-native using the instructions
+[here](https://facebook.github.io/react-native/docs/getting-started.html#content).
 
 The project also uses [Parse Server](https://github.com/ParsePlatform/parse-server) as the back-end solution. Instructions for installation are available [here](https://github.com/ParsePlatform/parse-server#getting-started) and documentation for development are published [on their site](https://parse.com/docs/js/guide).
 

@@ -13,7 +13,6 @@ import Store from '../data/Store'
 import Styles from '../styles/Styles'
 
 import { loadSurveyList } from '../api/Surveys'
-
 import SurveyListItem from '../components/SurveyListItem'
 
 const SurveyListPage = React.createClass ({

@@ -1,7 +1,6 @@
 const Store = {
-  platform: 'android',
-  server: 'local',
   platform: null,
+  server: 'local',
 
   logged_in: false,
   email_verified: false,
