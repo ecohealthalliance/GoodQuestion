@@ -10,7 +10,7 @@ import { loadForms, storeForms } from '../api/Forms'
 import { loadQuestions, storeQuestions } from '../api/Questions'
 import { loadTriggers, storeTriggers } from '../api/Triggers'
 
-export function initializeParseData () {
+export function initializeLocalParseData () {
   if ( Store.server === 'local' ) {
     loadSurveyList({}, createInitialParseData)
   } else {
