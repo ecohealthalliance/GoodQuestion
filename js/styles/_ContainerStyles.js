@@ -43,6 +43,17 @@ const ContainerStyles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 110,
   },
+
+  col75: {
+    flex: .75,
+    flexDirection: 'column',
+  },
+
+  col25: {
+    flex: .25,
+    flexDirection: 'column',
+  },
+
 })
 
 module.exports = ContainerStyles

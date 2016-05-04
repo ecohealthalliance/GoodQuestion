@@ -7,7 +7,7 @@ import React, {
 import Styles from '../styles/Styles'
 
 const Button = React.createClass ({
-  
+
   propTypes: {
     action: React.PropTypes.func.isRequired,
     color: React.PropTypes.string,
@@ -22,14 +22,20 @@ const Button = React.createClass ({
   /* Render */
   render() {
     const buttonStyle = [Styles.form.button]
-    if (this.props.color === 'primary') buttonStyle.push(Styles.form.primaryButton)
+    const buttonTextStyle = [Styles.form.buttonText]
     if (this.props.wide) buttonStyle.push(Styles.form.wideButton)
+    if (this.props.color === 'primary') {
+      buttonStyle.push(Styles.form.primaryButton)
+      buttonTextStyle.push(Styles.form.primaryButtonText)
+    }
 
     return (
       <TouchableWithoutFeedback onPress={this.handleTouch}>
-        <Text style={buttonStyle}>
-          {this.props.children}
-        </Text>
+        <View style={buttonStyle}>
+          <Text style={buttonTextStyle}>
+            {this.props.children}
+          </Text>
+        </View>
       </TouchableWithoutFeedback>
     )
   }

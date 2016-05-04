@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Platform } from 'react-native'
 import Color from './Color'
 
 
@@ -21,24 +21,34 @@ const FormStyles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    padding: 20,
+    paddingHorizontal: 40,
+    paddingBottom: 40,
+    paddingTop: 20,
     backgroundColor: Color.background2,
   },
 
   button: {
-    textAlign: 'center',
-    fontWeight: 'bold',
     backgroundColor: Color.positive,
-    padding: 20,
+    padding: 12,
     margin: 10,
+    borderRadius: 5,
   },
   primaryButton: {
     backgroundColor: Color.primary,
-    color: Color.background2,
   },
   wideButton: {
     marginHorizontal: 0,
     alignSelf: 'stretch',
+  },
+  buttonText: {
+    flex: 1,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 20,
+    color: Color.primary,
+  },
+  primaryButtonText: {
+    color: Color.background2,
   },
 
   input: {
@@ -60,6 +70,9 @@ const FormStyles = StyleSheet.create({
     paddingTop: 2,
     borderRadius: 5,
   },
+  submitBtn: {
+    margin: 5
+  }
 })
 
 module.exports = FormStyles

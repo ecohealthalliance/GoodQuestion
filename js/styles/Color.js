@@ -8,6 +8,9 @@ const Color = {
 
   background1: '#9AD1DC',
   background2: '#FFFFFF',
+
+  fadedRed: '#FEABAB',
+  fadedGreen: '#BDE3A7',
 }
 
 module.exports = Color

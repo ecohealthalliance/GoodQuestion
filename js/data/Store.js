@@ -1,6 +1,7 @@
 const Store = {
   platform: 'android',
   server: 'local',
+  platform: null,
 
   logged_in: false,
   email_verified: false,
@@ -10,7 +11,12 @@ const Store = {
     long: 0,
   },
 
-  user: {},
+  user: {
+    objectId: 'SoMeH4sH',
+    name: 'John Doe',
+    email: 'john@doe.com',
+    isAdmin: false,
+  },
   surveys: [],
   forms: [],
   questions: [],
