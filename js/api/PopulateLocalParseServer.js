@@ -75,7 +75,7 @@ function createQuestions(parentForm) {
     let newQuestion = new Question()
     
     newQuestion.set('text', DummyData.questions[i].text)
-    newQuestion.set('question_type', DummyData.questions[i].question_type)
+    newQuestion.set('questionType', DummyData.questions[i].questionType)
     newQuestion.set('properties', DummyData.questions[i].properties)
     newQuestion.set('form', parentForm)
 
@@ -95,7 +95,7 @@ function createTriggers(parentForm) {
   const Trigger = Parse.Object.extend('Trigger')
   let newTrigger = new Trigger()
 
-  newTrigger.set('trigger_type', DummyData.trigger.trigger_type)
+  newTrigger.set('triggerType', DummyData.trigger.triggerType)
   newTrigger.set('properties', DummyData.trigger.properties)
   newTrigger.set('form', parentForm)
 

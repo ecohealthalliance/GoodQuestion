@@ -19,7 +19,7 @@ const DummyData = {
   ],
 
   trigger: {
-    trigger_type: 'geo',
+    triggerType: 'geo',
     properties: {
       lat: 40.767066,
       long: -73.978887,
@@ -28,14 +28,14 @@ const DummyData = {
 
   questions: [
     {
-      question_type: 'multi_choice',
+      questionType: 'multipleChoice',
       text: 'What is your favorite color?',
       properties: {
         choices: ['red', 'blue', 'green']
       },
       order: 1,
     }, {
-      question_type: 'text_area',
+      questionType: 'longAnswer',
       text: 'Describe any abnormalities in the location of the drag',
       properties: { 
         placeholder: 'Long Text...',
@@ -43,7 +43,7 @@ const DummyData = {
       },
       order: 2,
     }, {
-      question_type: 'input_text',
+      questionType: 'shortAnswer',
       text: 'Describe any abnormalities in the location of the drag',
       properties: {
         placeholder: 'Short Text...',
@@ -51,17 +51,17 @@ const DummyData = {
       },
       order: 3,
     }, {
-      question_type: 'date',
+      questionType: 'date',
       text: 'When do you plan on doing a follow-up darg?',
       properties: {},
       order: 4,
     }, {
-      question_type: 'time',
+      questionType: 'datetime',
       text: 'When do you plan on doing a follow-up darg?',
       properties: {},
       order: 5,
     }, {
-      question_type: 'number',
+      questionType: 'number',
       text: 'How many ticks have you found in this sector of the forest?',
       properties: {
         min: 0,
@@ -69,7 +69,7 @@ const DummyData = {
       },
       order: 6,
     }, {
-      question_type: 'scale',
+      questionType: 'scale',
       text: 'What is the likelyhood hikers in this forest will get bitten by a tick?',
       properties: {
         min: 1,
