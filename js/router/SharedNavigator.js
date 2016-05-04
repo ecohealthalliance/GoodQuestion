@@ -25,7 +25,6 @@ import RegistrationPagePart3 from '../views/RegistrationPagePart3'
 import RegistrationPagePart4 from '../views/RegistrationPagePart4'
 import FormPage from '../views/FormPage'
 
-
 /* Configuration */
 if (Platform.OS === 'ios') {
   Store.platform = 'ios'
@@ -35,45 +34,48 @@ if (Platform.OS === 'ios') {
 
 
 let navigator
-
 // Binds the hardware "back button" from Android devices
 if ( Platform.OS === 'android' ) {
   BackAndroid.addEventListener('hardwareBackPress', () => {
     if (navigator && navigator.getCurrentRoutes().length > 1) {
-      navigator.pop()
-      return true
+      navigator.pop();
+      return true;
     }
-    return false
-  })
+    return false;
+  });
 }
-
-const RouteMapper = function(route, navigationOperations, onComponentRef) {
-  console.log(route, navigationOperations, onComponentRef);
-  navigator = navigationOperations;
-  switch (route.name) {
-    case 'login': return <LoginPage navigator={navigator} />
-    case 'surveylist': return <SurveyListPage navigator={navigator} />
-    case 'terms': return <TermsOfServicePage navigator={navigator} />
-    case 'registration1': return <RegistrationPagePart1 navigator={navigator} />
-    case 'registration2': return <RegistrationPagePart2 navigator={navigator} />
-    case 'form': return <FormPage navigator={navigator} form={route.form} />
-    default: return <SurveyListPage navigator={navigator} />
-  }
-}
-
 
 const SharedNavigator = React.createClass ({
+  getInitialState() {
+    return {
+      title: '',
+    }
+  },
+  setTitle(title) {
+    this.setState({title: title});
+  },
+  routeMapper(route, nav, onComponentRef) {
+    switch (route.name) {
+      case 'login': return <LoginPage navigator={nav} setTitle={this.setTitle} />
+      case 'surveylist': return <SurveyListPage navigator={nav} setTitle={this.setTitle} />
+      case 'terms': return <TermsOfServicePage navigator={nav} setTitle={this.setTitle} />
+      case 'registration1': return <RegistrationPagePart1 navigator={nav} setTitle={this.setTitle}/>
+      case 'registration2': return <RegistrationPagePart2 navigator={nav} setTitle={this.setTitle}/>
+      case 'form': return <FormPage navigator={nav} form={route.form} survey={route.survey} />
+      default: return <SurveyListPage navigator={nav} setTitle={this.setTitle} />
+    }
+  },
   render() {
-    const initialRoute = {name: 'surveylist', prettyName: 'Survey List'};
+    const initialRoute = {name: 'registration1'}
     return (
       <Navigator
         ref={(nav) => { navigator = nav }}
         initialRoute={initialRoute}
-        renderScene={RouteMapper}
+        renderScene={this.routeMapper}
         configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
         style={Styles.container.wrapper}
         navigationBar={
-          <Header />
+          <Header title={this.state.title} />
         }
       />
     )

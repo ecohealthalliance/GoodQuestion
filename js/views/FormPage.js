@@ -13,17 +13,33 @@ import ShortAnswer from './QuestionTypes/ShortAnswer';
 import Button from 'apsl-react-native-button';
 
 const FormPage = React.createClass ({
+  propTypes: {
+    form: React.PropTypes.object.isRequired,
+    survey: React.PropTypes.object.isRequired,
+  },
+  genSubmissionKey() {
+   return "submission:" + this.props.survey.objectId + ":" + this.props.form.objectId;
+ },
   getInitialState() {
-    return {}
+    return {answers: {}}
+  },
+  componentWillMount() {
+    let id = this.genSubmissionKey();
+    AsyncStorage.getItem(id, (err, res) => {
+      if (res) {
+        let submission = JSON.parse(res);
+        this.setState({answers: submission.answers})
+      }
+    });
   },
   submit() {
-    let id = "submission_" + Number(new Date());
+    let id = this.genSubmissionKey();
     // TODO Get geolocation
     AsyncStorage.setItem(id, JSON.stringify({
       id: id,
-      formId: 'fakeId',
+      formId: this.props.form.objectId,
       date: new Date(),
-      answers: this.state
+      answers: this.state,
     })).then(()=>{
       this.props.navigator.push({name: 'surveyList'});
     }).catch((error)=>{
@@ -31,15 +47,18 @@ const FormPage = React.createClass ({
     });
   },
   render() {
-    let questions = this.props.form.questions.map((qId)=>Store.questions[qId]);
+    let questions = this.props.form.questions.map(function(qId) {
+       return Store.questions.find((q) => q.objectId === qId);
+    });
     return (<View>
       {questions.map((question)=>{
-        switch (question.question_type) {
-          case 'shortAnswer': return (<ShortAnswer
-            key={question._id}
+        switch (question.questionType) {
+          case 'inputText': return (<ShortAnswer
+            key={question.objectId}
             question={question}
-            onChange={(value)=> this.setState({[question._id]: value})} />);
-          default: throw new Exception("Unknown question type.");
+            value={this.state.answers[question.objectId]}
+            onChange={(value)=> this.setState({[question.objectId]: value})} />);
+          default: return;
         }
       })}
       <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>

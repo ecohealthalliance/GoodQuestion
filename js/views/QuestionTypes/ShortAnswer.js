@@ -9,6 +9,9 @@ import React, {
 import Styles from '../../styles/Styles'
 
 const ShortAnswer = React.createClass ({
+  componentWillMount() {
+    console.log('ShortAnswer.props: ', this.props);
+  },
   render() {
     return (
       <View>
