@@ -6,6 +6,8 @@ var DummyData = require('../data/DummyData')
 function loadQuestions(options, callback) {
   var Question = Parse.Object.extend("Question")
   var query = new Parse.Query(Question)
+  query.limit = 1000
+
 
   query.find({
     success: function(results) {
@@ -20,7 +22,6 @@ function loadQuestions(options, callback) {
 }
 
 function createQuestions(parentForm) {
-  console.log('creating questions')
   var Question = Parse.Object.extend('Question')
   for (var i = 0; i < DummyData.questions.length; i++) {
     var newQuestion = new Question()
@@ -28,10 +29,13 @@ function createQuestions(parentForm) {
     newQuestion.set('text', DummyData.questions[i].text)
     newQuestion.set('questionType', DummyData.questions[i].questionType)
     newQuestion.set('properties', DummyData.questions[i].properties)
-    newQuestion.set('form', parentForm)
 
     newQuestion.save(null, {
-    success: function(response) {
+      success: function(response) {
+        if (parentForm) {
+          var relation = parentForm.relation('questions')
+          relation.add(newQuestion)
+        }
         storeQuestions(response)
       },
       error: function(response, error) {

@@ -6,6 +6,7 @@ import Store from '../data/Store'
 export function loadQuestions(options, callback) {
   const Question = Parse.Object.extend("Question")
   const query = new Parse.Query(Question)
+  query.limit = 1000
 
   query.find({
     success: function(results) {

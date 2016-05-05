@@ -17,6 +17,7 @@ function loadCachedSurvey (id) {
 function loadSurveyList (options, callback) {
   var Survey = Parse.Object.extend("Survey")
   var query = new Parse.Query(Survey)
+  query.limit = 1000
 
   query.find({
     success: function(results) {
@@ -37,8 +38,7 @@ function storeSurveys (newSurveys) {
 }
 
 function createSurvey (surveyData) {
-  var Survey = Parse.Object.extend('Survey')
-  var newSurvey = new Survey()
+  var newSurvey = new Parse.Object('Survey')
 
   newSurvey.set('title', surveyData.title)
   newSurvey.set('user', surveyData.user)

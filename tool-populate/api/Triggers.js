@@ -7,6 +7,7 @@ var DummyData = require('../data/DummyData')
 function loadTriggers(options, callback) {
   var Trigger = Parse.Object.extend("Trigger")
   var query = new Parse.Query(Trigger)
+  query.limit = 1000
 
   query.find({
     success: function(results) {
@@ -30,6 +31,10 @@ function createTriggers(parentForm) {
 
   newTrigger.save(null, {
     success: function(response) {
+        if (parentForm) {
+          var relation = parentForm.relation('triggers')
+          relation.add(newTrigger)
+        }
         storeTriggers(response)
       },
       error: function(response, error) {

@@ -7,6 +7,7 @@ var Triggers = require('./Triggers')
 function loadForms(options, callback) {
   var Form = Parse.Object.extend("Form")
   var query = new Parse.Query(Form)
+  query.limit = 1000
 
   query.find({
     success: function(results) {
@@ -23,13 +24,14 @@ function loadForms(options, callback) {
 }
 
 function createForms(parentSurvey) {
-  var Form = Parse.Object.extend('Form')
-  var newForm = new Form()
+  var newForm = new Parse.Object('Form')
 
-  newForm.set('survey', parentSurvey)
-  
   newForm.save(null, {
     success: function(response) {
+      if (parentSurvey) {
+        var relation = parentSurvey.relation('forms')
+        relation.add(newForm)
+      }
       Questions.createQuestions(response)
       Triggers.createTriggers(response)
       storeForms(response)
