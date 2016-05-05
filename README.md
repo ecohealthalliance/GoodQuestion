@@ -23,3 +23,21 @@ To run your local Parse server, use:
 mongodb-runner start
 parse-server --appId testapp --masterKey test
 ```
+
+###Tools
+We have included a command line tool to help local development with Parse servers. The tool will populate your server with dummy data which can be queried, mutated, or erased.
+
+To populate your server you must first enable the command by typing:
+```
+sudo npm link
+```
+
+Afterwards you will be able to create the data in your server by using the command:
+```
+populate-goodquestion -c
+```
+
+Or you may reset/erase your stored data by using:
+```
+populate-goodquestion -r
+```
