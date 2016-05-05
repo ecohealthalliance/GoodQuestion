@@ -22,13 +22,6 @@ import SharedNavigator from './js/router/SharedNavigator'
 //  CUSTOM IP: Your own parse server IP
 connectToParseServer('local')
 
-// Uncomment this following function to empty your local server when the App launches.
-// resetLocalServer()
-
-// For now, resetting and first-time initializing may require an App refresh to come into effect.
-// Be wary of running multiple emulators while resetting/initializing your data.
-initializeLocalParseData()
-
 
 /* iOS App */
 const GoodQuestion = React.createClass ({
