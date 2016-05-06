@@ -15,23 +15,21 @@ const Header = React.createClass ({
   getInitialState() {
     return {
       index: 0,
-      name: '',
-      prettyName: '',
+      title: 'Good Question',
     }
   },
 
   componentWillReceiveProps(next_props) {
-    // TODO Add prety names to routes
-    console.log(next_props)
-
-    // Measuring position with routeStack as presentedIndex seems to take a short while to update in this object
-    const position = next_props.navState.routeStack.length - 1
-    console.log(position)
-    this.setState({
-      index: position,
-      name: next_props.navState.routeStack[position].name,
-      prettyName: next_props.navState.routeStack[position].name,
-    })
+    if (next_props.navState) {
+      const position = next_props.navState.routeStack.length - 1
+      this.setState({
+        index: position,
+      })
+    } else if (next_props.title) {
+      this.setState({
+        title: next_props.title,
+      })
+    }
   },
 
   /* Methods */
@@ -41,7 +39,6 @@ const Header = React.createClass ({
 
   /* Render */
   render() {
-    // console.log(this.state.index)
     return (
       <View style={Styles.header.navBar}>
         {
@@ -55,7 +52,7 @@ const Header = React.createClass ({
         }
         <View>
           <Text>
-            {this.state.prettyName}
+            {this.state.title}
           </Text>
         </View>
       </View>
