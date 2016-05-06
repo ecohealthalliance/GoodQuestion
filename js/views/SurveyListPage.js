@@ -1,4 +1,3 @@
-
 import React, {
   StyleSheet,
   TouchableHighlight,
@@ -13,12 +12,16 @@ import _ from 'lodash'
 import Store from '../data/Store'
 import Styles from '../styles/Styles'
 
+import { loadSurveyList } from '../api/Surveys'
 import SurveyListItem from '../components/SurveyListItem'
 
 const SurveyListPage = React.createClass ({
   title: 'Surveys',
+
   getInitialState() {
     return {
+      isLoading: true,
+      list: Store.surveys,
       dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
       })
@@ -30,9 +33,23 @@ const SurveyListPage = React.createClass ({
     this.setState({
       dataSource: this.state.dataSource.cloneWithRows(Store.surveys),
     })
+
+    if (this.state.list.length === 0)
+      loadSurveyList({}, this.loadList)
   },
 
   /* Methods */
+  loadList(error, response){
+    if (error) {
+      console.warn(error)
+    } else {
+      this.setState({
+        isLoading: false,
+        list: response,
+        dataSource: this.state.dataSource.cloneWithRows(response)
+      })
+    }
+  },
   getActiveForm(survey) {
     // TODO return the the most recently triggered form that hasn't been filled out.
     return Store.forms.find((form) => form.objectId === survey.forms[0]);
@@ -67,11 +84,11 @@ const SurveyListPage = React.createClass ({
   },
 
   render() {
-    return (
-      <ListView
-        dataSource={this.state.dataSource}
-        renderRow={this.renderItem}
-        contentContainerStyle={[Styles.container.default, Styles.survey.list]}
+    return ( 
+      <ListView dataSource = { this.state.dataSource }
+        renderRow = { this.renderItem }
+        contentContainerStyle = { [Styles.container.default, Styles.survey.list] }
+        enableEmptySections
       />
     )
   }
