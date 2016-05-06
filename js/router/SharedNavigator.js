@@ -61,7 +61,7 @@ const SharedNavigator = React.createClass ({
       case 'terms': return <TermsOfServicePage navigator={nav} setTitle={this.setTitle} />
       case 'registration1': return <RegistrationPagePart1 navigator={nav} setTitle={this.setTitle}/>
       case 'registration2': return <RegistrationPagePart2 navigator={nav} setTitle={this.setTitle}/>
-      case 'form': return <FormPage navigator={nav} form={route.form} survey={route.survey} />
+      case 'form': return <FormPage navigator={nav} form={route.form} survey={route.survey} questions={route.questions} />
       default: return <SurveyListPage navigator={nav} setTitle={this.setTitle} />
     }
   },

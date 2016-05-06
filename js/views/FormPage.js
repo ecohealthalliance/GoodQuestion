@@ -18,13 +18,16 @@ const FormPage = React.createClass ({
   propTypes: {
     form: React.PropTypes.object.isRequired,
     survey: React.PropTypes.object.isRequired,
+    questions: React.PropTypes.array.isRequired,
   },
-  genSubmissionKey() {
-   return "submission:" + this.props.survey.objectId + ":" + this.props.form.objectId;
- },
+
   getInitialState() {
-    return {answers: {}}
+    return {
+      questions: {},
+      answers: {}
+    }
   },
+
   componentWillMount() {
     let id = this.genSubmissionKey();
     AsyncStorage.getItem(id, (err, res) => {
@@ -34,12 +37,18 @@ const FormPage = React.createClass ({
       }
     });
   },
+
+  /* Methods */
+  genSubmissionKey() {
+    return "submission:" + this.props.survey.id + ":" + this.props.form.id;
+  },
+
   submit() {
     let id = this.genSubmissionKey();
     // TODO Get geolocation
     AsyncStorage.setItem(id, JSON.stringify({
       id: id,
-      formId: this.props.form.objectId,
+      formId: this.props.form.id,
       date: new Date(),
       answers: this.state,
     })).then(()=>{
@@ -48,28 +57,29 @@ const FormPage = React.createClass ({
       console.log(error);
     });
   },
+
+  /* Render */
   render() {
-    let questions = this.props.form.questions.map(function(qId) {
-       return Store.questions.find((q) => q.objectId === qId);
-    });
+    let questions = this.props.questions
+    console.log(questions)
     return (<View style={Styles.container.form}>
       {questions.map((question)=>{
         switch (question.questionType) {
           case 'inputText': return (<ShortAnswer
-            key={question.objectId}
+            key={question.id}
             question={question}
-            value={this.state.answers[question.objectId]}
-            onChange={(value)=> this.setState({[question.objectId]: value})} />);
+            value={this.state.answers[question.id]}
+            onChange={(value)=> this.setState({[question.id]: value})} />);
           case 'checkboxes': return (<Checkboxes
-            key={question.objectId}
+            key={question.id}
             question={question}
-            value={this.state.answers[question.objectId]}
-            onChange={(value)=> this.setState({[question.objectId]: value})} />);
+            value={this.state.answers[question.id]}
+            onChange={(value)=> this.setState({[question.id]: value})} />);
           case 'multipleChoice': return (<MultipleChoice
-            key={question.objectId}
+            key={question.id}
             question={question}
-            value={this.state.answers[question.objectId]}
-            onChange={(value)=> this.setState({[question.objectId]: value})} />);
+            value={this.state.answers[question.id]}
+            onChange={(value)=> this.setState({[question.id]: value})} />);
           default: return;
         }
       })}

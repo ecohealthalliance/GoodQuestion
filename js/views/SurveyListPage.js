@@ -50,10 +50,24 @@ const SurveyListPage = React.createClass ({
       })
     }
   },
-  getActiveForm(survey) {
-    // TODO return the the most recently triggered form that hasn't been filled out.
-    return Store.forms.find((form) => form.objectId === survey.forms[0]);
+
+  selectForm(form, survey) {
+    // Get Questions
+    const self = this
+    const formQuestionRelations = form.get('questions')
+    formQuestionRelations.query().find({
+      success: function(questions) {
+        self.props.navigator.push({
+          name: 'form',
+          form: form,
+          survey: survey,
+          questions: questions,
+        })
+      }
+    })
+    
   },
+
   onChecked(rowId) {
     let newSource = Store.surveys.slice();
     let oldItem = Store.surveys[rowId];
@@ -63,17 +77,23 @@ const SurveyListPage = React.createClass ({
       dataSource: this.state.dataSource.cloneWithRows(newSource),
     });
   },
+
   onPress(item) {
-    let activeForm = this.getActiveForm(item);
-    if(activeForm) {
-      this.props.navigator.push({
-        name: 'form',
-        form: activeForm,
-        survey: item,
-      });
-    } else {
-      Alert.alert('There is no active form for this survey.');
-    }
+    // TODO return the the most recently triggered form that hasn't been filled out.
+    const self = this
+    const surveyFormRelations = item.get('forms')
+    surveyFormRelations.query().find({
+      success: function(list) {
+        if (list[0]) {
+          self.selectForm(list[0], item)
+        } else {
+          Alert.alert('There is no active form for this survey.')
+        }
+      },
+      error: function(list, error) {
+        Alert.alert('There is no active form for this survey.')
+      }
+    })
   },
 
   /* Render */
