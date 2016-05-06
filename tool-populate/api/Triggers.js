@@ -34,6 +34,7 @@ function createTriggers(parentForm) {
         if (parentForm) {
           var relation = parentForm.relation('triggers')
           relation.add(newTrigger)
+          parentForm.save()
         }
         storeTriggers(response)
       },

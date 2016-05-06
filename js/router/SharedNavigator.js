@@ -66,7 +66,7 @@ const SharedNavigator = React.createClass ({
     }
   },
   render() {
-    const initialRoute = {name: 'registration1'}
+    const initialRoute = {name: 'surveylist1'}
     return (
       <Navigator
         ref={(nav) => { navigator = nav }}

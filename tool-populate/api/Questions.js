@@ -35,6 +35,7 @@ function createQuestions(parentForm) {
         if (parentForm) {
           var relation = parentForm.relation('questions')
           relation.add(newQuestion)
+          parentForm.save()
         }
         storeQuestions(response)
       },
