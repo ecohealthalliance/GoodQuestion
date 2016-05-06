@@ -30,7 +30,7 @@ const HeaderStyles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
     left: 10,
-    top: 40,
+    top: 16 + Variables.HEADER_PADDING,
     paddingLeft: 10,
   },
   navBarRightButton: {
