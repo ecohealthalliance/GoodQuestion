@@ -57,7 +57,6 @@ const SurveyListPage = React.createClass ({
     const formQuestionRelations = form.get('questions')
     formQuestionRelations.query().find({
       success: function(questions) {
-        console.log(questions)
         self.props.navigator.push({
           name: 'form',
           form: form,

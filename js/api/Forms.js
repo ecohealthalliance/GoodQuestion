@@ -7,7 +7,6 @@ import { loadTriggers } from './Triggers'
 
 // Queries the connected Parse server for a list of Triggers.
 export function loadForms(surveys, callback) {
-  console.log('forms 1')
   for (var i = 0; i < surveys.length; i++) {
     const surveyFormRelations = surveys[i].get('forms')
     surveyFormRelations.query().find({
