@@ -22,7 +22,7 @@ function loadQuestions(options, callback) {
 }
 
 function createQuestions(parentForm) {
-  var Question = Parse.Object.extend('Question')
+  var Question = Parse.Object('Question')
   for (var i = 0; i < DummyData.questions.length; i++) {
     var newQuestion = new Question()
     

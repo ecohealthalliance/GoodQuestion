@@ -31,9 +31,9 @@ const SurveyListPage = React.createClass ({
   componentDidMount() {
     this.props.setTitle(this.title);
     this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(Store.surveys),
+      dataSource: this.state.dataSource.cloneWithRows(this.state.list),
     })
-
+    
     if (this.state.list.length === 0)
       loadSurveyList({}, this.loadList)
   },
@@ -57,6 +57,7 @@ const SurveyListPage = React.createClass ({
     const formQuestionRelations = form.get('questions')
     formQuestionRelations.query().find({
       success: function(questions) {
+        console.log(questions)
         self.props.navigator.push({
           name: 'form',
           form: form,
@@ -65,7 +66,6 @@ const SurveyListPage = React.createClass ({
         })
       }
     })
-    
   },
 
   onChecked(rowId) {

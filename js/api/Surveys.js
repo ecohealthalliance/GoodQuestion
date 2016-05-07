@@ -22,7 +22,8 @@ export function loadSurveyList(options, callback) {
   query.find({
     success: function(results) {
       storeSurveys(results)
-      loadForms()
+      loadForms(results)
+      setTimeout(()=>{console.log(Store)},1000)
       if (callback) callback(null, results)
     },
     error: function(error, results) {

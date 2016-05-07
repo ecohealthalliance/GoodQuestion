@@ -4,13 +4,11 @@ import Store from '../data/Store'
 
 
 // Queries the connected Parse server for a list of Triggers.
-export function loadTriggers(options, callback) {
-  const Trigger = Parse.Object.extend("Trigger")
-  const query = new Parse.Query(Trigger)
-
-  query.find({
-    success: function(results) {
-      storeTriggers(results)
+export function loadTriggers(form, callback) {
+  const formTriggerRelations = form.get('triggers')
+  formTriggerRelations.query().find({
+    success: function(triggers) {
+      storeTriggers(triggers)
       if (callback) callback(null, results)
     },
     error: function(error, results) {

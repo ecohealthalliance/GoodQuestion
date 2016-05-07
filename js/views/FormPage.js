@@ -9,9 +9,9 @@ import React, {
 
 import Store from '../data/Store'
 import Styles from '../styles/Styles';
-import ShortAnswer from './QuestionTypes/ShortAnswer';
-import Checkboxes from './QuestionTypes/Checkboxes';
-import MultipleChoice from './QuestionTypes/MultipleChoice';
+import ShortAnswer from '../components/QuestionTypes/ShortAnswer';
+import Checkboxes from '../components/QuestionTypes/Checkboxes';
+import MultipleChoice from '../components/QuestionTypes/MultipleChoice';
 import Button from 'apsl-react-native-button';
 
 const FormPage = React.createClass ({
