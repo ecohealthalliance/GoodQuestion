@@ -3,6 +3,7 @@ import React, {
   TouchableHighlight,
   Text,
   View,
+  ScrollView,
   ListView,
   AsyncStorage
 } from 'react-native'
@@ -90,20 +91,17 @@ const FormPage = React.createClass ({
           question={question}
           value={this.state.answers[question.id]}
           onChange={(value)=> this.setState({[question.id]: value})} />);
-        default: return <Text key={'unknown-question-'+index}>Unknown Question Type</Text>;
+        default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('questionType')}</Text>;
       }
     })
   },
 
   render() {
-    
-    console.log('QUESTIONS:')
-    console.log(this.state.questions)
     return (
-      <View style={Styles.container.form}>
+      <ScrollView style={Styles.container.form}>
         {this.renderQuestions()}
         <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
-      </View>
+      </ScrollView>
     )
   }
 })
