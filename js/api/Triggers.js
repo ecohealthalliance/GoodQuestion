@@ -7,8 +7,8 @@ import Store from '../data/Store'
 export function loadTriggers(form, callback) {
   const formTriggerRelations = form.get('triggers')
   formTriggerRelations.query().find({
-    success: function(triggers) {
-      storeTriggers(triggers)
+    success: function(results) {
+      storeTriggers(results)
       if (callback) callback(null, results)
     },
     error: function(error, results) {

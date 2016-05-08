@@ -5,25 +5,20 @@ import Store from '../data/Store'
 import { loadQuestions } from './Questions'
 import { loadTriggers } from './Triggers'
 
-// Queries the connected Parse server for a list of Triggers.
-export function loadForms(surveys, callback) {
-  for (var i = 0; i < surveys.length; i++) {
-    const surveyFormRelations = surveys[i].get('forms')
-    surveyFormRelations.query().find({
-      success: function(results) {
-        storeForms(results)
-        for (var i = 0; i < results.length; i++) {
-          loadTriggers(results[i])
-          loadQuestions(results[i])
-        }
-        if (callback) callback(null, results)
-      },
-      error: function(error, results) {
-        console.warn("Error: " + error.code + " " + error.message)
-        if (callback) callback(error, results)
-      }
-    })
-  }
+
+// Loads Form data from a single Survey and retuns it via callback after the related questions have also been fetched.
+export function loadForms(survey, callback) {
+  const surveyFormRelations = survey.get('forms')
+  surveyFormRelations.query().find({
+    success: function(results) {
+      storeForms(results)
+      if (callback) callback(null, results, survey)
+    },
+    error: function(error, results) {
+      console.warn("Error: " + error.code + " " + error.message)
+      if (callback) callback(error, results, survey)
+    }
+  })
 }
 
 // Caches Form objects inside the Store.

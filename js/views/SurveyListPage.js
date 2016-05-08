@@ -11,8 +11,8 @@ import React, {
 import _ from 'lodash'
 import Store from '../data/Store'
 import Styles from '../styles/Styles'
-
 import { loadSurveyList } from '../api/Surveys'
+import { loadForms } from '../api/Forms'
 import SurveyListItem from '../components/SurveyListItem'
 
 const SurveyListPage = React.createClass ({
@@ -51,22 +51,6 @@ const SurveyListPage = React.createClass ({
     }
   },
 
-  selectForm(form, survey) {
-    // Get Questions
-    const self = this
-    const formQuestionRelations = form.get('questions')
-    formQuestionRelations.query().find({
-      success: function(questions) {
-        self.props.navigator.push({
-          name: 'form',
-          form: form,
-          survey: survey,
-          questions: questions,
-        })
-      }
-    })
-  },
-
   onChecked(rowId) {
     let newSource = Store.surveys.slice();
     let oldItem = Store.surveys[rowId];
@@ -79,20 +63,21 @@ const SurveyListPage = React.createClass ({
 
   onPress(item) {
     // TODO return the the most recently triggered form that hasn't been filled out.
-    const self = this
-    const surveyFormRelations = item.get('forms')
-    surveyFormRelations.query().find({
-      success: function(list) {
-        if (list[0]) {
-          self.selectForm(list[0], item)
-        } else {
-          Alert.alert('There is no active form for this survey.')
-        }
-      },
-      error: function(list, error) {
-        Alert.alert('There is no active form for this survey.')
-      }
-    })
+    loadForms(item, this.selectForm)
+  },
+
+  selectForm(error, forms, survey) {
+    // TODO Support multiple forms
+    if (error) {
+      console.warn(error)
+    } else {
+      console.log('selectForm')
+      this.props.navigator.push({
+        name: 'form',
+        form: forms[0],
+        survey: survey
+      })
+    }
   },
 
   /* Render */

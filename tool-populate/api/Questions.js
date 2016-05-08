@@ -34,7 +34,6 @@ function createQuestions(parentForm) {
       success: function(response) {
         questions.push(response)
         if (parentForm && questions.length === DummyData.questions.length) {
-          console.log('saving questions...')
           var relation = parentForm.relation('questions')
           relation.add(questions)
           parentForm.save()
