@@ -5,14 +5,18 @@ import React, {
   View,
   ScrollView,
   ListView,
-  AsyncStorage
+  AsyncStorage,
+  Platform,
 } from 'react-native'
+import _ from 'lodash'
 
 import Store from '../data/Store'
 import Styles from '../styles/Styles';
 import ShortAnswer from '../components/QuestionTypes/ShortAnswer';
 import Checkboxes from '../components/QuestionTypes/Checkboxes';
 import MultipleChoice from '../components/QuestionTypes/MultipleChoice';
+import DateQuestionIOS from '../components/QuestionTypes/DateQuestionIOS'
+import DateQuestionAndroid from '../components/QuestionTypes/DateQuestionAndroid'
 import Button from 'apsl-react-native-button';
 
 import { loadQuestions } from '../api/Questions'
@@ -75,6 +79,21 @@ const FormPage = React.createClass ({
 
   renderQuestions() {
     return this.state.questions.map((question, index)=>{
+      console.log(Platform.OS)
+      let questionProps = {
+        key: question.id,
+        id: question.id,
+        value: this.state.answers[question.id],
+        onChange: (value)=> this.setState({[question.id]: value}),
+      }
+
+      if (question.attributes) {
+        questionProps = _.merge(questionProps, question.attributes)
+      } else {
+        console.warn('Error: Malformed question object: ' + question)
+        return null
+      }
+      
       switch (question.get('questionType')) {
         case 'shortAnswer': return (<ShortAnswer
           key={question.id}
@@ -86,11 +105,18 @@ const FormPage = React.createClass ({
           question={question}
           value={this.state.answers[question.id]}
           onChange={(value)=> this.setState({[question.id]: value})} />);
+
         case 'multipleChoice': return (<MultipleChoice
           key={question.id}
           question={question}
           value={this.state.answers[question.id]}
           onChange={(value)=> this.setState({[question.id]: value})} />);
+
+        case 'date':
+          return Platform.OS === 'ios' ?
+            <DateQuestionIOS {...questionProps} /> : 
+            <DateQuestionAndroid {...questionProps} />
+
         default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('questionType')}</Text>;
       }
     })

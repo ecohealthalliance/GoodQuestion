@@ -20,6 +20,12 @@ import SharedNavigator from './js/router/SharedNavigator'
 //  CUSTOM IP: Your own parse server IP
 connectToParseServer('local')
 
+// Due to a bug in React Native, we must temporarily ignore propType warnings for some iOS components to work.
+// Affected component: DatePickerIOS
+console.ignoredYellowBox = [
+  'Warning: Failed propType',
+]
+
 
 /* iOS App */
 const GoodQuestion = React.createClass ({
