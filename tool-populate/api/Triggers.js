@@ -22,8 +22,7 @@ function loadTriggers(options, callback) {
 }
 
 function createTriggers(parentForm) {
-  var Trigger = Parse.Object.extend('Trigger')
-  var newTrigger = new Trigger()
+  var newTrigger = new Parse.Object('Trigger')
 
   newTrigger.set('triggerType', DummyData.trigger.triggerType)
   newTrigger.set('properties', DummyData.trigger.properties)
@@ -34,6 +33,7 @@ function createTriggers(parentForm) {
         if (parentForm) {
           var relation = parentForm.relation('triggers')
           relation.add(newTrigger)
+          parentForm.save()
         }
         storeTriggers(response)
       },

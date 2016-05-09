@@ -2,13 +2,12 @@ import _ from 'lodash'
 import Parse from 'parse/react-native'
 import Store from '../data/Store'
 
-// Queries the connected Parse server for a list of Triggers.
-export function loadQuestions(options, callback) {
-  const Question = Parse.Object.extend("Question")
-  const query = new Parse.Query(Question)
-  query.limit = 1000
-
-  query.find({
+// Queries the connected Parse server for a list of Questions.
+export function loadQuestions(form, callback) {
+  console.log('loadQuestions')
+  console.log(form)
+  const formQuestionRelations = form.get('questions')
+  formQuestionRelations.query().find({
     success: function(results) {
       storeQuestions(results)
       if (callback) callback(null, results)

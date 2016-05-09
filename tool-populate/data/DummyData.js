@@ -35,6 +35,13 @@ const DummyData = {
       },
       order: 1,
     }, {
+      questionType: 'checkboxes',
+      text: 'What is your favorite color?',
+      properties: {
+        choices: ['red', 'blue', 'green']
+      },
+      order: 1,
+    }, {
       questionType: 'longAnswer',
       text: 'Describe any abnormalities in the location of the drag',
       properties: { 

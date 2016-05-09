@@ -5,23 +5,24 @@ import Store from '../data/Store'
 import { loadQuestions } from './Questions'
 import { loadTriggers } from './Triggers'
 
-// Queries the connected Parse server for a list of Triggers.
-export function loadForms(options, callback) {
-  const Form = Parse.Object.extend("Form")
-  const query = new Parse.Query(Form)
 
-  query.find({
-    success: function(results) {
-      storeForms(results)
-      loadTriggers()
-      loadQuestions()
-      if (callback) callback(null, results)
-    },
-    error: function(error, results) {
-      console.warn("Error: " + error.code + " " + error.message)
-      if (callback) callback(error, results)
-    }
-  })
+// Loads Form data from a single Survey and retuns it via callback after the related questions have also been fetched.
+export function loadForms(survey, callback) {
+  const surveyFormRelations = survey.get('forms')
+  if (surveyFormRelations) {
+    surveyFormRelations.query().find({
+      success: function(results) {
+        storeForms(results)
+        if (callback) callback(null, results, survey)
+      },
+      error: function(error, results) {
+        console.warn("Error: " + error.code + " " + error.message)
+        if (callback) callback(error, results, survey)
+      }
+    })
+  } else {
+    console.warn("Error: Unable to find relation \"forms\" for Survey object." )
+  }
 }
 
 // Caches Form objects inside the Store.

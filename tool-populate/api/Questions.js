@@ -22,9 +22,9 @@ function loadQuestions(options, callback) {
 }
 
 function createQuestions(parentForm) {
-  var Question = Parse.Object.extend('Question')
+  var questions = []
   for (var i = 0; i < DummyData.questions.length; i++) {
-    var newQuestion = new Question()
+    var newQuestion = new Parse.Object('Question')
     
     newQuestion.set('text', DummyData.questions[i].text)
     newQuestion.set('questionType', DummyData.questions[i].questionType)
@@ -32,9 +32,11 @@ function createQuestions(parentForm) {
 
     newQuestion.save(null, {
       success: function(response) {
-        if (parentForm) {
+        questions.push(response)
+        if (parentForm && questions.length === DummyData.questions.length) {
           var relation = parentForm.relation('questions')
-          relation.add(newQuestion)
+          relation.add(questions)
+          parentForm.save()
         }
         storeQuestions(response)
       },

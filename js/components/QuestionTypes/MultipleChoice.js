@@ -17,14 +17,14 @@ const MultipleChoice = React.createClass ({
   render() {
     return (
       <View>
-        <Text style={Styles.form.questionLabel}>{this.props.question.text}</Text>
+        <Text style={Styles.form.questionLabel}>{this.props.question.get('text')}</Text>
         <Picker
           selectedValue={this.state.value}
           onValueChange={(value) =>{
             this.setState({value: value});
             this.props.onChange(value);
           }}>
-          {this.props.question.properties.choices.map((choice, idx)=>{
+          {this.props.question.get('properties').choices.map((choice, idx)=>{
             return <Picker.Item key={idx} label={choice} value={choice} />
           })}
         </Picker>

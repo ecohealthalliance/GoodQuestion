@@ -31,6 +31,7 @@ function createForms(parentSurvey) {
       if (parentSurvey) {
         var relation = parentSurvey.relation('forms')
         relation.add(newForm)
+        parentSurvey.save()
       }
       Questions.createQuestions(response)
       Triggers.createTriggers(response)
