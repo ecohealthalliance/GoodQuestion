@@ -13,6 +13,7 @@ const DateQuestionIOS = React.createClass ({
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
     value: React.PropTypes.object,
+    mode: React.PropTypes.string,
     onChange: React.PropTypes.func.isRequired,
   },
 
@@ -20,6 +21,7 @@ const DateQuestionIOS = React.createClass ({
     return {
       value: new Date(),
       timeZoneOffset: (-1) * (new Date()).getTimezoneOffset(),
+      mode: 'date',
     };
   },
 
@@ -50,7 +52,7 @@ const DateQuestionIOS = React.createClass ({
         <Text>Notice: Date Picker temporarily disabled for iOS.</Text>
         {/*
         <DatePickerIOS 
-          mode="date"
+          mode={this.props.mode}
           timeZoneOffsetInMinutes={this.props.timeZoneOffset}
           onDateChange={this.handleChange}
           date={this.state.value}

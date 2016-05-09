@@ -80,7 +80,6 @@ const FormPage = React.createClass ({
 
   renderQuestions() {
     return this.state.questions.map((question, index)=>{
-      console.log(Platform.OS)
       let questionProps = {
         key: question.id,
         id: question.id,
@@ -120,7 +119,7 @@ const FormPage = React.createClass ({
 
         case 'datetime':
           return Platform.OS === 'ios' ?
-            <DateQuestionIOS {...questionProps} time /> : 
+            <DateQuestionIOS {...questionProps} mode="datetime" /> : 
             <TimeQuestionAndroid {...questionProps} />
 
         default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('questionType')}</Text>;
