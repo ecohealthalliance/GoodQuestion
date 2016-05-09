@@ -21,37 +21,37 @@ const TimeQuestionAndroid = React.createClass ({
 
   getDefaultProps: function () {
     return {
-      value: {hours: 14, minutes: 0},
-      hours: 14,
-      minutes: 0,
+      value: {hour: 0, minute: 0},
+      hour: 0,
+      minute: 0,
     }
   },
 
   getInitialState: function() {
     return {
       value: this.props.value,
-      hours: this.props.value.hours,
-      minutes: this.props.value.minutes,
+      hour: this.props.value.hour,
+      minute: this.props.value.minute,
     }
   },
 
   /* Methods */
-  // Android date picker pop-up
+  // Android time picker pop-up
   async showPicker() {
     const options = {
-      hour: this.state.presetHour,
-      minute: this.state.presetMinute,
+      hour: this.state.hour,
+      minute: this.state.minute,
     }
 
     try {
       const {action, minute, hour} = await TimePickerAndroid.open(options);
       if (action === TimePickerAndroid.timeSetAction) {
-        let newValue = {hours: hour, minutes: minute}
+        let newValue = {hour: hour, minute: minute}
         this.setState({
           valueText: moment(hour+':'+minute, 'H:m', true).format('hh:mm A'),
           value: newValue,
-          hours: hour,
-          minutes: minute,
+          hour: hour,
+          minute: minute,
         })
         this.props.onChange(newValue)
       }

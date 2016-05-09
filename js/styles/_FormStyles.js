@@ -51,6 +51,26 @@ const FormStyles = StyleSheet.create({
     color: Color.background2,
   },
 
+  doubleButtons: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+  },
+  doubleButtonLeft: {
+    flex: 1,
+    alignSelf: 'auto',
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  doubleButtonRight: {
+    flex: 1,
+    alignSelf: 'auto',
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+  },
+
   input: {
     height: 50,
     borderColor: 'gray',

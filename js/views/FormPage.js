@@ -17,6 +17,7 @@ import Checkboxes from '../components/QuestionTypes/Checkboxes';
 import MultipleChoice from '../components/QuestionTypes/MultipleChoice';
 import DateQuestionIOS from '../components/QuestionTypes/DateQuestionIOS'
 import DateQuestionAndroid from '../components/QuestionTypes/DateQuestionAndroid'
+import DatetimeQuestionAndroid from '../components/QuestionTypes/DatetimeQuestionAndroid'
 import TimeQuestionAndroid from '../components/QuestionTypes/TimeQuestionAndroid'
 import Button from 'apsl-react-native-button';
 
@@ -84,7 +85,10 @@ const FormPage = React.createClass ({
         key: question.id,
         id: question.id,
         value: this.state.answers[question.id],
-        onChange: (value)=> this.setState({[question.id]: value}),
+        onChange: (value)=> {
+          console.log(value)
+          this.setState({[question.id]: value})
+        },
       }
 
       if (question.attributes) {
@@ -120,7 +124,7 @@ const FormPage = React.createClass ({
         case 'datetime':
           return Platform.OS === 'ios' ?
             <DateQuestionIOS {...questionProps} mode="datetime" /> : 
-            <TimeQuestionAndroid {...questionProps} />
+            <DatetimeQuestionAndroid {...questionProps} />
 
         default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('questionType')}</Text>;
       }
