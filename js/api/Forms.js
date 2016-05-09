@@ -9,16 +9,20 @@ import { loadTriggers } from './Triggers'
 // Loads Form data from a single Survey and retuns it via callback after the related questions have also been fetched.
 export function loadForms(survey, callback) {
   const surveyFormRelations = survey.get('forms')
-  surveyFormRelations.query().find({
-    success: function(results) {
-      storeForms(results)
-      if (callback) callback(null, results, survey)
-    },
-    error: function(error, results) {
-      console.warn("Error: " + error.code + " " + error.message)
-      if (callback) callback(error, results, survey)
-    }
-  })
+  if (surveyFormRelations) {
+    surveyFormRelations.query().find({
+      success: function(results) {
+        storeForms(results)
+        if (callback) callback(null, results, survey)
+      },
+      error: function(error, results) {
+        console.warn("Error: " + error.code + " " + error.message)
+        if (callback) callback(error, results, survey)
+      }
+    })
+  } else {
+    console.warn("Error: Unable to find relation \"forms\" for Survey object." )
+  }
 }
 
 // Caches Form objects inside the Store.
