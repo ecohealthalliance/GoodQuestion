@@ -46,7 +46,7 @@ const TimeQuestionAndroid = React.createClass ({
     try {
       const {action, minute, hour} = await TimePickerAndroid.open(options);
       if (action === TimePickerAndroid.timeSetAction) {
-        let newValue = {hours: hour, minutes: minutes}
+        let newValue = {hours: hour, minutes: minute}
         this.setState({
           valueText: moment(hour+':'+minute, 'H:m', true).format('hh:mm A'),
           value: newValue,

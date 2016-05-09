@@ -43,7 +43,7 @@ const DateQuestionAndroid = React.createClass ({
           value: date,
           valueText: moment(date).format('MMMM DD, YYYY')
         })
-        this.props.onChange(value)
+        this.props.onChange(date)
       }
     } catch ({code, message}) {
       console.warn('Date Picker Error: ' + code + ' ' + message)

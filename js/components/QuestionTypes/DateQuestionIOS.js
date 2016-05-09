@@ -32,8 +32,6 @@ const DateQuestionIOS = React.createClass ({
 
   /* Methods */
   handleChange(value) {
-    console.log('new value')
-    console.log(value)
     this.setState({
       value: value
     })
