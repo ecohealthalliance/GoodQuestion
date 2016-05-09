@@ -45,7 +45,6 @@ const TimeQuestionAndroid = React.createClass ({
 
     try {
       const {action, minute, hour} = await TimePickerAndroid.open(options);
-      var newState = {};
       if (action === TimePickerAndroid.timeSetAction) {
         let newValue = {hours: hour, minutes: minutes}
         this.setState({
@@ -56,7 +55,6 @@ const TimeQuestionAndroid = React.createClass ({
         })
         this.props.onChange(newValue)
       }
-      this.setState(newState);
     } catch ({code, message}) {
       console.warn('Time Picker Error: ' + code + ' ' + message)
     }

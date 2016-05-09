@@ -32,16 +32,9 @@ const DateQuestionAndroid = React.createClass ({
   },
 
   /* Methods */
-  handleChange(value) {
-    this.setState({
-      value: value
-    })
-    this.props.onChange(value)
-  },
 
   // Android date picker pop-up
   async showPicker() {
-    stateKey = 'simple'
     try {
       const {action, year, month, day} = await DatePickerAndroid.open({date: this.state.value})
       if (action !== DatePickerAndroid.dismissedAction) {
@@ -50,6 +43,7 @@ const DateQuestionAndroid = React.createClass ({
           value: date,
           valueText: moment(date).format('MMMM DD, YYYY')
         })
+        this.props.onChange(value)
       }
     } catch ({code, message}) {
       console.warn('Date Picker Error: ' + code + ' ' + message)
