@@ -9,6 +9,7 @@ import React, {
 } from 'react-native'
 import Styles from '../../styles/Styles'
 import Button from 'apsl-react-native-button'
+import moment from 'moment'
 
 const DateQuestionAndroid = React.createClass ({
   propTypes: {
@@ -47,7 +48,7 @@ const DateQuestionAndroid = React.createClass ({
         var date = new Date(year, month, day)
         this.setState({
           value: date,
-          valueText: date.toLocaleDateString()
+          valueText: moment(date).format('MMMM DD, YYYY')
         })
       }
     } catch ({code, message}) {
