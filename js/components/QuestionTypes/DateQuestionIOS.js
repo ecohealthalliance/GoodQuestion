@@ -53,22 +53,20 @@ const DateQuestionIOS = React.createClass ({
 
   /* Render */
   render() {
-    // Date Picker disabled on iOS temporarily due to React Native bug.
+    // Due to a bug in react-native's source, DatePickerIOS is currently unstable and may cause problems with rendering. 
     // Issue: https://github.com/facebook/react-native/issues/6264
     // PR fix: https://github.com/facebook/react-native/pull/7472
 
     return (
       <View>
         <Text style={Styles.type.h1}>{this.props.text}</Text>
-        <Text>Notice: Date Picker temporarily disabled for iOS.</Text>
-        
-        <DatePickerIOS 
+        <Text>Notice: iOS Date Picker is currently unstable.</Text>
+        <DatePickerIOS
           mode={this.props.mode}
           timeZoneOffsetInMinutes={this.props.timeZoneOffset}
           onDateChange={this.handleChange}
           date={this.checkDate(this.state.value)}
           />
-        
       </View>
     )
   }
