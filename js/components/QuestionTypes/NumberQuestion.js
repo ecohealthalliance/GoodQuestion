@@ -7,7 +7,7 @@ import React, {
 } from 'react-native'
 import Styles from '../../styles/Styles'
 
-const ScaleQuestion = React.createClass ({
+const NumberQuestion = React.createClass ({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
@@ -16,8 +16,6 @@ const ScaleQuestion = React.createClass ({
     properties: React.PropTypes.shape({
       min: React.PropTypes.number.isRequired,
       max: React.PropTypes.number.isRequired,
-      minText: React.PropTypes.text,
-      maxText: React.PropTypes.text,
     }),
   },
 
@@ -26,7 +24,7 @@ const ScaleQuestion = React.createClass ({
       value: 1,
       properties: {
         min: 0,
-        max: 5,
+        max: 999,
       },
     };
   },
@@ -39,6 +37,8 @@ const ScaleQuestion = React.createClass ({
 
   /* Methods */
   handleChange(value) {
+    if (value < this.props.properties.min) value = this.props.properties.min 
+    if (value > this.props.properties.max) value = this.props.properties.max
     this.setState({
       value: value
     })
@@ -46,47 +46,21 @@ const ScaleQuestion = React.createClass ({
   },
 
   /* Render */
-  renderNotes() {
-    return this.props.notes.map((note, index)=>{
-      return ( 
-        <Text key={'note-'+this.props.id+'-'+index}>
-          {note}
-        </Text>
-      )
-    })
-  },
-
   render() {
     const { properties } = this.props
     return (
       <View>
         <Text style={Styles.type.h1}>{this.props.text}</Text>
-        <Text style={Styles.type.h2}>{this.state.value}</Text>
-        <Slider
+        <TextInput
+          style={{height: 40, borderColor: 'gray', borderWidth: 1, width: 100}}
+          onChangeText={this.handleChange}
+          keyboardType='numeric'
           value={this.state.value}
-          minimumValue={properties.min}
-          maximumValue={properties.max}
-          step={1}
-          onValueChange={this.handleChange}
-          />
-        {
-          properties.minText ? 
-          <Text style={Styles.type.p}>
-            {properties.min}: {properties.minText}
-          </Text> 
-          : null
-        }
-        {
-          properties.maxText ? 
-          <Text style={Styles.type.p}>
-            {properties.max}: {properties.maxText}
-          </Text> 
-          : null
-        }
+        />
       </View>
     )
   }
 })
 
-module.exports = ScaleQuestion
+module.exports = NumberQuestion
 

@@ -16,6 +16,7 @@ import ShortAnswer from '../components/QuestionTypes/ShortAnswer';
 import Checkboxes from '../components/QuestionTypes/Checkboxes';
 import MultipleChoice from '../components/QuestionTypes/MultipleChoice';
 import ScaleQuestion from '../components/QuestionTypes/ScaleQuestion'
+import NumberQuestion from '../components/QuestionTypes/NumberQuestion'
 import DateQuestionIOS from '../components/QuestionTypes/DateQuestionIOS'
 import DateQuestionAndroid from '../components/QuestionTypes/DateQuestionAndroid'
 import DatetimeQuestionAndroid from '../components/QuestionTypes/DatetimeQuestionAndroid'
@@ -117,8 +118,8 @@ const FormPage = React.createClass ({
           value={this.state.answers[question.id]}
           onChange={(value)=> this.setState({[question.id]: value})} />);
 
-        case 'scale': 
-          return <ScaleQuestion {...questionProps} />
+        case 'number': return <NumberQuestion {...questionProps} />
+        case 'scale': return <ScaleQuestion {...questionProps} />
         case 'date':
           return Platform.OS === 'ios' ?
             <DateQuestionIOS {...questionProps} /> : 
