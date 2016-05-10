@@ -67,7 +67,7 @@ const FormPage = React.createClass ({
     })).then(()=>{
       this.props.navigator.push({name: 'surveyList'});
     }).catch((error)=>{
-      console.log(error);
+      console.error(error);
     });
   },
 

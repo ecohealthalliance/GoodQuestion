@@ -1,4 +1,5 @@
 import React, {
+  View,
   Platform,
   Navigator,
   BackAndroid,
@@ -6,14 +7,23 @@ import React, {
   Text,
 } from 'react-native'
 
+import Settings from '../settings'
+
 // Components
 import Header from '../components/Header'
+import Loading from '../components/Loading'
 
 // Styles
 import Styles from '../styles/Styles'
 
 // Model
 import Store from '../data/Store'
+
+// Parse
+import Parse from 'parse/react-native'
+import {connectToParseServer} from '../api/ParseServer'
+import {isAuthenticated} from '../api/Account'
+
 
 // Views
 import LoginPage from '../views/LoginPage'
@@ -49,14 +59,39 @@ const SharedNavigator = React.createClass ({
   getInitialState() {
     return {
       title: '',
+      isLoading: true,
+      isAuthenticated: false,
     }
   },
-  setTitle(title) {
-    this.setState({title: title});
+  componentWillMount() {
+    connectToParseServer(Settings.parse.serverUrl);
   },
-  routeMapper(route, nav, onComponentRef) {
+  componentDidMount() {
+    let self = this;
+    isAuthenticated(function(authenticated) {
+      let state = Object.assign({}, self.state);
+      state.isAuthenticated = authenticated;
+      state.isLoading = false;
+      self.setState(state);
+    });
+  },
+  setTitle(title) {
+    let state = Object.assign({}, this.state);
+    state.title = title;
+    this.setState(state);
+  },
+  setAuthenticated(authenticated) {
+    let state = Object.assign({}, this.state);
+    state.isAuthenticated = authenticated;
+    this.setState(state);
+  },
+  routeMapper(route, nav) {
+    // we secure all routes
+    if (!this.state.isAuthenticated) {
+      return <LoginPage navigator={nav} setTitle={this.setTitle} setAuthenticated={this.setAuthenticated} />
+    }
     switch (route.name) {
-      case 'login': return <LoginPage navigator={nav} setTitle={this.setTitle} />
+      case 'login': return <LoginPage navigator={nav} setTitle={this.setTitle} setAuthenticated={this.setAuthenticated} />
       case 'surveylist': return <SurveyListPage navigator={nav} setTitle={this.setTitle} />
       case 'terms': return <TermsOfServicePage navigator={nav} setTitle={this.setTitle} />
       case 'registration1': return <RegistrationPagePart1 navigator={nav} setTitle={this.setTitle} />
@@ -67,6 +102,11 @@ const SharedNavigator = React.createClass ({
   },
   render() {
     const initialRoute = {name: 'surveylist'}
+    // show loading component without the navigationBar
+    if (this.state.isLoading) {
+      return (<Loading/>);
+    }
+    // show the navigator
     return (
       <Navigator
         ref={(nav) => { navigator = nav }}
@@ -78,7 +118,7 @@ const SharedNavigator = React.createClass ({
           <Header title={this.state.title} />
         }
       />
-    )
+    );
   }
 })
 

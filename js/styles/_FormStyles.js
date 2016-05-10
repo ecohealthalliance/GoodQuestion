@@ -50,7 +50,15 @@ const FormStyles = StyleSheet.create({
   primaryButtonText: {
     color: Color.background2,
   },
-
+  errorText: {
+    paddingLeft: 5,
+    color: 'red',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  inputGroup: {
+    padding: 5,
+  },
   input: {
     height: 50,
     borderColor: 'gray',
