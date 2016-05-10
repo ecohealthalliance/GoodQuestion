@@ -89,7 +89,7 @@ const DatetimeQuestionAndroid = React.createClass ({
   /* Render */
   renderButtons() {
     return (
-      <View style={Styles.form.doubleButtons}>
+      <View style={Styles.form.inlineForm}>
         <Button onPress={this.showDatePicker} style={Styles.form.doubleButtonLeft}>
           {this.state.hasDate ? 'Update Date' : 'Select Date'}
         </Button>

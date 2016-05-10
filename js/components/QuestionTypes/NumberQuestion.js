@@ -4,9 +4,11 @@ import React, {
   TextInput,
   View,
   Slider,
+  TouchableWithoutFeedback,
 } from 'react-native'
 import Styles from '../../styles/Styles'
-import Button from 'apsl-react-native-button'
+import Button from '../Button'
+import Icon from 'react-native-vector-icons/FontAwesome'
 
 const NumberQuestion = React.createClass ({
   propTypes: {
@@ -70,18 +72,18 @@ const NumberQuestion = React.createClass ({
     return (
       <View>
         <Text style={Styles.type.h1}>{this.props.text}</Text>
-        <View style={Styles.form.doubleButtons}>
-          <Button onPress={this.decreaseCount} style={Styles.form.doubleButtonLeft}>
-            -
+        <View style={Styles.form.inlineForm}>
+          <Button action={this.decreaseCount} primary round>
+            <Icon name="minus" size={20} style={{color: '#FFFFFF'}} />
           </Button>
           <TextInput
-            style={{flex:1, height: 40, borderColor: 'gray', borderWidth: 1, textAlign: 'center'}}
+            style={{height: 40, borderColor: 'gray', borderWidth: 1, textAlign: 'center', width: 120}}
             onChangeText={this.handleChange}
             keyboardType='numeric'
             value={this.state.valueText}
           />
-          <Button onPress={this.increaseCount} style={Styles.form.doubleButtonRight}>
-            +
+          <Button action={this.increaseCount} primary round>
+            <Icon name="plus" size={20} style={{color: '#FFFFFF'}} /> 
           </Button>
         </View>
       </View>

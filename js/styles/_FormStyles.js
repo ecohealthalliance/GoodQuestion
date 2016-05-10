@@ -14,6 +14,13 @@ const FormStyles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
   },
+  inlineForm: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+  },
   bottomForm: {
     justifyContent: 'center',
     alignItems: 'stretch',
@@ -33,6 +40,18 @@ const FormStyles = StyleSheet.create({
     margin: 10,
     borderRadius: 5,
   },
+  roundButton: {
+    backgroundColor: Color.primary,
+    alignSelf: 'auto',
+    borderRadius: 100,
+    borderWidth: 0,
+    width: 36,
+    height: 36,
+    padding: 8,
+    marginVertical: 2,
+    marginHorizontal: 10,
+  },
+
   primaryButton: {
     backgroundColor: Color.primary,
   },
@@ -51,13 +70,6 @@ const FormStyles = StyleSheet.create({
     color: Color.background2,
   },
 
-  doubleButtons: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    flexWrap: 'nowrap',
-  },
   doubleButtonLeft: {
     flex: 1,
     alignSelf: 'auto',
