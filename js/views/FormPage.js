@@ -42,12 +42,21 @@ const FormPage = React.createClass ({
     loadQuestions(this.props.form, this.setQuestions)
   },
 
+  componentWillUnmount() {
+    // Cancel callbacks
+    this.cancelCallbacks = true
+  },
+
   /* Methods */
   genSubmissionKey() {
     return "submission:" + this.props.survey.id + ":" + this.props.form.id;
   },
 
   setQuestions(error, response) {
+    // Prevent this callback from working if the comoponent has unmounted.
+    if (this.cancelCallbacks) return
+
+    // Render the questions passed by the response object.
     if (error) {
       console.warn(error)
     } else if (!response || !response[0]){

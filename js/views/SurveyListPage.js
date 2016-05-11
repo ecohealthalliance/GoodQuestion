@@ -39,8 +39,16 @@ const SurveyListPage = React.createClass ({
     }
   },
 
+  componentWillUnmount() {
+    // Cancel callbacks
+    this.cancelCallbacks = true
+  },
+
   /* Methods */
   loadList(error, response){
+    // Prevent this callback from working if the comoponent has unmounted.
+    if (this.cancelCallbacks) return
+
     if (error) {
       console.warn(error)
     } else {
