@@ -109,6 +109,8 @@ const LoginPage = React.createClass ({
             style={Styles.form.input}
             onChangeText={this.textFieldChangeHandler.bind(this, 'username')}
             value={this.state.username}
+            autoCapitalize='none'
+            autoCorrect={false}
             placeholder="Username"
           />
         </View>
@@ -121,6 +123,8 @@ const LoginPage = React.createClass ({
             style={Styles.form.input}
             onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
             value={this.state.password}
+            autoCapitalize='none'
+            autoCorrect={false}
             placeholder="Password"
           />
         </View>
