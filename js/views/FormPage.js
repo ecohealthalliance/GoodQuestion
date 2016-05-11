@@ -17,6 +17,7 @@ import Button from 'apsl-react-native-button';
 
 import { loadQuestions } from '../api/Questions'
 
+
 const FormPage = React.createClass ({
   propTypes: {
     form: React.PropTypes.object.isRequired,
@@ -31,6 +32,7 @@ const FormPage = React.createClass ({
   },
 
   componentWillMount() {
+    this.props.setTitle("Survey: " + this.props.survey.get('title'));
     let id = this.genSubmissionKey();
     AsyncStorage.getItem(id, (err, res) => {
       if (res) {
