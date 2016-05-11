@@ -46,7 +46,7 @@ const SurveyListPage = React.createClass ({
 
   /* Methods */
   loadList(error, response){
-    // Prevent this callback from working if the comoponent has unmounted.
+    // Prevent this callback from working if the component has unmounted.
     if (this.cancelCallbacks) return
 
     if (error) {
@@ -73,6 +73,8 @@ const SurveyListPage = React.createClass ({
   },
 
   selectForm(error, forms, survey) {
+    if (this.cancelCallbacks) return
+
     // TODO Support multiple forms
     if (error) {
       console.warn(error)

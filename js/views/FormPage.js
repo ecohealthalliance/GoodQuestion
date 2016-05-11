@@ -53,7 +53,7 @@ const FormPage = React.createClass ({
   },
 
   setQuestions(error, response) {
-    // Prevent this callback from working if the comoponent has unmounted.
+    // Prevent this callback from working if the component has unmounted.
     if (this.cancelCallbacks) return
 
     // Render the questions passed by the response object.
