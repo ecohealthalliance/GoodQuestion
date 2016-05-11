@@ -1,5 +1,6 @@
 
 import React, {
+  Alert,
   StyleSheet,
   TouchableHighlight,
   Text,
@@ -10,57 +11,128 @@ import React, {
 
 import Styles from '../styles/Styles'
 import Color from '../styles/Color'
+import Button from '../components/Button'
 
-import { verifyLogin } from '../api/Account'
+import {authenticate} from '../api/Account'
 
+import Joi from '../lib/joi-browser.min'
+import JoiMixins from '../mixins/joi-mixins'
+
+import async from 'async'
+import he from 'he' // HTML entity encode and decode
 
 const LoginPage = React.createClass ({
+  title: 'Login to GoodQuestion',
+  mixins: [
+    JoiMixins,
+  ],
+
+  schema: {
+    username: Joi.string().min(3).required().label('Username'),
+    password: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().label('Password'),
+  },
+
+  componentWillMount() {
+    this.props.setTitle(this.title);
+  },
+
   getInitialState() {
     return {
-      emailInput: '',
-      passwordInput: '',
-      button_text: 'Verify',
+      username: '',
+      password: '',
+      button_text: 'Login',
+      errors: [],
     }
   },
 
   /* Methods */
-  handleVerifyLogin(event) {
-    event.preventDefault()
+  handleVerifyLogin() {
+    let self = this;
 
-    this.setState({
-      button_text: 'Verifying...'
-    })
+    // validate
+    let errors = this.joiValidate();
+    if (errors.length > 0) {
+      Alert.alert('Validation', 'The form errors need corrected to continue.');
+      return;
+    }
 
-    verifyLogin(this.state.text, this.handleVerifyLoginResponse)
+    let state = Object.assign({}, this.state);
+    state.button_text = 'Verifying...';
+    this.setState(state);
+
+    authenticate(state.username, state.password, function(err, user) {
+      if (err) {
+        // reset button_text state
+        state.button_text = 'Login';
+        self.setState(state);
+        // show a message
+        Alert.alert(err, 'The username and password combination is invalid.')
+        return;
+      }
+      // the user is authenticated, setAuthenticated to true
+      self.props.setAuthenticated(true)
+      // allow for the async state to be updated
+      async.nextTick(function(){
+        // navigate to the default route
+        self.props.navigator.replace({});
+      });
+    });
   },
 
-  handleVerifyLoginResponse(response) {
-    this.setState({
-      button_text: 'Login Verified'
-    })
+  decodeText(txt) {
+    if (txt) {
+      return he.decode(txt);
+    }
+    return '';
+  },
+
+  textFieldChangeHandler(name, text) {
+    let schema = {};
+    schema[name] = this.schema[name];
+    let object = {};
+    object[name] = text;
+    this.joiCheckError(object, schema);
+    let state = Object.assign({}, this.state);
+    state[name] = text;
+    this.setState(state);
   },
 
   /* Render */
   render() {
     return (
       <View style={Styles.container.default}>
-        <TextInput
-          style={Styles.form.input}
-          onChangeText={(emailInput) => this.setState({emailInput})}
-          value={this.state.emailInput}
-          placeholder="Login"
-        />
-        <TextInput
-          style={Styles.form.input}
-          onChangeText={(passwordInput) => this.setState({passwordInput})}
-          value={this.state.passwordInput}
-          placeholder="Password"
-        />
-        <TouchableHighlight onPress={this.handleVerifyLogin}>
-          <Text>
-            {this.state.button_text}
+        <View style={Styles.form.inputGroup}>
+          <Text style={Styles.form.errorText}>
+            {this.decodeText(this.state.errors.username)}
           </Text>
-        </TouchableHighlight>
+          <TextInput
+            style={Styles.form.input}
+            onChangeText={this.textFieldChangeHandler.bind(this, 'username')}
+            value={this.state.username}
+            autoCapitalize='none'
+            autoCorrect={false}
+            placeholder="Username"
+          />
+        </View>
+        <View style={Styles.form.inputGroup}>
+          <Text style={Styles.form.errorText}>
+            {this.decodeText(this.state.errors.password)}
+          </Text>
+          <TextInput
+            secureTextEntry={true}
+            style={Styles.form.input}
+            onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
+            value={this.state.password}
+            autoCapitalize='none'
+            autoCorrect={false}
+            placeholder="Password"
+          />
+        </View>
+        <View style={Styles.form.bottomForm}>
+          <Button action={this.handleVerifyLogin} color='primary' wide>
+            {this.state.button_text}
+          </Button>
+        </View>
       </View>
     )
   }

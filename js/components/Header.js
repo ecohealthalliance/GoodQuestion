@@ -20,15 +20,15 @@ const Header = React.createClass ({
   },
 
   componentWillReceiveProps(next_props) {
+    let state = Object.assign({}, this.state);
     if (next_props.navState) {
       const position = next_props.navState.routeStack.length - 1
-      this.setState({
-        index: position,
-      })
-    } else if (next_props.title) {
-      this.setState({
-        title: next_props.title,
-      })
+      state.index = position;
+      this.setState(state);
+    }
+    if (next_props.title) {
+      state.title = next_props.title;
+      this.setState(state);
     }
   },
 
