@@ -102,8 +102,9 @@ const DatetimeQuestionAndroid = React.createClass ({
 
   render() {
     return (
-      <View>
-        <Text style={Styles.type.h1}>{this.props.text}</Text>
+      <View style={Styles.question.block}>
+        <Text style={Styles.question.header}>Question #1</Text>
+        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         <View>
           <Text style={Styles.type.h2}> {this.state.dateText ? this.state.dateText : '-'} </Text>
           <Text style={Styles.type.h2}> {this.state.timeText ? this.state.timeText : '-'} </Text>

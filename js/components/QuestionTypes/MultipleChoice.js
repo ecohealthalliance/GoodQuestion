@@ -16,8 +16,9 @@ const MultipleChoice = React.createClass ({
   },
   render() {
     return (
-      <View>
-        <Text style={Styles.form.questionLabel}>{this.props.question.get('text')}</Text>
+      <View style={Styles.question.block}>
+        <Text style={Styles.question.header}>Question #1</Text>
+        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.question.get('text')}</Text>
         <Picker
           selectedValue={this.state.value}
           onValueChange={(value) =>{

@@ -70,8 +70,9 @@ const NumberQuestion = React.createClass ({
   render() {
     const { properties } = this.props
     return (
-      <View>
-        <Text style={Styles.type.h1}>{this.props.text}</Text>
+      <View style={Styles.question.block}>
+        <Text style={Styles.question.header}>Question #1</Text>
+        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         <View style={Styles.form.inlineForm}>
           <Button action={this.decreaseCount} primary round>
             <Icon name="minus" size={20} style={{color: '#FFFFFF'}} />

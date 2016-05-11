@@ -59,8 +59,9 @@ const ScaleQuestion = React.createClass ({
   render() {
     const { properties } = this.props
     return (
-      <View>
-        <Text style={Styles.type.h1}>{this.props.text}</Text>
+      <View style={Styles.question.block}>
+        <Text style={Styles.question.header}>Question #1</Text>
+        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         <Text style={Styles.type.h2}>{this.state.value}</Text>
         <Slider
           value={this.state.value}

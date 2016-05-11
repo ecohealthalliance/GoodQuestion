@@ -23,8 +23,9 @@ const Checkboxes = React.createClass ({
   render() {
     let selectedChoices = new Set(this.state.selectedChoices);
     return (
-      <View>
-        <Text style={Styles.form.questionLabel}>{this.props.question.get('text')}</Text>
+      <View style={Styles.question.block}>
+        <Text style={Styles.question.header}>Question #1</Text>
+        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.question.get('text')}</Text>
         {this.props.question.get('properties').choices.map((choice, idx)=>{
           return (<Checkbox
             label={choice}

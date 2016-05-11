@@ -47,8 +47,9 @@ const DateQuestionIOS = React.createClass ({
     // PR fix: https://github.com/facebook/react-native/pull/7472
 
     return (
-      <View>
-        <Text style={Styles.type.h1}>{this.props.text}</Text>
+      <View style={Styles.question.block}>
+        <Text style={Styles.question.header}>Question #1</Text>
+        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         <Text>Notice: Date Picker temporarily disabled for iOS.</Text>
         {/*
         <DatePickerIOS 
