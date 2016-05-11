@@ -68,6 +68,8 @@ const SurveyListPage = React.createClass ({
     // TODO Support multiple forms
     if (error) {
       console.warn(error)
+    } else if (!forms || !forms[0]) {
+      alert('Error: Unable to fetch the Forms associated with this Survey.')
     } else {
       this.props.navigator.push({
         name: 'form',
