@@ -64,7 +64,7 @@ const SharedNavigator = React.createClass ({
     }
   },
   componentWillMount() {
-    connectToParseServer(Settings.parse.serverUrl);
+    connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
   },
   componentDidMount() {
     let self = this;

@@ -12,15 +12,6 @@ import { connectToParseServer } from './js/api/ParseServer'
 // Router
 import SharedNavigator from './js/router/SharedNavigator'
 
-
-/* Initialize Parse Server */
-// Create initial connection to a Parse server. Valid options are:
-//  local
-//  remote-test
-//  CUSTOM IP: Your own parse server IP
-connectToParseServer('local')
-
-
 /* iOS App */
 const GoodQuestion = React.createClass ({
   /* Life Cycle */
