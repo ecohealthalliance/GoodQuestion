@@ -39,8 +39,9 @@ const LongAnswerQuestion = React.createClass ({
   /* Render */
   render() {
     return (
-      <View>
-        <Text style={Styles.type.h1}>{this.props.text}</Text>
+      <View style={Styles.question.block}>
+        <Text style={Styles.question.header}>Question #1</Text>
+        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         <TextInput
           style={{height: 200, borderColor: 'gray', borderWidth: 1}}
           onChangeText={this.handleChange}
