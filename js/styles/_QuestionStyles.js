@@ -8,6 +8,7 @@ const QuestionStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'stretch',
     margin: 20,
+    marginBottom: 5,
     paddingHorizontal: 10,
     paddingBottom: 10,
     backgroundColor: Color.background2,
