@@ -63,12 +63,19 @@ const FormPage = React.createClass ({
       id: id,
       formId: this.props.form.id,
       date: new Date(),
-      answers: this.state,
+      answers: this.state.answers,
     })).then(()=>{
       this.props.navigator.push({name: 'surveyList'});
     }).catch((error)=>{
       console.error(error);
     });
+  },
+
+  setAnswer(questionId, value) {
+    this.setState((prevState)=>{
+      prevState.answers[questionId] = value;
+      return prevState;
+    })
   },
 
   /* Render */
@@ -80,17 +87,17 @@ const FormPage = React.createClass ({
           key={question.id}
           question={question}
           value={this.state.answers[question.id]}
-          onChange={(value)=> this.setState({[question.id]: value})} />);
+          onChange={(value)=> this.setAnswer(question.id, value)} />);
         case 'checkboxes': return (<Checkboxes
           key={question.id}
           question={question}
           value={this.state.answers[question.id]}
-          onChange={(value)=> this.setState({[question.id]: value})} />);
+          onChange={(value)=> this.setAnswer(question.id, value)} />);
         case 'multipleChoice': return (<MultipleChoice
           key={question.id}
           question={question}
           value={this.state.answers[question.id]}
-          onChange={(value)=> this.setState({[question.id]: value})} />);
+          onChange={(value)=> this.setAnswer(question.id, value)} />);
         default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('questionType')}</Text>;
       }
     })
