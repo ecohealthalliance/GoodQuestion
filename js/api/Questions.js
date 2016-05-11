@@ -4,8 +4,6 @@ import Store from '../data/Store'
 
 // Queries the connected Parse server for a list of Questions.
 export function loadQuestions(form, callback) {
-  console.log('loadQuestions')
-  console.log(form)
   const formQuestionRelations = form.get('questions')
   formQuestionRelations.query().find({
     success: function(results) {

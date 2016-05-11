@@ -16,8 +16,11 @@ const DatetimeQuestionAndroid = React.createClass ({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
-    value: React.PropTypes.object,
     onChange: React.PropTypes.func.isRequired,
+    value: React.PropTypes.oneOfType([
+      React.PropTypes.string,
+      React.PropTypes.instanceOf(Date)
+    ]),
   },
 
   getDefaultProps: function () {
@@ -31,7 +34,7 @@ const DatetimeQuestionAndroid = React.createClass ({
 
   getInitialState: function() {
     return {
-      value: this.props.value,
+      value: this.checkDate(this.props.value),
       date: this.props.date,
       hour: this.props.value.hour,
       minute: this.props.value.minute,
@@ -84,6 +87,17 @@ const DatetimeQuestionAndroid = React.createClass ({
     } catch ({code, message}) {
       console.warn('Time Picker Error: ' + code + ' ' + message)
     }
+  },
+
+  checkDate(value) {
+    if (typeof value === 'string') {
+      try {
+        value = new Date(value);
+      } catch(e) {
+        console.error('could not parse date: ' + value);
+      }
+    }
+    return value;
   },
 
   /* Render */

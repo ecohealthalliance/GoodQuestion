@@ -1,44 +1,86 @@
-let rest_config = {  
-  method: 'POST',
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
-  }
-}
+import Parse from 'parse/react-native'
+import Store from '../data/Store'
 
-export function verifyLogin(email_string, callback) {
-  //TODO: Use the validateEmailString function for client-side validation before sending a request.
+import async from 'async'
 
-  rest_config.body = JSON.stringify({
-    email: email_string,
-  })
+import Settings from '../settings'
 
-  fetch('http://api.goodquestion.io/email/verify', rest_config)  
-    .then(function (response) {
-      // Fake endpoint responses for now.
-      response = {
-        email: email_string,
-        verified: true
-      }
-      callback(response)
-    })
-    .catch(function (response) {
-      // TODO: We will need to replace this with real error handling when our api endpoints are set.
-      // For now we will return placeholder data.
-      response = {
-        email: email_string,
-        verified: true
-      }
-      callback(response)
-    })
+/**
+ * authenticates against openam then parse
+ *
+ * @param {string} username
+ * @param {string} password
+ * @param {function} the function to execute when done
+ */
+export function authenticate(username, password, done) {
+  async.auto({
+    /**
+     * authenticates against openam
+     *
+     * @param {function} the callback when done with this async operation
+     */
+    openam: function(cb) {
+      let authConfig = {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-OpenAM-Username': username,
+          'X-OpenAM-Password': password,
+        }
+      };
+      let url = Settings.openam.baseUrl+Settings.openam.authPath;
+      fetch(url, authConfig).then(function(res) {
+        if (!res.ok) {
+          cb('Unauthorized');
+          return;
+        }
+        cb(null, res);
+      }).catch(function() {
+        cb('Unauthorized');
+      });
+    },
+    /**
+     * authenticates against parse
+     *
+     * @param {function} the callback when done with this async operation
+     */
+    parse: ['openam', function(cb) {
+      Parse.User.logIn(username, password).then(
+        function(user) {
+          cb(null, user);
+        },
+        function(user) {
+          cb('Unauthorized');
+        }
+      );
+    }]
+  }, function(err, results) {
+    if (err) {
+      done(err);
+      return;
+    }
+    done(null, results.parse);
+  });
 }
 
 /**
- * Validates an email string using RegEx.
- * @param  {string} email_string
- * @return {bool}   result
+ * is the current parse user authenticated
+ *
+ * @param {function} the function to execute when done
  */
-function validateEmailString(email) {
-  var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-  return re.test(email)
-}
+export function isAuthenticated(done) {
+  Parse.User.currentAsync().then(
+    function(user) {
+      if (user && typeof user.getSessionToken() !== 'undefined') {
+        done(true);
+        return;
+      }
+      done(false);
+    },
+    function(err) {
+      console.error(err);
+      done(false);
+    }
+  );
+};

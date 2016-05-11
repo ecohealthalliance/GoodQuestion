@@ -41,3 +41,6 @@ android/keystores/debug.keystore
 
 # Parse
 logs/
+
+# Settings
+js/settings.js

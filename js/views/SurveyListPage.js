@@ -32,10 +32,11 @@ const SurveyListPage = React.createClass ({
     this.props.setTitle(this.title);
     this.setState({
       dataSource: this.state.dataSource.cloneWithRows(this.state.list),
-    })
-    
-    if (this.state.list.length === 0)
-      loadSurveyList({}, this.loadList)
+    });
+
+    if (this.state.list.length === 0) {
+      loadSurveyList({}, this.loadList);
+    }
   },
 
   /* Methods */
@@ -43,22 +44,19 @@ const SurveyListPage = React.createClass ({
     if (error) {
       console.warn(error)
     } else {
-      this.setState({
-        isLoading: false,
-        list: response,
-        dataSource: this.state.dataSource.cloneWithRows(response)
-      })
+      if (this.isMounted()) {
+        this.setState({
+          isLoading: false,
+          list: response,
+          dataSource: this.state.dataSource.cloneWithRows(response)
+        })
+      }
     }
   },
 
   onChecked(rowId) {
-    let newSource = Store.surveys.slice();
-    let oldItem = Store.surveys[rowId];
-    oldItem.accepted = !oldItem.accepted;
-    newSource[rowId] = Object.assign({}, oldItem);
-    this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(newSource),
-    });
+    // TODO the checked state should be set when a row is swipped
+    return;
   },
 
   onPress(item) {
@@ -71,7 +69,6 @@ const SurveyListPage = React.createClass ({
     if (error) {
       console.warn(error)
     } else {
-      console.log('selectForm')
       this.props.navigator.push({
         name: 'form',
         form: forms[0],
@@ -88,7 +85,7 @@ const SurveyListPage = React.createClass ({
   },
 
   render() {
-    return ( 
+    return (
       <ListView dataSource = { this.state.dataSource }
         renderRow = { this.renderItem }
         contentContainerStyle = { [Styles.container.default, Styles.survey.list] }
