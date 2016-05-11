@@ -1,5 +1,6 @@
 const Color = {
   primary: '#202A44',
+  secondary: '#95989A',
 
   faded: '#CCC',
 

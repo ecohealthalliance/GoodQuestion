@@ -41,7 +41,7 @@ const FormStyles = StyleSheet.create({
     borderRadius: 5,
   },
   roundButton: {
-    backgroundColor: Color.primary,
+    backgroundColor: Color.secondary,
     alignSelf: 'auto',
     borderRadius: 100,
     borderWidth: 0,

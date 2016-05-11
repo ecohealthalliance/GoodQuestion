@@ -32,6 +32,10 @@ const QuestionStyles = StyleSheet.create({
   text: {
     marginTop: 5,
     marginBottom: 15,
+  },
+  smallInput: {
+    marginVertical: 30,
+    marginHorizontal: 5,
   }
 })
 

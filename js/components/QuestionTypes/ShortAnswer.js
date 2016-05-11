@@ -17,11 +17,13 @@ const ShortAnswer = React.createClass ({
       <View style={Styles.question.block}>
         <Text style={Styles.question.header}>Question #1</Text>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.question.get('text')}</Text>
-        <TextInput
-          style={{height: 40, borderColor: 'gray', borderWidth: 1}}
-          onChangeText={this.props.onChange}
-          value={this.props.value}
-        />
+        <View style={Styles.question.smallInput}>
+          <TextInput
+            style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+            onChangeText={this.props.onChange}
+            value={this.props.value}
+          />
+        </View>
       </View>
     )
   }
