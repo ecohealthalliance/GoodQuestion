@@ -86,8 +86,7 @@ const SharedNavigator = React.createClass ({
     this.setState(state);
   },
   routeMapper(route, nav) {
-    // we secure all routes
-    if (!this.state.isAuthenticated) {
+    if (!this.state.isAuthenticated && !route.insecure) {
       return <LoginPage navigator={nav} setTitle={this.setTitle} setAuthenticated={this.setAuthenticated} />
     }
     switch (route.name) {

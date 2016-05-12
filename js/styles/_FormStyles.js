@@ -36,6 +36,9 @@ const FormStyles = StyleSheet.create({
   primaryButton: {
     backgroundColor: Color.primary,
   },
+  primaryButton: {
+    backgroundColor: Color.success,
+  },
   wideButton: {
     marginHorizontal: 0,
     alignSelf: 'stretch',
@@ -49,6 +52,9 @@ const FormStyles = StyleSheet.create({
   },
   primaryButtonText: {
     color: Color.background2,
+  },
+  successButtonText: {
+    color: Color.background3,
   },
   errorText: {
     paddingLeft: 5,

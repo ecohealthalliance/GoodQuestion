@@ -3,10 +3,12 @@ import React, {
   Alert,
   StyleSheet,
   TouchableHighlight,
+  TouchableWithoutFeedback,
   Text,
   TextInput,
   View,
   TouchableOpacity,
+  Image,
 } from 'react-native'
 
 import Styles from '../styles/Styles'
@@ -22,13 +24,46 @@ import async from 'async'
 import he from 'he' // HTML entity encode and decode
 
 const LoginPage = React.createClass ({
-  title: 'Login to GoodQuestion',
+  title: ' ',
+
+  styles: {
+    loginHeader: {
+      flex: 1,
+      height: 125,
+      alignItems:'center',
+      justifyContent:'center',
+      backgroundColor: Color.background1,
+      paddingBottom: 25,
+      marginBottom: 25,
+    },
+    loginFooter: {
+      flex: 1,
+      height: 75,
+      backgroundColor: '#F0F0F0',
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: 0,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    registerText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: '#4E546A',
+    },
+    logo: {
+      width: 240,
+      resizeMode: 'contain',
+    },
+  },
+
   mixins: [
     JoiMixins,
   ],
 
   schema: {
-    username: Joi.string().min(3).required().label('Username'),
+    email: Joi.string().min(3).required().label('Email'),
     password: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().label('Password'),
   },
 
@@ -38,14 +73,18 @@ const LoginPage = React.createClass ({
 
   getInitialState() {
     return {
-      username: '',
-      password: '',
+      email: '',
+      email: '',
       button_text: 'Login',
       errors: [],
     }
   },
 
   /* Methods */
+  handleRegistration() {
+    this.props.navigator.push({name:'registration1', insecure: true})
+  },
+
   handleVerifyLogin() {
     let self = this;
 
@@ -60,13 +99,13 @@ const LoginPage = React.createClass ({
     state.button_text = 'Verifying...';
     this.setState(state);
 
-    authenticate(state.username, state.password, function(err, user) {
+    authenticate(state.email, state.password, function(err, user) {
       if (err) {
         // reset button_text state
         state.button_text = 'Login';
         self.setState(state);
         // show a message
-        Alert.alert(err, 'The username and password combination is invalid.')
+        Alert.alert(err, 'The email and password combination is invalid.')
         return;
       }
       // the user is authenticated, setAuthenticated to true
@@ -100,38 +139,50 @@ const LoginPage = React.createClass ({
   /* Render */
   render() {
     return (
-      <View style={Styles.container.default}>
-        <View style={Styles.form.inputGroup}>
-          <Text style={Styles.form.errorText}>
-            {this.decodeText(this.state.errors.username)}
-          </Text>
-          <TextInput
-            style={Styles.form.input}
-            onChangeText={this.textFieldChangeHandler.bind(this, 'username')}
-            value={this.state.username}
-            autoCapitalize='none'
-            autoCorrect={false}
-            placeholder="Username"
-          />
+      <View style={{flex: 1}}>
+        <View>
+          <View style={this.styles.loginHeader}>
+            <Image source={require('../images/logo_stacked.png')} style={this.styles.logo}></Image>
+          </View>
+          <View style={Styles.form.inputGroup}>
+            <Text style={Styles.form.errorText}>
+              {this.decodeText(this.state.errors.email)}
+            </Text>
+            <TextInput
+              style={Styles.form.input}
+              onChangeText={this.textFieldChangeHandler.bind(this, 'email')}
+              value={this.state.email}
+              autoCapitalize='none'
+              autoCorrect={false}
+              placeholder="Email"
+            />
+          </View>
+          <View style={Styles.form.inputGroup}>
+            <Text style={Styles.form.errorText}>
+              {this.decodeText(this.state.errors.password)}
+            </Text>
+            <TextInput
+              secureTextEntry={true}
+              style={Styles.form.input}
+              onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
+              value={this.state.password}
+              autoCapitalize='none'
+              autoCorrect={false}
+              placeholder="Password"
+            />
+          </View>
+
+          <View style={Styles.form.bottomForm}>
+            <Button action={this.handleVerifyLogin} color='success' wide>
+              {this.state.button_text}
+            </Button>
+          </View>
         </View>
-        <View style={Styles.form.inputGroup}>
-          <Text style={Styles.form.errorText}>
-            {this.decodeText(this.state.errors.password)}
-          </Text>
-          <TextInput
-            secureTextEntry={true}
-            style={Styles.form.input}
-            onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
-            value={this.state.password}
-            autoCapitalize='none'
-            autoCorrect={false}
-            placeholder="Password"
-          />
-        </View>
-        <View style={Styles.form.bottomForm}>
-          <Button action={this.handleVerifyLogin} color='primary' wide>
-            {this.state.button_text}
-          </Button>
+
+        <View style={this.styles.loginFooter}>
+          <TouchableWithoutFeedback onPress={this.handleRegistration}>
+            <Text style={this.styles.registerText}> Register an Account </Text>
+          </TouchableWithoutFeedback>
         </View>
       </View>
     )

@@ -28,6 +28,10 @@ const Button = React.createClass ({
       buttonStyle.push(Styles.form.primaryButton)
       buttonTextStyle.push(Styles.form.primaryButtonText)
     }
+    if (this.props.color === 'success') {
+      buttonStyle.push(Styles.form.successButton)
+      buttonTextStyle.push(Styles.form.successButtonText)
+    }
 
     return (
       <TouchableWithoutFeedback onPress={this.handleTouch}>

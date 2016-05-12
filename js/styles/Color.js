@@ -1,5 +1,6 @@
 const Color = {
   primary: '#202A44',
+  success: '#A0D782',
 
   faded: '#CCC',
 
@@ -8,6 +9,7 @@ const Color = {
 
   background1: '#9AD1DC',
   background2: '#FFFFFF',
+  background3: '#1F2A45',
 
   fadedRed: '#FEABAB',
   fadedGreen: '#BDE3A7',
