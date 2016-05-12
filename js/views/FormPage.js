@@ -23,6 +23,7 @@ import DateQuestionAndroid from '../components/QuestionTypes/DateQuestionAndroid
 import DatetimeQuestionAndroid from '../components/QuestionTypes/DatetimeQuestionAndroid'
 import TimeQuestionAndroid from '../components/QuestionTypes/TimeQuestionAndroid'
 import Button from 'apsl-react-native-button';
+import Loading from '../components/Loading';
 
 import { loadQuestions } from '../api/Questions'
 
@@ -142,6 +143,7 @@ const FormPage = React.createClass ({
     if (this.state.loading) {
       return (
         <View>
+          <Loading />
           <Text style={Styles.type.h1}>Loading questions...</Text>
         </View>
       )

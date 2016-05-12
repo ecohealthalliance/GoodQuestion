@@ -49,7 +49,7 @@ const NumberQuestion = React.createClass ({
       if (value < this.props.properties.min) value = this.props.properties.min
       if (value > this.props.properties.max) value = this.props.properties.max
       this.setState({
-        valueText: String(value),
+        valueText: valueText,
         value: value,
       })
       this.props.onChange(value)
