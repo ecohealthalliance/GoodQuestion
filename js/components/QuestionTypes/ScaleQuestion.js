@@ -77,6 +77,7 @@ const ScaleQuestion = React.createClass ({
           maximumValue={properties.max}
           step={1}
           onValueChange={this.handleChange}
+          style={{marginHorizontal: 20}}
           />
         <View style={Styles.question.notes}>
           {

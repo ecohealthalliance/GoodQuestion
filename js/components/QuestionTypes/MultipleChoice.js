@@ -33,9 +33,7 @@ const MultipleChoice = React.createClass ({
 
   /* Methods */
   handleChange(value) {
-    this.setState({
-      value: value
-    })
+    this.setState({ value: value })
     this.props.onChange(value)
   },
 
@@ -51,10 +49,7 @@ const MultipleChoice = React.createClass ({
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         <Picker
           selectedValue={this.state.value}
-          onValueChange={(value) =>{
-            this.setState({value: value});
-            this.props.onChange(value);
-          }}>
+          onValueChange={this.handleChange}>
           {this.props.properties.choices.map((choice, idx)=>{
             return <Picker.Item key={idx} label={choice} value={choice} />
           })}

@@ -51,9 +51,9 @@ const ShortAnswer = React.createClass ({
         <View style={Styles.question.smallInput}>
           <TextInput
             style={{height: 40, borderColor: Color.background1, borderWidth: 1, paddingLeft: 10}}
-            onChangeText={this.props.onChange}
+            onChangeText={this.handleChange}
             placeholder="Tap to type..."
-            value={this.props.value}
+            value={this.state.value}
           />
         </View>
       </View>

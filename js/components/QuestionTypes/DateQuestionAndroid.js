@@ -17,19 +17,24 @@ const DateQuestionAndroid = React.createClass ({
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
     index: React.PropTypes.number.isRequired,
-    value: React.PropTypes.object,
+    value: React.PropTypes.oneOfType([
+      React.PropTypes.string,
+      React.PropTypes.instanceOf(Date)
+    ]),
     onChange: React.PropTypes.func.isRequired,
   },
 
-  getDefaultProps: function () {
-    return {
-      value: new Date(),
-    }
-  },
-
   getInitialState: function() {
-    return {
-      value: this.checkDate(this.props.value),
+    if (!this.props.value) {
+      return {
+        value: new Date(),
+      }
+    } else {
+      const date = this.checkDate(this.props.value)
+      return {
+        value: date,
+        valueText: moment(date).format('MMMM DD, YYYY'),
+      }
     }
   },
 

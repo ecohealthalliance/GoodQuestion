@@ -42,9 +42,9 @@ const Checkboxes = React.createClass ({
   /* Methods */
   handleChange(value) {
     this.setState({
-      value: value
+      selectedChoices: value
     })
-    this.props.onChange(value)
+    this.props.onChange(Array.from(value))
   },
 
   /* Render */
@@ -73,10 +73,7 @@ const Checkboxes = React.createClass ({
                   } else {
                     selectedChoices.delete(choice)
                   }
-                  this.setState({
-                    selectedChoices: selectedChoices
-                  })
-                  this.props.onChange(Array.from(this.state.selectedChoices))
+                  this.handleChange(selectedChoices)
                 }}
               />
             </View>

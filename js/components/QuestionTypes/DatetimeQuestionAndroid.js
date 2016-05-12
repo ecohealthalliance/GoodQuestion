@@ -25,21 +25,22 @@ const DatetimeQuestionAndroid = React.createClass ({
     ]),
   },
 
-  getDefaultProps: function () {
-    return {
-      value: new Date(),
-      date: new Date(),
-      hour: 0,
-      minute: 0,
-    }
-  },
-
   getInitialState: function() {
-    return {
-      value: this.checkDate(this.props.value),
-      date: this.props.date,
-      hour: this.props.value.hour,
-      minute: this.props.value.minute,
+    if (!this.props.value) {
+      return {
+        value: new Date(),
+        date: new Date(),
+      }
+    } else {
+      const date = this.checkDate(this.props.value)
+      return {
+        value: date,
+        date: date,
+        hour: date.getHours(),
+        minute: date.getMinutes(),
+        dateText: moment(date).format('MMMM DD, YYYY'),
+        timeText: moment(date.getHours()+':'+date.getMinutes(), 'H:m', true).format('hh:mm A'),
+      }
     }
   },
 
