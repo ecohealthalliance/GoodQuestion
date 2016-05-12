@@ -21,14 +21,19 @@ const Button = React.createClass ({
 
   /* Render */
   render() {
-    const buttonStyle = [Styles.form.button]
-    const buttonTextStyle = [Styles.form.buttonText]
+    let buttonStyle = [Styles.form.button]
+    let buttonTextStyle = [Styles.form.buttonText]
+
+    // Square or Round
+    if (this.props.round) buttonStyle = [Styles.form.roundButton]
+
+    // Optional Rendering options
     if (this.props.wide) buttonStyle.push(Styles.form.wideButton)
     if (this.props.color === 'primary') {
       buttonStyle.push(Styles.form.primaryButton)
       buttonTextStyle.push(Styles.form.primaryButtonText)
     }
-
+    
     return (
       <TouchableWithoutFeedback onPress={this.handleTouch}>
         <View style={buttonStyle}>

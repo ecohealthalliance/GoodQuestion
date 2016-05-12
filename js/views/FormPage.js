@@ -5,14 +5,23 @@ import React, {
   View,
   ScrollView,
   ListView,
-  AsyncStorage
+  AsyncStorage,
+  Platform,
 } from 'react-native'
+import _ from 'lodash'
 
 import Store from '../data/Store'
 import Styles from '../styles/Styles';
 import ShortAnswer from '../components/QuestionTypes/ShortAnswer';
 import Checkboxes from '../components/QuestionTypes/Checkboxes';
 import MultipleChoice from '../components/QuestionTypes/MultipleChoice';
+import ScaleQuestion from '../components/QuestionTypes/ScaleQuestion'
+import LongAnswerQuestion from '../components/QuestionTypes/LongAnswerQuestion'
+import NumberQuestion from '../components/QuestionTypes/NumberQuestion'
+import DateQuestionIOS from '../components/QuestionTypes/DateQuestionIOS'
+import DateQuestionAndroid from '../components/QuestionTypes/DateQuestionAndroid'
+import DatetimeQuestionAndroid from '../components/QuestionTypes/DatetimeQuestionAndroid'
+import TimeQuestionAndroid from '../components/QuestionTypes/TimeQuestionAndroid'
 import Button from 'apsl-react-native-button';
 
 import { loadQuestions } from '../api/Questions'
@@ -75,6 +84,23 @@ const FormPage = React.createClass ({
 
   renderQuestions() {
     return this.state.questions.map((question, index)=>{
+      let questionProps = {
+        key: question.id,
+        id: question.id,
+        value: this.state.answers[question.id],
+        onChange: (value)=> {
+          console.log(value)
+          this.setState({[question.id]: value})
+        },
+      }
+
+      if (question.attributes) {
+        questionProps = _.merge(questionProps, question.attributes)
+      } else {
+        console.warn('Error: Malformed question object: ' + question)
+        return null
+      }
+      
       switch (question.get('questionType')) {
         case 'shortAnswer': return (<ShortAnswer
           key={question.id}
@@ -86,11 +112,25 @@ const FormPage = React.createClass ({
           question={question}
           value={this.state.answers[question.id]}
           onChange={(value)=> this.setState({[question.id]: value})} />);
+
         case 'multipleChoice': return (<MultipleChoice
           key={question.id}
           question={question}
           value={this.state.answers[question.id]}
           onChange={(value)=> this.setState({[question.id]: value})} />);
+
+        case 'longAnswer': return <LongAnswerQuestion {...questionProps} />
+        case 'number': return <NumberQuestion {...questionProps} />
+        case 'scale': return <ScaleQuestion {...questionProps} />
+        case 'date':
+          return Platform.OS === 'ios' ?
+            <DateQuestionIOS {...questionProps} /> : 
+            <DateQuestionAndroid {...questionProps} />
+        case 'datetime':
+          return Platform.OS === 'ios' ?
+            <DateQuestionIOS {...questionProps} mode="datetime" /> : 
+            <DatetimeQuestionAndroid {...questionProps} />
+
         default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('questionType')}</Text>;
       }
     })
