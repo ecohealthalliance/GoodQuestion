@@ -15,18 +15,43 @@ let uncheckedComponent = (<Icon name='square-o' size={30} />);
 let checkedComponent = (<Icon name='check-square-o' size={30} />);
 
 const Checkboxes = React.createClass ({
-  getInitialState() {
+  propTypes: {
+    id: React.PropTypes.string.isRequired,
+    text: React.PropTypes.string.isRequired,
+    value: React.PropTypes.string,
+    onChange: React.PropTypes.func.isRequired,
+    properties: React.PropTypes.object.isRequired,
+  },
+
+  getDefaultProps: function () {
     return {
-      selectedChoices: this.props.value || []
+      value: '',
+      properties: [],
     };
   },
+
+  getInitialState: function() {
+    return {
+      selectedChoices: this.props.value || []
+    }
+  },
+
+  /* Methods */
+  handleChange(value) {
+    this.setState({
+      value: value
+    })
+    this.props.onChange(value)
+  },
+
+  /* Render */
   render() {
     let selectedChoices = new Set(this.state.selectedChoices);
     return (
       <View style={Styles.question.block}>
         <Text style={Styles.question.header}>Question #1</Text>
-        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.question.get('text')}</Text>
-        {this.props.question.get('properties').choices.map((choice, idx)=>{
+        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
+        {this.props.properties.choices.map((choice, idx)=>{
           return (<Checkbox
             label={choice}
             key={idx}

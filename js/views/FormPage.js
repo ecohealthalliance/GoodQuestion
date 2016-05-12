@@ -118,23 +118,9 @@ const FormPage = React.createClass ({
       }
       
       switch (question.get('questionType')) {
-        case 'shortAnswer': return (<ShortAnswer
-          key={question.id}
-          question={question}
-          value={this.state.answers[question.id]}
-          onChange={(value)=> this.setState({[question.id]: value})} />);
-        case 'checkboxes': return (<Checkboxes
-          key={question.id}
-          question={question}
-          value={this.state.answers[question.id]}
-          onChange={(value)=> this.setState({[question.id]: value})} />);
-
-        case 'multipleChoice': return (<MultipleChoice
-          key={question.id}
-          question={question}
-          value={this.state.answers[question.id]}
-          onChange={(value)=> this.setState({[question.id]: value})} />);
-
+        case 'shortAnswer': return <ShortAnswer {...questionProps} />
+        case 'checkboxes': return <Checkboxes {...questionProps} />
+        case 'multipleChoice': return <MultipleChoice {...questionProps} />
         case 'longAnswer': return <LongAnswerQuestion {...questionProps} />
         case 'number': return <NumberQuestion {...questionProps} />
         case 'scale': return <ScaleQuestion {...questionProps} />
