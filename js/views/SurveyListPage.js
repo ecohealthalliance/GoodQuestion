@@ -32,33 +32,39 @@ const SurveyListPage = React.createClass ({
     this.props.setTitle(this.title);
     this.setState({
       dataSource: this.state.dataSource.cloneWithRows(this.state.list),
-    })
-    
-    if (this.state.list.length === 0)
-      loadSurveyList({}, this.loadList)
+    });
+
+    if (this.state.list.length === 0) {
+      loadSurveyList({}, this.loadList);
+    }
+  },
+
+  componentWillUnmount() {
+    // Cancel callbacks
+    this.cancelCallbacks = true
   },
 
   /* Methods */
   loadList(error, response){
+    // Prevent this callback from working if the component has unmounted.
+    if (this.cancelCallbacks) return
+
     if (error) {
       console.warn(error)
     } else {
-      this.setState({
-        isLoading: false,
-        list: response,
-        dataSource: this.state.dataSource.cloneWithRows(response)
-      })
+      if (this.isMounted()) {
+        this.setState({
+          isLoading: false,
+          list: response,
+          dataSource: this.state.dataSource.cloneWithRows(response)
+        })
+      }
     }
   },
 
   onChecked(rowId) {
-    let newSource = Store.surveys.slice();
-    let oldItem = Store.surveys[rowId];
-    oldItem.accepted = !oldItem.accepted;
-    newSource[rowId] = Object.assign({}, oldItem);
-    this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(newSource),
-    });
+    // TODO the checked state should be set when a row is swipped
+    return;
   },
 
   onPress(item) {
@@ -67,11 +73,14 @@ const SurveyListPage = React.createClass ({
   },
 
   selectForm(error, forms, survey) {
+    if (this.cancelCallbacks) return
+
     // TODO Support multiple forms
     if (error) {
       console.warn(error)
+    } else if (!forms || !forms[0]) {
+      alert('Error: Unable to fetch the Forms associated with this Survey.')
     } else {
-      console.log('selectForm')
       this.props.navigator.push({
         name: 'form',
         form: forms[0],
@@ -88,7 +97,7 @@ const SurveyListPage = React.createClass ({
   },
 
   render() {
-    return ( 
+    return (
       <ListView dataSource = { this.state.dataSource }
         renderRow = { this.renderItem }
         contentContainerStyle = { [Styles.container.default, Styles.survey.list] }

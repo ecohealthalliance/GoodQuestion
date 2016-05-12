@@ -27,7 +27,7 @@ const DateQuestionAndroid = React.createClass ({
 
   getInitialState: function() {
     return {
-      value: this.props.value,
+      value: this.checkDate(this.props.value),
     }
   },
 
@@ -48,6 +48,17 @@ const DateQuestionAndroid = React.createClass ({
     } catch ({code, message}) {
       console.warn('Date Picker Error: ' + code + ' ' + message)
     }
+  },
+
+  checkDate(value) {
+    if (typeof value === 'string') {
+      try {
+        value = new Date(value);
+      } catch(e) {
+        console.error('could not parse date: ' + value);
+      }
+    }
+    return value;
   },
 
   /* Render */
