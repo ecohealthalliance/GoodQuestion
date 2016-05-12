@@ -16,6 +16,7 @@ const NumberQuestion = React.createClass ({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
+    index: React.PropTypes.number.isRequired,
     value: React.PropTypes.number,
     onChange: React.PropTypes.func.isRequired,
     properties: React.PropTypes.shape({
@@ -85,12 +86,12 @@ const NumberQuestion = React.createClass ({
     const { properties } = this.props
     return (
       <View style={Styles.question.block}>
-        <Text style={Styles.question.header}>Question #1</Text>
-        {/*<ViewText 
-          style={{}}
-          textStyle={[Styles.type.h3, Styles.question.text]}>
-            {this.props.text}
-        </ViewText>*/}
+        <ViewText 
+          style={Styles.question.header}
+          textStyle={Styles.question.headerText}>
+            Question #{this.props.index}
+        </ViewText>
+        <Text style={[Styles.type.h3, Styles.question.text]}> {this.props.text} </Text>
         <View style={[Styles.form.inlineForm, Styles.question.smallInput]}>
           <Button action={this.decreaseCount} primary round>
             <Icon name="minus" size={20} style={{color: '#FFFFFF'}} />

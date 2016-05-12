@@ -4,30 +4,33 @@ import React, {
   TextInput,
   View,
 } from 'react-native'
-
 import Checkbox from 'react-native-checkbox'
-
 import Styles from '../../styles/Styles'
-
+import Color from '../../styles/Color'
+import ViewText from '../ViewText'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
-let uncheckedComponent = (<Icon name='square-o' size={30} />);
-let checkedComponent = (<Icon name='check-square-o' size={30} />);
+let uncheckedComponent = <Icon name='circle-o' size={30} color={Color.primary} />
+let checkedComponent = <Icon name='check-circle' size={30} color={Color.primary} />
 
 const Checkboxes = React.createClass ({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
-    value: React.PropTypes.string,
+    index: React.PropTypes.number.isRequired,
     onChange: React.PropTypes.func.isRequired,
     properties: React.PropTypes.object.isRequired,
+    value: React.PropTypes.oneOfType([
+      React.PropTypes.string,
+      React.PropTypes.array,
+    ]),
   },
 
   getDefaultProps: function () {
     return {
       value: '',
       properties: [],
-    };
+    }
   },
 
   getInitialState: function() {
@@ -46,31 +49,38 @@ const Checkboxes = React.createClass ({
 
   /* Render */
   render() {
-    let selectedChoices = new Set(this.state.selectedChoices);
+    let selectedChoices = new Set(this.state.selectedChoices)
     return (
       <View style={Styles.question.block}>
-        <Text style={Styles.question.header}>Question #1</Text>
+        <ViewText 
+          style={Styles.question.header}
+          textStyle={Styles.question.headerText}>
+            Question #{this.props.index}
+        </ViewText>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         {this.props.properties.choices.map((choice, idx)=>{
-          return (<Checkbox
-            label={choice}
-            key={idx}
-            labelStyle={{height:34, textAlignVertical: "center"}}
-            checked={selectedChoices.has(choice)}
-            uncheckedComponent={uncheckedComponent}
-            checkedComponent={checkedComponent}
-            onChange={(checked)=>{
-              if (checked) {
-                selectedChoices.add(choice);
-              } else {
-                selectedChoices.delete(choice);
-              }
-              this.setState({
-                selectedChoices: selectedChoices
-              });
-              this.props.onChange(Array.from(this.state.selectedChoices));
-            }}
-          />);
+          return (
+            <View style={{marginHorizontal: 15, marginVertical:5}} key={idx}>
+              <Checkbox
+                label={choice}
+                labelStyle={{height:34, paddingTop: 9, textAlignVertical: "center", color: Color.primary}}
+                checked={selectedChoices.has(choice)}
+                uncheckedComponent={uncheckedComponent}
+                checkedComponent={checkedComponent}
+                onChange={(checked)=>{
+                  if (checked) {
+                    selectedChoices.add(choice)
+                  } else {
+                    selectedChoices.delete(choice)
+                  }
+                  this.setState({
+                    selectedChoices: selectedChoices
+                  })
+                  this.props.onChange(Array.from(this.state.selectedChoices))
+                }}
+              />
+            </View>
+          )
         })}
       </View>
     )

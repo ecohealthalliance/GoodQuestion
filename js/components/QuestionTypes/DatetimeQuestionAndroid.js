@@ -9,6 +9,7 @@ import React, {
   TouchableWithoutFeedback,
 } from 'react-native'
 import Styles from '../../styles/Styles'
+import ViewText from '../ViewText'
 import Button from 'apsl-react-native-button'
 import moment from 'moment'
 
@@ -16,6 +17,7 @@ const DatetimeQuestionAndroid = React.createClass ({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
+    index: React.PropTypes.number.isRequired,
     onChange: React.PropTypes.func.isRequired,
     value: React.PropTypes.oneOfType([
       React.PropTypes.string,
@@ -117,7 +119,11 @@ const DatetimeQuestionAndroid = React.createClass ({
   render() {
     return (
       <View style={Styles.question.block}>
-        <Text style={Styles.question.header}>Question #1</Text>
+        <ViewText 
+          style={Styles.question.header}
+          textStyle={Styles.question.headerText}>
+            Question #{this.props.index}
+        </ViewText>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         <View>
           <Text style={Styles.type.h2}> {this.state.dateText ? this.state.dateText : '-'} </Text>

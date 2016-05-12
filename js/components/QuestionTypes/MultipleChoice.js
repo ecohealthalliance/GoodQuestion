@@ -12,6 +12,7 @@ const MultipleChoice = React.createClass ({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
+    index: React.PropTypes.number.isRequired,
     value: React.PropTypes.string,
     onChange: React.PropTypes.func.isRequired,
     properties: React.PropTypes.object.isRequired,
@@ -42,7 +43,7 @@ const MultipleChoice = React.createClass ({
   render() {
     return (
       <View style={Styles.question.block}>
-        <Text style={Styles.question.header}>Question #1</Text>
+        <Text style={Styles.question.header}>Question #{this.props.index}</Text>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         <Picker
           selectedValue={this.state.value}

@@ -7,10 +7,12 @@ import React, {
 
 import Styles from '../styles/Styles'
 
-const Button = React.createClass ({
-  propTypes: {
-    style: React.PropTypes.object,
-    textStyle: React.PropTypes.object,
+const ViewText = React.createClass ({
+  getDefaultProps() {
+    return {
+      style: {},
+      textStyle: {},
+    }
   },
 
   /* Render */
@@ -25,4 +27,4 @@ const Button = React.createClass ({
   }
 })
 
-module.exports = Button
+module.exports = ViewText

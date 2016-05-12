@@ -105,6 +105,7 @@ const FormPage = React.createClass ({
         key: question.id,
         id: question.id,
         value: this.state.answers[question.id],
+        index: index + 1,
         onChange: (value)=> {
           console.log(value)
           this.setState({[question.id]: value})

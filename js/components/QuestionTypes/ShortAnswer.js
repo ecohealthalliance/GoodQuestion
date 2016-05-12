@@ -5,13 +5,15 @@ import React, {
   TextInput,
   View
 } from 'react-native'
-
 import Styles from '../../styles/Styles'
+import Color from '../../styles/Color'
+import ViewText from '../ViewText'
 
 const ShortAnswer = React.createClass ({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
+    index: React.PropTypes.number.isRequired,
     value: React.PropTypes.string,
     onChange: React.PropTypes.func.isRequired,
   },
@@ -40,12 +42,17 @@ const ShortAnswer = React.createClass ({
   render() {
     return (
       <View style={Styles.question.block}>
-        <Text style={Styles.question.header}>Question #1</Text>
+        <ViewText 
+          style={Styles.question.header}
+          textStyle={Styles.question.headerText}>
+            Question #{this.props.index}
+        </ViewText>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         <View style={Styles.question.smallInput}>
           <TextInput
-            style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+            style={{height: 40, borderColor: Color.background1, borderWidth: 1, paddingLeft: 10}}
             onChangeText={this.props.onChange}
+            placeholder="Tap to type..."
             value={this.props.value}
           />
         </View>

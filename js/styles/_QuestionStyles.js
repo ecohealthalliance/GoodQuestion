@@ -16,6 +16,7 @@ const QuestionStyles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
   },
+  
   header: {
     flex: 1,
     justifyContent: 'center',
@@ -24,9 +25,11 @@ const QuestionStyles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 15,
     paddingVertical: 10,
+    backgroundColor: Color.background1,
+  },
+  headerText: {
     color: Color.primary,
     fontSize: 24,
-    backgroundColor: Color.background1,
   },
 
   text: {
@@ -36,6 +39,9 @@ const QuestionStyles = StyleSheet.create({
   smallInput: {
     marginVertical: 30,
     marginHorizontal: 5,
+  },
+  notes: {
+    marginVertical: 15,
   }
 })
 

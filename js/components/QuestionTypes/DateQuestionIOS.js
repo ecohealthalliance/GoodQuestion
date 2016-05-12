@@ -7,11 +7,13 @@ import React, {
   DatePickerIOS,
 } from 'react-native'
 import Styles from '../../styles/Styles'
+import ViewText from '../ViewText'
 
 const DateQuestionIOS = React.createClass ({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
+    index: React.PropTypes.number.isRequired,
     value: React.PropTypes.object,
     mode: React.PropTypes.string,
     onChange: React.PropTypes.func.isRequired,
@@ -59,7 +61,11 @@ const DateQuestionIOS = React.createClass ({
 
     return (
       <View style={Styles.question.block}>
-        <Text style={Styles.question.header}>Question #1</Text>
+        <ViewText 
+          style={Styles.question.header}
+          textStyle={Styles.question.headerText}>
+            Question #{this.props.index}
+        </ViewText>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         <Text>Notice: Date Picker for iOS is currently unstable.</Text>
         <DatePickerIOS 
