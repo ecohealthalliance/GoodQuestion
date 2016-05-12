@@ -47,8 +47,8 @@ const NumberQuestion = React.createClass ({
   // Note: The iOS TextInput display does not work well with the Number data type.
   // It must be converted to a String to avoid rendering problems.
   handleChange(valueText) {
+    const newValueLength = valueText.length
     let value = Number(valueText)
-    console.log(value + ' : ' + valueText)
     if (!isNaN(value)) {
       if (value <= this.props.properties.min) {
         value = this.props.properties.min
@@ -57,11 +57,16 @@ const NumberQuestion = React.createClass ({
         value = this.props.properties.max
         valueText = value
       }
+
+      if (newValueLength === 0) {
+        valueText = ''
+      } else {
+        this.props.onChange(value)
+      }
       this.setState({
         valueText: String(valueText),
         value: value,
       })
-      this.props.onChange(value)
     } else {
       console.warn('Error: ' + valueText + ' is not a valid number.')
     }

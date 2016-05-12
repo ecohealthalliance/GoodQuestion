@@ -60,7 +60,6 @@ const ScaleQuestion = React.createClass ({
   },
 
   render() {
-    console.log(this.props)
     const { properties } = this.props
     return (
       <View style={Styles.question.block}>
