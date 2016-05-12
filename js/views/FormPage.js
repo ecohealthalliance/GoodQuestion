@@ -23,9 +23,10 @@ import DateQuestionAndroid from '../components/QuestionTypes/DateQuestionAndroid
 import DatetimeQuestionAndroid from '../components/QuestionTypes/DatetimeQuestionAndroid'
 import TimeQuestionAndroid from '../components/QuestionTypes/TimeQuestionAndroid'
 import Button from 'apsl-react-native-button';
+import Submission from '../models/Submission';
 
 import { loadQuestions } from '../api/Questions'
-
+import Realm from 'realm';
 
 const FormPage = React.createClass ({
   propTypes: {
@@ -34,6 +35,8 @@ const FormPage = React.createClass ({
   },
 
   getInitialState() {
+    this.realm = new Realm({schema: [Submission]});
+    console.log(this.realm);
     return {
       questions: [],
       answers: {},
@@ -43,13 +46,15 @@ const FormPage = React.createClass ({
 
   componentWillMount() {
     this.props.setTitle("Survey: " + this.props.survey.get('title'));
-    let id = this.genSubmissionKey();
-    AsyncStorage.getItem(id, (err, res) => {
-      if (res) {
-        let submission = JSON.parse(res);
-        this.setState({answers: submission.answers})
-      }
-    });
+    console.log(this.realm);
+    let submissions = this.realm
+      .objects('Submission')
+      .filtered(`formId = "${this.props.form.id}"`)
+      .sorted('created');
+    console.log(submissions);
+    if(submissions.length > 0) {
+      this.setState({answers: JSON.parse(submissions.slice(-1)[0].answers)})
+    }
     loadQuestions(this.props.form, this.setQuestions)
   },
 
@@ -59,9 +64,6 @@ const FormPage = React.createClass ({
   },
 
   /* Methods */
-  genSubmissionKey() {
-    return "submission:" + this.props.survey.id + ":" + this.props.form.id;
-  },
 
   setQuestions(error, response) {
     // Prevent this callback from working if the component has unmounted.
@@ -82,18 +84,18 @@ const FormPage = React.createClass ({
   },
 
   submit() {
-    let id = this.genSubmissionKey();
-    // TODO Get geolocation
-    AsyncStorage.setItem(id, JSON.stringify({
-      id: id,
-      formId: this.props.form.id,
-      date: new Date(),
-      answers: this.state.answers,
-    })).then(()=>{
-      this.props.navigator.push({name: 'surveyList'});
-    }).catch((error)=>{
-      console.error(error);
+    // // TODO Get geolocation
+    let realm = this.realm;
+    let answers = this.state.answers;
+    let formId = this.props.form.id;
+    realm.write(() => {
+      let submission = realm.create('Submission', {
+        formId: formId,
+        created: new Date(),
+        answers: JSON.stringify(answers),
+      });
     });
+    this.props.navigator.push({name: 'surveyList'});
   },
 
   setAnswer(questionId, value) {
