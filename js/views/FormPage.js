@@ -36,7 +36,8 @@ const FormPage = React.createClass ({
   getInitialState() {
     return {
       questions: [],
-      answers: {}
+      answers: {},
+      loading: true,
     }
   },
 
@@ -52,17 +53,30 @@ const FormPage = React.createClass ({
     loadQuestions(this.props.form, this.setQuestions)
   },
 
+  componentWillUnmount() {
+    // Cancel callbacks
+    this.cancelCallbacks = true
+  },
+
   /* Methods */
   genSubmissionKey() {
     return "submission:" + this.props.survey.id + ":" + this.props.form.id;
   },
 
   setQuestions(error, response) {
+    // Prevent this callback from working if the component has unmounted.
+    if (this.cancelCallbacks) return
+
+    // Render the questions passed by the response object.
     if (error) {
       console.warn(error)
+    } else if (!response || !response[0]){
+      alert('Error: Unable to fetch the Questions associated with this Survey\'s Form.')
+      this.props.navigator.pop()
     } else {
       this.setState({
-        questions: response
+        questions: response,
+        loading: false,
       })
     }
   },
@@ -139,12 +153,20 @@ const FormPage = React.createClass ({
   },
 
   render() {
-    return (
-      <ScrollView style={Styles.container.form}>
-        {this.renderQuestions()}
-        <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
-      </ScrollView>
-    )
+    if (this.state.loading) {
+      return (
+        <View>
+          <Text style={Styles.type.h1}>Loading questions...</Text>
+        </View>
+      )
+    } else {
+      return (
+        <ScrollView style={Styles.container.form}>
+          {this.renderQuestions()}
+          <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
+        </ScrollView>
+      )
+    }
   }
 })
 
