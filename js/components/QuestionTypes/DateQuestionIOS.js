@@ -14,7 +14,10 @@ const DateQuestionIOS = React.createClass ({
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
     index: React.PropTypes.number.isRequired,
-    value: React.PropTypes.object,
+    value: React.PropTypes.oneOfType([
+      React.PropTypes.string,
+      React.PropTypes.instanceOf(Date)
+    ]),
     mode: React.PropTypes.string,
     onChange: React.PropTypes.func.isRequired,
   },
