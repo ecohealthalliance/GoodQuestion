@@ -73,6 +73,7 @@ const DateQuestionIOS = React.createClass ({
           timeZoneOffsetInMinutes={this.props.timeZoneOffset}
           onDateChange={this.handleChange}
           date={this.checkDate(this.state.value)}
+          style={{marginLeft: -9}}
           />
       </View>
     )
