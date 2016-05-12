@@ -5,8 +5,8 @@ import React, {
   Picker,
   View
 } from 'react-native'
-
 import Styles from '../../styles/Styles'
+import ViewText from '../ViewText'
 
 const MultipleChoice = React.createClass ({
   propTypes: {
@@ -43,7 +43,11 @@ const MultipleChoice = React.createClass ({
   render() {
     return (
       <View style={Styles.question.block}>
-        <Text style={Styles.question.header}>Question #{this.props.index}</Text>
+        <ViewText 
+          style={Styles.question.header}
+          textStyle={Styles.question.headerText}>
+            Question #{this.props.index}
+        </ViewText>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         <Picker
           selectedValue={this.state.value}

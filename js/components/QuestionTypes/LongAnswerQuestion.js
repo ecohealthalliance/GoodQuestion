@@ -48,26 +48,35 @@ const LongAnswerQuestion = React.createClass ({
             Question #{this.props.index}
         </ViewText>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
-        <TextInput
-          style={inputStyle}
-          onChangeText={this.handleChange}
-          numberOfLines={7}
-          multiline={true}
-          placeholder="Tap to type..."
-          value={this.state.value}
-        />
+        <View style={wrapperStyle}>
+          <TextInput
+            style={inputStyle}
+            onChangeText={this.handleChange}
+            numberOfLines={7}
+            multiline={true}
+            placeholder="Tap to type..."
+            underlineColorAndroid="transparent"
+            value={this.state.value}
+          />
+        </View>
       </View>
     )
   }
 })
 
-const inputStyle = {
-  height: 180,
+const wrapperStyle = {
   borderColor: Color.background1,
-  borderTopWidth: 1, 
-  padding: 10,
+  borderTopWidth: 1,
   marginHorizontal: -10,
   marginBottom: -10,
+  padding: 0,
+}
+
+const inputStyle = {
+  height: 180,
+  borderWidth: 0, 
+  paddingHorizontal: 15,
+  paddingVertical: 10,
   fontSize: 14,
 }
 

@@ -105,7 +105,7 @@ const DatetimeQuestionAndroid = React.createClass ({
   /* Render */
   renderButtons() {
     return (
-      <View style={Styles.form.inlineForm}>
+      <View style={[Styles.form.inlineForm, {marginTop: 30, marginHorizontal: 20}]}>
         <Button onPress={this.showDatePicker} style={Styles.form.doubleButtonLeft}>
           {this.state.hasDate ? 'Update Date' : 'Select Date'}
         </Button>
@@ -126,8 +126,8 @@ const DatetimeQuestionAndroid = React.createClass ({
         </ViewText>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         <View>
-          <Text style={Styles.type.h2}> {this.state.dateText ? this.state.dateText : '-'} </Text>
-          <Text style={Styles.type.h2}> {this.state.timeText ? this.state.timeText : '-'} </Text>
+          <Text style={[Styles.type.h1, {marginVertical: 5, textAlign: 'center'}]}> {this.state.dateText ? this.state.dateText : '-'} </Text>
+          <Text style={[Styles.type.h1, {marginVertical: 5, textAlign: 'center'}]}> {this.state.timeText ? this.state.timeText : '-'} </Text>
           {this.renderButtons()}
         </View>
       </View>

@@ -73,19 +73,14 @@ const DateQuestionAndroid = React.createClass ({
             Question #{this.props.index}
         </ViewText>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
-        {
-          this.state.valueText ?
-          <View>
-            <Text style={Styles.type.h2}> {this.state.valueText} </Text>
-            <Button onPress={this.showPicker} style={Styles.form.submitBtn}>
-              Update
-            </Button>
-          </View>
-          :
-          <Button onPress={this.showPicker} style={Styles.form.submitBtn}>
-            Select Date
-          </Button>
-        }
+        <Text style={[Styles.type.h1, {marginVertical: 5, textAlign: 'center'}]}> {this.state.valueText ? this.state.valueText : '-'} </Text>
+        <View style={[{marginTop: 15}]}>
+          {
+            this.state.valueText ?
+            <Button onPress={this.showPicker} style={Styles.form.questionBtn}>Update</Button>
+            : <Button onPress={this.showPicker} style={Styles.form.questionBtn}>Select Date</Button>
+          }
+        </View>
       </View>
     )
   }
