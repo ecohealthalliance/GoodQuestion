@@ -5,17 +5,27 @@ import React, {
   View,
   ScrollView,
   ListView,
-  AsyncStorage
+  AsyncStorage,
+  Platform,
 } from 'react-native'
+import _ from 'lodash'
 
 import Store from '../data/Store'
 import Styles from '../styles/Styles';
 import ShortAnswer from '../components/QuestionTypes/ShortAnswer';
 import Checkboxes from '../components/QuestionTypes/Checkboxes';
 import MultipleChoice from '../components/QuestionTypes/MultipleChoice';
+import ScaleQuestion from '../components/QuestionTypes/ScaleQuestion'
+import LongAnswerQuestion from '../components/QuestionTypes/LongAnswerQuestion'
+import NumberQuestion from '../components/QuestionTypes/NumberQuestion'
+import DateQuestionIOS from '../components/QuestionTypes/DateQuestionIOS'
+import DateQuestionAndroid from '../components/QuestionTypes/DateQuestionAndroid'
+import DatetimeQuestionAndroid from '../components/QuestionTypes/DatetimeQuestionAndroid'
+import TimeQuestionAndroid from '../components/QuestionTypes/TimeQuestionAndroid'
 import Button from 'apsl-react-native-button';
 
 import { loadQuestions } from '../api/Questions'
+
 
 const FormPage = React.createClass ({
   propTypes: {
@@ -26,11 +36,13 @@ const FormPage = React.createClass ({
   getInitialState() {
     return {
       questions: [],
-      answers: {}
+      answers: {},
+      loading: true,
     }
   },
 
   componentWillMount() {
+    this.props.setTitle("Survey: " + this.props.survey.get('title'));
     let id = this.genSubmissionKey();
     AsyncStorage.getItem(id, (err, res) => {
       if (res) {
@@ -41,17 +53,30 @@ const FormPage = React.createClass ({
     loadQuestions(this.props.form, this.setQuestions)
   },
 
+  componentWillUnmount() {
+    // Cancel callbacks
+    this.cancelCallbacks = true
+  },
+
   /* Methods */
   genSubmissionKey() {
     return "submission:" + this.props.survey.id + ":" + this.props.form.id;
   },
 
   setQuestions(error, response) {
+    // Prevent this callback from working if the component has unmounted.
+    if (this.cancelCallbacks) return
+
+    // Render the questions passed by the response object.
     if (error) {
       console.warn(error)
+    } else if (!response || !response[0]){
+      alert('Error: Unable to fetch the Questions associated with this Survey\'s Form.')
+      this.props.navigator.pop()
     } else {
       this.setState({
-        questions: response
+        questions: response,
+        loading: false,
       })
     }
   },
@@ -82,6 +107,22 @@ const FormPage = React.createClass ({
 
   renderQuestions() {
     return this.state.questions.map((question, index)=>{
+      let questionProps = {
+        key: question.id,
+        id: question.id,
+        value: this.state.answers[question.id],
+        onChange: (value)=> {
+          this.setAnswer(question.id, value)
+        },
+      }
+
+      if (question.attributes) {
+        questionProps = _.merge(questionProps, question.attributes)
+      } else {
+        console.warn('Error: Malformed question object: ' + question)
+        return null
+      }
+      
       switch (question.get('questionType')) {
         case 'shortAnswer': return (<ShortAnswer
           key={question.id}
@@ -98,18 +139,37 @@ const FormPage = React.createClass ({
           question={question}
           value={this.state.answers[question.id]}
           onChange={(value)=> this.setAnswer(question.id, value)} />);
+        case 'longAnswer': return <LongAnswerQuestion {...questionProps} />
+        case 'number': return <NumberQuestion {...questionProps} />
+        case 'scale': return <ScaleQuestion {...questionProps} />
+        case 'date':
+          return Platform.OS === 'ios' ?
+            <DateQuestionIOS {...questionProps} /> : 
+            <DateQuestionAndroid {...questionProps} />
+        case 'datetime':
+          return Platform.OS === 'ios' ?
+            <DateQuestionIOS {...questionProps} mode="datetime" /> : 
+            <DatetimeQuestionAndroid {...questionProps} />
         default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('questionType')}</Text>;
       }
     })
   },
 
   render() {
-    return (
-      <ScrollView style={Styles.container.form}>
-        {this.renderQuestions()}
-        <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
-      </ScrollView>
-    )
+    if (this.state.loading) {
+      return (
+        <View>
+          <Text style={Styles.type.h1}>Loading questions...</Text>
+        </View>
+      )
+    } else {
+      return (
+        <ScrollView style={Styles.container.form}>
+          {this.renderQuestions()}
+          <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
+        </ScrollView>
+      )
+    }
   }
 })
 

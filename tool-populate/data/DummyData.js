@@ -81,6 +81,8 @@ const DummyData = {
       properties: {
         min: 1,
         max: 5,
+        minText: 'None at all.',
+        maxText: 'Very likely.',
       },
       order: 7,
     },
