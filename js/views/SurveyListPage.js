@@ -29,7 +29,6 @@ const SurveyListPage = React.createClass ({
   },
 
   componentDidMount() {
-    this.props.setTitle(this.title);
     this.setState({
       dataSource: this.state.dataSource.cloneWithRows(this.state.list),
     });
@@ -82,7 +81,8 @@ const SurveyListPage = React.createClass ({
       alert('Error: Unable to fetch the Forms associated with this Survey.')
     } else {
       this.props.navigator.push({
-        name: 'form',
+        path: 'form',
+        title: 'Survey: ' + survey.get('title'),
         form: forms[0],
         survey: survey
       })

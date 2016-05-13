@@ -24,11 +24,11 @@ const RegistrationPagePart1 = React.createClass ({
 
   /* Methods */
   goToTermsPage() {
-    this.props.navigator.push({name: 'terms'})
+    this.props.navigator.push({path: 'terms', title: 'Terms of Service'})
   },
 
   goToNextPage() {
-    this.props.navigator.push({name: 'registration2'})
+    this.props.navigator.push({path: 'registration2', title: 'Register'})
   },
 
   /* Render */

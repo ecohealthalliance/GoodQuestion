@@ -43,7 +43,6 @@ const FormPage = React.createClass ({
   },
 
   componentWillMount() {
-    this.props.setTitle("Survey: " + this.props.survey.get('title'));
     let id = this.genSubmissionKey();
     AsyncStorage.getItem(id, (err, res) => {
       if (res) {
@@ -91,7 +90,7 @@ const FormPage = React.createClass ({
       date: new Date(),
       answers: this.state.answers,
     })).then(()=>{
-      this.props.navigator.push({name: 'surveyList'});
+      this.props.navigator.push({path: 'surveyList', title: 'Surveys'});
     }).catch((error)=>{
       console.error(error);
     });
