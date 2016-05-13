@@ -29,10 +29,7 @@ import {isAuthenticated} from '../api/Account'
 import LoginPage from '../views/LoginPage'
 import SurveyListPage from '../views/SurveyListPage'
 import TermsOfServicePage from '../views/TermsOfServicePage'
-import RegistrationPagePart1 from '../views/RegistrationPagePart1'
-import RegistrationPagePart2 from '../views/RegistrationPagePart2'
-import RegistrationPagePart3 from '../views/RegistrationPagePart3'
-import RegistrationPagePart4 from '../views/RegistrationPagePart4'
+import RegistrationPages from '../views/RegistrationPages'
 import FormPage from '../views/FormPage'
 
 /* Configuration */
@@ -86,17 +83,21 @@ const SharedNavigator = React.createClass ({
     this.setState(state);
   },
   routeMapper(route, nav) {
-    if (!this.state.isAuthenticated && !route.insecure) {
-      return <LoginPage navigator={nav} setTitle={this.setTitle} setAuthenticated={this.setAuthenticated} />
+    let sharedProps = {
+      navigator: nav,
+      setTitle: this.setTitle,
+    };
+
+    if (!this.state.isAuthenticated && !route.unsecured) {
+      return <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />
     }
     switch (route.name) {
-      case 'login': return <LoginPage navigator={nav} setTitle={this.setTitle} setAuthenticated={this.setAuthenticated} />
-      case 'surveylist': return <SurveyListPage navigator={nav} setTitle={this.setTitle} />
-      case 'terms': return <TermsOfServicePage navigator={nav} setTitle={this.setTitle} />
-      case 'registration1': return <RegistrationPagePart1 navigator={nav} setTitle={this.setTitle} />
-      case 'registration2': return <RegistrationPagePart2 navigator={nav} setTitle={this.setTitle} />
-      case 'form': return <FormPage navigator={nav} form={route.form} survey={route.survey} />
-      default: return <SurveyListPage navigator={nav} setTitle={this.setTitle} />
+      case 'login': return <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />
+      case 'surveylist': return <SurveyListPage {...sharedProps} />
+      case 'terms': return <TermsOfServicePage {...sharedProps} />
+      case 'registration': return <RegistrationPages {...sharedProps} index={route.index} />
+      case 'form': return <FormPage {...sharedProps} form={route.form} survey={route.survey} />
+      default: return <SurveyListPage {...sharedProps} />
     }
   },
   render() {

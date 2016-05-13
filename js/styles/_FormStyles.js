@@ -26,7 +26,6 @@ const FormStyles = StyleSheet.create({
     paddingTop: 20,
     backgroundColor: Color.background2,
   },
-
   button: {
     backgroundColor: Color.positive,
     padding: 12,
@@ -36,7 +35,7 @@ const FormStyles = StyleSheet.create({
   primaryButton: {
     backgroundColor: Color.primary,
   },
-  primaryButton: {
+  successButton: {
     backgroundColor: Color.success,
   },
   wideButton: {

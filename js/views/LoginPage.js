@@ -19,9 +19,9 @@ import {authenticate} from '../api/Account'
 
 import Joi from '../lib/joi-browser.min'
 import JoiMixins from '../mixins/joi-mixins'
+import he from 'he' // HTML entity encode and decode
 
 import async from 'async'
-import he from 'he' // HTML entity encode and decode
 
 const LoginPage = React.createClass ({
   title: ' ',
@@ -63,7 +63,7 @@ const LoginPage = React.createClass ({
   ],
 
   schema: {
-    email: Joi.string().min(3).required().label('Email'),
+    email: Joi.string().email().required().label('Email'),
     password: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().label('Password'),
   },
 
@@ -74,7 +74,7 @@ const LoginPage = React.createClass ({
   getInitialState() {
     return {
       email: '',
-      email: '',
+      password: '',
       button_text: 'Login',
       errors: [],
     }
@@ -82,7 +82,7 @@ const LoginPage = React.createClass ({
 
   /* Methods */
   handleRegistration() {
-    this.props.navigator.push({name:'registration1', insecure: true})
+    this.props.navigator.push({name:'registration', unsecured: true})
   },
 
   handleVerifyLogin() {
@@ -154,7 +154,7 @@ const LoginPage = React.createClass ({
               value={this.state.email}
               autoCapitalize='none'
               autoCorrect={false}
-              placeholder="Email"
+              placeholder='Email'
             />
           </View>
           <View style={Styles.form.inputGroup}>
@@ -168,7 +168,7 @@ const LoginPage = React.createClass ({
               value={this.state.password}
               autoCapitalize='none'
               autoCorrect={false}
-              placeholder="Password"
+              placeholder='Password'
             />
           </View>
 
@@ -179,11 +179,11 @@ const LoginPage = React.createClass ({
           </View>
         </View>
 
-        <View style={this.styles.loginFooter}>
-          <TouchableWithoutFeedback onPress={this.handleRegistration}>
-            <Text style={this.styles.registerText}> Register an Account </Text>
-          </TouchableWithoutFeedback>
-        </View>
+        <TouchableWithoutFeedback onPress={this.handleRegistration}>
+          <View style={this.styles.loginFooter}>
+              <Text style={this.styles.registerText}> Register an Account </Text>
+          </View>
+        </TouchableWithoutFeedback>
       </View>
     )
   }

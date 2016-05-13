@@ -10,26 +10,26 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 const Header = React.createClass ({
   propTypes: {
     navigator: React.PropTypes.object,
+    title: React.PropTypes.string,
   },
 
   getInitialState() {
     return {
       index: 0,
-      title: 'Good Question',
+      title: this.props.title,
     }
   },
 
-  componentWillReceiveProps(next_props) {
+  componentWillReceiveProps(nextProps) {
     let state = Object.assign({}, this.state);
-    if (next_props.navState) {
-      const position = next_props.navState.routeStack.length - 1
+    if (nextProps.navState) {
+      const position = nextProps.navState.routeStack.length - 1
       state.index = position;
-      this.setState(state);
     }
-    if (next_props.title) {
-      state.title = next_props.title;
-      this.setState(state);
+    if (typeof nextProps.title !== 'undefined') {
+      state.title = nextProps.title;
     }
+    this.setState(state);
   },
 
   /* Methods */
