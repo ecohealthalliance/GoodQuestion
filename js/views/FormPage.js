@@ -125,7 +125,7 @@ const FormPage = React.createClass ({
         return null
       }
       
-      switch (question.get('questionType')) {
+      switch (question.get('type')) {
         case 'shortAnswer': return <ShortAnswer {...questionProps} />
         case 'checkboxes': return <Checkboxes {...questionProps} />
         case 'multipleChoice': return <MultipleChoice {...questionProps} />
@@ -140,7 +140,7 @@ const FormPage = React.createClass ({
           return Platform.OS === 'ios' ?
             <DateQuestionIOS {...questionProps} mode="datetime" /> : 
             <DatetimeQuestionAndroid {...questionProps} />
-        default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('questionType')}</Text>;
+        default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('type')}</Text>;
       }
     })
   },
