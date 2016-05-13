@@ -18,7 +18,7 @@ export function loadCachedSurvey(id) {
 export function loadSurveyList(options, callback) {
   const Survey = Parse.Object.extend("Survey")
   const query = new Parse.Query(Survey)
-
+  query.equalTo("active", true)
   query.find({
     success: function(results) {
       storeSurveys(results)
