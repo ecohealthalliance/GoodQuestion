@@ -5,21 +5,57 @@ import React, {
   TextInput,
   View
 } from 'react-native'
-
 import Styles from '../../styles/Styles'
+import Color from '../../styles/Color'
+import ViewText from '../ViewText'
 
 const ShortAnswer = React.createClass ({
-  componentWillMount() {
+  propTypes: {
+    id: React.PropTypes.string.isRequired,
+    text: React.PropTypes.string.isRequired,
+    index: React.PropTypes.number.isRequired,
+    value: React.PropTypes.string,
+    onChange: React.PropTypes.func.isRequired,
   },
+
+  getDefaultProps: function () {
+    return {
+      value: '',
+    };
+  },
+
+  getInitialState: function() {
+    return {
+      value: this.props.value,
+    }
+  },
+
+  /* Methods */
+  handleChange(value) {
+    this.setState({
+      value: value
+    })
+    this.props.onChange(value)
+  },
+
+  /* Render */
   render() {
     return (
-      <View>
-        <Text style={Styles.type.h1}>{this.props.question.get('text')}</Text>
-        <TextInput
-          style={{height: 40, borderColor: 'gray', borderWidth: 1}}
-          onChangeText={this.props.onChange}
-          value={this.props.value}
-        />
+      <View style={Styles.question.block}>
+        <ViewText 
+          style={Styles.question.header}
+          textStyle={Styles.question.headerText}>
+            Question #{this.props.index}
+        </ViewText>
+        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
+        <View style={Styles.question.smallInput}>
+          <TextInput
+            style={{height: 40, borderColor: Color.background1, borderWidth: 1, paddingLeft: 10}}
+            onChangeText={this.handleChange}
+            placeholder="Tap to type..."
+            value={this.state.value}
+          />
+        </View>
       </View>
     )
   }

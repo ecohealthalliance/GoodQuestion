@@ -27,8 +27,9 @@ function createQuestions(parentForm) {
     var newQuestion = new Parse.Object('Question')
     
     newQuestion.set('text', DummyData.questions[i].text)
-    newQuestion.set('questionType', DummyData.questions[i].questionType)
+    newQuestion.set('type', DummyData.questions[i].type)
     newQuestion.set('properties', DummyData.questions[i].properties)
+    newQuestion.set('order', DummyData.questions[i].order)
 
     newQuestion.save(null, {
       success: function(response) {

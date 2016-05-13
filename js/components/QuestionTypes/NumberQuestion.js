@@ -8,12 +8,15 @@ import React, {
 } from 'react-native'
 import Styles from '../../styles/Styles'
 import Button from '../Button'
+import ViewText from '../ViewText'
+import _ from 'lodash'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 const NumberQuestion = React.createClass ({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
+    index: React.PropTypes.number.isRequired,
     value: React.PropTypes.number,
     onChange: React.PropTypes.func.isRequired,
     properties: React.PropTypes.shape({
@@ -29,7 +32,7 @@ const NumberQuestion = React.createClass ({
         min: 0,
         max: 999,
       },
-    };
+    }
   },
 
   getInitialState: function() {
@@ -44,35 +47,57 @@ const NumberQuestion = React.createClass ({
   // Note: The iOS TextInput display does not work well with the Number data type.
   // It must be converted to a String to avoid rendering problems.
   handleChange(valueText) {
+    const newValueLength = valueText.length
     let value = Number(valueText)
     if (!isNaN(value)) {
-      if (value < this.props.properties.min) value = this.props.properties.min
-      if (value > this.props.properties.max) value = this.props.properties.max
+      if (value <= this.props.properties.min) {
+        value = this.props.properties.min
+        valueText = value
+      } else if (value >= this.props.properties.max) {
+        value = this.props.properties.max
+        valueText = value
+      }
+
+      if (newValueLength === 0) {
+        valueText = ''
+      } else {
+        this.props.onChange(value)
+      }
       this.setState({
-        valueText: String(value),
+        valueText: String(valueText),
         value: value,
       })
-      this.props.onChange(value)
     } else {
-      console.warn('Eror: ' + valueText + ' is not a valid number.')
+      console.warn('Error: ' + valueText + ' is not a valid number.')
     }
   },
 
   increaseCount() {
-    this.handleChange(this.state.value + 1)
+    this.handleChange(_.add(this.state.value, 1))
   },
 
   decreaseCount() {
-    this.handleChange(this.state.value - 1)
+    this.handleChange(_.subtract(this.state.value, 1))
+  },
+
+  getDecimalPlaces(num) {
+    var match = (''+num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/)
+    if (!match) { return 0 }
+    return Math.max( 0, (match[1] ? match[1].length : 0) - (match[2] ? +match[2] : 0) )
   },
 
   /* Render */
   render() {
     const { properties } = this.props
     return (
-      <View>
-        <Text style={Styles.type.h1}>{this.props.text}</Text>
-        <View style={Styles.form.inlineForm}>
+      <View style={Styles.question.block}>
+        <ViewText 
+          style={Styles.question.header}
+          textStyle={Styles.question.headerText}>
+            Question #{this.props.index}
+        </ViewText>
+        <Text style={[Styles.type.h3, Styles.question.text]}> {this.props.text} </Text>
+        <View style={[Styles.form.inlineForm, Styles.question.smallInput]}>
           <Button action={this.decreaseCount} primary round>
             <Icon name="minus" size={20} style={{color: '#FFFFFF'}} />
           </Button>

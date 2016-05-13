@@ -9,6 +9,7 @@ import FormStyles from './_FormStyles'
 
 // Partials: Component specific
 import SurveyStyles from './_SurveyStyles'
+import QuestionStyles from './_QuestionStyles'
 import HeaderStyles from './_HeaderStyles'
 import DrawerStyles from './_DrawerStyles'
 import ControlPanelStyles from './_ControlPanelStyles'
@@ -21,7 +22,8 @@ const Styles = {
   header: HeaderStyles,
   drawer: DrawerStyles,
   survey: SurveyStyles,
-  controlPanel: ControlPanelStyles
+  controlPanel: ControlPanelStyles,
+  question: QuestionStyles
 }
 
 module.exports = Styles

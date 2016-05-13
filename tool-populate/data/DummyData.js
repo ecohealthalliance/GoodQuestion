@@ -2,20 +2,20 @@ const DummyData = {
 
   surveys: [
     {
-      title: 'Survey #1',
+      title: 'A New Survey',
       user: 'user1',
       created: Date.now() - 10000,
     }, 
-    {
-      title: 'Survey #2',
-      user: 'user1',
-      created: Date.now() - 50000,
-    }, 
-    {
-      title: 'Survey #3',
-      user: 'user1',
-      created: Date.now() - 100000,
-    },
+    // {
+    //   title: 'Survey #2',
+    //   user: 'user1',
+    //   created: Date.now() - 50000,
+    // }, 
+    // {
+    //   title: 'Survey #3',
+    //   user: 'user1',
+    //   created: Date.now() - 100000,
+    // },
   ],
 
   trigger: {
@@ -28,55 +28,55 @@ const DummyData = {
 
   questions: [
     {
-      questionType: 'multipleChoice',
+      type: 'multipleChoice',
       text: 'What is your favorite color?',
       properties: {
         choices: ['red', 'blue', 'green']
       },
       order: 1,
     }, {
-      questionType: 'checkboxes',
+      type: 'checkboxes',
       text: 'What is your favorite color?',
       properties: {
         choices: ['red', 'blue', 'green']
       },
-      order: 1,
+      order: 2,
     }, {
-      questionType: 'longAnswer',
+      type: 'longAnswer',
       text: 'Describe any abnormalities in the location of the drag',
       properties: { 
         placeholder: 'Long Text...',
         maxlength: 150,
       },
-      order: 2,
+      order: 3,
     }, {
-      questionType: 'shortAnswer',
+      type: 'shortAnswer',
       text: 'Describe any abnormalities in the location of the drag',
       properties: {
         placeholder: 'Short Text...',
         maxlength: 20,
       },
-      order: 3,
-    }, {
-      questionType: 'date',
-      text: 'When do you plan on doing a follow-up darg?',
-      properties: {},
       order: 4,
     }, {
-      questionType: 'datetime',
+      type: 'date',
       text: 'When do you plan on doing a follow-up darg?',
       properties: {},
       order: 5,
     }, {
-      questionType: 'number',
+      type: 'datetime',
+      text: 'When do you plan on doing a follow-up darg?',
+      properties: {},
+      order: 6,
+    }, {
+      type: 'number',
       text: 'How many ticks have you found in this sector of the forest?',
       properties: {
         min: 0,
         max: 999,
       },
-      order: 6,
+      order: 7,
     }, {
-      questionType: 'scale',
+      type: 'scale',
       text: 'What is the likelyhood hikers in this forest will get bitten by a tick?',
       properties: {
         min: 1,
@@ -84,7 +84,7 @@ const DummyData = {
         minText: 'None at all.',
         maxText: 'Very likely.',
       },
-      order: 7,
+      order: 8,
     },
   ],
 
