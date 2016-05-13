@@ -21,7 +21,6 @@ const Header = React.createClass ({
   },
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps)
     try {
       let position = nextProps.navState.routeStack.length - 1
       let nextTitle = nextProps.navState.routeStack[nextProps.navState.routeStack.length-1].title
