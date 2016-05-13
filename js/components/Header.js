@@ -16,19 +16,23 @@ const Header = React.createClass ({
     return {
       index: 0,
       title: 'Good Question',
+      path: 'none'
     }
   },
 
-  componentWillReceiveProps(next_props) {
-    let state = Object.assign({}, this.state);
-    if (next_props.navState) {
-      const position = next_props.navState.routeStack.length - 1
-      state.index = position;
-      this.setState(state);
-    }
-    if (next_props.title) {
-      state.title = next_props.title;
-      this.setState(state);
+  componentWillReceiveProps(nextProps) {
+    console.log(nextProps)
+    try {
+      let position = nextProps.navState.routeStack.length - 1
+      let nextTitle = nextProps.navState.routeStack[nextProps.navState.routeStack.length-1].title
+      if (nextTitle && nextTitle !== this.state.title) {
+        this.setState({
+          title: nextTitle,
+          index: position,
+        })
+      }
+    } catch(e) {
+      console.warn(e)
     }
   },
 

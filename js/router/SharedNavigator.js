@@ -75,33 +75,33 @@ const SharedNavigator = React.createClass ({
       self.setState(state);
     });
   },
-  setTitle(title) {
-    let state = Object.assign({}, this.state);
-    state.title = title;
-    this.setState(state);
-  },
+
+  /* Methods */
   setAuthenticated(authenticated) {
     let state = Object.assign({}, this.state);
     state.isAuthenticated = authenticated;
     this.setState(state);
   },
+
+  /* Render */
   routeMapper(route, nav) {
     // we secure all routes
     if (!this.state.isAuthenticated) {
-      return <LoginPage navigator={nav} setTitle={this.setTitle} setAuthenticated={this.setAuthenticated} />
+      route.path = 'login'
+      route.title = 'Good Question'
     }
-    switch (route.name) {
-      case 'login': return <LoginPage navigator={nav} setTitle={this.setTitle} setAuthenticated={this.setAuthenticated} />
-      case 'surveylist': return <SurveyListPage navigator={nav} setTitle={this.setTitle} />
-      case 'terms': return <TermsOfServicePage navigator={nav} setTitle={this.setTitle} />
-      case 'registration1': return <RegistrationPagePart1 navigator={nav} setTitle={this.setTitle} />
-      case 'registration2': return <RegistrationPagePart2 navigator={nav} setTitle={this.setTitle} />
-      case 'form': return <FormPage navigator={nav} form={route.form} survey={route.survey} setTitle={this.setTitle} />
-      default: return <SurveyListPage navigator={nav} setTitle={this.setTitle} />
+    switch (route.path) {
+      case 'login': return <LoginPage navigator={nav} setAuthenticated={this.setAuthenticated} />
+      case 'surveylist': return <SurveyListPage navigator={nav} />
+      case 'terms': return <TermsOfServicePage navigator={nav} />
+      case 'registration1': return <RegistrationPagePart1 navigator={nav} />
+      case 'registration2': return <RegistrationPagePart2 navigator={nav} />
+      case 'form': return <FormPage navigator={nav} form={route.form} survey={route.survey} />
+      default: return <SurveyListPage navigator={nav} />
     }
   },
   render() {
-    const initialRoute = {name: 'surveylist'}
+    const initialRoute = { path: 'surveylist', title: 'Surveys' }
     // show loading component without the navigationBar
     if (this.state.isLoading) {
       return (<Loading/>);

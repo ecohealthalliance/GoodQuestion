@@ -32,10 +32,6 @@ const LoginPage = React.createClass ({
     password: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().label('Password'),
   },
 
-  componentWillMount() {
-    this.props.setTitle(this.title);
-  },
-
   getInitialState() {
     return {
       username: '',
