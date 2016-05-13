@@ -7,6 +7,8 @@ import React, {
   Text,
 } from 'react-native'
 
+import Drawer from 'react-native-drawer'
+
 import Settings from '../settings'
 
 // Components
@@ -34,6 +36,7 @@ import RegistrationPagePart2 from '../views/RegistrationPagePart2'
 import RegistrationPagePart3 from '../views/RegistrationPagePart3'
 import RegistrationPagePart4 from '../views/RegistrationPagePart4'
 import FormPage from '../views/FormPage'
+import ControlPanel from '../views/ControlPanel'
 
 /* Configuration */
 if (Platform.OS === 'ios') {
@@ -61,6 +64,7 @@ const SharedNavigator = React.createClass ({
       title: '',
       isLoading: true,
       isAuthenticated: false,
+      drawerOpen: false
     }
   },
   componentWillMount() {
@@ -108,16 +112,35 @@ const SharedNavigator = React.createClass ({
     }
     // show the navigator
     return (
-      <Navigator
-        ref={(nav) => { navigator = nav }}
-        initialRoute={initialRoute}
-        renderScene={this.routeMapper}
-        configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
-        style={Styles.container.wrapper}
-        navigationBar={
-          <Header title={this.state.title} />
-        }
-      />
+      <Drawer
+        type="overlay"
+        content={<ControlPanel
+          navigator={navigator}
+          closeDrawer={()=>this.setState({drawerOpen: false})} />}
+        tapToClose={true}
+        openDrawerOffset={0.2} // 20% gap on the right side of drawer
+        panCloseMask={0.2}
+        closedDrawerOffset={-3}
+        styles={Styles.drawer}
+        open={this.state.drawerOpen}
+        onClose={()=>this.setState({drawerOpen: false})}
+        tweenHandler={(ratio) => ({
+          main: { opacity:(2-ratio)/2 }
+        })}
+        >
+        <Navigator
+          ref={(nav) => { navigator = nav }}
+          initialRoute={initialRoute}
+          renderScene={this.routeMapper}
+          configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
+          style={Styles.container.wrapper}
+          navigationBar={
+            <Header
+              title={this.state.title}
+              openDrawer={()=>this.setState({drawerOpen: true})} />
+          }
+        />
+      </Drawer>
     );
   }
 })

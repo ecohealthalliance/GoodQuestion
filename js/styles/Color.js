@@ -7,6 +7,7 @@ const Color = {
   warning: '#FC5A5D',
 
   background1: '#9AD1DC',
+  background1Edge: '#71B1BC',
   background2: '#FFFFFF',
 
   fadedRed: '#FEABAB',
