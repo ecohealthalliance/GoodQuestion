@@ -6,11 +6,14 @@ import React, {
   Slider,
 } from 'react-native'
 import Styles from '../../styles/Styles'
+import Color from '../../styles/Color'
+import ViewText from '../ViewText'
 
 const ScaleQuestion = React.createClass ({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
+    index: React.PropTypes.number.isRequired,
     value: React.PropTypes.number,
     onChange: React.PropTypes.func.isRequired,
     properties: React.PropTypes.shape({
@@ -59,30 +62,38 @@ const ScaleQuestion = React.createClass ({
   render() {
     const { properties } = this.props
     return (
-      <View>
-        <Text style={Styles.type.h1}>{this.props.text}</Text>
-        <Text style={Styles.type.h2}>{this.state.value}</Text>
+      <View style={Styles.question.block}>
+        <ViewText 
+          style={Styles.question.header}
+          textStyle={Styles.question.headerText}>
+            Question #{this.props.index}
+        </ViewText>
+        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
+        <Text style={[Styles.type.h1, {textAlign: 'center'}]}>{this.state.value}</Text>
         <Slider
           value={this.state.value}
           minimumValue={properties.min}
           maximumValue={properties.max}
           step={1}
           onValueChange={this.handleChange}
+          style={{marginHorizontal: 20}}
           />
-        {
-          properties.minText ? 
-          <Text style={Styles.type.p}>
-            {properties.min}: {properties.minText}
-          </Text> 
-          : null
-        }
-        {
-          properties.maxText ? 
-          <Text style={Styles.type.p}>
-            {properties.max}: {properties.maxText}
-          </Text> 
-          : null
-        }
+        <View style={Styles.question.notes}>
+          {
+            properties.minText ? 
+            <Text style={[Styles.type.p, {textAlign: 'center'}]}>
+              {properties.min}: {properties.minText}
+            </Text> 
+            : null
+          }
+          {
+            properties.maxText ? 
+            <Text style={[Styles.type.p, {textAlign: 'center'}]}>
+              {properties.max}: {properties.maxText}
+            </Text> 
+            : null
+          }
+        </View>
       </View>
     )
   }

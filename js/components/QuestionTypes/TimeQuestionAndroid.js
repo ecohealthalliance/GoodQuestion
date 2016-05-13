@@ -8,6 +8,7 @@ import React, {
   TouchableWithoutFeedback,
 } from 'react-native'
 import Styles from '../../styles/Styles'
+import ViewText from '../ViewText'
 import Button from 'apsl-react-native-button'
 import moment from 'moment'
 
@@ -15,6 +16,7 @@ const TimeQuestionAndroid = React.createClass ({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
+    index: React.PropTypes.number.isRequired,
     value: React.PropTypes.object,
     onChange: React.PropTypes.func.isRequired,
   },
@@ -63,8 +65,13 @@ const TimeQuestionAndroid = React.createClass ({
   /* Render */
   render() {
     return (
-      <View>
-        <Text style={Styles.type.h1}>{this.props.text}</Text>
+      <View style={Styles.question.block}>
+        <ViewText 
+          style={Styles.question.header}
+          textStyle={Styles.question.headerText}>
+            Question #{this.props.index}
+        </ViewText>
+        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         {
           this.state.valueText ?
           <View>

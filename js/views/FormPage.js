@@ -23,6 +23,7 @@ import DateQuestionAndroid from '../components/QuestionTypes/DateQuestionAndroid
 import DatetimeQuestionAndroid from '../components/QuestionTypes/DatetimeQuestionAndroid'
 import TimeQuestionAndroid from '../components/QuestionTypes/TimeQuestionAndroid'
 import Button from 'apsl-react-native-button';
+import Loading from '../components/Loading';
 
 import { loadQuestions } from '../api/Questions'
 
@@ -111,6 +112,7 @@ const FormPage = React.createClass ({
         key: question.id,
         id: question.id,
         value: this.state.answers[question.id],
+        index: index + 1,
         onChange: (value)=> {
           this.setAnswer(question.id, value)
         },
@@ -123,22 +125,10 @@ const FormPage = React.createClass ({
         return null
       }
       
-      switch (question.get('questionType')) {
-        case 'shortAnswer': return (<ShortAnswer
-          key={question.id}
-          question={question}
-          value={this.state.answers[question.id]}
-          onChange={(value)=> this.setAnswer(question.id, value)} />);
-        case 'checkboxes': return (<Checkboxes
-          key={question.id}
-          question={question}
-          value={this.state.answers[question.id]}
-          onChange={(value)=> this.setAnswer(question.id, value)} />);
-        case 'multipleChoice': return (<MultipleChoice
-          key={question.id}
-          question={question}
-          value={this.state.answers[question.id]}
-          onChange={(value)=> this.setAnswer(question.id, value)} />);
+      switch (question.get('type')) {
+        case 'shortAnswer': return <ShortAnswer {...questionProps} />
+        case 'checkboxes': return <Checkboxes {...questionProps} />
+        case 'multipleChoice': return <MultipleChoice {...questionProps} />
         case 'longAnswer': return <LongAnswerQuestion {...questionProps} />
         case 'number': return <NumberQuestion {...questionProps} />
         case 'scale': return <ScaleQuestion {...questionProps} />
@@ -150,7 +140,7 @@ const FormPage = React.createClass ({
           return Platform.OS === 'ios' ?
             <DateQuestionIOS {...questionProps} mode="datetime" /> : 
             <DatetimeQuestionAndroid {...questionProps} />
-        default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('questionType')}</Text>;
+        default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('type')}</Text>;
       }
     })
   },
@@ -159,6 +149,7 @@ const FormPage = React.createClass ({
     if (this.state.loading) {
       return (
         <View>
+          <Loading />
           <Text style={Styles.type.h1}>Loading questions...</Text>
         </View>
       )

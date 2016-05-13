@@ -41,7 +41,7 @@ const FormStyles = StyleSheet.create({
     borderRadius: 5,
   },
   roundButton: {
-    backgroundColor: Color.primary,
+    backgroundColor: Color.secondary,
     alignSelf: 'auto',
     borderRadius: 100,
     borderWidth: 0,
@@ -68,19 +68,6 @@ const FormStyles = StyleSheet.create({
   },
   primaryButtonText: {
     color: Color.background2,
-  },
-
-  doubleButtonLeft: {
-    flex: 1,
-    alignSelf: 'auto',
-    borderTopRightRadius: 0,
-    borderBottomRightRadius: 0,
-  },
-  doubleButtonRight: {
-    flex: 1,
-    alignSelf: 'auto',
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 0,
   },
 
   errorText: {
@@ -113,6 +100,34 @@ const FormStyles = StyleSheet.create({
   },
   submitBtn: {
     margin: 5
+  },
+  questionBtn: {
+    borderColor: Color.secondary,
+    borderWidth: 2,
+    margin: 5
+  },
+  doubleButtonLeft: {
+    flex: 1,
+    alignSelf: 'auto',
+    borderColor: Color.secondary,
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderRightWidth: 1,
+    borderLeftWidth: 2,
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  doubleButtonRight: {
+    flex: 1,
+    alignSelf: 'auto',
+    borderColor: Color.secondary,
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+    borderLeftWidth: 1,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    
   },
   questionLabel: {
     color: Color.primary,

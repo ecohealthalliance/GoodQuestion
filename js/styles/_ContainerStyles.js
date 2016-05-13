@@ -7,11 +7,11 @@ const ContainerStyles = StyleSheet.create({
   wrapper: {
     flex: 1,
     paddingTop: Variables.HEADER_SIZE,
-    backgroundColor: Color.background2,
+    backgroundColor: Color.background3,
   },
 
   default: {
-    backgroundColor: Color.background2,
+    backgroundColor: Color.background3,
     borderLeftWidth: 1,
     borderRightWidth: 1,
     borderColor: Color.background1,
@@ -22,7 +22,7 @@ const ContainerStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'stretch',
-    backgroundColor: Color.background2,
+    backgroundColor: Color.background3,
     borderLeftWidth: 1,
     borderRightWidth: 1,
     borderColor: Color.background1,
