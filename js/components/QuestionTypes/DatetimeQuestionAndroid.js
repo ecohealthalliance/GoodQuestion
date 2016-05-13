@@ -9,6 +9,7 @@ import React, {
   TouchableWithoutFeedback,
 } from 'react-native'
 import Styles from '../../styles/Styles'
+import ViewText from '../ViewText'
 import Button from 'apsl-react-native-button'
 import moment from 'moment'
 
@@ -16,6 +17,7 @@ const DatetimeQuestionAndroid = React.createClass ({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
+    index: React.PropTypes.number.isRequired,
     onChange: React.PropTypes.func.isRequired,
     value: React.PropTypes.oneOfType([
       React.PropTypes.string,
@@ -23,21 +25,22 @@ const DatetimeQuestionAndroid = React.createClass ({
     ]),
   },
 
-  getDefaultProps: function () {
-    return {
-      value: new Date(),
-      date: new Date(),
-      hour: 0,
-      minute: 0,
-    }
-  },
-
   getInitialState: function() {
-    return {
-      value: this.checkDate(this.props.value),
-      date: this.props.date,
-      hour: this.props.value.hour,
-      minute: this.props.value.minute,
+    if (!this.props.value) {
+      return {
+        value: new Date(),
+        date: new Date(),
+      }
+    } else {
+      const date = this.checkDate(this.props.value)
+      return {
+        value: date,
+        date: date,
+        hour: date.getHours(),
+        minute: date.getMinutes(),
+        dateText: moment(date).format('MMMM DD, YYYY'),
+        timeText: moment(date.getHours()+':'+date.getMinutes(), 'H:m', true).format('hh:mm A'),
+      }
     }
   },
 
@@ -103,7 +106,7 @@ const DatetimeQuestionAndroid = React.createClass ({
   /* Render */
   renderButtons() {
     return (
-      <View style={Styles.form.inlineForm}>
+      <View style={[Styles.form.inlineForm, {marginTop: 30, marginHorizontal: 20}]}>
         <Button onPress={this.showDatePicker} style={Styles.form.doubleButtonLeft}>
           {this.state.hasDate ? 'Update Date' : 'Select Date'}
         </Button>
@@ -116,11 +119,16 @@ const DatetimeQuestionAndroid = React.createClass ({
 
   render() {
     return (
-      <View>
-        <Text style={Styles.type.h1}>{this.props.text}</Text>
+      <View style={Styles.question.block}>
+        <ViewText 
+          style={Styles.question.header}
+          textStyle={Styles.question.headerText}>
+            Question #{this.props.index}
+        </ViewText>
+        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         <View>
-          <Text style={Styles.type.h2}> {this.state.dateText ? this.state.dateText : '-'} </Text>
-          <Text style={Styles.type.h2}> {this.state.timeText ? this.state.timeText : '-'} </Text>
+          <Text style={[Styles.type.h1, {marginVertical: 5, textAlign: 'center'}]}> {this.state.dateText ? this.state.dateText : '-'} </Text>
+          <Text style={[Styles.type.h1, {marginVertical: 5, textAlign: 'center'}]}> {this.state.timeText ? this.state.timeText : '-'} </Text>
           {this.renderButtons()}
         </View>
       </View>

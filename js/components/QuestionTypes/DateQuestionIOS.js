@@ -7,12 +7,17 @@ import React, {
   DatePickerIOS,
 } from 'react-native'
 import Styles from '../../styles/Styles'
+import ViewText from '../ViewText'
 
 const DateQuestionIOS = React.createClass ({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
-    value: React.PropTypes.object,
+    index: React.PropTypes.number.isRequired,
+    value: React.PropTypes.oneOfType([
+      React.PropTypes.string,
+      React.PropTypes.instanceOf(Date)
+    ]),
     mode: React.PropTypes.string,
     onChange: React.PropTypes.func.isRequired,
   },
@@ -58,14 +63,20 @@ const DateQuestionIOS = React.createClass ({
     // PR fix: https://github.com/facebook/react-native/pull/7472
 
     return (
-      <View>
-        <Text style={Styles.type.h1}>{this.props.text}</Text>
-        <Text>Notice: iOS Date Picker is currently unstable.</Text>
-        <DatePickerIOS
+      <View style={Styles.question.block}>
+        <ViewText 
+          style={Styles.question.header}
+          textStyle={Styles.question.headerText}>
+            Question #{this.props.index}
+        </ViewText>
+        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
+        <Text>Notice: Date Picker for iOS is currently unstable.</Text>
+        <DatePickerIOS 
           mode={this.props.mode}
           timeZoneOffsetInMinutes={this.props.timeZoneOffset}
           onDateChange={this.handleChange}
           date={this.checkDate(this.state.value)}
+          style={{marginLeft: -9}}
           />
       </View>
     )
