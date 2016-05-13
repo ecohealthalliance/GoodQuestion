@@ -58,6 +58,11 @@ const Header = React.createClass ({
             {this.state.title}
           </Text>
         </View>
+        <View style={Styles.header.navBarRightButton}>
+          <TouchableWithoutFeedback onPress={this.props.openDrawer}>
+            <Icon name="bars" size={30} color="#FFFFFF" />
+          </TouchableWithoutFeedback>
+        </View>
       </View>
     )
   }

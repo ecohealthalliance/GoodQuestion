@@ -11,7 +11,8 @@ import FormStyles from './_FormStyles'
 import SurveyStyles from './_SurveyStyles'
 import QuestionStyles from './_QuestionStyles'
 import HeaderStyles from './_HeaderStyles'
-
+import DrawerStyles from './_DrawerStyles'
+import ControlPanelStyles from './_ControlPanelStyles'
 
 const Styles = {
   container: ContainerStyles,
@@ -19,8 +20,10 @@ const Styles = {
   form: FormStyles,
 
   header: HeaderStyles,
+  drawer: DrawerStyles,
   survey: SurveyStyles,
-  question: QuestionStyles,
+  controlPanel: ControlPanelStyles,
+  question: QuestionStyles
 }
 
 module.exports = Styles
