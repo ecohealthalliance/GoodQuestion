@@ -12,7 +12,10 @@ const Button = React.createClass ({
     action: React.PropTypes.func.isRequired,
     color: React.PropTypes.string,
     wide: React.PropTypes.bool,
-    style: React.PropTypes.object,
+    style: React.PropTypes.oneOfType([
+      React.PropTypes.object,
+      React.PropTypes.array,
+    ]),
     textStyle: React.PropTypes.object,
   },
 

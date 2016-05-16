@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import Parse from 'parse/react-native'
-import Realm from 'realm'
+import Realm from '../data/Realm'
 import Store from '../data/Store'
 
 import { loadForms } from './Forms'
@@ -29,6 +29,9 @@ export function loadSurveyList(options, callback) {
   query.find({
     success: function(results) {
       storeSurveys(results)
+      for (var i = 0; i < results.length; i++) {
+        cacheParseSurvey(results[i])
+      }
       if (callback) callback(null, results)
     },
     error: function(error, results) {
