@@ -35,6 +35,7 @@ import RegistrationPagePart1 from '../views/RegistrationPagePart1'
 import RegistrationPagePart2 from '../views/RegistrationPagePart2'
 import RegistrationPagePart3 from '../views/RegistrationPagePart3'
 import RegistrationPagePart4 from '../views/RegistrationPagePart4'
+import SurveyDetailsPage from '../views/SurveyDetailsPage'
 import FormPage from '../views/FormPage'
 import ControlPanel from '../views/ControlPanel'
 
@@ -100,6 +101,7 @@ const SharedNavigator = React.createClass ({
       case 'terms': return <TermsOfServicePage navigator={nav} />
       case 'registration1': return <RegistrationPagePart1 navigator={nav} />
       case 'registration2': return <RegistrationPagePart2 navigator={nav} />
+      case 'survey-details': return <SurveyDetailsPage navigator={nav} forms={route.forms} survey={route.survey} />
       case 'form': return <FormPage navigator={nav} form={route.form} survey={route.survey} />
       default: return <SurveyListPage navigator={nav} />
     }

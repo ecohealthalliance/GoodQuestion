@@ -12,6 +12,8 @@ const Button = React.createClass ({
     action: React.PropTypes.func.isRequired,
     color: React.PropTypes.string,
     wide: React.PropTypes.bool,
+    style: React.PropTypes.object,
+    textStyle: React.PropTypes.object,
   },
 
   /* Methods */
@@ -36,8 +38,8 @@ const Button = React.createClass ({
     
     return (
       <TouchableWithoutFeedback onPress={this.handleTouch}>
-        <View style={buttonStyle}>
-          <Text style={buttonTextStyle}>
+        <View style={[buttonStyle, this.props.style]}>
+          <Text style={[buttonTextStyle, this.props.textStyle]}>
             {this.props.children}
           </Text>
         </View>

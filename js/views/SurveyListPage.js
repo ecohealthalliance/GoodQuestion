@@ -68,7 +68,7 @@ const SurveyListPage = React.createClass ({
 
   onPress(item) {
     // TODO return the the most recently triggered form that hasn't been filled out.
-    loadForms(item, this.selectForm)
+    loadForms(item, this.selectSurvey)
   },
 
   selectForm(error, forms, survey) {
@@ -84,6 +84,24 @@ const SurveyListPage = React.createClass ({
         path: 'form',
         title: 'Survey: ' + survey.get('title'),
         form: forms[0],
+        survey: survey
+      })
+    }
+  },
+
+  selectSurvey(error, forms, survey) {
+    if (this.cancelCallbacks) return
+
+    // TODO Support multiple forms
+    if (error) {
+      console.warn(error)
+    } else if (!forms || !forms[0]) {
+      alert('Error: Unable to fetch the Forms associated with this Survey.')
+    } else {
+      this.props.navigator.push({
+        path: 'survey-details',
+        title: survey.get('title'),
+        forms: forms,
         survey: survey
       })
     }

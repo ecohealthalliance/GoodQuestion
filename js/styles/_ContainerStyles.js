@@ -44,6 +44,11 @@ const ContainerStyles = StyleSheet.create({
     paddingBottom: 110,
   },
 
+  fullView: {
+    flex: 1,
+    backgroundColor: Color.background2,
+  },
+
   col75: {
     flex: .75,
     flexDirection: 'column',
