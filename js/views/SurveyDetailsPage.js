@@ -6,6 +6,7 @@ import React, {
 } from 'react-native'
 
 import _ from 'lodash'
+import Icon from 'react-native-vector-icons/FontAwesome'
 import Store from '../data/Store'
 import Styles from '../styles/Styles'
 import Color from '../styles/Color'
@@ -91,8 +92,12 @@ const SurveyDetailsPage = React.createClass ({
         </ScrollView>
 
         <View style={[Styles.survey.acceptanceButtons, {padding: 0}]}>
-          <Button style={acceptButtonStyle} textStyle={acceptButtonTextStyle} action={this.acceptSurvey}>Accept</Button>
-          <Button style={declineButtonStyle} textStyle={declineButtonTextStyle} action={this.declineSurvey}>Decline</Button>
+          <Button style={acceptButtonStyle} textStyle={acceptButtonTextStyle} action={this.acceptSurvey}>
+            <Icon name='check-circle' size={18} color={this.state.status === 'accepted' ?  Color.background2 : Color.positive} /> Accept
+          </Button>
+          <Button style={declineButtonStyle} textStyle={declineButtonTextStyle} action={this.declineSurvey}>
+            <Icon name='times-circle' size={18} color={this.state.status === 'declined' ?  Color.background2 : Color.warning} /> Decline
+          </Button>
         </View>
       </View>
     )
