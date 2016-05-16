@@ -43,6 +43,11 @@ const SurveyDetailsPage = React.createClass ({
     }
   },
 
+  componentDidMount() {
+    // Cache survey into device
+    
+  },
+
   /* Methods */
   acceptSurvey() {
     this.setState({status: 'accepted'})
