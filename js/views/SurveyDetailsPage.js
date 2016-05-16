@@ -44,15 +44,28 @@ const SurveyDetailsPage = React.createClass ({
 
   /* Methods */
   acceptSurvey() {
-
+    this.setState({status: 'accepted'})
   },
 
   declineSurvey() {
-
+    this.setState({status: 'declined'})
   },
 
   /* Render */
   render() {
+    let acceptButtonStyle = [Styles.survey.acceptButton]
+    let acceptButtonTextStyle = {color: Color.positive}
+    let declineButtonStyle = [Styles.survey.declineButton]
+    let declineButtonTextStyle = {color: Color.warning}
+
+    if (this.state.status === 'accepted') {
+      acceptButtonStyle.push({backgroundColor: Color.positive})
+      acceptButtonTextStyle = {color: Color.background2}
+    } else if (this.state.status === 'declined') {
+      declineButtonStyle.push({backgroundColor: Color.warning})
+      declineButtonTextStyle = {color: Color.background2}
+    }
+
     return (
       <View style={Styles.container.fullView}>
         <ScrollView>
@@ -77,9 +90,9 @@ const SurveyDetailsPage = React.createClass ({
           </View>
         </ScrollView>
 
-        <View style={Styles.form.bottomForm}>
-          <Button style={Styles.survey.acceptButton} action={this.acceptSurvey}>Accept</Button>
-          <Button style={Styles.survey.declineButton} action={this.declineSurvey}>Decline</Button>
+        <View style={[Styles.survey.acceptanceButtons, {padding: 0}]}>
+          <Button style={acceptButtonStyle} textStyle={acceptButtonTextStyle} action={this.acceptSurvey}>Accept</Button>
+          <Button style={declineButtonStyle} textStyle={declineButtonTextStyle} action={this.declineSurvey}>Decline</Button>
         </View>
       </View>
     )
