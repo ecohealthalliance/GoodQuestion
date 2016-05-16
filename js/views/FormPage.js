@@ -46,13 +46,10 @@ const FormPage = React.createClass ({
   },
 
   componentWillMount() {
-    this.props.setTitle("Survey: " + this.props.survey.get('title'));
-    console.log(this.realm);
     let submissions = this.realm
       .objects('Submission')
       .filtered(`formId = "${this.props.form.id}"`)
       .sorted('created');
-    console.log(submissions);
     if(submissions.length > 0) {
       this.setState({answers: JSON.parse(submissions.slice(-1)[0].answers)})
     }
@@ -96,7 +93,7 @@ const FormPage = React.createClass ({
         answers: JSON.stringify(answers),
       });
     });
-    this.props.navigator.push({name: 'surveyList'});
+    this.props.navigator.push({name: 'surveyList', title: 'Surveys'});
   },
 
   setAnswer(questionId, value) {
@@ -126,7 +123,7 @@ const FormPage = React.createClass ({
         console.warn('Error: Malformed question object: ' + question)
         return null
       }
-      
+
       switch (question.get('type')) {
         case 'shortAnswer': return <ShortAnswer {...questionProps} />
         case 'checkboxes': return <Checkboxes {...questionProps} />
@@ -136,11 +133,11 @@ const FormPage = React.createClass ({
         case 'scale': return <ScaleQuestion {...questionProps} />
         case 'date':
           return Platform.OS === 'ios' ?
-            <DateQuestionIOS {...questionProps} /> : 
+            <DateQuestionIOS {...questionProps} /> :
             <DateQuestionAndroid {...questionProps} />
         case 'datetime':
           return Platform.OS === 'ios' ?
-            <DateQuestionIOS {...questionProps} mode="datetime" /> : 
+            <DateQuestionIOS {...questionProps} mode="datetime" /> :
             <DatetimeQuestionAndroid {...questionProps} />
         default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('type')}</Text>;
       }

@@ -7,6 +7,8 @@ import React, {
   Text,
 } from 'react-native'
 
+import Drawer from 'react-native-drawer'
+
 import Settings from '../settings'
 
 // Components
@@ -34,6 +36,7 @@ import RegistrationPagePart2 from '../views/RegistrationPagePart2'
 import RegistrationPagePart3 from '../views/RegistrationPagePart3'
 import RegistrationPagePart4 from '../views/RegistrationPagePart4'
 import FormPage from '../views/FormPage'
+import ControlPanel from '../views/ControlPanel'
 
 /* Configuration */
 if (Platform.OS === 'ios') {
@@ -61,6 +64,7 @@ const SharedNavigator = React.createClass ({
       title: '',
       isLoading: true,
       isAuthenticated: false,
+      drawerOpen: false
     }
   },
   componentWillMount() {
@@ -75,49 +79,68 @@ const SharedNavigator = React.createClass ({
       self.setState(state);
     });
   },
-  setTitle(title) {
-    let state = Object.assign({}, this.state);
-    state.title = title;
-    this.setState(state);
-  },
+
+  /* Methods */
   setAuthenticated(authenticated) {
     let state = Object.assign({}, this.state);
     state.isAuthenticated = authenticated;
     this.setState(state);
   },
+
+  /* Render */
   routeMapper(route, nav) {
     // we secure all routes
     if (!this.state.isAuthenticated) {
-      return <LoginPage navigator={nav} setTitle={this.setTitle} setAuthenticated={this.setAuthenticated} />
+      route.path = 'login'
+      route.title = 'Good Question'
     }
-    switch (route.name) {
-      case 'login': return <LoginPage navigator={nav} setTitle={this.setTitle} setAuthenticated={this.setAuthenticated} />
-      case 'surveylist': return <SurveyListPage navigator={nav} setTitle={this.setTitle} />
-      case 'terms': return <TermsOfServicePage navigator={nav} setTitle={this.setTitle} />
-      case 'registration1': return <RegistrationPagePart1 navigator={nav} setTitle={this.setTitle} />
-      case 'registration2': return <RegistrationPagePart2 navigator={nav} setTitle={this.setTitle} />
-      case 'form': return <FormPage navigator={nav} form={route.form} survey={route.survey} setTitle={this.setTitle} />
-      default: return <SurveyListPage navigator={nav} setTitle={this.setTitle} />
+    switch (route.path) {
+      case 'login': return <LoginPage navigator={nav} setAuthenticated={this.setAuthenticated} />
+      case 'surveylist': return <SurveyListPage navigator={nav} />
+      case 'terms': return <TermsOfServicePage navigator={nav} />
+      case 'registration1': return <RegistrationPagePart1 navigator={nav} />
+      case 'registration2': return <RegistrationPagePart2 navigator={nav} />
+      case 'form': return <FormPage navigator={nav} form={route.form} survey={route.survey} />
+      default: return <SurveyListPage navigator={nav} />
     }
   },
   render() {
-    const initialRoute = {name: 'surveylist'}
+    const initialRoute = { path: 'surveylist', title: 'Surveys' }
     // show loading component without the navigationBar
     if (this.state.isLoading) {
       return (<Loading/>);
     }
     // show the navigator
     return (
-      <Navigator
-        ref={(nav) => { navigator = nav }}
-        initialRoute={initialRoute}
-        renderScene={this.routeMapper}
-        configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
-        style={Styles.container.wrapper}
-        navigationBar={
-          <Header title={this.state.title} />
-        }
-      />
+      <Drawer
+        type="overlay"
+        content={<ControlPanel
+          navigator={navigator}
+          closeDrawer={()=>this.setState({drawerOpen: false})} />}
+        tapToClose={true}
+        openDrawerOffset={0.2} // 20% gap on the right side of drawer
+        panCloseMask={0.2}
+        closedDrawerOffset={-3}
+        styles={Styles.drawer}
+        open={this.state.drawerOpen}
+        onClose={()=>this.setState({drawerOpen: false})}
+        tweenHandler={(ratio) => ({
+          main: { opacity:(2-ratio)/2 }
+        })}
+        >
+        <Navigator
+          ref={(nav) => { navigator = nav }}
+          initialRoute={initialRoute}
+          renderScene={this.routeMapper}
+          configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
+          style={Styles.container.wrapper}
+          navigationBar={
+            <Header
+              title={this.state.title}
+              openDrawer={()=>this.setState({drawerOpen: true})} />
+          }
+        />
+      </Drawer>
     );
   }
 })
