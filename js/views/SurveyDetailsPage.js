@@ -52,7 +52,46 @@ const SurveyDetailsPage = React.createClass ({
     this.setState({status: 'declined'})
   },
 
+  showForms(tab) {
+    // TODO Allow user to see Forms in a map and on a calendar
+    if (this.cancelCallbacks) return
+
+    // Temporary redirection to form 0
+    this.selectForm(this.props.forms[0])
+  },
+
+  selectForm(form) {
+    if (this.cancelCallbacks) return
+
+    // TODO Support multiple forms
+    this.props.navigator.push({
+      path: 'form',
+      title: this.props.survey.get('title'),
+      form: form,
+      survey: this.props.survey
+    })
+  },
+
   /* Render */
+
+  renderFormButtons() {
+    if (this.state.status === 'accepted') {
+      return (
+        <View style={[Styles.survey.formButtons]}>
+          <Button style={[Styles.survey.formButton]} action={this.showForms.bind(this, 'map')}>
+            <Icon name='map-marker' size={28} color={Color.secondary} />
+          </Button>
+          <Button style={[Styles.survey.formButton]} action={this.showForms.bind(this, 'calendar')}>
+            <Icon name='clock-o' size={28} color={Color.secondary} />
+          </Button>
+          <Button style={[Styles.survey.formButton]} action={this.showForms.bind(this, 'no-trigger')}>
+            <Icon name='bolt' size={28} color={Color.secondary} />
+          </Button>
+        </View>
+      )
+    }
+  },
+
   render() {
     let acceptButtonStyle = [Styles.survey.acceptButton]
     let acceptButtonTextStyle = {color: Color.positive}
@@ -84,6 +123,8 @@ const SurveyDetailsPage = React.createClass ({
               <Text style={Styles.survey.surveyStatsNumber}>{this.state.questionCount}</Text>
             </View>
           </View>
+
+          {this.renderFormButtons()}
 
           <View style={Styles.survey.surveyNotes}>
             <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>Administered by:</Text>

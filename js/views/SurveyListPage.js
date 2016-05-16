@@ -71,24 +71,6 @@ const SurveyListPage = React.createClass ({
     loadForms(item, this.selectSurvey)
   },
 
-  selectForm(error, forms, survey) {
-    if (this.cancelCallbacks) return
-
-    // TODO Support multiple forms
-    if (error) {
-      console.warn(error)
-    } else if (!forms || !forms[0]) {
-      alert('Error: Unable to fetch the Forms associated with this Survey.')
-    } else {
-      this.props.navigator.push({
-        path: 'form',
-        title: 'Survey: ' + survey.get('title'),
-        form: forms[0],
-        survey: survey
-      })
-    }
-  },
-
   selectSurvey(error, forms, survey) {
     if (this.cancelCallbacks) return
 
