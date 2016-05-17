@@ -6,26 +6,6 @@ import realm from '../data/Realm'
 import { loadForms } from './Forms'
 
 
-// Saves a Survey object from Parse into our Realm.io local database
-export function cacheParseSurvey(survey) {
-  realm.write(() => {
-    try {
-      realm.create('Survey', {
-        id: survey.id,
-        active: survey.get('active') ? true : false,
-        createdAt: survey.get('createdAt'),
-        updatedAt: survey.get('updatedAt'),
-        description: survey.get('description'),
-        user: 'Test University', // get parse user name
-        forms: [],
-        title: survey.get('title'),
-      }, true)
-    } catch(e) {
-      console.error(e)
-    }
-  })
-}
-
 // Attempts to find a survey with a specified id cached in the Store
 export function loadCachedSurvey(id) {
   const Survey = Parse.Object.extend("Survey")
@@ -46,12 +26,55 @@ export function loadSurveyList(options, callback) {
       storeSurveys(results)
       for (var i = 0; i < results.length; i++) {
         cacheParseSurvey(results[i])
+        loadForms(results[i])
       }
       if (callback) callback(null, results)
     },
     error: function(error, results) {
       console.warn("Error: " + error.code + " " + error.message)
       if (callback) callback(error, results)
+    }
+  })
+}
+
+// Saves a Survey object from Parse into our Realm.io local database
+export function cacheParseSurvey(survey) {
+  realm.write(() => {
+    try {
+      realm.create('Survey', {
+        id: survey.id,
+        active: survey.get('active') ? true : false,
+        createdAt: survey.get('createdAt'),
+        updatedAt: survey.get('updatedAt'),
+        description: survey.get('description'),
+        user: 'Test University', // get parse user name
+        forms: [],
+        title: survey.get('title'),
+      }, true)
+      getSurveyOwner(survey)
+    } catch(e) {
+      console.error(e)
+    }
+  })
+}
+
+// Gets the name of the owner of a Survey and saves it to Realm database.
+// TODO Get the organization's name
+function getSurveyOwner(survey) {
+  let owner = survey.get("createdBy")
+  owner.fetch({
+    success: function(owner) {
+      realm.write(() => {
+        try {
+          realm.create('Survey', {
+            id: survey.id,
+            user: 'Organization\'s Name',
+            // user: owner.get("name"),
+          }, true)
+        } catch(e) {
+          console.error(e)
+        }
+      })
     }
   })
 }

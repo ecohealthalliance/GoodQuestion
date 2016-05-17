@@ -23,29 +23,38 @@ const SurveyDetailsPage = React.createClass ({
   },
 
   getInitialState() {
-    let surveys, cachedSurvey
+    let cachedSurvey, cachedForms, cachedQuestions = []
     try {
-      surveys = realm.objects('Survey')
-      cachedSurvey = surveys.filtered('id = "'+this.props.survey.id+ '"')[0]
+      cachedSurvey = realm.objects('Survey').filtered(`id = "${this.props.survey.id}"`)[0]
+      cachedForms = realm.objects('Form').filtered(`surveyId = "${this.props.survey.id}"`)
+      for (var i = 0; i < cachedForms.length; i++) {
+        cachedQuestions = _.merge(
+          cachedQuestions,
+          realm.objects('Question').filtered(`formId = "${cachedForms[i].id}"`)
+        )
+      }
     } catch (e) {
       console.error(e)
     }
 
-    console.log(cachedSurvey)
-    
     return {
-      cachedSurvey: cachedSurvey, // Realm Object
-      id: cachedSurvey.id,
+      // Realm Cached Objects
+      cachedSurvey: cachedSurvey,
+      cachedForms: cachedForms,
+      cachedQuestions: cachedQuestions,
 
+      formCount: cachedForms.length,
+      questionCount: cachedQuestions.length,
+
+      // Data
+      id: cachedSurvey.id,
       status: cachedSurvey.status.length === 0 ? 'pending' : cachedSurvey.status, // pending, accepted, declined
       user: cachedSurvey.user,
       description: cachedSurvey.description,
 
+      // Parse Object
+      // TODO replace with cached version in an optimization pass.
       forms: this.props.forms,
-      formCount: this.props.forms.length,
-
-      questions: [],
-      questionCount: 0,
     }
   },
 
@@ -70,19 +79,24 @@ const SurveyDetailsPage = React.createClass ({
     // TODO Allow user to see Forms in a map and on a calendar
     if (this.cancelCallbacks) return
 
-    // Temporary redirection to form 0
-    this.selectForm(this.props.forms[0])
+    // Temporary redirection to fist form
+    // To be changed when we support multiple forms in V2
+    this.selectForm(this.state.forms[0])
   },
 
   selectForm(form) {
     if (this.cancelCallbacks) return
 
-    // TODO Support multiple forms
+    //Gather questions only for this form
+    // let questions = realm.objects('Question').filtered(`formId = "${form.id}"`)
+
+    // TODO Support multiple forms & support cached forms
     this.props.navigator.push({
       path: 'form',
       title: this.props.survey.get('title'),
       form: form,
-      survey: this.props.survey
+      // questions: questions,
+      survey: this.state.cachedSurvey,
     })
   },
 
@@ -93,10 +107,10 @@ const SurveyDetailsPage = React.createClass ({
       return (
         <View style={[Styles.survey.formButtons]}>
           <Button style={[Styles.survey.formButton]} action={this.showForms.bind(this, 'map')}>
-            <Icon name='map-marker' size={28} color={Color.secondary} />
+            <Icon name='map-marker' size={28} color={Color.background3} />
           </Button>
           <Button style={[Styles.survey.formButton]} action={this.showForms.bind(this, 'calendar')}>
-            <Icon name='clock-o' size={28} color={Color.secondary} />
+            <Icon name='clock-o' size={28} color={Color.background3} />
           </Button>
           <Button style={[Styles.survey.formButton]} action={this.showForms.bind(this, 'no-trigger')}>
             <Icon name='bolt' size={28} color={Color.secondary} />

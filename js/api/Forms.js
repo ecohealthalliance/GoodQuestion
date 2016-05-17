@@ -32,6 +32,7 @@ export function loadForms(survey, callback) {
         storeForms(results)
         for (var i = 0; i < results.length; i++) {
           cacheParseForm(results[i], survey.id)
+          loadQuestions(results[i])
         }
         if (callback) callback(null, results, survey)
       },

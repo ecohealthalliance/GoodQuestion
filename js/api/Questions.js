@@ -29,8 +29,8 @@ export function loadQuestions(form, callback) {
     success: function(results) {
       storeQuestions(results)
       for (var i = 0; i < results.length; i++) {
-          cacheParseQuestion(results[i], form.id)
-        }
+        cacheParseQuestion(results[i], form.id)
+      }
       if (callback) callback(null, results)
     },
     error: function(error, results) {
