@@ -3,6 +3,7 @@ import { Platform } from 'react-native'
 const Variables = {
   HEADER_SIZE: 80,
   HEADER_PADDING: 20,
+  REGISTRATION_HEIGHT: 125,
 }
 
 if ( Platform.OS === 'android' ) {

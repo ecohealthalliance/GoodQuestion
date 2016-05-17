@@ -22,7 +22,7 @@ import Store from '../data/Store'
 // Parse
 import Parse from 'parse/react-native'
 import {connectToParseServer} from '../api/ParseServer'
-import {isAuthenticated} from '../api/Account'
+import {isAuthenticated, register} from '../api/Account'
 
 
 // Views

@@ -5,18 +5,23 @@ import React, {
   View,
   TouchableWithoutFeedback,
   StyleSheet,
+  Dimensions,
 } from 'react-native'
 
+import Variables from '../styles/Variables'
 import Styles from '../styles/Styles'
 import Button from '../components/Button'
 import Color from '../styles/Color'
 
-import Swiper from '../lib/react-native-page-swiper'
+import Swiper from 'react-native-page-swiper'
 
 import RegistrationPagePart1 from '../views/RegistrationPagePart1'
 import RegistrationPagePart2 from '../views/RegistrationPagePart2'
 import RegistrationPagePart3 from '../views/RegistrationPagePart3'
 
+import {register} from '../api/Account'
+
+const {height, width} = Dimensions.get('window')
 const totalPages = 3;
 
 const RegistrationPages = React.createClass ({
@@ -24,7 +29,7 @@ const RegistrationPages = React.createClass ({
     navigator: React.PropTypes.object.isRequired,
     index: React.PropTypes.number,
   },
-
+  alerts: 0,
   getInitialState() {
     let index = 0
     if (this.props.index) {
@@ -47,6 +52,16 @@ const RegistrationPages = React.createClass ({
     }
   },
 
+
+  /**
+   * dynamically calculate scroll view height
+   *
+   * @return {number} ideal height of the ScrollView
+   */
+  calculateScrollViewHeight() {
+    return height - (Variables.HEADER_SIZE + Variables.REGISTRATION_HEIGHT + 80);
+  },
+
   /**
    * validates the current page
    *
@@ -65,7 +80,10 @@ const RegistrationPages = React.createClass ({
         errors = currentPage.joiValidate();
         console.log('errors: ', errors);
         if (errors.length > 0) {
-          Alert.alert('Validation', 'The form errors need corrected to continue.');
+          if (this.alerts < 1) {
+            Alert.alert('Validation', 'The form errors need corrected to continue.');
+          }
+          this.alerts++;
           return false;
         }
       }
@@ -89,31 +107,43 @@ const RegistrationPages = React.createClass ({
    * finish user registration
    */
   finish() {
-    let user = {}
+    const self = this;
+    const props = {
+      role: 'user',
+    };
+    let email = '';
+    let password = '';
     for (let i = 0; i < totalPages; i++) {
-      let pageNum = 'page'+i;
-      let page = this.refs[pageNum];
+      const pageNum = 'page'+i;
+      const page = this.refs[pageNum];
       if (page.state.hasOwnProperty('email')) {
-        user.email = page.state.email;
+        email = page.state.email;
       }
       if (page.state.hasOwnProperty('password')) {
-        user.password = page.state.password;
+        password = page.state.password;
       }
       if (page.state.hasOwnProperty('terms')) {
-        user.acceptedTerms = page.state.terms;
+        props.acceptedTerms = page.state.terms;
       }
       if (page.state.hasOwnProperty('allowLocationServices')) {
-        user.allowLocationServices = page.state.allowLocationServices;
+        props.allowLocationServices = page.state.allowLocationServices;
       }
       if (page.state.hasOwnProperty('fullName')) {
-        user.fullName = page.state.fullName;
+        props.name = page.state.fullName;
       }
       if (page.state.hasOwnProperty('phoneNumber')) {
-        user.phoneNumber = page.state.phoneNumber;
+        props.phone = page.state.phoneNumber;
       }
     }
-    Alert.alert('User', JSON.stringify(user));
-    // TODO - register the user on forgerock and parse-server
+    register(email, password, props, function(err, success) {
+      if (err) {
+        Alert.alert('Error', err);
+        return;
+      }
+      Alert.alert('Success', 'You have successfully registered to Good Question');
+      // go to the default route
+      self.props.navigator.replace({});
+    });
   },
 
   setIndex(idx) {
@@ -121,15 +151,20 @@ const RegistrationPages = React.createClass ({
   },
 
   getChildren() {
-    let pages = [];
+    const sharedProps = Object.assign({
+      calculateScrollViewHeight: this.calculateScrollViewHeight,
+      validatePage: this.validatePage,
+      setIndex: this.setIndex,
+    }, this.props);
+    const pages = [];
     for (let i = 0; i < totalPages; i++) {
       let pageNum = 'page'+i;
       if (i === 0) {
-        pages.push((<View key={i}><RegistrationPagePart1 ref={pageNum} {...this.props} validatePage={this.validatePage} setIndex={this.setIndex} /></View>));
+        pages.push((<View key={i}><RegistrationPagePart1 ref={pageNum} {...sharedProps} /></View>));
       } else if ( i === 1) {
-        pages.push((<View key={i}><RegistrationPagePart2 ref={pageNum} {...this.props} validatePage={this.validatePage} setIndex={this.setIndex} /></View>));
+        pages.push((<View key={i}><RegistrationPagePart2 ref={pageNum} {...sharedProps} /></View>));
       } else {
-        pages.push((<View key={i}><RegistrationPagePart3 ref={pageNum} {...this.props} validatePage={this.validatePage} setIndex={this.setIndex} finish={this.finish} /></View>));
+        pages.push((<View key={i}><RegistrationPagePart3 ref={pageNum} {...sharedProps} finish={this.finish} /></View>));
       }
     }
     return pages;
@@ -145,7 +180,7 @@ const RegistrationPages = React.createClass ({
         beforePageChange={this.beforePageChange}
         onPageChange={this.onPageChange}
         children={this.getChildren()}
-        threshold={50}>
+        threshold={75}>
       </Swiper>
     )
   }

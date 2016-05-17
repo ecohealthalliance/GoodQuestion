@@ -62,10 +62,19 @@ const RegistrationPagePart3 = React.createClass ({
 
   /* Methods */
   finish() {
+    if (this.state.button_text === 'Validating...') return;
+    const state = Object.assign({}, this.state);
+    state.button_text = 'Validating...';
+    this.setState(state);
     const valid = this.props.validatePage(2);
+    state.button_text = 'Finish';
     if (valid) {
-      this.props.finish()
+      this.props.finish(function() {
+        this.setState(state);
+      });
+      return;
     }
+    this.setState(state);
   },
 
   textFieldChangeHandler(name, text) {
@@ -93,7 +102,7 @@ const RegistrationPagePart3 = React.createClass ({
         <View style={this.styles.registrationHeader}>
           <Image source={require('../images/logo_stacked.png')} style={this.styles.logo}></Image>
         </View>
-        <ScrollView style={{height: 400}}>
+        <ScrollView style={{height: this.props.calculateScrollViewHeight()}}>
           <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
             User Information
           </Text>

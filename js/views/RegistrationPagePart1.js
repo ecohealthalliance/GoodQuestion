@@ -7,8 +7,10 @@ import React, {
   Image,
   ScrollView,
   Alert,
+  Dimensions,
 } from 'react-native'
 
+import Variables from '../styles/Variables'
 import Styles from '../styles/Styles'
 import Color from '../styles/Color'
 import Button from '../components/Button'
@@ -16,8 +18,8 @@ import Button from '../components/Button'
 import Checkbox from 'react-native-checkbox'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
-let uncheckedComponent = (<Icon name='square-o' size={30} />);
-let checkedComponent = (<Icon name='check-square-o' size={30} />);
+const uncheckedComponent = (<Icon name='square-o' size={30} />);
+const checkedComponent = (<Icon name='check-square-o' size={30} />);
 
 import Joi from '../lib/joi-browser.min'
 import JoiMixins from '../mixins/joi-mixins'
@@ -31,7 +33,7 @@ const RegistrationPagePart1 = React.createClass ({
   styles: {
     registrationHeader: {
       flex: 1,
-      height: 125,
+      height: Variables.REGISTRATION_HEIGHT,
       alignItems:'center',
       justifyContent:'center',
       backgroundColor: Color.background1,
@@ -64,10 +66,10 @@ const RegistrationPagePart1 = React.createClass ({
   getInitialState() {
     return {
       button_text: 'Next',
-      email: 'yursky555@blurg.com',
-      password: 'P@ssw0rd',
-      confirmPassword: 'P@ssw0rd',
-      terms: false,
+      email: '',
+      password: '',
+      confirmPassword: '',
+      terms: true,
       errors: [],
     }
   },
@@ -123,7 +125,7 @@ const RegistrationPagePart1 = React.createClass ({
         <View style={this.styles.registrationHeader}>
           <Image source={require('../images/logo_stacked.png')} style={this.styles.logo}></Image>
         </View>
-        <ScrollView style={{height: 400}}>
+        <ScrollView style={{height: this.props.calculateScrollViewHeight()}}>
           <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
             Create an Account
           </Text>
