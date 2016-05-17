@@ -25,6 +25,7 @@ import TimeQuestionAndroid from '../components/QuestionTypes/TimeQuestionAndroid
 import Button from 'apsl-react-native-button';
 import Submission from '../models/Submission';
 import Loading from '../components/Loading';
+import Swiper from 'react-native-page-swiper'
 
 import { loadQuestions } from '../api/Questions'
 import Realm from 'realm';
@@ -38,12 +39,25 @@ const FormPage = React.createClass ({
   getInitialState() {
     this.realm = new Realm({schema: [Submission]});
     console.log(this.realm);
+    let index = 0
+    if (this.props.index) {
+      index = this.props.index;
+    }
     return {
       questions: [],
       answers: {},
       loading: true,
+      index: index
     }
   },
+  // beforePageChange(nextPage) {
+  //   const shouldContinue = this.validatePage();
+  //   if (!shouldContinue) {
+  //     return false;
+  //   }
+  //   this.setIndex(nextPage);
+  //   return true;
+  // },
 
   componentWillMount() {
     let submissions = this.realm
@@ -64,6 +78,7 @@ const FormPage = React.createClass ({
   /* Methods */
 
   setQuestions(error, response) {
+
     // Prevent this callback from working if the component has unmounted.
     if (this.cancelCallbacks) return
 
@@ -74,6 +89,7 @@ const FormPage = React.createClass ({
       alert('Error: Unable to fetch the Questions associated with this Survey\'s Form.')
       this.props.navigator.pop()
     } else {
+      console.log('setQuestions')
       this.setState({
         questions: response,
         loading: false,
@@ -144,6 +160,24 @@ const FormPage = React.createClass ({
     })
   },
 
+  getChildren() {
+    let pages = [];
+    pages.push(<View key="1"><Text>Hello Swiper1!</Text></View>)
+    pages.push(<View key="2"><Text>Hello Swiper2!!</Text></View>)
+    pages.push(<View key="3"><Text>Hello Swiper3!!!</Text></View>)
+    // for (let i = 0; i < totalPages; i++) {
+    //   let pageNum = 'page'+i;
+    //   if (i === 0) {
+    //     pages.push((<View key={i}><RegistrationPagePart1 ref={pageNum} {...this.props} validatePage={this.validatePage} setIndex={this.setIndex} /></View>));
+    //   } else if ( i === 1) {
+    //     pages.push((<View key={i}><RegistrationPagePart2 ref={pageNum} {...this.props} validatePage={this.validatePage} setIndex={this.setIndex} /></View>));
+    //   } else {
+    //     pages.push((<View key={i}><RegistrationPagePart3 ref={pageNum} {...this.props} validatePage={this.validatePage} setIndex={this.setIndex} finish={this.finish} /></View>));
+    //   }
+    // }
+    return pages;
+  },
+
   render() {
     if (this.state.loading) {
       return (
@@ -153,11 +187,22 @@ const FormPage = React.createClass ({
         </View>
       )
     } else {
+      console.log('else')
       return (
-        <ScrollView style={Styles.container.form}>
-          {this.renderQuestions()}
-          <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
-        </ScrollView>
+        <Swiper
+          style={{flex: 1}}
+          activeDotColor={Color.background1}
+          index={this.state.index}
+          beforePageChange={this.beforePageChange}
+          onPageChange={this.onPageChange}
+          children={this.getChildren()}
+          threshold={50}>
+        </Swiper>
+        
+        // <ScrollView style={Styles.container.form}>
+        //   {this.renderQuestions()}
+        //   <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
+        // </ScrollView>
       )
     }
   }
