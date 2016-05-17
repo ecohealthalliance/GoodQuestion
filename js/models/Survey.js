@@ -5,10 +5,11 @@ Survey.schema = {
   properties: {
   	id: 'string',
   	active: 'bool',
-    created:  'date',
-    updated:  'date',
-    answers: 'string',
-    status: 'string',
-    // forms: {type: 'Form'},
+    created: 'date',
+    updated: 'date',
+    
+    user: 'string',
+    description: 'string',
+    status: {type: 'string', default: 'pending'},
   }
 }

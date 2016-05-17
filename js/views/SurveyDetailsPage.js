@@ -12,49 +12,58 @@ import Styles from '../styles/Styles'
 import Color from '../styles/Color'
 import { loadSurveyList } from '../api/Surveys'
 import { loadForms } from '../api/Forms'
+import realm from '../data/Realm'
 import SurveyListItem from '../components/SurveyListItem'
 import Button from '../components/Button'
 
 const SurveyDetailsPage = React.createClass ({
   propTypes: {
-    survey: React.PropTypes.object.isRequired,
+    survey: React.PropTypes.object.isRequired, // Parse Object
     forms: React.PropTypes.array.isRequired,
   },
 
-  getDefaultProps: function () {
-    let status = 'pending'
-    return {
-      title: 'Replace me',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae veritatis aliquam voluptatem omnis libero praesentium aliquid possimus modi culpa doloribus, soluta, tenetur! Cupiditate, nisi. Ut iusto recusandae error, possimus culpa.',
-      user: 'University X',
-      forms: [],
-      status: status,
-    };
-  },
-
   getInitialState() {
-    return {
-      status: this.props.status, // pending, accepted, declined
-      forms: this.props.forms,
-      questions: [],
-      formCount: this.props.forms.length,
-      questionCount: 0,
-      user: this.props.user,
+    let surveys, cachedSurvey
+    try {
+      surveys = realm.objects('Survey')
+      cachedSurvey = surveys.filtered('id = "'+this.props.survey.id+ '"')[0]
+    } catch (e) {
+      console.error(e)
     }
-  },
 
-  componentDidMount() {
-    // Cache survey into device
+    console.log(cachedSurvey)
     
+    return {
+      cachedSurvey: cachedSurvey, // Realm Object
+      id: cachedSurvey.id,
+
+      status: cachedSurvey.status.length === 0 ? 'pending' : cachedSurvey.status, // pending, accepted, declined
+      user: cachedSurvey.user,
+      description: cachedSurvey.description,
+
+      forms: this.props.forms,
+      formCount: this.props.forms.length,
+
+      questions: [],
+      questionCount: 0,
+    }
   },
 
   /* Methods */
   acceptSurvey() {
+    let survey = this.state.cachedSurvey
     this.setState({status: 'accepted'})
+    realm.write(() => {
+      survey.status = 'accepted'
+    })
   },
 
   declineSurvey() {
+    let survey = this.state.cachedSurvey
     this.setState({status: 'declined'})
+    realm.write(() => {
+      survey.status = 'declined'
+    })
   },
 
   showForms(tab) {
@@ -115,7 +124,7 @@ const SurveyDetailsPage = React.createClass ({
       <View style={Styles.container.fullView}>
         <ScrollView>
           <View style={Styles.survey.surveyDescription}>
-            <Text style={Styles.type.h3}>{this.props.description}</Text>
+            <Text style={Styles.type.h3}>{this.state.description}</Text>
           </View>
 
           <View style={Styles.survey.surveyStats}>

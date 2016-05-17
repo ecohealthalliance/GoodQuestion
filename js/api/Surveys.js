@@ -1,14 +1,29 @@
 import _ from 'lodash'
 import Parse from 'parse/react-native'
-import Realm from '../data/Realm'
 import Store from '../data/Store'
+import realm from '../data/Realm'
 
 import { loadForms } from './Forms'
 
 
 // Saves a Survey object from Parse into our Realm.io local database
 export function cacheParseSurvey(survey) {
-  
+  realm.write(() => {
+    try {
+      realm.create('Survey', {
+        id: survey.id,
+        active: survey.get('active') ? true : false,
+        createdAt: survey.get('createdAt'),
+        updatedAt: survey.get('updatedAt'),
+        description: survey.get('description'),
+        user: 'Test University', // get parse user name
+        forms: [],
+        title: survey.get('title'),
+      }, true)
+    } catch(e) {
+      console.error(e)
+    }
+  })
 }
 
 // Attempts to find a survey with a specified id cached in the Store

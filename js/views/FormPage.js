@@ -27,7 +27,7 @@ import Submission from '../models/Submission';
 import Loading from '../components/Loading';
 
 import { loadQuestions } from '../api/Questions'
-import Realm from '../data/Realm'
+import realm from '../data/Realm'
 
 const FormPage = React.createClass ({
   propTypes: {
@@ -44,7 +44,7 @@ const FormPage = React.createClass ({
   },
 
   componentWillMount() {
-    let submissions = Realm
+    let submissions = realm
       .objects('Submission')
       .filtered(`formId = "${this.props.form.id}"`)
       .sorted('created');
@@ -83,8 +83,8 @@ const FormPage = React.createClass ({
     // TODO Get geolocation
     let answers = this.state.answers;
     let formId = this.props.form.id;
-    Realm.write(() => {
-      let submission = Realm.create('Submission', {
+    realm.write(() => {
+      let submission = realm.create('Submission', {
         formId: formId,
         created: new Date(),
         answers: JSON.stringify(answers),
