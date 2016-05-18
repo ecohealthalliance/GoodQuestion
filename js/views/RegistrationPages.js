@@ -52,7 +52,6 @@ const RegistrationPages = React.createClass ({
     }
   },
 
-
   /**
    * dynamically calculate scroll view height
    *
@@ -122,17 +121,17 @@ const RegistrationPages = React.createClass ({
       if (page.state.hasOwnProperty('password')) {
         password = page.state.password;
       }
-      if (page.state.hasOwnProperty('terms')) {
-        props.acceptedTerms = page.state.terms;
+      if (page.state.hasOwnProperty('acceptedTerms')) {
+        props.acceptedTerms = page.state.acceptedTerms;
       }
       if (page.state.hasOwnProperty('allowLocationServices')) {
         props.allowLocationServices = page.state.allowLocationServices;
       }
-      if (page.state.hasOwnProperty('fullName')) {
-        props.name = page.state.fullName;
+      if (page.state.hasOwnProperty('name')) {
+        props.name = page.state.name;
       }
-      if (page.state.hasOwnProperty('phoneNumber')) {
-        props.phone = page.state.phoneNumber;
+      if (page.state.hasOwnProperty('phone')) {
+        props.phone = page.state.phone;
       }
     }
     register(email, password, props, function(err, success) {

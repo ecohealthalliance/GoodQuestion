@@ -19,6 +19,7 @@ let checkedComponent = (<Icon name='check-square-o' size={30} />);
 
 import Joi from '../lib/joi-browser.min'
 import JoiMixins from '../mixins/joi-mixins'
+import EventMixins from '../mixins/event-mixins'
 import he from 'he' // HTML entity encode and decode
 
 const RegistrationPagePart4 = React.createClass ({
@@ -51,10 +52,11 @@ const RegistrationPagePart4 = React.createClass ({
 
   mixins: [
     JoiMixins,
+    EventMixins,
   ],
 
   schema: {
-    allowLocationServices: Joi.boolean().required().invalid(false).label('Terms of Service'),
+    allowLocationServices: Joi.boolean().required().invalid(false).options({language: {any: {invalid: 'must be accepted'}}}).label('Allow Location Services'),
   },
 
 
@@ -121,9 +123,7 @@ const RegistrationPagePart4 = React.createClass ({
                 checked={this.state.allowLocationServices}
                 uncheckedComponent={uncheckedComponent}
                 checkedComponent={checkedComponent}
-                onChange={(checked)=>{
-                  this.setState({allowLocationServices: checked});
-                }}
+                onChange={this.checkboxChangeHandler.bind(this, 'allowLocationServices')}
               />
             </View>
           </View>

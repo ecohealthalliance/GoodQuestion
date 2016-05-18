@@ -13,6 +13,7 @@ import Color from '../styles/Color'
 
 import Joi from '../lib/joi-browser.min'
 import JoiMixins from '../mixins/joi-mixins'
+import EventMixins from '../mixins/event-mixins'
 import he from 'he' // HTML entity encode and decode
 
 const RegistrationPagePart3 = React.createClass ({
@@ -44,18 +45,19 @@ const RegistrationPagePart3 = React.createClass ({
 
   mixins: [
     JoiMixins,
+    EventMixins,
   ],
 
   schema: {
-    fullName: Joi.string().min(3).required().label('Full Name'),
-    phoneNumber: Joi.string().optional().label('Phone Number'),
+    name: Joi.string().min(3).required().options({language: {any: {allowOnly: 'must not be empty'}}}).label('Full Name'),
+    phone: Joi.string().optional().label('Phone Number'),
   },
 
   getInitialState() {
     return {
       button_text: 'Finish',
-      fullName: '',
-      phoneNumber: '111-111-1111',
+      name: '',
+      phone: '',
       errors: [],
     }
   },
@@ -74,17 +76,6 @@ const RegistrationPagePart3 = React.createClass ({
       });
       return;
     }
-    this.setState(state);
-  },
-
-  textFieldChangeHandler(name, text) {
-    let schema = {};
-    schema[name] = this.schema[name];
-    let object = {};
-    object[name] = text;
-    this.joiCheckError(object, schema);
-    let state = Object.assign({}, this.state);
-    state[name] = text;
     this.setState(state);
   },
 
@@ -108,23 +99,23 @@ const RegistrationPagePart3 = React.createClass ({
           </Text>
           <View style={Styles.form.inputGroup}>
             <Text style={Styles.form.errorText}>
-              {this.decodeText(this.state.errors.fullName)}
+              {this.decodeText(this.state.errors.name)}
             </Text>
             <TextInput
               style={Styles.form.input}
-              onChangeText={this.textFieldChangeHandler.bind(this, 'fullName')}
-              value={this.state.fullName}
+              onChangeText={this.textFieldChangeHandler.bind(this, 'name')}
+              value={this.state.name}
               autoCapitalize='none'
               autoCorrect={false}
               placeholder="Full Name"
             />
             <Text style={Styles.form.errorText}>
-              {this.decodeText(this.state.errors.phoneNumber)}
+              {this.decodeText(this.state.errors.phone)}
             </Text>
             <TextInput
               style={Styles.form.input}
-              onChangeText={this.textFieldChangeHandler.bind(this, 'phoneNumber')}
-              value={this.state.phoneNumber}
+              onChangeText={this.textFieldChangeHandler.bind(this, 'phone')}
+              value={this.state.phone}
               autoCapitalize='none'
               autoCorrect={false}
               placeholder="Phone Number"

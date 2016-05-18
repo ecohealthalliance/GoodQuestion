@@ -23,6 +23,7 @@ const checkedComponent = (<Icon name='check-square-o' size={30} />);
 
 import Joi from '../lib/joi-browser.min'
 import JoiMixins from '../mixins/joi-mixins'
+import EventMixins from '../mixins/event-mixins'
 import he from 'he' // HTML entity encode and decode
 
 const RegistrationPagePart1 = React.createClass ({
@@ -54,13 +55,14 @@ const RegistrationPagePart1 = React.createClass ({
 
   mixins: [
     JoiMixins,
+    EventMixins,
   ],
 
   schema: {
-    email: Joi.string().email().required().label('Email'),
-    password: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().label('Password'),
-    confirmPassword: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().label('Confirm Password'),
-    terms: Joi.boolean().required().invalid(false).label('Terms of Service'),
+    email: Joi.string().email().required().options({language: {any: {allowOnly: 'must be a valid email'}}}).label('Email'),
+    password: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().options({language: {any: {allowOnly: 'must be at least 8 alpha numberic characters'}}}).label('Password'),
+    confirmPassword: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().options({language: {any: {allowOnly: 'must be at least 8 alpha numberic characters'}}}).label('Confirm Password'),
+    acceptedTerms: Joi.boolean().required().invalid(false).options({language: {any: {invalid: 'must be accepted'}}}).label('Terms of Service'),
   },
 
   getInitialState() {
@@ -69,8 +71,8 @@ const RegistrationPagePart1 = React.createClass ({
       email: '',
       password: '',
       confirmPassword: '',
-      terms: true,
-      errors: [],
+      acceptedTerms: false,
+      errors: {},
     }
   },
 
@@ -89,22 +91,27 @@ const RegistrationPagePart1 = React.createClass ({
     }
   },
 
+  confirmPasswordChangeHandler(name, value) {
+    const password = this.state.password;
+    const errors = Object.assign({}, this.state.errors);
+    const state = {
+      errors: errors,
+    };
+    if (password !== value) {
+      state.errors[name] = '"Confirm Password" does not match password';
+      state[name] = value
+      this.setState(state);
+      return;
+    }
+    // continue with mixin handler
+    this.textFieldChangeHandler(name, value);
+  },
+
   decodeText(txt) {
     if (txt) {
       return he.decode(txt);
     }
     return '';
-  },
-
-  textFieldChangeHandler(name, text) {
-    let schema = {};
-    schema[name] = this.schema[name];
-    let object = {};
-    object[name] = text;
-    this.joiCheckError(object, schema);
-    let state = Object.assign({}, this.state);
-    state[name] = text;
-    this.setState(state);
   },
 
   renderTerms() {
@@ -159,24 +166,22 @@ const RegistrationPagePart1 = React.createClass ({
             <TextInput
               secureTextEntry={true}
               style={Styles.form.input}
-              onChangeText={this.textFieldChangeHandler.bind(this, 'confirmPassword')}
+              onChangeText={this.confirmPasswordChangeHandler.bind(this, 'confirmPassword')}
               value={this.state.confirmPassword}
               autoCapitalize='none'
               autoCorrect={false}
               placeholder='Confirm Password'
             />
             <Text style={Styles.form.errorText}>
-              {this.decodeText(this.state.errors.terms)}
+              {this.decodeText(this.state.errors.acceptedTerms)}
             </Text>
             <View style={this.styles.checkboxWrapper}>
               <Checkbox
                 children={this.renderTerms()}
-                checked={this.state.terms}
+                checked={this.state.acceptedTerms}
                 uncheckedComponent={uncheckedComponent}
                 checkedComponent={checkedComponent}
-                onChange={(checked)=>{
-                  this.setState({terms: checked});
-                }}
+                onChange={this.checkboxChangeHandler.bind(this, 'acceptedTerms')}
               />
             </View>
           </View>
