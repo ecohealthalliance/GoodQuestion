@@ -2,8 +2,6 @@
  * Good Question
  */
 
-const BackgroundGeolocation = require('react-native-background-geolocation')
-
 import React, { AppRegistry } from 'react-native'
 
 // Model
@@ -24,7 +22,6 @@ const GoodQuestion = React.createClass ({
 
   /* Render */
   render() {
-    console.log(BackgroundGeolocation)
     return ( <SharedNavigator /> )
   }
 })

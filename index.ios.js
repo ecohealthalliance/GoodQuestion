@@ -3,7 +3,7 @@
  * @flow
  */
 
-const BackgroundGeolocation = require('react-native-background-geolocation')
+const backgroundGeolocation = require('react-native-background-geolocation')
 
 import React, { AppRegistry } from 'react-native'
 
@@ -32,7 +32,7 @@ const GoodQuestion = React.createClass ({
 
   /* Render */
   render() {
-    console.log(BackgroundGeolocation)
+    console.log(backgroundGeolocation)
     return ( <SharedNavigator /> )
   }
 })

@@ -3,5 +3,3 @@ rootProject.name = 'GoodQuestion'
 include ':app'
 include ':realm'
 project(':realm').projectDir = new File(rootProject.projectDir, '../node_modules/realm/android')
-include ':RNBackgroundGeolocation', ':app'
-project(':RNBackgroundGeolocation').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-background-geolocation-android/android')
