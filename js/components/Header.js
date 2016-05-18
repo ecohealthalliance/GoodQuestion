@@ -57,7 +57,6 @@ const Header = React.createClass ({
 
   /* Render */
   render() {
-    console.log('this.props:', this.props);
     return (
       <View style={Styles.header.navBar}>
         {

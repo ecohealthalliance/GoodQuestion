@@ -37,7 +37,6 @@ const FormPage = React.createClass ({
 
   getInitialState() {
     this.realm = new Realm({schema: [Submission]});
-    console.log(this.realm);
     return {
       questions: [],
       answers: {},
