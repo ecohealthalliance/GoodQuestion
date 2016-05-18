@@ -66,12 +66,11 @@ const SharedNavigator = React.createClass ({
     connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
   },
   componentDidMount() {
-    let self = this;
-    isAuthenticated(function(authenticated) {
-      let state = Object.assign({}, self.state);
-      state.isAuthenticated = authenticated;
-      state.isLoading = false;
-      self.setState(state);
+    isAuthenticated((authenticated) => {
+      this.setState({
+        isAuthenticated: authenticated,
+        isLoading: false,
+      });
     });
   },
 
@@ -86,9 +85,7 @@ const SharedNavigator = React.createClass ({
     navigator.resetTo({path:'login',title:' '});
   },
 
-  /* Render */
   routeMapper(route, nav) {
-
     const sharedProps = {
       navigator: nav,
     };
@@ -107,6 +104,8 @@ const SharedNavigator = React.createClass ({
       default: return <SurveyListPage {...sharedProps} />
     }
   },
+
+  /* Render */
   render() {
     const initialRoute = { path:'surveylist', title: 'Surveys' }
     // show loading component without the navigationBar
@@ -115,7 +114,6 @@ const SharedNavigator = React.createClass ({
     }
     // show the navigator
     if (this.state.isAuthenticated) {
-      console.log('show drawer');
       return (<Drawer
         type="overlay"
         content={<ControlPanel
