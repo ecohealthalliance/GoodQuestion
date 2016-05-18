@@ -67,13 +67,30 @@ export function authenticate(username, password, done) {
 /**
  * is the current parse user authenticated
  *
- * @param {function} the function to execute when done
+ * @param {function} the function to execute when done, will be a single value
+ * true/false
+ *
  */
 export function isAuthenticated(done) {
+  currentUser(function(err, user) {
+    if (err) {
+      done(false);
+    }
+    done(true);
+  });
+};
+
+/**
+ * get the current user
+ *
+ * @param {function} the function to execute when done, will be in the format
+ *  err, res
+ */
+export function currentUser(done) {
   Parse.User.currentAsync().then(
     function(user) {
       if (user && typeof user.getSessionToken() !== 'undefined') {
-        done(true);
+        done(null, user);
         return;
       }
       done(false);
@@ -83,4 +100,4 @@ export function isAuthenticated(done) {
       done(false);
     }
   );
-};
+}
