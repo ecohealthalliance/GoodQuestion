@@ -37,6 +37,7 @@ import RegistrationPagePart3 from '../views/RegistrationPagePart3'
 import RegistrationPagePart4 from '../views/RegistrationPagePart4'
 import FormPage from '../views/FormPage'
 import ControlPanel from '../views/ControlPanel'
+import ProfilePage from '../views/ProfilePage'
 
 /* Configuration */
 if (Platform.OS === 'ios') {
@@ -101,6 +102,7 @@ const SharedNavigator = React.createClass ({
       case 'registration1': return <RegistrationPagePart1 navigator={nav} />
       case 'registration2': return <RegistrationPagePart2 navigator={nav} />
       case 'form': return <FormPage navigator={nav} form={route.form} survey={route.survey} />
+      case 'profile': return <ProfilePage navigator={nav} />
       default: return <SurveyListPage navigator={nav} />
     }
   },
