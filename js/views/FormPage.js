@@ -25,6 +25,7 @@ import TimeQuestionAndroid from '../components/QuestionTypes/TimeQuestionAndroid
 import Button from 'apsl-react-native-button';
 import Submission from '../models/Submission';
 import Loading from '../components/Loading';
+import Color from '../styles/Color';
 import Swiper from 'react-native-page-swiper'
 
 import { loadQuestions } from '../api/Questions'
@@ -89,7 +90,6 @@ const FormPage = React.createClass ({
       alert('Error: Unable to fetch the Questions associated with this Survey\'s Form.')
       this.props.navigator.pop()
     } else {
-      console.log('setQuestions')
       this.setState({
         questions: response,
         loading: false,
@@ -113,16 +113,13 @@ const FormPage = React.createClass ({
   },
 
   setAnswer(questionId, value) {
-    this.setState((prevState)=>{
-      prevState.answers[questionId] = value;
-      return prevState;
-    })
+    this.state.answers[questionId] = value;
   },
 
   /* Render */
 
   renderQuestions() {
-    return this.state.questions.map((question, index)=>{
+    var renderedQuestions = this.state.questions.map((question, index)=>{
       let questionProps = {
         key: question.id,
         id: question.id,
@@ -141,43 +138,30 @@ const FormPage = React.createClass ({
       }
 
       switch (question.get('type')) {
-        case 'shortAnswer': return <ShortAnswer {...questionProps} />
-        case 'checkboxes': return <Checkboxes {...questionProps} />
-        case 'multipleChoice': return <MultipleChoice {...questionProps} />
-        case 'longAnswer': return <LongAnswerQuestion {...questionProps} />
-        case 'number': return <NumberQuestion {...questionProps} />
-        case 'scale': return <ScaleQuestion {...questionProps} />
+        case 'shortAnswer': return <View><ShortAnswer {...questionProps} /></View>
+        case 'checkboxes': return <View><Checkboxes {...questionProps} /></View>
+        case 'multipleChoice': return <View><MultipleChoice {...questionProps} /></View>
+        case 'longAnswer': return <View><LongAnswerQuestion {...questionProps} /></View>
+        case 'number': return <View><NumberQuestion {...questionProps} /></View>
+        case 'scale': return <View><ScaleQuestion {...questionProps} /></View>
         case 'date':
           return Platform.OS === 'ios' ?
-            <DateQuestionIOS {...questionProps} /> :
-            <DateQuestionAndroid {...questionProps} />
+            <View><DateQuestionIOS {...questionProps} /></View>  :
+            <View><DateQuestionAndroid {...questionProps} /></View> 
         case 'datetime':
           return Platform.OS === 'ios' ?
-            <DateQuestionIOS {...questionProps} mode="datetime" /> :
-            <DatetimeQuestionAndroid {...questionProps} />
+            <View><DateQuestionIOS {...questionProps} mode="datetime" /></View> :
+            <View><DatetimeQuestionAndroid {...questionProps} /></View>
         default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('type')}</Text>;
       }
     })
+    newLast = <View>
+                {renderedQuestions[renderedQuestions.length-1]}
+                <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
+              </View>
+    renderedQuestions[renderedQuestions.length-1] = newLast
+    return renderedQuestions;
   },
-
-  getChildren() {
-    let pages = [];
-    pages.push(<View key="1"><Text>Hello Swiper1!</Text></View>)
-    pages.push(<View key="2"><Text>Hello Swiper2!!</Text></View>)
-    pages.push(<View key="3"><Text>Hello Swiper3!!!</Text></View>)
-    // for (let i = 0; i < totalPages; i++) {
-    //   let pageNum = 'page'+i;
-    //   if (i === 0) {
-    //     pages.push((<View key={i}><RegistrationPagePart1 ref={pageNum} {...this.props} validatePage={this.validatePage} setIndex={this.setIndex} /></View>));
-    //   } else if ( i === 1) {
-    //     pages.push((<View key={i}><RegistrationPagePart2 ref={pageNum} {...this.props} validatePage={this.validatePage} setIndex={this.setIndex} /></View>));
-    //   } else {
-    //     pages.push((<View key={i}><RegistrationPagePart3 ref={pageNum} {...this.props} validatePage={this.validatePage} setIndex={this.setIndex} finish={this.finish} /></View>));
-    //   }
-    // }
-    return pages;
-  },
-
   render() {
     if (this.state.loading) {
       return (
@@ -187,7 +171,6 @@ const FormPage = React.createClass ({
         </View>
       )
     } else {
-      console.log('else')
       return (
         <Swiper
           style={{flex: 1}}
@@ -195,7 +178,7 @@ const FormPage = React.createClass ({
           index={this.state.index}
           beforePageChange={this.beforePageChange}
           onPageChange={this.onPageChange}
-          children={this.getChildren()}
+          children={this.renderQuestions()}
           threshold={50}>
         </Swiper>
         
