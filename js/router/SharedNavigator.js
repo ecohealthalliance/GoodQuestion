@@ -26,8 +26,6 @@ import Parse from 'parse/react-native'
 import {connectToParseServer} from '../api/ParseServer'
 import {isAuthenticated, register, logout} from '../api/Account'
 
-import async from 'async'
-
 // Views
 import LoginPage from '../views/LoginPage'
 import SurveyListPage from '../views/SurveyListPage'
@@ -42,7 +40,6 @@ if (Platform.OS === 'ios') {
 } else {
   Store.platform = 'android'
 }
-
 
 let navigator
 // Binds the hardware "back button" from Android devices
@@ -85,9 +82,8 @@ const SharedNavigator = React.createClass ({
 
   logoutHandler() {
     logout();
-    async.nextTick(() => {
-      navigator.resetTo({path:'login',title:' '});
-    });
+    this.setState({isAuthenticated: false});
+    navigator.resetTo({path:'login',title:' '});
   },
 
   /* Render */
