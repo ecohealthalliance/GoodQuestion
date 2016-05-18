@@ -147,7 +147,7 @@ const FormPage = React.createClass ({
         case 'date':
           return Platform.OS === 'ios' ?
             <View><DateQuestionIOS {...questionProps} /></View>  :
-            <View><DateQuestionAndroid {...questionProps} /></View> 
+            <View><DateQuestionAndroid {...questionProps} /></View>
         case 'datetime':
           return Platform.OS === 'ios' ?
             <View><DateQuestionIOS {...questionProps} mode="datetime" /></View> :
@@ -181,7 +181,7 @@ const FormPage = React.createClass ({
           children={this.renderQuestions()}
           threshold={50}>
         </Swiper>
-        
+
         // <ScrollView style={Styles.container.form}>
         //   {this.renderQuestions()}
         //   <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>

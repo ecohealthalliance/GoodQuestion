@@ -17,11 +17,6 @@ const TermsOfServicePage = React.createClass ({
     navigator: React.PropTypes.object.isRequired,
   },
 
-  /* Methods */
-  handleAccept() {
-    this.props.navigator.pop()
-  },
-
   /* Render */
   render() {
     return (
@@ -31,11 +26,6 @@ const TermsOfServicePage = React.createClass ({
             {TermsOfService}
           </Text>
         </ScrollView>
-        <View style={Styles.form.fixedForm}>
-          <Button action={this.handleAccept}>
-            Accept
-          </Button>
-        </View>
       </View>
     )
   }

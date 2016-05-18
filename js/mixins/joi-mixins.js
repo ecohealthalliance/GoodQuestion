@@ -1,34 +1,33 @@
 import Joi from '../lib/joi-browser.min'
 
-var JoiMixins = {
+export default {
   joiCheckError: function(object, schema) {
-    var self = this;
-    var state = Object.assign({}, self.state);
-    if (typeof state.errors === 'undefined') {
-      state.errors = {};
+    if (typeof this.state.errors === 'undefined') {
+      this.state.errors = {};
     }
-    var name = Object.keys(object)[0];
-    var res = Joi.validate(object, schema);
-    var err = null;
+    const name = Object.keys(object)[0];
+    const res = Joi.validate(object, schema);
+    const errors = Object.assign({}, this.state.errors)
+    let err = null;
     if (res.hasOwnProperty('error')) {
       if (res.error != null) {
-        state.errors[name] = res.error.details[0].message;
-        self.setState(state);
+        errors[name] = res.error.details[0].message;
+        this.setState({errors: errors});
         err = res.error.details[0];
       } else {
-        state.errors[name] = '';
-        self.setState(state);
+        errors[name] = '';
+        this.setState({errors: errors});
       }
     } else {
-      state.errors[name] = '';
-      self.setState(state);
+      errors[name] = '';
+      this.setState({errors: errors});
     }
     return err;
   },
   joiValidate: function() {
-    var self = this;
-    var errors = [];
-    Object.keys(self.schema).forEach(function(key) {
+    const self = this;
+    const errors = [];
+    Object.keys(this.schema).forEach(function(key) {
       var value = self.state[key];
       var object = {};
       object[key] = value;
@@ -42,4 +41,3 @@ var JoiMixins = {
     return errors;
   },
 };
-module.exports = JoiMixins;

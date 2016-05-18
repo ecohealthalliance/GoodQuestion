@@ -15,6 +15,7 @@
     "react": "0.14.8",
     "react-native": "0.24.1",
     "react-native-checkbox": "https://github.com/dan-nyanko/react-native-checkbox#master",
+    "react-native-page-swiper": "https://github.com/dan-nyanko/react-native-page-swiper#master",
     "react-native-vector-icons": "1.3.4",
     "realm": "^0.12.0",
     "react-native-drawer": "^2.2.2",
