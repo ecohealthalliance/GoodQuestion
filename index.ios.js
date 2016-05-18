@@ -3,8 +3,6 @@
  * @flow
  */
 
-const backgroundGeolocation = require('react-native-background-geolocation')
-
 import React, { AppRegistry } from 'react-native'
 
 // Model
@@ -32,7 +30,6 @@ const GoodQuestion = React.createClass ({
 
   /* Render */
   render() {
-    console.log(backgroundGeolocation)
     return ( <SharedNavigator /> )
   }
 })

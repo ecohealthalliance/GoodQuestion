@@ -25,9 +25,6 @@
 		71488E640C714937B5D999AE /* libRealmReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2CB1BF2A142467BBF1AFBE0 /* libRealmReact.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		B4F2DC7E18D9455C8FAE85AA /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B832CA7646945768EABA7A6 /* libz.tbd */; };
-		D4882C4F1CECA6E1006A1C13 /* libRNBackgroundGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4882C4C1CECA63E006A1C13 /* libRNBackgroundGeolocation.a */; };
-		D4882C511CECA764006A1C13 /* TSLocationManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4882C501CECA764006A1C13 /* TSLocationManager.framework */; };
-		D4882C531CECA790006A1C13 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D4882C521CECA790006A1C13 /* libsqlite3.tbd */; };
 		DC9DEC7AD32346D29CD99AB0 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BA72AAE0624D4568BCC62B37 /* libc++.tbd */; };
 /* End PBXBuildFile section */
 
@@ -116,20 +113,6 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
-		D4882C4B1CECA63E006A1C13 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D4882C461CECA63E006A1C13 /* RNBackgroundGeolocation.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 83FF5F851AFD0D2B0016A13E;
-			remoteInfo = RNBackgroundGeolocation;
-		};
-		D4882C4D1CECA63E006A1C13 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D4882C461CECA63E006A1C13 /* RNBackgroundGeolocation.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 83FF5F901AFD0D2B0016A13E;
-			remoteInfo = RNBackgroundGeolocationTests;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -160,9 +143,6 @@
 		8B832CA7646945768EABA7A6 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		BA72AAE0624D4568BCC62B37 /* libc++.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		D2CB1BF2A142467BBF1AFBE0 /* libRealmReact.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRealmReact.a; sourceTree = "<group>"; };
-		D4882C461CECA63E006A1C13 /* RNBackgroundGeolocation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNBackgroundGeolocation.xcodeproj; path = "../node_modules/react-native-background-geolocation/RNBackgroundGeolocation.xcodeproj"; sourceTree = "<group>"; };
-		D4882C501CECA764006A1C13 /* TSLocationManager.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TSLocationManager.framework; path = "../node_modules/react-native-background-geolocation/RNBackgroundGeolocation/TSLocationManager.framework"; sourceTree = "<group>"; };
-		D4882C521CECA790006A1C13 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,9 +157,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D4882C531CECA790006A1C13 /* libsqlite3.tbd in Frameworks */,
-				D4882C511CECA764006A1C13 /* TSLocationManager.framework in Frameworks */,
-				D4882C4F1CECA6E1006A1C13 /* libRNBackgroundGeolocation.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
@@ -313,7 +290,6 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				D4882C461CECA63E006A1C13 /* RNBackgroundGeolocation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
 				00C302B51ABCB90400DB3ED1 /* RCTGeolocation.xcodeproj */,
@@ -363,22 +339,11 @@
 		C14AEA65D20A42DCB351B9A6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				D4882C521CECA790006A1C13 /* libsqlite3.tbd */,
-				D4882C501CECA764006A1C13 /* TSLocationManager.framework */,
 				59027C1D1CE4ED4200110480 /* libRealmJS.a */,
 				BA72AAE0624D4568BCC62B37 /* libc++.tbd */,
 				8B832CA7646945768EABA7A6 /* libz.tbd */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		D4882C471CECA63E006A1C13 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				D4882C4C1CECA63E006A1C13 /* libRNBackgroundGeolocation.a */,
-				D4882C4E1CECA63E006A1C13 /* RNBackgroundGeolocationTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -432,13 +397,6 @@
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
-					};
-					13B07F861A680F5B00A75B9A = {
-						SystemCapabilities = {
-							com.apple.BackgroundModes = {
-								enabled = 1;
-							};
-						};
 					};
 				};
 			};
@@ -497,10 +455,6 @@
 				{
 					ProductGroup = 59027C0E1CE4ECE300110480 /* Products */;
 					ProjectRef = 6A2952F9CD4A424186BE3AFE /* RealmReact.xcodeproj */;
-				},
-				{
-					ProductGroup = D4882C471CECA63E006A1C13 /* Products */;
-					ProjectRef = D4882C461CECA63E006A1C13 /* RNBackgroundGeolocation.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -587,20 +541,6 @@
 			fileType = archive.ar;
 			path = libRCTText.a;
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		D4882C4C1CECA63E006A1C13 /* libRNBackgroundGeolocation.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRNBackgroundGeolocation.a;
-			remoteRef = D4882C4B1CECA63E006A1C13 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		D4882C4E1CECA63E006A1C13 /* RNBackgroundGeolocationTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RNBackgroundGeolocationTests.xctest;
-			remoteRef = D4882C4D1CECA63E006A1C13 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -733,7 +673,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEAD_CODE_STRIPPING = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../node_modules/react-native-background-geolocation/**";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -752,7 +691,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEAD_CODE_STRIPPING = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../node_modules/react-native-background-geolocation/**";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
