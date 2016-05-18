@@ -7,6 +7,8 @@ import React, {
   Text,
 } from 'react-native'
 
+import Drawer from 'react-native-drawer'
+
 import Settings from '../settings'
 
 // Components
@@ -31,6 +33,7 @@ import SurveyListPage from '../views/SurveyListPage'
 import TermsOfServicePage from '../views/TermsOfServicePage'
 import RegistrationPages from '../views/RegistrationPages'
 import FormPage from '../views/FormPage'
+import ControlPanel from '../views/ControlPanel'
 
 /* Configuration */
 if (Platform.OS === 'ios') {
@@ -58,6 +61,7 @@ const SharedNavigator = React.createClass ({
       title: '',
       isLoading: true,
       isAuthenticated: false,
+      drawerOpen: false
     }
   },
   componentWillMount() {
@@ -72,26 +76,27 @@ const SharedNavigator = React.createClass ({
       self.setState(state);
     });
   },
-  setTitle(title) {
-    let state = Object.assign({}, this.state);
-    state.title = title;
-    this.setState(state);
-  },
+
+  /* Methods */
   setAuthenticated(authenticated) {
     let state = Object.assign({}, this.state);
     state.isAuthenticated = authenticated;
     this.setState(state);
   },
+
+  /* Render */
   routeMapper(route, nav) {
-    let sharedProps = {
+
+    const sharedProps = {
       navigator: nav,
-      setTitle: this.setTitle,
     };
 
     if (!this.state.isAuthenticated && !route.unsecured) {
-      return <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />
+      route.path = 'login'
+      route.title = ' '
     }
-    switch (route.name) {
+
+    switch (route.path) {
       case 'login': return <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />
       case 'surveylist': return <SurveyListPage {...sharedProps} />
       case 'terms': return <TermsOfServicePage {...sharedProps} />
@@ -101,23 +106,43 @@ const SharedNavigator = React.createClass ({
     }
   },
   render() {
-    const initialRoute = {name: 'surveylist'}
+    const initialRoute = { path:'surveylist', title: 'Surveys' }
     // show loading component without the navigationBar
     if (this.state.isLoading) {
       return (<Loading/>);
     }
     // show the navigator
     return (
-      <Navigator
-        ref={(nav) => { navigator = nav }}
-        initialRoute={initialRoute}
-        renderScene={this.routeMapper}
-        configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
-        style={Styles.container.wrapper}
-        navigationBar={
-          <Header title={this.state.title} />
-        }
-      />
+      <Drawer
+        type="overlay"
+        content={<ControlPanel
+          navigator={navigator}
+          closeDrawer={()=>this.setState({drawerOpen: false})} />}
+        tapToClose={true}
+        openDrawerOffset={0.2} // 20% gap on the right side of drawer
+        panCloseMask={0.2}
+        closedDrawerOffset={-3}
+        styles={Styles.drawer}
+        open={this.state.drawerOpen}
+        onClose={()=>this.setState({drawerOpen: false})}
+        tweenHandler={(ratio) => ({
+          main: { opacity:(2-ratio)/2 }
+        })}
+        >
+        <Navigator
+          ref={(nav) => { navigator = nav }}
+          immediatelyRefresh={()=>{}}
+          initialRoute={initialRoute}
+          renderScene={this.routeMapper}
+          configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
+          style={Styles.container.wrapper}
+          navigationBar={
+            <Header
+              title={this.state.title}
+              openDrawer={()=>this.setState({drawerOpen: true})} />
+          }
+        />
+      </Drawer>
     );
   }
 })

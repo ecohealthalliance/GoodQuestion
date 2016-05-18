@@ -67,10 +67,6 @@ const LoginPage = React.createClass ({
     password: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().label('Password'),
   },
 
-  componentWillMount() {
-    this.props.setTitle(this.title);
-  },
-
   getInitialState() {
     return {
       email: '',
@@ -82,11 +78,15 @@ const LoginPage = React.createClass ({
 
   /* Methods */
   handleRegistration() {
-    this.props.navigator.push({name:'registration', unsecured: true})
+    this.props.navigator.push({path:'registration', unsecured: true})
   },
 
   handleVerifyLogin() {
     let self = this;
+
+    if (self.state.button_text === 'Verifying...') {
+      return;
+    }
 
     // validate
     let errors = this.joiValidate();
@@ -139,7 +139,7 @@ const LoginPage = React.createClass ({
   /* Render */
   render() {
     return (
-      <View style={{flex: 1}}>
+      <View style={{flex: 1, backgroundColor: '#fff'}}>
         <View>
           <View style={this.styles.loginHeader}>
             <Image source={require('../images/logo_stacked.png')} style={this.styles.logo}></Image>

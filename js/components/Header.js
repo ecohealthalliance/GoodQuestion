@@ -10,26 +10,33 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 const Header = React.createClass ({
   propTypes: {
     navigator: React.PropTypes.object,
-    title: React.PropTypes.string,
   },
 
   getInitialState() {
     return {
       index: 0,
-      title: this.props.title,
+      title: 'Good Question',
+      path: 'none'
     }
   },
 
+  immediatelyRefresh() {
+    // NoOp https://github.com/facebook/react-native/issues/6205
+  },
+
   componentWillReceiveProps(nextProps) {
-    let state = Object.assign({}, this.state);
-    if (nextProps.navState) {
-      const position = nextProps.navState.routeStack.length - 1
-      state.index = position;
+    try {
+      let position = nextProps.navState.routeStack.length - 1
+      let nextTitle = nextProps.navState.routeStack[nextProps.navState.routeStack.length-1].title
+      if (nextTitle && nextTitle !== this.state.title) {
+        this.setState({
+          title: nextTitle,
+          index: position,
+        })
+      }
+    } catch(e) {
+      console.warn(e)
     }
-    if (typeof nextProps.title !== 'undefined') {
-      state.title = nextProps.title;
-    }
-    this.setState(state);
   },
 
   /* Methods */
@@ -54,6 +61,11 @@ const Header = React.createClass ({
           <Text>
             {this.state.title}
           </Text>
+        </View>
+        <View style={Styles.header.navBarRightButton}>
+          <TouchableWithoutFeedback onPress={this.props.openDrawer}>
+            <Icon name="bars" size={30} color="#FFFFFF" />
+          </TouchableWithoutFeedback>
         </View>
       </View>
     )

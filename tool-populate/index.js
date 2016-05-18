@@ -17,6 +17,8 @@ program
 
 Parse.initialize('testapp')
 Parse.serverURL = 'http://localhost:1337/parse'
+// Parse.initialize('UMassSurvey')
+// Parse.serverURL = 'https://survey.eha.io/parse'
 
 if (program.reset) {
   resetLocalServer()

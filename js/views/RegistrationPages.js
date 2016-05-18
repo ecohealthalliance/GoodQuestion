@@ -41,7 +41,6 @@ const RegistrationPages = React.createClass ({
   },
 
   componentWillMount() {
-    this.props.setTitle(' ');
   },
 
   componentWillReceiveProps(nextProps) {
@@ -172,15 +171,16 @@ const RegistrationPages = React.createClass ({
   /* Render */
   render() {
     return (
-      <Swiper
-        style={{flex: 1}}
-        activeDotColor={Color.background1}
-        index={this.state.index}
-        beforePageChange={this.beforePageChange}
-        onPageChange={this.onPageChange}
-        children={this.getChildren()}
-        threshold={75}>
-      </Swiper>
+      <View style={{flex: 1, backgroundColor: '#fff'}}>
+        <Swiper
+          activeDotColor={Color.background1}
+          index={this.state.index}
+          beforePageChange={this.beforePageChange}
+          onPageChange={this.onPageChange}
+          children={this.getChildren()}
+          threshold={75}>
+        </Swiper>
+      </View>
     )
   }
 })

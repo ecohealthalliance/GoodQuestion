@@ -29,7 +29,6 @@ const SurveyListPage = React.createClass ({
   },
 
   componentDidMount() {
-    this.props.setTitle(this.title);
     this.setState({
       dataSource: this.state.dataSource.cloneWithRows(this.state.list),
     });
@@ -39,8 +38,16 @@ const SurveyListPage = React.createClass ({
     }
   },
 
+  componentWillUnmount() {
+    // Cancel callbacks
+    this.cancelCallbacks = true
+  },
+
   /* Methods */
   loadList(error, response){
+    // Prevent this callback from working if the component has unmounted.
+    if (this.cancelCallbacks) return
+
     if (error) {
       console.warn(error)
     } else {
@@ -65,12 +72,17 @@ const SurveyListPage = React.createClass ({
   },
 
   selectForm(error, forms, survey) {
+    if (this.cancelCallbacks) return
+
     // TODO Support multiple forms
     if (error) {
       console.warn(error)
+    } else if (!forms || !forms[0]) {
+      alert('Error: Unable to fetch the Forms associated with this Survey.')
     } else {
       this.props.navigator.push({
-        name: 'form',
+        path: 'form',
+        title: 'Survey: ' + survey.get('title'),
         form: forms[0],
         survey: survey
       })

@@ -81,7 +81,7 @@ const RegistrationPagePart1 = React.createClass ({
 
   /* Methods */
   goToTermsPage() {
-    this.props.navigator.push({name: 'terms', unsecured: true})
+    this.props.navigator.push({path: 'terms', unsecured: true})
   },
 
   goToNextPage() {
@@ -123,6 +123,7 @@ const RegistrationPagePart1 = React.createClass ({
         </TouchableWithoutFeedback>
       </Text>
     );
+    this.props.navigator.push({path: 'terms', title: 'Terms of Service'})
   },
 
   /* Render */
