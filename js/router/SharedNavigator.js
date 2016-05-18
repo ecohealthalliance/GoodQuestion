@@ -41,7 +41,7 @@ if (Platform.OS === 'ios') {
   Store.platform = 'android'
 }
 
-let navigator
+let navigator;
 // Binds the hardware "back button" from Android devices
 if ( Platform.OS === 'android' ) {
   BackAndroid.addEventListener('hardwareBackPress', () => {
@@ -59,7 +59,7 @@ const SharedNavigator = React.createClass ({
       title: '',
       isLoading: true,
       isAuthenticated: false,
-      drawerOpen: false
+      drawerOpen: false,
     }
   },
   componentWillMount() {
@@ -76,13 +76,20 @@ const SharedNavigator = React.createClass ({
 
   /* Methods */
   setAuthenticated(authenticated) {
-    this.setState({isAuthenticated: authenticated});
+    this.setState({
+      isAuthenticated: authenticated
+    }, function() {
+      navigator.resetTo({});
+    });
   },
 
   logoutHandler() {
     logout();
-    this.setState({isAuthenticated: false});
-    navigator.resetTo({path:'login',title:' '});
+    this.setState({
+      isAuthenticated: false,
+    }, function() {
+      navigator.resetTo({path:'login',title:''});
+    });
   },
 
   routeMapper(route, nav) {
@@ -133,7 +140,6 @@ const SharedNavigator = React.createClass ({
         >
         <Navigator
           ref={(nav) => { navigator = nav }}
-          immediatelyRefresh={()=>{}}
           initialRoute={initialRoute}
           renderScene={this.routeMapper}
           configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
@@ -150,7 +156,6 @@ const SharedNavigator = React.createClass ({
     return(
       <Navigator
         ref={(nav) => { navigator = nav }}
-        immediatelyRefresh={()=>{}}
         initialRoute={initialRoute}
         renderScene={this.routeMapper}
         configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
