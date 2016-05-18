@@ -64,7 +64,7 @@ const LoginPage = React.createClass ({
 
   schema: {
     email: Joi.string().email().required().label('Email'),
-    password: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().label('Password'),
+    password: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().options({language: {string: {regex: {base: 'must be at least 8 alpha numberic characters'}}}}).label('Password'),
   },
 
   getInitialState() {
@@ -108,13 +108,7 @@ const LoginPage = React.createClass ({
         Alert.alert(err, 'The email and password combination is invalid.')
         return;
       }
-      // the user is authenticated, setAuthenticated to true
-      self.props.setAuthenticated(true)
-      // allow for the async state to be updated
-      async.nextTick(function(){
-        // navigate to the default route
-        self.props.navigator.replace({});
-      });
+      self.props.setAuthenticated(true);
     });
   },
 
