@@ -1,15 +1,22 @@
 
 import React, {View, Text, Linking} from 'react-native'
 
+import {logout} from '../api/Account'
 import Styles from '../styles/Styles'
 import ControlPanelItem from '../components/ControlPanelItem'
 import Settings from '../settings'
 
 export default React.createClass({
-  //
   render() {
     return (
       <View style={Styles.controlPanel.container}>
+        <ControlPanelItem
+          onPress={()=>{
+            this.props.closeDrawer();
+            this.props.logout();
+          }}
+          text="Logout"
+        />
         <ControlPanelItem
           onPress={()=>{
             this.props.navigator.push({name: 'surveylist'})
