@@ -1,8 +1,6 @@
 
 import React, {View, Text, Linking} from 'react-native'
 
-import async from 'async'
-
 import {logout} from '../api/Account'
 import Styles from '../styles/Styles'
 import ControlPanelItem from '../components/ControlPanelItem'
@@ -14,11 +12,8 @@ export default React.createClass({
       <View style={Styles.controlPanel.container}>
         <ControlPanelItem
           onPress={()=>{
-            logout();
-            async.nextTick(() => {
-              this.props.closeDrawer();
-              this.props.navigator.resetTo({path:'login',title:' '});
-            });
+            this.props.closeDrawer();
+            this.props.logout();
           }}
           text="Logout"
         />

@@ -24,8 +24,9 @@ import Store from '../data/Store'
 // Parse
 import Parse from 'parse/react-native'
 import {connectToParseServer} from '../api/ParseServer'
-import {isAuthenticated, register} from '../api/Account'
+import {isAuthenticated, register, logout} from '../api/Account'
 
+import async from 'async'
 
 // Views
 import LoginPage from '../views/LoginPage'
@@ -79,9 +80,14 @@ const SharedNavigator = React.createClass ({
 
   /* Methods */
   setAuthenticated(authenticated) {
-    let state = Object.assign({}, this.state);
-    state.isAuthenticated = authenticated;
-    this.setState(state);
+    this.setState({isAuthenticated: authenticated});
+  },
+
+  logoutHandler() {
+    logout();
+    async.nextTick(() => {
+      navigator.resetTo({path:'login',title:' '});
+    });
   },
 
   /* Render */
@@ -112,11 +118,13 @@ const SharedNavigator = React.createClass ({
       return (<Loading/>);
     }
     // show the navigator
-    return (
-      <Drawer
+    if (this.state.isAuthenticated) {
+      console.log('show drawer');
+      return (<Drawer
         type="overlay"
         content={<ControlPanel
           navigator={navigator}
+          logout={this.logoutHandler}
           closeDrawer={()=>this.setState({drawerOpen: false})} />}
         tapToClose={true}
         openDrawerOffset={0.2} // 20% gap on the right side of drawer
@@ -142,7 +150,22 @@ const SharedNavigator = React.createClass ({
               openDrawer={()=>this.setState({drawerOpen: true})} />
           }
         />
-      </Drawer>
+      </Drawer>);
+    }
+
+    return(
+      <Navigator
+        ref={(nav) => { navigator = nav }}
+        immediatelyRefresh={()=>{}}
+        initialRoute={initialRoute}
+        renderScene={this.routeMapper}
+        configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
+        style={Styles.container.wrapper}
+        navigationBar={
+          <Header
+            title={this.state.title} />
+        }
+      />
     );
   }
 })

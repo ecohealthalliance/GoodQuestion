@@ -15,7 +15,7 @@ const Header = React.createClass ({
   getInitialState() {
     return {
       index: 0,
-      title: 'Good Question',
+      title: '',
       path: 'none'
     }
   },
@@ -39,6 +39,17 @@ const Header = React.createClass ({
     }
   },
 
+  renderDrawer() {
+    if (typeof this.props.openDrawer === 'undefined') return;
+    return (
+      <View style={Styles.header.navBarRightButton}>
+        <TouchableWithoutFeedback onPress={this.props.openDrawer}>
+          <Icon name="bars" size={30} color="#FFFFFF" />
+        </TouchableWithoutFeedback>
+      </View>
+    );
+  },
+
   /* Methods */
   navigateBack() {
     this.props.navigator.pop()
@@ -46,6 +57,7 @@ const Header = React.createClass ({
 
   /* Render */
   render() {
+    console.log('this.props:', this.props);
     return (
       <View style={Styles.header.navBar}>
         {
@@ -62,11 +74,7 @@ const Header = React.createClass ({
             {this.state.title}
           </Text>
         </View>
-        <View style={Styles.header.navBarRightButton}>
-          <TouchableWithoutFeedback onPress={this.props.openDrawer}>
-            <Icon name="bars" size={30} color="#FFFFFF" />
-          </TouchableWithoutFeedback>
-        </View>
+        {this.renderDrawer()}
       </View>
     )
   }
