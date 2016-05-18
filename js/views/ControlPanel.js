@@ -12,8 +12,8 @@ export default React.createClass({
       <View style={Styles.controlPanel.container}>
         <ControlPanelItem
           onPress={()=>{
-            this.props.navigator.push({name: 'surveylist'})
-            this.props.closeDrawer()
+            this.props.navigator.push({path: 'surveylist', title: 'Surveys'});
+            this.props.closeDrawer();
           }}
           text="Surveys"
         />
@@ -21,10 +21,11 @@ export default React.createClass({
           text="Notifications"
         />
         <ControlPanelItem
+          onPress={()=>{
+            this.props.navigator.push({'path': 'profile', title: 'Profile'});
+            this.props.closeDrawer();
+          }}
           text="Profile"
-        />
-        <ControlPanelItem
-          text="Account"
         />
         <ControlPanelItem
           onPress={()=>{
