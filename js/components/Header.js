@@ -15,9 +15,13 @@ const Header = React.createClass ({
   getInitialState() {
     return {
       index: 0,
-      title: 'Good Question',
+      title: '',
       path: 'none'
     }
+  },
+
+  immediatelyRefresh() {
+    // NoOp https://github.com/facebook/react-native/issues/6205
   },
 
   componentWillReceiveProps(nextProps) {
@@ -33,6 +37,17 @@ const Header = React.createClass ({
     } catch(e) {
       console.warn(e)
     }
+  },
+
+  renderDrawer() {
+    if (typeof this.props.openDrawer === 'undefined') return;
+    return (
+      <View style={Styles.header.navBarRightButton}>
+        <TouchableWithoutFeedback onPress={this.props.openDrawer}>
+          <Icon name="bars" size={30} color="#FFFFFF" />
+        </TouchableWithoutFeedback>
+      </View>
+    );
   },
 
   /* Methods */
@@ -58,11 +73,7 @@ const Header = React.createClass ({
             {this.state.title}
           </Text>
         </View>
-        <View style={Styles.header.navBarRightButton}>
-          <TouchableWithoutFeedback onPress={this.props.openDrawer}>
-            <Icon name="bars" size={30} color="#FFFFFF" />
-          </TouchableWithoutFeedback>
-        </View>
+        {this.renderDrawer()}
       </View>
     )
   }

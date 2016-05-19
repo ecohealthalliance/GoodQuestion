@@ -7,10 +7,17 @@ import React, {
   View,
   Alert,
   Image,
+  ScrollView,
 } from 'react-native'
 
 import Styles from '../styles/Styles'
 import {currentUser} from '../api/Account'
+
+import Button from '../components/Button'
+
+import Joi from '../lib/joi-browser.min'
+import JoiMixins from '../mixins/joi-mixins'
+import EventMixins from '../mixins/event-mixins'
 
 const ProfilePage = React.createClass ({
   currentUser: null,
@@ -19,11 +26,23 @@ const ProfilePage = React.createClass ({
     navigator: React.PropTypes.object.isRequired,
   },
 
+  mixins: [
+    JoiMixins,
+    EventMixins,
+  ],
+
+  schema: {
+    name: Joi.string().min(3).required().options({language: {any: {allowOnly: 'must not be empty'}}}).label('Full Name'),
+    phone: Joi.string().optional().label('Phone Number'),
+  },
+
   getInitialState() {
     return {
+      button_text: 'Submit',
       email: null,
       name: null,
       phone: null,
+      errors: [],
     }
   },
 
@@ -43,6 +62,9 @@ const ProfilePage = React.createClass ({
     });
   },
   /* Methods */
+  submit() {
+
+  },
 
   /* Render */
   render() {
@@ -53,8 +75,40 @@ const ProfilePage = React.createClass ({
           <Text style={Styles.profile.name}> {this.state.name} </Text>
           <Text style={Styles.profile.phone}> {this.state.phone} </Text>
         </View>
-        <Text style={[Styles.type.h1, {textAlign: 'center'}]}> Update your Profile </Text>
-
+        <ScrollView style={{height: 200}}>
+          <Text style={[Styles.type.h1, {textAlign: 'center'}]}>
+            Update your Profile
+          </Text>
+          <View style={Styles.form.inputGroup}>
+            <Text style={Styles.form.errorText}>
+              {this.decodeText(this.state.errors.name)}
+            </Text>
+            <TextInput
+              style={Styles.form.input}
+              onChangeText={this.textFieldChangeHandler.bind(this, 'name')}
+              value={this.state.name}
+              autoCapitalize='none'
+              autoCorrect={false}
+              placeholder="Full Name"
+            />
+            <Text style={Styles.form.errorText}>
+              {this.decodeText(this.state.errors.phone)}
+            </Text>
+            <TextInput
+              style={Styles.form.input}
+              onChangeText={this.textFieldChangeHandler.bind(this, 'phone')}
+              value={this.state.phone}
+              autoCapitalize='none'
+              autoCorrect={false}
+              placeholder="Phone Number"
+            />
+          </View>
+          <View style={Styles.form.bottomForm}>
+            <Button action={this.submit} color='primary' wide>
+              {this.state.button_text}
+            </Button>
+          </View>
+        </ScrollView>
       </View>
     )
   }

@@ -25,6 +25,8 @@ import TimeQuestionAndroid from '../components/QuestionTypes/TimeQuestionAndroid
 import Button from 'apsl-react-native-button';
 import Submission from '../models/Submission';
 import Loading from '../components/Loading';
+import Color from '../styles/Color';
+import Swiper from 'react-native-page-swiper'
 
 import { loadQuestions } from '../api/Questions'
 import Realm from 'realm';
@@ -38,12 +40,25 @@ const FormPage = React.createClass ({
   getInitialState() {
     this.realm = new Realm({schema: [Submission]});
     console.log(this.realm);
+    let index = 0
+    if (this.props.index) {
+      index = this.props.index;
+    }
     return {
       questions: [],
       answers: {},
       loading: true,
+      index: index
     }
   },
+  // beforePageChange(nextPage) {
+  //   const shouldContinue = this.validatePage();
+  //   if (!shouldContinue) {
+  //     return false;
+  //   }
+  //   this.setIndex(nextPage);
+  //   return true;
+  // },
 
   componentWillMount() {
     let submissions = this.realm
@@ -64,6 +79,7 @@ const FormPage = React.createClass ({
   /* Methods */
 
   setQuestions(error, response) {
+
     // Prevent this callback from working if the component has unmounted.
     if (this.cancelCallbacks) return
 
@@ -97,16 +113,13 @@ const FormPage = React.createClass ({
   },
 
   setAnswer(questionId, value) {
-    this.setState((prevState)=>{
-      prevState.answers[questionId] = value;
-      return prevState;
-    })
+    this.state.answers[questionId] = value;
   },
 
   /* Render */
 
   renderQuestions() {
-    return this.state.questions.map((question, index)=>{
+    var renderedQuestions = this.state.questions.map((question, index)=>{
       let questionProps = {
         key: question.id,
         id: question.id,
@@ -125,25 +138,30 @@ const FormPage = React.createClass ({
       }
 
       switch (question.get('type')) {
-        case 'shortAnswer': return <ShortAnswer {...questionProps} />
-        case 'checkboxes': return <Checkboxes {...questionProps} />
-        case 'multipleChoice': return <MultipleChoice {...questionProps} />
-        case 'longAnswer': return <LongAnswerQuestion {...questionProps} />
-        case 'number': return <NumberQuestion {...questionProps} />
-        case 'scale': return <ScaleQuestion {...questionProps} />
+        case 'shortAnswer': return <View><ShortAnswer {...questionProps} /></View>
+        case 'checkboxes': return <View><Checkboxes {...questionProps} /></View>
+        case 'multipleChoice': return <View><MultipleChoice {...questionProps} /></View>
+        case 'longAnswer': return <View><LongAnswerQuestion {...questionProps} /></View>
+        case 'number': return <View><NumberQuestion {...questionProps} /></View>
+        case 'scale': return <View><ScaleQuestion {...questionProps} /></View>
         case 'date':
           return Platform.OS === 'ios' ?
-            <DateQuestionIOS {...questionProps} /> :
-            <DateQuestionAndroid {...questionProps} />
+            <View><DateQuestionIOS {...questionProps} /></View>  :
+            <View><DateQuestionAndroid {...questionProps} /></View>
         case 'datetime':
           return Platform.OS === 'ios' ?
-            <DateQuestionIOS {...questionProps} mode="datetime" /> :
-            <DatetimeQuestionAndroid {...questionProps} />
+            <View><DateQuestionIOS {...questionProps} mode="datetime" /></View> :
+            <View><DatetimeQuestionAndroid {...questionProps} /></View>
         default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('type')}</Text>;
       }
     })
+    newLast = <View>
+                {renderedQuestions[renderedQuestions.length-1]}
+                <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
+              </View>
+    renderedQuestions[renderedQuestions.length-1] = newLast
+    return renderedQuestions;
   },
-
   render() {
     if (this.state.loading) {
       return (
@@ -154,10 +172,20 @@ const FormPage = React.createClass ({
       )
     } else {
       return (
-        <ScrollView style={Styles.container.form}>
-          {this.renderQuestions()}
-          <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
-        </ScrollView>
+        <Swiper
+          style={{flex: 1}}
+          activeDotColor={Color.background1}
+          index={this.state.index}
+          beforePageChange={this.beforePageChange}
+          onPageChange={this.onPageChange}
+          children={this.renderQuestions()}
+          threshold={50}>
+        </Swiper>
+
+        // <ScrollView style={Styles.container.form}>
+        //   {this.renderQuestions()}
+        //   <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
+        // </ScrollView>
       )
     }
   }
