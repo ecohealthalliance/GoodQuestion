@@ -93,11 +93,11 @@ export function currentUser(done) {
         done(null, user);
         return;
       }
-      done(false);
+      done('Invalid User');
     },
     function(err) {
       console.error(err);
-      done(false);
+      done('Invalid User');
     }
   );
 };
