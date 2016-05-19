@@ -33,7 +33,6 @@ const FormStyles = StyleSheet.create({
     paddingTop: 20,
     backgroundColor: Color.background2,
   },
-
   button: {
     backgroundColor: Color.positive,
     padding: 12,
@@ -55,6 +54,9 @@ const FormStyles = StyleSheet.create({
   primaryButton: {
     backgroundColor: Color.primary,
   },
+  successButton: {
+    backgroundColor: Color.success,
+  },
   wideButton: {
     marginHorizontal: 0,
     alignSelf: 'stretch',
@@ -69,7 +71,9 @@ const FormStyles = StyleSheet.create({
   primaryButtonText: {
     color: Color.background2,
   },
-
+  successButtonText: {
+    color: Color.background3,
+  },
   errorText: {
     paddingLeft: 5,
     color: 'red',
@@ -127,7 +131,7 @@ const FormStyles = StyleSheet.create({
     borderLeftWidth: 1,
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
-    
+
   },
   questionLabel: {
     color: Color.primary,

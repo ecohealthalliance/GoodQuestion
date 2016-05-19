@@ -25,6 +25,8 @@ import TimeQuestionAndroid from '../components/QuestionTypes/TimeQuestionAndroid
 import Button from 'apsl-react-native-button';
 import Submission from '../models/Submission';
 import Loading from '../components/Loading';
+import Color from '../styles/Color';
+import Swiper from 'react-native-page-swiper'
 
 import { loadQuestions, loadCachedQuestions } from '../api/Questions'
 import realm from '../data/Realm'
@@ -36,12 +38,25 @@ const FormPage = React.createClass ({
   },
 
   getInitialState() {
+    let index = 0
+    if (this.props.index) {
+      index = this.props.index;
+    }
     return {
       questions: loadCachedQuestions(this.props.form.id),
       answers: {},
       loading: false,
+      index: index
     }
   },
+  // beforePageChange(nextPage) {
+  //   const shouldContinue = this.validatePage();
+  //   if (!shouldContinue) {
+  //     return false;
+  //   }
+  //   this.setIndex(nextPage);
+  //   return true;
+  // },
 
   componentWillMount() {
     let submissions = realm
@@ -74,52 +89,54 @@ const FormPage = React.createClass ({
   },
 
   setAnswer(questionId, value) {
-    this.setState((prevState)=>{
-      prevState.answers[questionId] = value;
-      return prevState;
-    })
+    this.state.answers[questionId] = value;
   },
 
   /* Render */
 
   renderQuestions() {
     try {
-      return this.state.questions.map((question, index)=>{
-        let questionProps = {
-          key: question.id,
-          id: question.id,
-          value: this.state.answers[question.id],
-          index: index + 1,
-          onChange: (value)=> {
-            this.setAnswer(question.id, value)
-          },
-        }
-        questionProps = _.merge(questionProps, question)
-        if (questionProps.properties) questionProps.properties = JSON.parse(questionProps.properties)
+    var renderedQuestions = this.state.questions.map((question, index)=>{
+      let questionProps = {
+        key: question.id,
+        id: question.id,
+        value: this.state.answers[question.id],
+        index: index + 1,
+        onChange: (value)=> {
+          this.setAnswer(question.id, value)
+        },
+      }
+      questionProps = _.merge(questionProps, question)
+      if (questionProps.properties) questionProps.properties = JSON.parse(questionProps.properties)
 
-        switch (question.type) {
-          case 'shortAnswer': return <ShortAnswer {...questionProps} />
-          case 'checkboxes': return <Checkboxes {...questionProps} />
-          case 'multipleChoice': return <MultipleChoice {...questionProps} />
-          case 'longAnswer': return <LongAnswerQuestion {...questionProps} />
-          case 'number': return <NumberQuestion {...questionProps} />
-          case 'scale': return <ScaleQuestion {...questionProps} />
-          case 'date':
-            return Platform.OS === 'ios' ?
-              <DateQuestionIOS {...questionProps} /> :
-              <DateQuestionAndroid {...questionProps} />
-          case 'datetime':
-            return Platform.OS === 'ios' ?
-              <DateQuestionIOS {...questionProps} mode="datetime" /> :
-              <DatetimeQuestionAndroid {...questionProps} />
-          default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.type}</Text>;
-        }
-      })
-    } catch (e) {
-      console.error(e)
-    }
+      switch (question.type) {
+        case 'shortAnswer': return <View><ShortAnswer {...questionProps} /></View>
+        case 'checkboxes': return <View><Checkboxes {...questionProps} /></View>
+        case 'multipleChoice': return <View><MultipleChoice {...questionProps} /></View>
+        case 'longAnswer': return <View><LongAnswerQuestion {...questionProps} /></View>
+        case 'number': return <View><NumberQuestion {...questionProps} /></View>
+        case 'scale': return <View><ScaleQuestion {...questionProps} /></View>
+        case 'date':
+          return Platform.OS === 'ios' ?
+            <View><DateQuestionIOS {...questionProps} /></View>  :
+            <View><DateQuestionAndroid {...questionProps} /></View>
+        case 'datetime':
+          return Platform.OS === 'ios' ?
+            <View><DateQuestionIOS {...questionProps} mode="datetime" /></View> :
+            <View><DatetimeQuestionAndroid {...questionProps} /></View>
+        default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.type}</Text>;
+      }
+    })
+    newLast = <View>
+                {renderedQuestions[renderedQuestions.length-1]}
+                <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
+              </View>
+    renderedQuestions[renderedQuestions.length-1] = newLast
+    return renderedQuestions;
+  } catch (e) {
+    console.error(e)
+  }
   },
-
   render() {
     if (this.state.loading) {
       return (
@@ -130,10 +147,20 @@ const FormPage = React.createClass ({
       )
     } else {
       return (
-        <ScrollView style={Styles.container.form}>
-          {this.renderQuestions()}
-          <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
-        </ScrollView>
+        <Swiper
+          style={{flex: 1}}
+          activeDotColor={Color.background1}
+          index={this.state.index}
+          beforePageChange={this.beforePageChange}
+          onPageChange={this.onPageChange}
+          children={this.renderQuestions()}
+          threshold={50}>
+        </Swiper>
+
+        // <ScrollView style={Styles.container.form}>
+        //   {this.renderQuestions()}
+        //   <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
+        // </ScrollView>
       )
     }
   }

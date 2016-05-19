@@ -61,7 +61,8 @@ const ContainerStyles = StyleSheet.create({
 
   form: {
     margin: 5,
-  }
+  },
+
 })
 
 module.exports = ContainerStyles
