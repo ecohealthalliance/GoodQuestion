@@ -1,4 +1,7 @@
-var BackgroundGeolocation = require('react-native-background-geolocation');
+import { Platform } from 'react-native'
+const BackgroundGeolocation = Platform.OS === 'android' ?
+    require('react-native-background-geolocation') :
+    require('react-native-background-geolocation-android')
 
 export function configureGeolocationServices() {
   BackgroundGeolocation.configure({
