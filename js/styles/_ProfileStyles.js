@@ -14,7 +14,7 @@ const ProfileStyles = StyleSheet.create({
   picture: {
     width: 175,
     height: 175,
-    borderRadius: 95,
+    borderRadius: 175/2,
     resizeMode: 'contain',
     marginBottom: 10,
   },
