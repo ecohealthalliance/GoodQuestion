@@ -236,7 +236,6 @@ export function isRegistered(email, done) {
   });
 };
 
-
 /**
  *
  * @param {string} email, the email of the user
@@ -280,5 +279,31 @@ export function register(email, password, props, done) {
     // it was successful, registration will automatically login the user, we
     // can call logout() and force them to authenticate
     done(null, true);
+  });
+};
+
+/**
+ * update the users profile information
+ *
+ * @param {string} name, the users full name
+ * @param {string} phone, the users phone number
+ * @param {function} done, the function to execute when done
+ */
+export function updateProfile(name, phone, done) {
+  currentUser(function(err, user) {
+    if (err) {
+      done(false);
+    }
+    user.save({
+      name: name,
+      phone: phone,
+    }).then(
+      function(user) {
+        done(null, user);
+      },
+      function(err) {
+        done(err);
+      }
+    );
   });
 };
