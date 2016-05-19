@@ -13,7 +13,7 @@ const realmInstance = new Realm({
     Question,
     Submission,
   ],
-  schemaVersion: 4,
+  schemaVersion: 8,
 })
 
 console.log(realmInstance)

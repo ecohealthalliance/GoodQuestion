@@ -26,14 +26,14 @@ const SurveyListItem = React.createClass ({
       <View style={Styles.survey.listitem}>
         <TouchableWithoutFeedback onPress={this.props.onPressed}>
           <View style={Styles.container.col75}>
-            <Text style={Styles.survey.title}>{this.props.item.get('title')}</Text>
+            <Text style={Styles.survey.title}>{this.props.item.title}</Text>
             <Text style={Styles.survey.subtitle}>A subtitle</Text>
           </View>
         </TouchableWithoutFeedback>
         <View style={[Styles.container.col25, {alignItems: 'flex-end'}]}>
           <CheckBox
-            ref={this.props.item.get('objectId')}
-            checked={this.props.item.get('accepted')}
+            ref={this.props.item.id}
+            checked={this.props.item.status === 'accepted'}
             uncheckedComponent={uncheckedComponent}
             checkedComponent={checkedComponent}
             onChange={this.props.onChecked}

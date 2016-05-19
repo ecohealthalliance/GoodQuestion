@@ -10,8 +10,9 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import Store from '../data/Store'
 import Styles from '../styles/Styles'
 import Color from '../styles/Color'
-import { loadSurveyList } from '../api/Surveys'
-import { loadForms } from '../api/Forms'
+import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys'
+import { loadCachedForms } from '../api/Forms'
+import { loadCachedQuestions } from '../api/Questions'
 import realm from '../data/Realm'
 import SurveyListItem from '../components/SurveyListItem'
 import Button from '../components/Button'
@@ -25,16 +26,20 @@ const SurveyDetailsPage = React.createClass ({
   getInitialState() {
     let cachedSurvey, cachedForms, cachedQuestions = []
     try {
-      cachedSurvey = realm.objects('Survey').filtered(`id = "${this.props.survey.id}"`)[0]
-      cachedForms = realm.objects('Form').filtered(`surveyId = "${this.props.survey.id}"`)
+      cachedSurvey = this.props.survey
+      cachedForms = loadCachedForms(this.props.survey.id)
       for (var i = 0; i < cachedForms.length; i++) {
         cachedQuestions = _.merge(
           cachedQuestions,
-          realm.objects('Question').filtered(`formId = "${cachedForms[i].id}"`)
+          loadCachedQuestions(cachedForms[i].id)
         )
       }
     } catch (e) {
       console.error(e)
+    }
+
+    if (!cachedForms || !cachedForms[0]) {
+      alert('Error: Unable to fetch the Forms associated with this Survey.')
     }
 
     return {
@@ -93,7 +98,7 @@ const SurveyDetailsPage = React.createClass ({
     // TODO Support multiple forms & support cached forms
     this.props.navigator.push({
       path: 'form',
-      title: this.props.survey.get('title'),
+      title: this.props.survey.title,
       form: form,
       // questions: questions,
       survey: this.state.cachedSurvey,

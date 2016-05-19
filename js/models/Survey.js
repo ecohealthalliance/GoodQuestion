@@ -9,6 +9,7 @@ Survey.schema = {
     updated: 'date',
     
     user: 'string',
+    title: 'string',
     description: 'string',
     status: {type: 'string', default: 'pending'},
   }

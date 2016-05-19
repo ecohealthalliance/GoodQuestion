@@ -11,7 +11,7 @@ import React, {
 import _ from 'lodash'
 import Store from '../data/Store'
 import Styles from '../styles/Styles'
-import { loadSurveyList } from '../api/Surveys'
+import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys'
 import { loadForms } from '../api/Forms'
 import SurveyListItem from '../components/SurveyListItem'
 
@@ -43,6 +43,18 @@ const SurveyListPage = React.createClass ({
     this.cancelCallbacks = true
   },
 
+  componentWillReceiveProps(nextProps) {
+    console.log('SurveyListPage receive props')
+    try {
+      if (nextProps.navigator) {
+        let newPath = nextProps.navigator.state.routeStack[nextProps.navigator.state.routeStack.length-1].path
+        if (newPath === 'surveylist') this.loadList()
+      }
+    } catch(e) {
+      console.error(e)
+    }
+  },
+
   /* Methods */
   loadList(error, response){
     // Prevent this callback from working if the component has unmounted.
@@ -51,11 +63,13 @@ const SurveyListPage = React.createClass ({
     if (error) {
       console.warn(error)
     } else {
+      // Use the Realm cached versions to determine accept/decline status
+      let cachedSurveys = loadCachedSurveyList()
       if (this.isMounted()) {
         this.setState({
           isLoading: false,
-          list: response,
-          dataSource: this.state.dataSource.cloneWithRows(response)
+          list: cachedSurveys,
+          dataSource: this.state.dataSource.cloneWithRows(cachedSurveys)
         })
       }
     }
@@ -67,26 +81,19 @@ const SurveyListPage = React.createClass ({
   },
 
   onPress(item) {
-    // TODO return the the most recently triggered form that hasn't been filled out.
-    loadForms(item, this.selectSurvey)
+    // TODO return the most recently triggered form that hasn't been filled out.
+    this.selectSurvey(item)
   },
 
-  selectSurvey(error, forms, survey) {
+  selectSurvey(survey) {
     if (this.cancelCallbacks) return
 
     // TODO Support multiple forms
-    if (error) {
-      console.warn(error)
-    } else if (!forms || !forms[0]) {
-      alert('Error: Unable to fetch the Forms associated with this Survey.')
-    } else {
-      this.props.navigator.push({
-        path: 'survey-details',
-        title: survey.get('title'),
-        forms: forms,
-        survey: survey
-      })
-    }
+    this.props.navigator.push({
+      path: 'survey-details',
+      title: survey.title,
+      survey: survey
+    })
   },
 
   /* Render */

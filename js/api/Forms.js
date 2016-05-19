@@ -23,6 +23,11 @@ export function cacheParseForm(form, surveyId) {
   })
 }
 
+// Fetches the cached forms related to a specific survey
+export function loadCachedForms(surveyId) {
+  return realm.objects('Form').filtered(`surveyId = "${surveyId}"`)
+}
+
 // Loads Form data from a single Survey and retuns it via callback after the related questions have also been fetched.
 export function loadForms(survey, callback) {
   const surveyFormRelations = survey.get('forms')
