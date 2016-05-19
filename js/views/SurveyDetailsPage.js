@@ -39,6 +39,8 @@ const SurveyDetailsPage = React.createClass ({
 
     if (!cachedForms || !cachedForms[0]) {
       alert('Error: Unable to fetch the Forms associated with this Survey.')
+    } else if (!cachedQuestions || !cachedQuestions[0]) {
+      alert('Error: Unable to fetch the Questions associated with this Survey.')
     }
 
     return {
