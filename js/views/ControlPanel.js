@@ -19,7 +19,7 @@ export default React.createClass({
         />
         <ControlPanelItem
           onPress={()=>{
-            this.props.navigator.push({name: 'surveylist'})
+            this.props.navigator.push({name: 'surveylist', title: "Surveys"})
             this.props.closeDrawer()
           }}
           text="Surveys"
