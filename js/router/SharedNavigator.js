@@ -34,12 +34,17 @@ import RegistrationPages from '../views/RegistrationPages'
 import FormPage from '../views/FormPage'
 import ControlPanel from '../views/ControlPanel'
 
+// Background
+import { configureGeolocationServices } from '../api/BackgroundProcess'
+
 /* Configuration */
 if (Platform.OS === 'ios') {
   Store.platform = 'ios'
 } else {
   Store.platform = 'android'
 }
+
+configureGeolocationServices()
 
 let navigator;
 // Binds the hardware "back button" from Android devices
