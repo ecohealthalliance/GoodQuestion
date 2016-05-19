@@ -26,14 +26,16 @@ const Header = React.createClass ({
 
   componentWillReceiveProps(nextProps) {
     try {
+      let title = this.state.title
       let position = nextProps.navState.routeStack.length - 1
       let nextTitle = nextProps.navState.routeStack[nextProps.navState.routeStack.length-1].title
-      if (nextTitle && nextTitle !== this.state.title) {
-        this.setState({
-          title: nextTitle,
-          index: position,
-        })
+      if (nextTitle && nextTitle !== title) {
+        title = nextTitle
       }
+      this.setState({
+        title: title,
+        index: position
+      })
     } catch(e) {
       console.warn(e)
     }
