@@ -127,10 +127,12 @@ const FormPage = React.createClass ({
         default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.type}</Text>;
       }
     })
-    newLast = <View>
-                {renderedQuestions[renderedQuestions.length-1]}
-                <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
-              </View>
+    newLast = (
+      <View>
+        {renderedQuestions[renderedQuestions.length-1]}
+        <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
+      </View>
+    )
     renderedQuestions[renderedQuestions.length-1] = newLast
     return renderedQuestions;
   } catch (e) {
@@ -156,11 +158,6 @@ const FormPage = React.createClass ({
           children={this.renderQuestions()}
           threshold={50}>
         </Swiper>
-
-        // <ScrollView style={Styles.container.form}>
-        //   {this.renderQuestions()}
-        //   <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
-        // </ScrollView>
       )
     }
   }
