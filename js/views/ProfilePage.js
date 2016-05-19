@@ -8,10 +8,12 @@ import React, {
   Alert,
   Image,
   ScrollView,
+  Dimensions,
 } from 'react-native'
 
+import Variables from '../styles/Variables'
 import Styles from '../styles/Styles'
-import {currentUser} from '../api/Account'
+import {currentUser, updateProfile} from '../api/Account'
 
 import Button from '../components/Button'
 
@@ -19,9 +21,9 @@ import Joi from '../lib/joi-browser.min'
 import JoiMixins from '../mixins/joi-mixins'
 import EventMixins from '../mixins/event-mixins'
 
-const ProfilePage = React.createClass ({
-  currentUser: null,
+const {height, width} = Dimensions.get('window')
 
+const ProfilePage = React.createClass ({
   propTypes: {
     navigator: React.PropTypes.object.isRequired,
   },
@@ -53,7 +55,6 @@ const ProfilePage = React.createClass ({
         this.props.navigator.resetTo({path:'login', title:''});
         return;
       }
-      this.currentUser = user;
       this.setState({
         email: user.get('username'),
         name: user.get('name'),
@@ -63,7 +64,20 @@ const ProfilePage = React.createClass ({
   },
   /* Methods */
   submit() {
+    const self = this;
+    this.setState({button_text: 'Updating...'});
+    updateProfile(this.state.name, this.state.phone, function(err, user) {
+      self.setState({button_text: 'Submit'});
+      if (err) {
+        Alert.alert('Error', 'There was an error saving.');
+        return;
+      }
+      Alert.alert('Success', 'Your profile has been updated.');
+    });
+  },
 
+  calculateScrollViewHeight() {
+    return height - (Variables.HEADER_SIZE + Variables.PROFILE_HEIGHT);
   },
 
   /* Render */
@@ -75,7 +89,7 @@ const ProfilePage = React.createClass ({
           <Text style={Styles.profile.name}> {this.state.name} </Text>
           <Text style={Styles.profile.phone}> {this.state.phone} </Text>
         </View>
-        <ScrollView style={{height: 200}}>
+        <ScrollView style={{height: this.calculateScrollViewHeight()}}>
           <Text style={[Styles.type.h1, {textAlign: 'center'}]}>
             Update your Profile
           </Text>

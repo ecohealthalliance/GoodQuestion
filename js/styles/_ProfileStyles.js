@@ -5,17 +5,16 @@ import Variables from './Variables'
 
 const ProfileStyles = StyleSheet.create({
   header: {
-    height: 275,
+    height: Variables.PROFILE_HEIGHT,
     alignItems:'center',
     justifyContent:'center',
     backgroundColor: Color.background1,
-    paddingBottom: 25,
-    marginBottom: 25,
+    marginBottom: 10,
   },
   picture: {
     width: 175,
     height: 175,
-    borderRadius: 75,
+    borderRadius: 95,
     resizeMode: 'contain',
     marginBottom: 10,
   },
