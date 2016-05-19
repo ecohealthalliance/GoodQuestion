@@ -44,7 +44,6 @@ const SurveyListPage = React.createClass ({
   },
 
   componentWillReceiveProps(nextProps) {
-    console.log('SurveyListPage receive props')
     try {
       if (nextProps.navigator) {
         let newPath = nextProps.navigator.state.routeStack[nextProps.navigator.state.routeStack.length-1].path

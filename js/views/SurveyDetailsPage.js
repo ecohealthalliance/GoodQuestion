@@ -19,8 +19,7 @@ import Button from '../components/Button'
 
 const SurveyDetailsPage = React.createClass ({
   propTypes: {
-    survey: React.PropTypes.object.isRequired, // Parse Object
-    forms: React.PropTypes.array.isRequired,
+    survey: React.PropTypes.object.isRequired, // Realm.io Object
   },
 
   getInitialState() {
@@ -86,7 +85,7 @@ const SurveyDetailsPage = React.createClass ({
 
     // Temporary redirection to fist form
     // To be changed when we support multiple forms in V2
-    this.selectForm(this.state.forms[0])
+    this.selectForm(this.state.cachedForms[0])
   },
 
   selectForm(form) {
@@ -100,7 +99,6 @@ const SurveyDetailsPage = React.createClass ({
       path: 'form',
       title: this.props.survey.title,
       form: form,
-      // questions: questions,
       survey: this.state.cachedSurvey,
     })
   },

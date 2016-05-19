@@ -10,9 +10,6 @@ import Color from '../styles/Color'
 import CheckBox from 'react-native-checkbox'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
-let uncheckedComponent = (<Icon name='circle-o' size={28} color={Color.fadedRed} />);
-let checkedComponent = (<Icon name='check-circle' size={28} color={Color.fadedGreen} />);
-
 const SurveyListItem = React.createClass ({
   propTypes: {
     item: React.PropTypes.object.isRequired,
@@ -21,6 +18,20 @@ const SurveyListItem = React.createClass ({
   },
 
   /* Render */
+  renderIcon() {
+    let icon
+    switch(this.props.item.status) {
+      case 'accepted': icon = <Icon name='check-circle' size={28} color={Color.fadedGreen} />; break;
+      case 'declined': icon = <Icon name='times-circle' size={28} color={Color.fadedRed} />; break;
+      default: icon = <Icon name='circle-o' size={28} color={Color.fadedRed} />; break;
+    }
+    return (
+      <View style={{paddingTop: 4}}>
+        {icon}
+      </View>
+    )
+  },
+
   render() {
     return (
       <View style={Styles.survey.listitem}>
@@ -31,13 +42,7 @@ const SurveyListItem = React.createClass ({
           </View>
         </TouchableWithoutFeedback>
         <View style={[Styles.container.col25, {alignItems: 'flex-end'}]}>
-          <CheckBox
-            ref={this.props.item.id}
-            checked={this.props.item.status === 'accepted'}
-            uncheckedComponent={uncheckedComponent}
-            checkedComponent={checkedComponent}
-            onChange={this.props.onChecked}
-          />
+          {this.renderIcon()}
         </View>
       </View>
     )

@@ -26,7 +26,7 @@ import Button from 'apsl-react-native-button';
 import Submission from '../models/Submission';
 import Loading from '../components/Loading';
 
-import { loadQuestions } from '../api/Questions'
+import { loadQuestions, loadCachedQuestions } from '../api/Questions'
 import realm from '../data/Realm'
 
 const FormPage = React.createClass ({
@@ -37,9 +37,9 @@ const FormPage = React.createClass ({
 
   getInitialState() {
     return {
-      questions: [],
+      questions: loadCachedQuestions(this.props.form.id),
       answers: {},
-      loading: true,
+      loading: false,
     }
   },
 
@@ -50,34 +50,14 @@ const FormPage = React.createClass ({
       .sorted('created');
     if(submissions.length > 0) {
       this.setState({answers: JSON.parse(submissions.slice(-1)[0].answers)})
-    }
-    loadQuestions(this.props.form, this.setQuestions)
+    }    
   },
 
   componentWillUnmount() {
-    // Cancel callbacks
     this.cancelCallbacks = true
   },
 
   /* Methods */
-
-  setQuestions(error, response) {
-    // Prevent this callback from working if the component has unmounted.
-    if (this.cancelCallbacks) return
-
-    // Render the questions passed by the response object.
-    if (error) {
-      console.warn(error)
-    } else if (!response || !response[0]){
-      alert('Error: Unable to fetch the Questions associated with this Survey\'s Form.')
-      this.props.navigator.pop()
-    } else {
-      this.setState({
-        questions: response,
-        loading: false,
-      })
-    }
-  },
 
   submit() {
     // TODO Get geolocation
@@ -103,42 +83,41 @@ const FormPage = React.createClass ({
   /* Render */
 
   renderQuestions() {
-    return this.state.questions.map((question, index)=>{
-      let questionProps = {
-        key: question.id,
-        id: question.id,
-        value: this.state.answers[question.id],
-        index: index + 1,
-        onChange: (value)=> {
-          this.setAnswer(question.id, value)
-        },
-      }
+    try {
+      return this.state.questions.map((question, index)=>{
+        let questionProps = {
+          key: question.id,
+          id: question.id,
+          value: this.state.answers[question.id],
+          index: index + 1,
+          onChange: (value)=> {
+            this.setAnswer(question.id, value)
+          },
+        }
+        questionProps = _.merge(questionProps, question)
+        if (questionProps.properties) questionProps.properties = JSON.parse(questionProps.properties)
 
-      if (question.attributes) {
-        questionProps = _.merge(questionProps, question.attributes)
-      } else {
-        console.warn('Error: Malformed question object: ' + question)
-        return null
-      }
-
-      switch (question.get('type')) {
-        case 'shortAnswer': return <ShortAnswer {...questionProps} />
-        case 'checkboxes': return <Checkboxes {...questionProps} />
-        case 'multipleChoice': return <MultipleChoice {...questionProps} />
-        case 'longAnswer': return <LongAnswerQuestion {...questionProps} />
-        case 'number': return <NumberQuestion {...questionProps} />
-        case 'scale': return <ScaleQuestion {...questionProps} />
-        case 'date':
-          return Platform.OS === 'ios' ?
-            <DateQuestionIOS {...questionProps} /> :
-            <DateQuestionAndroid {...questionProps} />
-        case 'datetime':
-          return Platform.OS === 'ios' ?
-            <DateQuestionIOS {...questionProps} mode="datetime" /> :
-            <DatetimeQuestionAndroid {...questionProps} />
-        default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('type')}</Text>;
-      }
-    })
+        switch (question.type) {
+          case 'shortAnswer': return <ShortAnswer {...questionProps} />
+          case 'checkboxes': return <Checkboxes {...questionProps} />
+          case 'multipleChoice': return <MultipleChoice {...questionProps} />
+          case 'longAnswer': return <LongAnswerQuestion {...questionProps} />
+          case 'number': return <NumberQuestion {...questionProps} />
+          case 'scale': return <ScaleQuestion {...questionProps} />
+          case 'date':
+            return Platform.OS === 'ios' ?
+              <DateQuestionIOS {...questionProps} /> :
+              <DateQuestionAndroid {...questionProps} />
+          case 'datetime':
+            return Platform.OS === 'ios' ?
+              <DateQuestionIOS {...questionProps} mode="datetime" /> :
+              <DatetimeQuestionAndroid {...questionProps} />
+          default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.type}</Text>;
+        }
+      })
+    } catch (e) {
+      console.error(e)
+    }
   },
 
   render() {
