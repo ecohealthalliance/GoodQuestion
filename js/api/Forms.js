@@ -50,11 +50,3 @@ export function loadForms(survey, callback) {
     console.warn("Error: Unable to find relation \"forms\" for Survey object." )
   }
 }
-
-// Caches Form objects inside the Store.
-// May take an array of objects or a single object.
-// Objects are unique and indentified by id, with the newest entries always replacing the oldest.
-export function storeForms(newForms) {
-  if (!Array.isArray(newForms)) newForms = [newForms]
-  Store.forms = _.unionBy(Store.forms, newForms, 'id')
-}
