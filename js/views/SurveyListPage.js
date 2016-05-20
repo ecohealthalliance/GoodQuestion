@@ -68,12 +68,11 @@ const SurveyListPage = React.createClass ({
 
   onPress(item) {
     // TODO return the the most recently triggered form that hasn't been filled out.
-    loadForms(item, this.selectForm)
+    loadForms(item, this.selectForms)
   },
 
-  selectForm(error, forms, survey) {
+  selectForms(error, forms, survey) {
     if (this.cancelCallbacks) return
-
     // TODO Support multiple forms
     if (error) {
       console.warn(error)
@@ -83,7 +82,8 @@ const SurveyListPage = React.createClass ({
       this.props.navigator.push({
         path: 'form',
         title: 'Survey: ' + survey.get('title'),
-        form: forms[0],
+        index: 0,
+        forms: forms,
         survey: survey
       })
     }

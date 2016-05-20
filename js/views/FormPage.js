@@ -33,17 +33,18 @@ import Realm from 'realm';
 
 const FormPage = React.createClass ({
   propTypes: {
-    form: React.PropTypes.object.isRequired,
+    forms: React.PropTypes.array.isRequired,
     survey: React.PropTypes.object.isRequired,
+    index: React.PropTypes.number.isRequired
   },
 
   getInitialState() {
     this.realm = new Realm({schema: [Submission]});
-    console.log(this.realm);
     let index = 0
     if (this.props.index) {
       index = this.props.index;
     }
+    form = this.props.forms[index]
     return {
       questions: [],
       answers: {},
@@ -63,12 +64,12 @@ const FormPage = React.createClass ({
   componentWillMount() {
     let submissions = this.realm
       .objects('Submission')
-      .filtered(`formId = "${this.props.form.id}"`)
+      .filtered(`formId = "${form.id}"`)
       .sorted('created');
     if(submissions.length > 0) {
       this.setState({answers: JSON.parse(submissions.slice(-1)[0].answers)})
     }
-    loadQuestions(this.props.form, this.setQuestions)
+    loadQuestions(form, this.setQuestions)
   },
 
   componentWillUnmount() {
@@ -101,7 +102,10 @@ const FormPage = React.createClass ({
     // // TODO Get geolocation
     let realm = this.realm;
     let answers = this.state.answers;
-    let formId = this.props.form.id;
+    let formId = form.id;
+    let index = this.props.index;
+    let survey = this.props.survey;
+    let forms = this.props.forms;
     realm.write(() => {
       let submission = realm.create('Submission', {
         formId: formId,
@@ -109,7 +113,18 @@ const FormPage = React.createClass ({
         answers: JSON.stringify(answers),
       });
     });
-    this.props.navigator.push({name: 'surveyList', title: 'Surveys'});
+    //If there is another form continue onto that
+    if(forms[index+1]){
+      this.props.navigator.push({ path: 'form', 
+                                  title: 'Survey: ' + survey.get('title'),
+                                  index: index +1,
+                                  survey: survey,
+                                  forms: forms,
+                                });
+    }
+    else{
+      this.props.navigator.push({name: 'surveyList', title: 'Surveys'});
+    }
   },
 
   setAnswer(questionId, value) {
@@ -119,6 +134,7 @@ const FormPage = React.createClass ({
   /* Render */
 
   renderQuestions() {
+    let nextForm = this.props.forms[this.props.index + 1];
     var renderedQuestions = this.state.questions.map((question, index)=>{
       let questionProps = {
         key: question.id,
@@ -129,6 +145,7 @@ const FormPage = React.createClass ({
           this.setAnswer(question.id, value)
         },
       }
+      let forms = this.props.forms;
 
       if (question.attributes) {
         questionProps = _.merge(questionProps, question.attributes)
@@ -155,9 +172,13 @@ const FormPage = React.createClass ({
         default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('type')}</Text>;
       }
     })
+    let buttonText = "Complete survey"
+    if(nextForm){
+      buttonText = "Submit and continue"
+    }
     newLast = <View>
                 {renderedQuestions[renderedQuestions.length-1]}
-                <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
+                <Button onPress={this.submit} style={Styles.form.submitBtn}>{buttonText}</Button>
               </View>
     renderedQuestions[renderedQuestions.length-1] = newLast
     return renderedQuestions;
@@ -175,7 +196,7 @@ const FormPage = React.createClass ({
         <Swiper
           style={{flex: 1}}
           activeDotColor={Color.background1}
-          index={this.state.index}
+          index={0}
           beforePageChange={this.beforePageChange}
           onPageChange={this.onPageChange}
           children={this.renderQuestions()}
