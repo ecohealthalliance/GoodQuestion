@@ -36,7 +36,7 @@ const RegistrationPages = React.createClass ({
       index = this.props.index;
     }
     return {
-      index: index,
+      index: index
     }
   },
 

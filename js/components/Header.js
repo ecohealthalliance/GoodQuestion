@@ -2,6 +2,7 @@ import React, {
   View,
   Text,
   TouchableWithoutFeedback,
+  Alert
 } from 'react-native'
 
 import Styles from '../styles/Styles'
@@ -53,8 +54,24 @@ const Header = React.createClass ({
   },
 
   /* Methods */
+  backToLogin() {
+    this.props.navigator.resetTo({path:'login', title: ''})
+    this.setState({title: ''})
+  },
+
   navigateBack() {
-    this.props.navigator.pop()
+    if (this.state.title == "Registration") {
+      Alert.alert(
+        'Exit registration?',
+        '',
+        [
+          {text: 'OK', onPress: ()=> this.backToLogin()},
+          {text: 'Cancel', style: 'cancel'}
+        ]
+      )
+    } else {
+      this.props.navigator.pop()
+    }
   },
 
   /* Render */

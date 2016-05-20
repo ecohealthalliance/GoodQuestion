@@ -78,7 +78,7 @@ const LoginPage = React.createClass ({
 
   /* Methods */
   handleRegistration() {
-    this.props.navigator.push({path:'registration', unsecured: true})
+    this.props.navigator.push({path:'registration', unsecured: true, title: 'Registration'})
   },
 
   handleVerifyLogin() {
