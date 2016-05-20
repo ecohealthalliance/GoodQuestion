@@ -8,7 +8,7 @@ export function loadTriggers(form, callback) {
   const formTriggerRelations = form.get('triggers')
   formTriggerRelations.query().find({
     success: function(results) {
-      storeTriggers(results)
+      // TODO Cache triggers in Realm
       if (callback) callback(null, results)
     },
     error: function(error, results) {
@@ -16,12 +16,4 @@ export function loadTriggers(form, callback) {
       if (callback) callback(error, results)
     }
   })
-}
-
-// Caches Trigger objects inside the Store.
-// May take an array of objects or a single object.
-// Objects are unique and indentified by id, with the newest entries always replacing the oldest.
-export function storeTriggers(newTriggers) {
-  if (!Array.isArray(newTriggers)) newTriggers = [newTriggers]
-  Store.triggers = _.unionBy(Store.triggers, newTriggers, 'id')
 }

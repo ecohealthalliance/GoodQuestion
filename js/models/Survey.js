@@ -5,8 +5,8 @@ Survey.schema = {
   properties: {
   	id: 'string',
   	active: 'bool',
-    created: 'date',
-    updated: 'date',
+    createdAt: 'date',
+    updatedAt: 'date',
     
     user: 'string',
     title: 'string',

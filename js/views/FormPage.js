@@ -92,6 +92,12 @@ const FormPage = React.createClass ({
     this.state.answers[questionId] = value;
   },
 
+  onPageChange(page) {
+    this.setState({
+      index: page
+    });
+  },
+
   /* Render */
 
   renderQuestions() {

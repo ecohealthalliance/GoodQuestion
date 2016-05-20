@@ -177,8 +177,7 @@ const RegistrationPages = React.createClass ({
           index={this.state.index}
           beforePageChange={this.beforePageChange}
           onPageChange={this.onPageChange}
-          children={this.getChildren()}
-          threshold={75}>
+          children={this.getChildren()}>
         </Swiper>
       </View>
     )

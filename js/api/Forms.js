@@ -31,10 +31,10 @@ export function loadCachedForms(surveyId) {
 // Loads Form data from a single Survey and retuns it via callback after the related questions have also been fetched.
 export function loadForms(survey, callback) {
   const surveyFormRelations = survey.get('forms')
+
   if (surveyFormRelations) {
     surveyFormRelations.query().find({
       success: function(results) {
-        storeForms(results)
         for (var i = 0; i < results.length; i++) {
           cacheParseForm(results[i], survey.id)
           loadQuestions(results[i])
@@ -49,12 +49,4 @@ export function loadForms(survey, callback) {
   } else {
     console.warn("Error: Unable to find relation \"forms\" for Survey object." )
   }
-}
-
-// Caches Form objects inside the Store.
-// May take an array of objects or a single object.
-// Objects are unique and indentified by id, with the newest entries always replacing the oldest.
-export function storeForms(newForms) {
-  if (!Array.isArray(newForms)) newForms = [newForms]
-  Store.forms = _.unionBy(Store.forms, newForms, 'id')
 }

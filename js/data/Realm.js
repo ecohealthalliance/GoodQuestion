@@ -13,9 +13,7 @@ const realmInstance = new Realm({
     Question,
     Submission,
   ],
-  schemaVersion: 8,
+  schemaVersion: 11,
 })
-
-console.log(realmInstance)
 
 export default realmInstance;

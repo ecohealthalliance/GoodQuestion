@@ -110,11 +110,3 @@ function clearSurveyCache(exclusions) {
     console.error(e)
   } 
 }
-
-// Caches Survey objects inside the Store.
-// May take an array of objects or a single object.
-// Objects are unique and indentified by id, with the newest entries always replacing the oldest.
-export function storeSurveys(newSurveys) {
-  if (!Array.isArray(newSurveys)) newSurveys = [newSurveys]
-  Store.surveys = _.unionBy(Store.surveys, newSurveys, 'id')
-}
