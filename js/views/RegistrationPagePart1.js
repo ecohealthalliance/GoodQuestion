@@ -67,6 +67,7 @@ const RegistrationPagePart1 = React.createClass ({
 
   getInitialState() {
     return {
+      title: 'Registration',
       button_text: 'Next',
       email: '',
       password: '',
@@ -106,7 +107,7 @@ const RegistrationPagePart1 = React.createClass ({
     // continue with mixin handler
     this.textFieldChangeHandler(name, value);
   },
-  
+
   renderTerms() {
     return (
       <Text style={[Styles.type.h3, {textAlign: 'center', paddingBottom: 2}]}>
