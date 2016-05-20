@@ -31,10 +31,10 @@ export function loadCachedForms(surveyId) {
 // Loads Form data from a single Survey and retuns it via callback after the related questions have also been fetched.
 export function loadForms(survey, callback) {
   const surveyFormRelations = survey.get('forms')
+
   if (surveyFormRelations) {
     surveyFormRelations.query().find({
       success: function(results) {
-        storeForms(results)
         for (var i = 0; i < results.length; i++) {
           cacheParseForm(results[i], survey.id)
           loadQuestions(results[i])
