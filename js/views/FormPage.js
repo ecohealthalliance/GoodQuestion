@@ -28,8 +28,8 @@ import Loading from '../components/Loading';
 import Color from '../styles/Color';
 import Swiper from 'react-native-page-swiper'
 
-import { loadQuestions } from '../api/Questions'
-import Realm from 'realm';
+import { loadQuestions, loadCachedQuestions } from '../api/Questions'
+import realm from '../data/Realm'
 
 const FormPage = React.createClass ({
   propTypes: {
@@ -38,16 +38,14 @@ const FormPage = React.createClass ({
   },
 
   getInitialState() {
-    this.realm = new Realm({schema: [Submission]});
-    console.log(this.realm);
     let index = 0
     if (this.props.index) {
       index = this.props.index;
     }
     return {
-      questions: [],
+      questions: loadCachedQuestions(this.props.form.id),
       answers: {},
-      loading: true,
+      loading: false,
       index: index
     }
   },
@@ -61,45 +59,23 @@ const FormPage = React.createClass ({
   // },
 
   componentWillMount() {
-    let submissions = this.realm
+    let submissions = realm
       .objects('Submission')
       .filtered(`formId = "${this.props.form.id}"`)
       .sorted('created');
     if(submissions.length > 0) {
       this.setState({answers: JSON.parse(submissions.slice(-1)[0].answers)})
-    }
-    loadQuestions(this.props.form, this.setQuestions)
+    }    
   },
 
   componentWillUnmount() {
-    // Cancel callbacks
     this.cancelCallbacks = true
   },
 
   /* Methods */
 
-  setQuestions(error, response) {
-
-    // Prevent this callback from working if the component has unmounted.
-    if (this.cancelCallbacks) return
-
-    // Render the questions passed by the response object.
-    if (error) {
-      console.warn(error)
-    } else if (!response || !response[0]){
-      alert('Error: Unable to fetch the Questions associated with this Survey\'s Form.')
-      this.props.navigator.pop()
-    } else {
-      this.setState({
-        questions: response,
-        loading: false,
-      })
-    }
-  },
-
   submit() {
-    // // TODO Get geolocation
-    let realm = this.realm;
+    // TODO Get geolocation
     let answers = this.state.answers;
     let formId = this.props.form.id;
     realm.write(() => {
@@ -125,6 +101,7 @@ const FormPage = React.createClass ({
   /* Render */
 
   renderQuestions() {
+    try {
     var renderedQuestions = this.state.questions.map((question, index)=>{
       let questionProps = {
         key: question.id,
@@ -135,15 +112,10 @@ const FormPage = React.createClass ({
           this.setAnswer(question.id, value)
         },
       }
+      questionProps = _.merge(questionProps, question)
+      if (questionProps.properties) questionProps.properties = JSON.parse(questionProps.properties)
 
-      if (question.attributes) {
-        questionProps = _.merge(questionProps, question.attributes)
-      } else {
-        console.warn('Error: Malformed question object: ' + question)
-        return null
-      }
-
-      switch (question.get('type')) {
+      switch (question.type) {
         case 'shortAnswer': return <View><ShortAnswer {...questionProps} /></View>
         case 'checkboxes': return <View><Checkboxes {...questionProps} /></View>
         case 'multipleChoice': return <View><MultipleChoice {...questionProps} /></View>
@@ -158,15 +130,20 @@ const FormPage = React.createClass ({
           return Platform.OS === 'ios' ?
             <View><DateQuestionIOS {...questionProps} mode="datetime" /></View> :
             <View><DatetimeQuestionAndroid {...questionProps} /></View>
-        default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.get('type')}</Text>;
+        default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.type}</Text>;
       }
     })
-    newLast = <View>
-                {renderedQuestions[renderedQuestions.length-1]}
-                <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
-              </View>
+    newLast = (
+      <View>
+        {renderedQuestions[renderedQuestions.length-1]}
+        <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
+      </View>
+    )
     renderedQuestions[renderedQuestions.length-1] = newLast
     return renderedQuestions;
+  } catch (e) {
+    console.error(e)
+  }
   },
   render() {
     if (this.state.loading) {
@@ -187,11 +164,6 @@ const FormPage = React.createClass ({
           children={this.renderQuestions()}
           threshold={50}>
         </Swiper>
-
-        // <ScrollView style={Styles.container.form}>
-        //   {this.renderQuestions()}
-        //   <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
-        // </ScrollView>
       )
     }
   }
