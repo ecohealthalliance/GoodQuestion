@@ -5,7 +5,7 @@ const BackgroundGeolocation = Platform.OS === 'android' ?
     require('react-native-background-geolocation') :
     require('react-native-background-geolocation-android')
 
-export function configureGeolocationServices() {
+export function configureGeolocationService() {
   try {
     console.log('Configuring Geolocation...')
     BackgroundGeolocation.configure({
@@ -34,20 +34,55 @@ export function configureGeolocationServices() {
       startOnBoot: true,                   // <-- [Android] Auto start background-service in headless mode when device is powered-up.
 
       // HTTP / SQLite config
-      url: 'http://posttestserver.com/post.php?dir=cordova-background-geolocation',
-      batchSync: false,       // <-- [Default: false] Set true to sync locations to server in a single HTTP request.
-      maxBatchSize: 100,      // <-- If using batchSync: true, specifies the max number of records send with each HTTP request.
-      autoSync: true,         // <-- [Default: true] Set true to sync each location to server as it arrives.
-      maxDaysToPersist: 1,    // <-- Maximum days to persist a location in plugin's SQLite database when HTTP fails
-      headers: {
-        "X-FOO": "bar"
-      },
-      params: {
-        "auth_token": "maybe_your_server_authenticates_via_token_YES?"
-      }
+      // url: 'http://posttestserver.com/post.php?dir=cordova-background-geolocation',
+      // batchSync: false,       // <-- [Default: false] Set true to sync locations to server in a single HTTP request.
+      // maxBatchSize: 100,      // <-- If using batchSync: true, specifies the max number of records send with each HTTP request.
+      // autoSync: true,         // <-- [Default: true] Set true to sync each location to server as it arrives.
+      // maxDaysToPersist: 1,    // <-- Maximum days to persist a location in plugin's SQLite database when HTTP fails
+      // headers: {
+      //   "X-FOO": "bar"
+      // },
+      // params: {
+      //   "auth_token": "maybe_your_server_authenticates_via_token_YES?"
+      // }
     })
     console.log(BackgroundGeolocation)
   } catch (e) {
     console.error(e)
   }
 }
+
+export function initializeGeolocationService() {
+  configureGeolocationService()
+
+  // This handler fires whenever bgGeo receives a location update.
+  BackgroundGeolocation.on('location', function(location) {
+    console.log('- [js]location: ', JSON.stringify(location));
+  });
+
+  // This handler fires whenever bgGeo receives an error
+  BackgroundGeolocation.on('error', function(error) {
+    var type = error.type;
+    var code = error.code;
+    console.warn(type + " Error: " + code);
+  });
+
+  // This handler fires when movement states changes (stationary->moving; moving->stationary)
+  BackgroundGeolocation.on('motionchange', function(location) {
+      console.log('- [js]motionchanged: ', JSON.stringify(location));
+  });
+
+  BackgroundGeolocation.start(function() {
+    console.log('- [js] BackgroundGeolocation started successfully');
+
+    // Fetch current position
+    BackgroundGeolocation.getCurrentPosition({timeout: 30}, function(location) {
+      console.log('- [js] BackgroundGeolocation received current position: ', JSON.stringify(location));
+    }, function(error) {
+      console.warn("Location error: " + error);
+    });
+  });
+}
+
+
+
