@@ -28,10 +28,11 @@ export default React.createClass({
           text="Notifications"
         />
         <ControlPanelItem
+          onPress={()=>{
+            this.props.navigator.push({'path': 'profile', title: 'Profile'});
+            this.props.closeDrawer();
+          }}
           text="Profile"
-        />
-        <ControlPanelItem
-          text="Account"
         />
         <ControlPanelItem
           onPress={()=>{

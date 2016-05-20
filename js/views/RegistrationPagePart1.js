@@ -106,14 +106,7 @@ const RegistrationPagePart1 = React.createClass ({
     // continue with mixin handler
     this.textFieldChangeHandler(name, value);
   },
-
-  decodeText(txt) {
-    if (txt) {
-      return he.decode(txt);
-    }
-    return '';
-  },
-
+  
   renderTerms() {
     return (
       <Text style={[Styles.type.h3, {textAlign: 'center', paddingBottom: 2}]}>

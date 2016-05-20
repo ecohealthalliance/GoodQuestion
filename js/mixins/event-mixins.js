@@ -1,4 +1,13 @@
+import he from 'he' // HTML entity encode and decode
+
 export default {
+  decodeText(txt) {
+    if (txt) {
+      return he.decode(txt);
+    }
+    return '';
+  },
+
   defaultChangeHandler(name, value) {
     if (typeof this.schema === 'undefined' || !this.schema.hasOwnProperty(name)) {
       console.error('Invalid validation schema');
