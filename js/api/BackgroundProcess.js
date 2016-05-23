@@ -2,6 +2,7 @@ import { Platform } from 'react-native'
 import Settings from '../settings'
 
 import { addSchedule } from './Schedule'
+import { createTimeTrigger } from './Triggers'
 
 export const BackgroundGeolocation = Platform.OS === 'android' ?
     require('react-native-background-geolocation') :
@@ -52,7 +53,7 @@ export function configureGeolocationService() {
         '2-6 15:00-15:59',
         '2-6 16:00-16:59',
 
-        '1-7 23:50-23:59',
+        '1-7 9:46-23:59', // for testing
       ]
     })
 
@@ -65,19 +66,22 @@ export function configureGeolocationService() {
 export function initializeGeolocationService() {
   configureGeolocationService()
 
-  // This handler fires whenever bgGeo receives a location update.
+  // These events are triggered by the background process, they can be used to control geofence logic
+  // Until we implement those triggers these can still be used for testing background behavior.
+
   BackgroundGeolocation.on('location', function(location) {
-    // console.log('- [js]location: ', JSON.stringify(location))
-    printTimelog('location update')
+    // printTimelog('location update')
+    // console.log(location)
   })
 
   BackgroundGeolocation.on('error', function(error) {
-    // console.log(error.type + " Error: " + error.code)
-    printTimelog('error')
+    // printTimelog('error')
+    console.log(error.type + " Error: " + error.code)
   })
 
   BackgroundGeolocation.on('motionchange', function(location) {
-    printTimelog('motion change')
+    // printTimelog('motion change')
+    // console.log(location)
   })
 
   BackgroundGeolocation.on('schedule', function(state) {
@@ -88,11 +92,13 @@ export function initializeGeolocationService() {
     console.info('- Scheduler started')
   })
 
+  createTimeTrigger()
+
   addSchedule()
 }
 
 function printTimelog(msg) {
   let timing = ((Date.now() - startTimer) / 1000)
   timing = Math.ceil(timing)
-  console.log(msg + ': ' + timing)
+  console.log(msg + ': ' + timing + 's')
 }

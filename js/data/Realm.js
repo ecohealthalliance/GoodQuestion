@@ -6,6 +6,7 @@ import Survey from '../models/Survey'
 import Form from '../models/Form'
 import Question from '../models/Question'
 import Notification from '../models/Notification'
+import TimeTrigger from '../models/TimeTrigger'
 
 const realmInstance = new Realm({
   schema: [
@@ -13,9 +14,10 @@ const realmInstance = new Realm({
     Form,
     Question,
     Notification,
+    TimeTrigger,
     Submission,
   ],
-  schemaVersion: 12,
+  schemaVersion: 18,
 })
 
 export default realmInstance;

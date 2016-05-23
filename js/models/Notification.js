@@ -1,9 +1,8 @@
 export default class Notification {}
 Notification.schema = {
   name: 'Notification',
-  primaryKey: 'id',
+  primaryKey: 'formId',
   properties: {
-    id: 'string',
   	formId: 'string',
     
     title: 'string',

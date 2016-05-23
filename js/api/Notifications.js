@@ -10,3 +10,18 @@ import { loadForms } from './Forms'
 export function loadNotifications() {
   return realm.objects('Notification')
 }
+
+// 
+export function addTimeTriggerNotification( formId, title, description ) {
+  try {
+    realm.write(() => {
+      realm.create('Notification', {
+        formId: formId,
+        title: title,
+        description: description,
+      }, true)
+    })
+  } catch(e) {
+    console.error(e)
+  }
+}
