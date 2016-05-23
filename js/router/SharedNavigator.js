@@ -102,12 +102,23 @@ const SharedNavigator = React.createClass ({
     });
   },
 
+
   closeControlPanel() {
     this._drawer.close()
   },
 
   openControlPanel() {
     this._drawer.open()
+
+  setSceneConfig(route) {
+    let config = route.sceneConfig
+    let SceneConfigs = Navigator.SceneConfigs
+    if (config){
+      return SceneConfigs[config]
+    } else {
+      // Default animation
+      return SceneConfigs.FloatFromRight
+    }
   },
 
   routeMapper(route, nav) {
@@ -120,7 +131,6 @@ const SharedNavigator = React.createClass ({
       route.path = 'login'
       route.title = ''
     }
-
     switch (route.path) {
       case 'login': return <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />
       case 'surveylist': return <SurveyListPage {...sharedProps} />
@@ -141,6 +151,7 @@ const SharedNavigator = React.createClass ({
     if (this.state.isLoading) {
       return (<Loading/>);
     }
+    // if this.sceneConfig Navigator.SceneConfigs.FloatFromRight
     // show the navigator
     if (this.state.isAuthenticated) {
       return (
@@ -153,7 +164,7 @@ const SharedNavigator = React.createClass ({
             closeDrawer={this.closeControlPanel} />}
           tapToClose={true}
           openDrawerOffset={0.2} // 20% gap on the right side of drawer
-          panCloseMask={0.2}
+          panCloseMask={0.1}
           closedDrawerOffset={-3}
           styles={Styles.drawer}
           tweenHandler={(ratio) => ({
@@ -161,13 +172,13 @@ const SharedNavigator = React.createClass ({
           })}
           >
           <Navigator
-            ref={(nav) => { 
+            ref={(nav) => {
               navigator = nav
               Store.navigator = nav // Store globally so we can use the navigator outside components
             }}
             initialRoute={initialRoute}
             renderScene={this.routeMapper}
-            configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
+            configureScene={(route, routeStack) => this.setSceneConfig(route)}
             style={Styles.container.wrapper}
             navigationBar={
               <Header
@@ -184,7 +195,7 @@ const SharedNavigator = React.createClass ({
         ref={(nav) => { navigator = nav }}
         initialRoute={initialRoute}
         renderScene={this.routeMapper}
-        configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
+        configureScene={(route, routeStack) => this.setSceneConfig(route)}
         style={Styles.container.wrapper}
         navigationBar={
           <Header
