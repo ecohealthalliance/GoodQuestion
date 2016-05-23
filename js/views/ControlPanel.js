@@ -7,7 +7,19 @@ import ControlPanelItem from '../components/ControlPanelItem'
 import Settings from '../settings'
 
 export default React.createClass({
+
+  navigateToView(viewPath, title) {
+    let props = this.props
+    let navigator = props.navigator
+    let routeStack = navigator.getCurrentRoutes()
+    let currentRoutePath = routeStack[routeStack.length-1].path
+    if (viewPath !== currentRoutePath) {
+      navigator.push({path: viewPath, title: title})
+    }
+    props.closeDrawer()
+  },
   render() {
+
     return (
       <View style={Styles.controlPanel.container}>
         <ControlPanelItem
@@ -18,20 +30,14 @@ export default React.createClass({
           text="Logout"
         />
         <ControlPanelItem
-          onPress={()=>{
-            this.props.navigator.push({name: 'surveylist', title: "Surveys"})
-            this.props.closeDrawer()
-          }}
+          onPress={()=> this.navigateToView('surveylist', 'Surveys')}
           text="Surveys"
         />
         <ControlPanelItem
           text="Notifications"
         />
         <ControlPanelItem
-          onPress={()=>{
-            this.props.navigator.push({'path': 'profile', title: 'Profile'});
-            this.props.closeDrawer();
-          }}
+          onPress={()=> this.navigateToView('profile', 'Profile')}
           text="Profile"
         />
         <ControlPanelItem
