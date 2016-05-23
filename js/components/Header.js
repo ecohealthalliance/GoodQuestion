@@ -28,8 +28,9 @@ const Header = React.createClass ({
   componentWillReceiveProps(nextProps) {
     try {
       let title = this.state.title
-      let position = nextProps.navState.routeStack.length - 1
-      let nextTitle = nextProps.navState.routeStack[nextProps.navState.routeStack.length-1].title
+      let routeStack = nextProps.navState.routeStack
+      let position = routeStack.length - 1
+      let nextTitle = routeStack[routeStack.length-1].title
       if (nextTitle && nextTitle !== title) {
         title = nextTitle
       }
