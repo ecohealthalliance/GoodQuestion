@@ -7,6 +7,7 @@ import React, {
   ListView,
   AsyncStorage,
   Platform,
+  Alert,
 } from 'react-native'
 import _ from 'lodash'
 
@@ -28,7 +29,9 @@ import Loading from '../components/Loading';
 import Color from '../styles/Color';
 import Swiper from 'react-native-page-swiper'
 
+import { loadCachedSubmissions, saveSubmission} from '../api/Submissions'
 import { loadQuestions, loadCachedQuestions } from '../api/Questions'
+
 import realm from '../data/Realm'
 
 const FormPage = React.createClass ({
@@ -46,7 +49,8 @@ const FormPage = React.createClass ({
       questions: loadCachedQuestions(this.props.form.id),
       answers: {},
       loading: false,
-      index: index
+      index: index,
+      button_text: 'Submit',
     }
   },
   // beforePageChange(nextPage) {
@@ -59,13 +63,10 @@ const FormPage = React.createClass ({
   // },
 
   componentWillMount() {
-    let submissions = realm
-      .objects('Submission')
-      .filtered(`formId = "${this.props.form.id}"`)
-      .sorted('created');
+    const submissions = loadCachedSubmissions(this.props.form.id);
     if(submissions.length > 0) {
       this.setState({answers: JSON.parse(submissions.slice(-1)[0].answers)})
-    }    
+    }
   },
 
   componentWillUnmount() {
@@ -78,14 +79,23 @@ const FormPage = React.createClass ({
     // TODO Get geolocation
     let answers = this.state.answers;
     let formId = this.props.form.id;
-    realm.write(() => {
-      let submission = realm.create('Submission', {
-        formId: formId,
-        created: new Date(),
-        answers: JSON.stringify(answers),
+    this.setState({
+      button_text: 'Saving...'
+    });
+    saveSubmission(formId, answers, (err, res) => {
+      if (err) {
+        if (err === 'Invalid User') {
+          this.props.logout();
+          return;
+        }
+        Alert.alert('Error', err);
+        return;
+      }
+      Alert.alert('Success', 'The form has been saved');
+      this.setState({
+        button_text: 'Submit'
       });
     });
-    this.props.navigator.push({name: 'surveyList', title: 'Surveys'});
   },
 
   setAnswer(questionId, value) {
@@ -136,7 +146,7 @@ const FormPage = React.createClass ({
     newLast = (
       <View>
         {renderedQuestions[renderedQuestions.length-1]}
-        <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
+        <Button onPress={this.submit} style={Styles.form.submitBtn}> {this.state.button_text}</Button>
       </View>
     )
     renderedQuestions[renderedQuestions.length-1] = newLast
