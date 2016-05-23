@@ -31,6 +31,7 @@ import LoginPage from '../views/LoginPage'
 import SurveyListPage from '../views/SurveyListPage'
 import TermsOfServicePage from '../views/TermsOfServicePage'
 import SurveyDetailsPage from '../views/SurveyDetailsPage'
+import NotificationsPage from '../views/NotificationsPage'
 import RegistrationPages from '../views/RegistrationPages'
 import FormPage from '../views/FormPage'
 import ControlPanel from '../views/ControlPanel'
@@ -111,6 +112,7 @@ const SharedNavigator = React.createClass ({
     switch (route.path) {
       case 'login': return <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />
       case 'surveylist': return <SurveyListPage {...sharedProps} />
+      case 'notifications': return <NotificationsPage {...sharedProps} />
       case 'terms': return <TermsOfServicePage {...sharedProps} />
       case 'registration': return <RegistrationPages {...sharedProps} index={route.index} />
       case 'survey-details': return <SurveyDetailsPage navigator={nav} survey={route.survey} />

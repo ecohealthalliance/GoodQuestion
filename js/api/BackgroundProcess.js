@@ -1,12 +1,17 @@
 import { Platform } from 'react-native'
 import Settings from '../settings'
 
-const BackgroundGeolocation = Platform.OS === 'android' ?
+import { addSchedule } from './Schedule'
+
+export const BackgroundGeolocation = Platform.OS === 'android' ?
     require('react-native-background-geolocation') :
     require('react-native-background-geolocation-android')
 
+let startTimer = Date.now()
+
 export function configureGeolocationService() {
   try {
+    BackgroundGeolocation.stop()
     console.log('Configuring Geolocation...')
     BackgroundGeolocation.configure({
       // License validations
@@ -14,38 +19,43 @@ export function configureGeolocationService() {
       license: Settings.licenses.BackgroundGeolocation.key,
 
       // Geolocation config
-      desiredAccuracy: 0,
+      desiredAccuracy: 10,
       distanceFilter: 50,
-      locationUpdateInterval: 5000,
-      fastestLocationUpdateInterval: 5000,
+      locationUpdateInterval: 60000,
+      fastestLocationUpdateInterval: 60000,
+
+      // useSignificantChangesOnly: true,
 
       // Activity Recognition config
       minimumActivityRecognitionConfidence: 80,   // 0-100%.  Minimum activity-confidence for a state-change 
-      activityRecognitionInterval: 10000,
+      activityRecognitionInterval: 60000,
       stopDetectionDelay: 1,  // <--  minutes to delay after motion stops before engaging stop-detection system
       stopTimeout: 2, // 2 minutes
 
       // Application config
-      debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
-      forceReloadOnLocationChange: false,  // <-- [Android] If the user closes the app **while location-tracking is started** , reboot app when a new location is recorded (WARNING: possibly distruptive to user) 
-      forceReloadOnMotionChange: false,    // <-- [Android] If the user closes the app **while location-tracking is started** , reboot app when device changes stationary-state (stationary->moving or vice-versa) --WARNING: possibly distruptive to user) 
-      forceReloadOnGeofence: false,        // <-- [Android] If the user closes the app **while location-tracking is started** , reboot app when a geofence crossing occurs --WARNING: possibly distruptive to user) 
-      stopOnTerminate: false,              // <-- [Android] Allow the background-service to run headless when user closes the app.
-      startOnBoot: true,                   // <-- [Android] Auto start background-service in headless mode when device is powered-up.
+      debug: true,
+      forceReloadOnLocationChange: false,  // Android
+      forceReloadOnMotionChange: false,    // Android
+      forceReloadOnGeofence: false,        // Android
+      stopOnTerminate: false,              // Android
+      startOnBoot: true,
 
-      // HTTP / SQLite config
-      // url: 'http://posttestserver.com/post.php?dir=cordova-background-geolocation',
-      // batchSync: false,       // <-- [Default: false] Set true to sync locations to server in a single HTTP request.
-      // maxBatchSize: 100,      // <-- If using batchSync: true, specifies the max number of records send with each HTTP request.
-      // autoSync: true,         // <-- [Default: true] Set true to sync each location to server as it arrives.
-      // maxDaysToPersist: 1,    // <-- Maximum days to persist a location in plugin's SQLite database when HTTP fails
-      // headers: {
-      //   "X-FOO": "bar"
-      // },
-      // params: {
-      //   "auth_token": "maybe_your_server_authenticates_via_token_YES?"
-      // }
+      disableMotionActivityUpdates: true, // iOS
+
+      schedule: [
+        '2-6 9:00-9:59',
+        '2-6 10:00-10:59',
+        '2-6 11:00-11:59',
+        '2-6 12:00-12:59',
+        '2-6 13:00-13:59',
+        '2-6 14:00-14:59',
+        '2-6 15:00-15:59',
+        '2-6 16:00-16:59',
+
+        '1-7 23:50-23:59',
+      ]
     })
+
     console.log(BackgroundGeolocation)
   } catch (e) {
     console.error(e)
@@ -57,32 +67,32 @@ export function initializeGeolocationService() {
 
   // This handler fires whenever bgGeo receives a location update.
   BackgroundGeolocation.on('location', function(location) {
-    console.log('- [js]location: ', JSON.stringify(location));
-  });
+    // console.log('- [js]location: ', JSON.stringify(location))
+    printTimelog('location update')
+  })
 
-  // This handler fires whenever bgGeo receives an error
   BackgroundGeolocation.on('error', function(error) {
-    var type = error.type;
-    var code = error.code;
-    console.warn(type + " Error: " + code);
-  });
+    // console.log(error.type + " Error: " + error.code)
+    printTimelog('error')
+  })
 
-  // This handler fires when movement states changes (stationary->moving; moving->stationary)
   BackgroundGeolocation.on('motionchange', function(location) {
-      console.log('- [js]motionchanged: ', JSON.stringify(location));
-  });
+    printTimelog('motion change')
+  })
 
-  BackgroundGeolocation.start(function() {
-    console.log('- [js] BackgroundGeolocation started successfully');
+  BackgroundGeolocation.on('schedule', function(state) {
+    console.log('Schedule event triggered, tracking enabled:', state.enabled)
+  })
 
-    // Fetch current position
-    BackgroundGeolocation.getCurrentPosition({timeout: 30}, function(location) {
-      console.log('- [js] BackgroundGeolocation received current position: ', JSON.stringify(location));
-    }, function(error) {
-      console.warn("Location error: " + error);
-    });
-  });
+  BackgroundGeolocation.startSchedule(function() {
+    console.info('- Scheduler started')
+  })
+
+  addSchedule()
 }
 
-
-
+function printTimelog(msg) {
+  let timing = ((Date.now() - startTimer) / 1000)
+  timing = Math.ceil(timing)
+  console.log(msg + ': ' + timing)
+}
