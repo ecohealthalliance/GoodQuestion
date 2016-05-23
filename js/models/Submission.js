@@ -1,6 +1,4 @@
-export default class Submission {
-
-}
+export default class Submission {}
 Submission.schema = {
   name: 'Submission',
   properties: {

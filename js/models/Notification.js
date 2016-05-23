@@ -7,6 +7,6 @@ Notification.schema = {
     
     title: 'string',
     description: 'string',
-    complete: 'bool',
+    complete: {type: 'bool', default: false},
   }
 }

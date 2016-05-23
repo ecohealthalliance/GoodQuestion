@@ -2,7 +2,7 @@ import { Platform } from 'react-native'
 import Settings from '../settings'
 
 import { addSchedule } from './Schedule'
-import { createTimeTrigger } from './Triggers'
+import { checkTimeTriggers } from './Triggers'
 
 export const BackgroundGeolocation = Platform.OS === 'android' ?
     require('react-native-background-geolocation') :
@@ -28,10 +28,10 @@ export function configureGeolocationService() {
       // useSignificantChangesOnly: true,
 
       // Activity Recognition config
-      minimumActivityRecognitionConfidence: 80,   // 0-100%.  Minimum activity-confidence for a state-change 
+      minimumActivityRecognitionConfidence: 80,
       activityRecognitionInterval: 60000,
-      stopDetectionDelay: 1,  // <--  minutes to delay after motion stops before engaging stop-detection system
-      stopTimeout: 2, // 2 minutes
+      stopDetectionDelay: 1,
+      stopTimeout: 2,
 
       // Application config
       debug: true,
@@ -44,14 +44,15 @@ export function configureGeolocationService() {
       disableMotionActivityUpdates: true, // iOS
 
       schedule: [
-        '2-6 9:00-9:59',
-        '2-6 10:00-10:59',
-        '2-6 11:00-11:59',
-        '2-6 12:00-12:59',
-        '2-6 13:00-13:59',
-        '2-6 14:00-14:59',
-        '2-6 15:00-15:59',
-        '2-6 16:00-16:59',
+        '2-6 9:00-9:05',
+        '2-6 10:00-10:05',
+        '2-6 11:00-11:05',
+        '2-6 12:00-12:05',
+        '2-6 13:00-13:05',
+        '2-6 14:00-14:05',
+        '2-6 15:00-15:05',
+        '2-6 16:00-16:05',
+        '2-6 17:00-17:05',
 
         '1-7 9:46-23:59', // for testing
       ]
@@ -86,15 +87,14 @@ export function initializeGeolocationService() {
 
   BackgroundGeolocation.on('schedule', function(state) {
     console.log('Schedule event triggered, tracking enabled:', state.enabled)
+    checkTimeTriggers()
   })
 
   BackgroundGeolocation.startSchedule(function() {
     console.info('- Scheduler started')
+    checkTimeTriggers()
   })
 
-  createTimeTrigger()
-
-  addSchedule()
 }
 
 function printTimelog(msg) {

@@ -5,7 +5,8 @@ TimeTrigger.schema = {
   properties: {
   	formId: 'string',
     
-    timestamp: 'int',
-    triggered: 'bool',
+    title: 'string',
+    datetime: 'date',
+    triggered: {type: 'bool', default: false},
   }
 }

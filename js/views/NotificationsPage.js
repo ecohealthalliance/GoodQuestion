@@ -11,6 +11,7 @@ import React, {
 import _ from 'lodash'
 import Styles from '../styles/Styles'
 import { loadNotifications } from '../api/Notifications'
+import { loadCachedFormDataById } from '../api/Forms'
 import Notification from '../components/Notification'
 
 const NotificationsPage = React.createClass({
@@ -50,7 +51,15 @@ const NotificationsPage = React.createClass({
 
   selectNotification(notification) {
     if (this.cancelCallbacks) return
-    navigateToForm(notification.formId)
+
+    let data = loadCachedFormDataById(notification.formId)
+    console.log(data)
+    this.props.navigator.push({
+      path: 'form',
+      title: data.survey.title,
+      form: data.form,
+      survey: data.survey,
+    })
   },
 
   /* Render */

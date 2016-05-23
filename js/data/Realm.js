@@ -17,7 +17,7 @@ const realmInstance = new Realm({
     TimeTrigger,
     Submission,
   ],
-  schemaVersion: 18,
+  schemaVersion: 22,
 })
 
 export default realmInstance;

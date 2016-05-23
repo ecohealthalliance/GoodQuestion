@@ -28,12 +28,12 @@ export function loadTriggers(form, callback) {
 // Saves a Form object from Parse into our Realm.io local database
 function cacheTimeTrigger(trigger, form) {
   try {
-    let datetime = trigger.get('datetime')
+    let datetime = new Date(trigger.get('properties').datetime)
     realm.write(() => {
       realm.create('TimeTrigger', {
         formId: form.id,
-        datetime: trigger.get('datetime'),
-        triggered: false,
+        title: form.get('title'),
+        datetime: datetime,
       }, true)
     })
   } catch(e) {
@@ -41,12 +41,43 @@ function cacheTimeTrigger(trigger, form) {
   }
 }
 
-export function checkDailyTimeTriggers() {
-  let forms = realm.objects('Form')
-  let now = Date.now() // timestamp in millis
-  newActivations = []
-  for (var i = 0; i < forms.length; i++) {
-    if (forms[i])
-    forms[i]
+export function checkTimeTriggers() {
+  let now = new Date()
+
+  // Make the cut-off date 3 days
+  let past = new Date()
+  past = past.setDate(past.getDate() - 3)
+
+  // The JavaScript version of Realm does not seem to support Date queries yet, the filtering has to be done manually.
+  let triggers = realm.objects('TimeTrigger').filtered(`triggered == false`)
+  let validTriggers = []
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].datetime < now && triggers[i].datetime > past) {
+      validTriggers.push(triggers[i])
+    }
   }
+
+  realm.write(() => {
+    for (var i = 0; i < validTriggers.length; i++) {
+      realm.create('TimeTrigger', {
+        formId: validTriggers[i].formId,
+        triggered: true,
+      }, true)
+
+      realm.create('Notification', {
+        formId: validTriggers[i].formId,
+        title: validTriggers[i].title,
+        description: 'A scheduled survey form is available.', // TODO Replace with more descriptive messages in the future. 
+        datetime: validTriggers[i].datetime,
+      }, true)
+    }
+  })
+
+  if (validTriggers.length > 0) {
+    // TODO call for local notifications
+    // callLocalNotification(`You have notifications from GoodQuestion!`)
+  }
+
+  
+  
 }
