@@ -31,6 +31,7 @@ function cacheTimeTrigger(trigger, form) {
     let datetime = new Date(trigger.get('properties').datetime)
     realm.write(() => {
       realm.create('TimeTrigger', {
+        id: trigger.id,
         formId: form.id,
         title: form.get('title'),
         datetime: datetime,
@@ -41,6 +42,8 @@ function cacheTimeTrigger(trigger, form) {
   }
 }
 
+
+// Checks for any time triggers activating in this cycle.
 export function checkTimeTriggers() {
   let now = new Date()
 
@@ -60,7 +63,7 @@ export function checkTimeTriggers() {
   realm.write(() => {
     for (var i = 0; i < validTriggers.length; i++) {
       realm.create('TimeTrigger', {
-        formId: validTriggers[i].formId,
+        id: validTriggers[i].id,
         triggered: true,
       }, true)
 
@@ -77,7 +80,4 @@ export function checkTimeTriggers() {
     // TODO call for local notifications
     // callLocalNotification(`You have notifications from GoodQuestion!`)
   }
-
-  
-  
 }
