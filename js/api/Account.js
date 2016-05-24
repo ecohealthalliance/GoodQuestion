@@ -307,3 +307,19 @@ export function updateProfile(name, phone, done) {
     );
   });
 };
+
+/**
+ * Checks for the current logged in user, navigates back to the login page if verification fails.
+ */
+export function validateUser() {
+  console.log('VALIDATING USER')
+  isAuthenticated((isValidUser) => {
+    if (!isValidUser) {
+      console.log('User validation failed, returning to login screen.')
+      logout()
+      Store.navigator.resetTo({path: 'login', title: ''})
+    }
+  })
+}
+
+
