@@ -25,6 +25,13 @@ export function cacheParseForm(form, surveyId) {
   })
 }
 
+// Returns an object containing a form and its parent survey
+export function loadCachedFormDataById(formId) {
+  let form = realm.objects('Form').filtered(`id = "${formId}"`)[0]
+  let survey = realm.objects('Survey').filtered(`id = "${form.surveyId}"`)[0]
+  return { form: form, survey: survey }
+}
+
 // Fetches the cached forms related to a specific survey
 export function loadCachedForms(surveyId) {
   return realm.objects('Form').filtered(`surveyId = "${surveyId}"`)
@@ -39,6 +46,7 @@ export function loadForms(survey, callback) {
       success: function(results) {
         for (var i = 0; i < results.length; i++) {
           cacheParseForm(results[i], survey.id)
+          loadTriggers(results[i], survey)
           loadQuestions(results[i])
         }
         if (callback) callback(null, results, survey)

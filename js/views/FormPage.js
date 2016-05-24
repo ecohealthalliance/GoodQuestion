@@ -89,7 +89,6 @@ const FormPage = React.createClass ({
     let formId = this.form.id;
     let index = this.state.index;
     let survey = this.props.survey;
-
     this.setState({
       button_text: 'Saving...'
     });
@@ -117,7 +116,6 @@ const FormPage = React.createClass ({
       else{
         this.props.navigator.push({name: 'surveyList', title: 'Surveys'});
       }
-
     });
   },
 

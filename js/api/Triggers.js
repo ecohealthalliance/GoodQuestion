@@ -1,14 +1,21 @@
 import _ from 'lodash'
 import Parse from 'parse/react-native'
-import Store from '../data/Store'
+import realm from '../data/Realm'
+
 
 
 // Queries the connected Parse server for a list of Triggers.
-export function loadTriggers(form, callback) {
+export function loadTriggers(form, survey, callback) {
   const formTriggerRelations = form.get('triggers')
   formTriggerRelations.query().find({
     success: function(results) {
-      // TODO Cache triggers in Realm
+      for (var i = 0; i < results.length; i++) {
+        if (results[i].get('type') === 'datetime') {
+          cacheTimeTrigger(results[i], form, survey)
+        } else {
+          // TODO Create/Cache Geofence trigger
+        }
+      }
       if (callback) callback(null, results)
     },
     error: function(error, results) {
@@ -16,4 +23,72 @@ export function loadTriggers(form, callback) {
       if (callback) callback(error, results)
     }
   })
+}
+
+// Saves a Form object from Parse into our Realm.io local database
+function cacheTimeTrigger(trigger, form, survey) {
+  try {
+    let datetime = new Date(trigger.get('properties').datetime)
+    realm.write(() => {
+      realm.create('TimeTrigger', {
+        id: trigger.id,
+        formId: form.id,
+        surveyId: survey.id,
+        title: form.get('title'),
+        datetime: datetime,
+      }, true)
+    })
+  } catch(e) {
+    console.error(e)
+  }
+}
+
+
+// Checks for any time triggers activating in this cycle.
+export function checkTimeTriggers() {
+  let now = new Date()
+
+  // Make the cut-off date 3 days
+  let past = new Date()
+  past = past.setDate(past.getDate() - 3)
+
+  // The JavaScript version of Realm does not seem to support Date queries yet, the filtering has to be done manually.
+  let triggers = realm.objects('TimeTrigger').filtered(`triggered == false`)
+  let validTriggers = []
+  let surveyId = ''
+  let surveyAccepted = false
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].datetime < now && triggers[i].datetime > past) {
+      if (triggers[i].surveyId !== surveyId) {
+        let survey = realm.objects('Survey').filtered(`id == "${triggers[i].surveyId}"`)
+        surveyId = survey.id
+        surveyAccepted = survey.status === 'accepted'
+      }
+      if (surveyAccepted) {
+        validTriggers.push(triggers[i])
+      }
+    }
+  }
+
+
+  realm.write(() => {
+    for (var i = 0; i < validTriggers.length; i++) {
+      realm.create('TimeTrigger', {
+        id: validTriggers[i].id,
+        triggered: true,
+      }, true)
+
+      realm.create('Notification', {
+        formId: validTriggers[i].formId,
+        title: validTriggers[i].title,
+        description: 'A scheduled survey form is available.', // TODO Replace with more descriptive messages in the future. 
+        datetime: validTriggers[i].datetime,
+      }, true)
+    }
+  })
+
+  if (validTriggers.length > 0) {
+    // TODO call for local notifications
+    // callLocalNotification(`You have notifications from GoodQuestion!`)
+  }
 }
