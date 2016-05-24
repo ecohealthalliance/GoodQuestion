@@ -59,7 +59,7 @@ const RegistrationPagePart1 = React.createClass ({
   ],
 
   schema: {
-    email: Joi.string().email().required().options({language: {any: {allowOnly: 'must be a valid email'}}}).label('Email'),
+    email: Joi.string().email({minDomainAtoms: 2}).required().options({language: {any: {allowOnly: 'must be a valid email'}}}).label('Email'),
     password: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().options({language: {string: {regex: {base: 'must be at least 8 alpha numberic characters'}}}}).label('Password'),
     confirmPassword: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().options({language: {string: {regex: {base: 'must be at least 8 alpha numberic characters'}}}}).label('Confirm Password'),
     acceptedTerms: Joi.boolean().required().invalid(false).options({language: {any: {invalid: 'must be accepted'}}}).label('Terms of Service'),
@@ -67,6 +67,7 @@ const RegistrationPagePart1 = React.createClass ({
 
   getInitialState() {
     return {
+      title: 'Registration',
       button_text: 'Next',
       email: '',
       password: '',
@@ -105,13 +106,6 @@ const RegistrationPagePart1 = React.createClass ({
     }
     // continue with mixin handler
     this.textFieldChangeHandler(name, value);
-  },
-
-  decodeText(txt) {
-    if (txt) {
-      return he.decode(txt);
-    }
-    return '';
   },
 
   renderTerms() {

@@ -14,7 +14,6 @@ import Color from '../styles/Color'
 import Joi from '../lib/joi-browser.min'
 import JoiMixins from '../mixins/joi-mixins'
 import EventMixins from '../mixins/event-mixins'
-import he from 'he' // HTML entity encode and decode
 
 const RegistrationPagePart3 = React.createClass ({
   propTypes: {
@@ -64,26 +63,22 @@ const RegistrationPagePart3 = React.createClass ({
 
   /* Methods */
   finish() {
-    if (this.state.button_text === 'Validating...') return;
-    const state = Object.assign({}, this.state);
-    state.button_text = 'Validating...';
-    this.setState(state);
+    if (this.state.button_text === 'Sending...') return;
+    this.setState({
+      button_text: 'Sending...'
+    });
     const valid = this.props.validatePage(2);
-    state.button_text = 'Finish';
     if (valid) {
-      this.props.finish(function() {
-        this.setState(state);
+      this.props.finish(() => {
+        this.setState({
+          button_text: 'Finish'
+        });
       });
       return;
     }
-    this.setState(state);
-  },
-
-  decodeText(txt) {
-    if (txt) {
-      return he.decode(txt);
-    }
-    return '';
+    this.setState({
+      button_text: 'Finish'
+    });
   },
 
   /* Render */

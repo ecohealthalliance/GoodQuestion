@@ -62,25 +62,42 @@ export function authenticate(username, password, done) {
     }
     done(null, results.parse);
   });
-}
+};
 
 /**
  * is the current parse user authenticated
  *
- * @param {function} the function to execute when done
+ * @param {function} the function to execute when done, will be a single value
+ * true/false
+ *
  */
 export function isAuthenticated(done) {
+  currentUser(function(err, user) {
+    if (err) {
+      done(false);
+    }
+    done(true);
+  });
+};
+
+/**
+ * get the current user
+ *
+ * @param {function} the function to execute when done, will be in the format
+ *  err, res
+ */
+export function currentUser(done) {
   Parse.User.currentAsync().then(
     function(user) {
       if (user && typeof user.getSessionToken() !== 'undefined') {
-        done(true);
+        done(null, user);
         return;
       }
-      done(false);
+      done('Invalid User');
     },
     function(err) {
       console.error(err);
-      done(false);
+      done('Invalid User');
     }
   );
 };
@@ -163,7 +180,7 @@ function openamRegister(user, tokenId, done) {
   }).catch(function(err) {
     done(err);
   });
-}
+};
 
 /**
  *
@@ -219,7 +236,6 @@ export function isRegistered(email, done) {
   });
 };
 
-
 /**
  *
  * @param {string} email, the email of the user
@@ -263,5 +279,31 @@ export function register(email, password, props, done) {
     // it was successful, registration will automatically login the user, we
     // can call logout() and force them to authenticate
     done(null, true);
+  });
+};
+
+/**
+ * update the users profile information
+ *
+ * @param {string} name, the users full name
+ * @param {string} phone, the users phone number
+ * @param {function} done, the function to execute when done
+ */
+export function updateProfile(name, phone, done) {
+  currentUser(function(err, user) {
+    if (err) {
+      done(false);
+    }
+    user.save({
+      name: name,
+      phone: phone,
+    }).then(
+      function(user) {
+        done(null, user);
+      },
+      function(err) {
+        done(err);
+      }
+    );
   });
 };
