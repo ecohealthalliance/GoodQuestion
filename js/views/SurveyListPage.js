@@ -14,6 +14,7 @@ import Styles from '../styles/Styles'
 import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys'
 import { loadForms } from '../api/Forms'
 import SurveyListItem from '../components/SurveyListItem'
+import Loading from '../components/Loading'
 
 const SurveyListPage = React.createClass ({
   title: 'Surveys',
@@ -29,9 +30,7 @@ const SurveyListPage = React.createClass ({
   },
 
   componentDidMount() {
-    this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(this.state.list),
-    });
+    this.mountTimeStamp = Date.now()
 
     if (this.state.list.length === 0) {
       loadSurveyList({}, this.loadList);
@@ -56,21 +55,31 @@ const SurveyListPage = React.createClass ({
 
   /* Methods */
   loadList(error, response){
+    console.log('loading list...')
     // Prevent this callback from working if the component has unmounted.
     if (this.cancelCallbacks) return
 
     if (error) {
       console.warn(error)
     } else {
+      let self = this
       // Use the Realm cached versions to determine accept/decline status
       let cachedSurveys = loadCachedSurveyList()
-      if (this.isMounted()) {
-        this.setState({
-          isLoading: false,
-          list: cachedSurveys,
-          dataSource: this.state.dataSource.cloneWithRows(cachedSurveys)
-        })
-      }
+
+      let delay = 0
+      if (this.mountTimeStamp + 750 > Date.now()) delay = 750
+
+      setTimeout(() => {
+        console.log('loading timeout')
+        if (!self.cancelCallbacks) {
+          console.log('loading setstate')
+          self.setState({
+            isLoading: false,
+            list: cachedSurveys,
+            dataSource: self.state.dataSource.cloneWithRows(cachedSurveys)
+          })
+        }
+      }, delay)
     }
   },
 
@@ -103,13 +112,17 @@ const SurveyListPage = React.createClass ({
   },
 
   render() {
-    return (
-      <ListView dataSource = { this.state.dataSource }
-        renderRow = { this.renderItem }
-        contentContainerStyle = { [Styles.container.default, Styles.survey.list] }
-        enableEmptySections
-      />
-    )
+    if (this.state.isLoading) {
+      return (<Loading/>)
+    } else {
+      return (
+        <ListView dataSource = { this.state.dataSource }
+          renderRow = { this.renderItem }
+          contentContainerStyle = { [Styles.container.default, Styles.survey.list] }
+          enableEmptySections
+        />
+      )
+    }
   }
 })
 

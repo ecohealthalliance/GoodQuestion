@@ -67,7 +67,6 @@ const SharedNavigator = React.createClass ({
       title: '',
       isLoading: true,
       isAuthenticated: false,
-      drawerOpen: false,
     }
   },
   componentWillMount() {
@@ -157,8 +156,6 @@ const SharedNavigator = React.createClass ({
           panCloseMask={0.2}
           closedDrawerOffset={-3}
           styles={Styles.drawer}
-          open={this.state.drawerOpen}
-          // onClose={()=>this.setState({drawerOpen: false})}
           tweenHandler={(ratio) => ({
             main: { opacity:(2-ratio)/2 }
           })}
