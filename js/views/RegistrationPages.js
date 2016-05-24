@@ -36,7 +36,7 @@ const RegistrationPages = React.createClass ({
       index = this.props.index;
     }
     return {
-      index: index,
+      index: index
     }
   },
 
@@ -140,7 +140,7 @@ const RegistrationPages = React.createClass ({
       }
       Alert.alert('Success', 'You have successfully registered to Good Question');
       // go to the default route
-      self.props.navigator.replace({});
+      self.props.navigator.resetTo({});
     });
   },
 

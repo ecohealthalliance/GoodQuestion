@@ -35,6 +35,7 @@ import NotificationsPage from '../views/NotificationsPage'
 import RegistrationPages from '../views/RegistrationPages'
 import FormPage from '../views/FormPage'
 import ControlPanel from '../views/ControlPanel'
+import ProfilePage from '../views/ProfilePage'
 
 // Background
 import { initializeGeolocationService } from '../api/BackgroundProcess'
@@ -106,7 +107,7 @@ const SharedNavigator = React.createClass ({
 
     if (!this.state.isAuthenticated && !route.unsecured) {
       route.path = 'login'
-      route.title = ' '
+      route.title = ''
     }
 
     switch (route.path) {
@@ -115,8 +116,9 @@ const SharedNavigator = React.createClass ({
       case 'notifications': return <NotificationsPage {...sharedProps} />
       case 'terms': return <TermsOfServicePage {...sharedProps} />
       case 'registration': return <RegistrationPages {...sharedProps} index={route.index} />
-      case 'survey-details': return <SurveyDetailsPage navigator={nav} survey={route.survey} />
-      case 'form': return <FormPage navigator={nav} form={route.form} survey={route.survey} />
+      case 'profile': return <ProfilePage {...sharedProps} />
+      case 'form': return <FormPage {...sharedProps} form={route.form} survey={route.survey} index={route.index} />
+      case 'survey-details': return <SurveyDetailsPage {...sharedProps} survey={route.survey} />
       default: return <SurveyListPage {...sharedProps} />
     }
   },
@@ -130,36 +132,38 @@ const SharedNavigator = React.createClass ({
     }
     // show the navigator
     if (this.state.isAuthenticated) {
-      return (<Drawer
-        type="overlay"
-        content={<ControlPanel
-          navigator={navigator}
-          logout={this.logoutHandler}
-          closeDrawer={()=>this.setState({drawerOpen: false})} />}
-        tapToClose={true}
-        openDrawerOffset={0.2} // 20% gap on the right side of drawer
-        panCloseMask={0.2}
-        closedDrawerOffset={-3}
-        styles={Styles.drawer}
-        open={this.state.drawerOpen}
-        onClose={()=>this.setState({drawerOpen: false})}
-        tweenHandler={(ratio) => ({
-          main: { opacity:(2-ratio)/2 }
-        })}
-        >
-        <Navigator
-          ref={(nav) => { navigator = nav }}
-          initialRoute={initialRoute}
-          renderScene={this.routeMapper}
-          configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
-          style={Styles.container.wrapper}
-          navigationBar={
-            <Header
-              title={this.state.title}
-              openDrawer={()=>this.setState({drawerOpen: true})} />
-          }
-        />
-      </Drawer>);
+      return (
+        <Drawer
+          type="overlay"
+          content={<ControlPanel
+            navigator={navigator}
+            logout={this.logoutHandler}
+            closeDrawer={()=>this.setState({drawerOpen: false})} />}
+          tapToClose={true}
+          openDrawerOffset={0.2} // 20% gap on the right side of drawer
+          panCloseMask={0.2}
+          closedDrawerOffset={-3}
+          styles={Styles.drawer}
+          open={this.state.drawerOpen}
+          onClose={()=>this.setState({drawerOpen: false})}
+          tweenHandler={(ratio) => ({
+            main: { opacity:(2-ratio)/2 }
+          })}
+          >
+          <Navigator
+            ref={(nav) => { navigator = nav }}
+            initialRoute={initialRoute}
+            renderScene={this.routeMapper}
+            configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
+            style={Styles.container.wrapper}
+            navigationBar={
+              <Header
+                title={this.state.title}
+                openDrawer={()=>this.setState({drawerOpen: true})} />
+            }
+          />
+        </Drawer>
+      );
     }
 
     return(

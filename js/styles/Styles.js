@@ -13,6 +13,7 @@ import QuestionStyles from './_QuestionStyles'
 import HeaderStyles from './_HeaderStyles'
 import DrawerStyles from './_DrawerStyles'
 import ControlPanelStyles from './_ControlPanelStyles'
+import ProfileStyles from './_ProfileStyles'
 
 const Styles = {
   container: ContainerStyles,
@@ -23,7 +24,8 @@ const Styles = {
   drawer: DrawerStyles,
   survey: SurveyStyles,
   controlPanel: ControlPanelStyles,
-  question: QuestionStyles
+  question: QuestionStyles,
+  profile: ProfileStyles,
 }
 
 module.exports = Styles

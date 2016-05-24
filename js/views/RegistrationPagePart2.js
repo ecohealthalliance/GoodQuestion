@@ -20,7 +20,6 @@ let checkedComponent = (<Icon name='check-square-o' size={30} />);
 import Joi from '../lib/joi-browser.min'
 import JoiMixins from '../mixins/joi-mixins'
 import EventMixins from '../mixins/event-mixins'
-import he from 'he' // HTML entity encode and decode
 
 const RegistrationPagePart4 = React.createClass ({
 
@@ -69,13 +68,6 @@ const RegistrationPagePart4 = React.createClass ({
   },
 
   componentWillMount() {
-  },
-
-  decodeText(txt) {
-    if (txt) {
-      return he.decode(txt);
-    }
-    return '';
   },
 
   /* Methods */

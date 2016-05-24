@@ -4,6 +4,7 @@ const Variables = {
   HEADER_SIZE: 80,
   HEADER_PADDING: 20,
   REGISTRATION_HEIGHT: 125,
+  PROFILE_HEIGHT: 250,
 }
 
 if ( Platform.OS === 'android' ) {

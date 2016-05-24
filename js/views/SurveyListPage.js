@@ -80,13 +80,13 @@ const SurveyListPage = React.createClass ({
   },
 
   onPress(item) {
+
     // TODO return the most recently triggered form that hasn't been filled out.
     this.selectSurvey(item)
   },
 
   selectSurvey(survey) {
     if (this.cancelCallbacks) return
-
     // TODO Support multiple forms
     this.props.navigator.push({
       path: 'survey-details',

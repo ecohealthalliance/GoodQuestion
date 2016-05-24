@@ -67,6 +67,7 @@ const RegistrationPagePart1 = React.createClass ({
 
   getInitialState() {
     return {
+      title: 'Registration',
       button_text: 'Next',
       email: '',
       password: '',
@@ -105,13 +106,6 @@ const RegistrationPagePart1 = React.createClass ({
     }
     // continue with mixin handler
     this.textFieldChangeHandler(name, value);
-  },
-
-  decodeText(txt) {
-    if (txt) {
-      return he.decode(txt);
-    }
-    return '';
   },
 
   renderTerms() {

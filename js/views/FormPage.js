@@ -27,23 +27,30 @@ import Submission from '../models/Submission';
 import Loading from '../components/Loading';
 import Color from '../styles/Color';
 import Swiper from 'react-native-page-swiper'
+import { loadCachedForms } from '../api/Forms'
 
 import { loadQuestions, loadCachedQuestions } from '../api/Questions'
 import realm from '../data/Realm'
 
 const FormPage = React.createClass ({
   propTypes: {
-    form: React.PropTypes.object.isRequired,
+    // forms: React.PropTypes.array.isRequired,
     survey: React.PropTypes.object.isRequired,
+    // index: React.PropTypes.number.isRequired
   },
 
   getInitialState() {
-    let index = 0
+    forms = loadCachedForms(this.props.survey.id)
+    // this.realm = new Realm({schema: [Submission]});
+    index = 0
     if (this.props.index) {
       index = this.props.index;
     }
+    questionIndex = 0
+    form = forms[index]
+    nextForm = forms[index + 1]
     return {
-      questions: loadCachedQuestions(this.props.form.id),
+      questions: loadCachedQuestions(form.id),
       answers: {},
       loading: false,
       index: index
@@ -61,7 +68,7 @@ const FormPage = React.createClass ({
   componentWillMount() {
     let submissions = realm
       .objects('Submission')
-      .filtered(`formId = "${this.props.form.id}"`)
+      .filtered(`formId = "${form.id}"`)
       .sorted('created');
     if(submissions.length > 0) {
       this.setState({answers: JSON.parse(submissions.slice(-1)[0].answers)})
@@ -77,8 +84,11 @@ const FormPage = React.createClass ({
   submit() {
     // TODO Get geolocation
     let answers = this.state.answers;
-    let formId = this.props.form.id;
-    let notification = realm.objects('Notification').filtered(`formId = "${this.props.form.id}"`)
+    let formId = form.id;
+    let index = this.state.index;
+    let survey = this.props.survey;
+    // let forms = this.props.forms;
+    let notification = realm.objects('Notification').filtered(`formId = "${formId}"`)
     realm.write(() => {
       let submission = realm.create('Submission', {
         formId: formId,
@@ -90,7 +100,18 @@ const FormPage = React.createClass ({
         notification.complete = true
       }
     });
-    this.props.navigator.push({name: 'surveyList', title: 'Surveys'});
+    //If there is another form continue onto that
+    if(nextForm){
+      this.props.navigator.push({ path: 'form', 
+                                  title: 'Survey: ' + survey.title,
+                                  index: index + 1,
+                                  survey: survey,
+                                  // forms: forms,
+                                });
+    }
+    else{
+      this.props.navigator.push({name: 'surveyList', title: 'Surveys'});
+    }
   },
 
   setAnswer(questionId, value) {
@@ -99,27 +120,27 @@ const FormPage = React.createClass ({
 
   onPageChange(page) {
     this.setState({
-      index: page
+      questionIndex: page
     });
   },
 
   /* Render */
 
   renderQuestions() {
-    try {
-    var renderedQuestions = this.state.questions.map((question, index)=>{
+    // questArray = Array(this.state.questions[0])
+    var renderedQuestions = this.state.questions.map((question, idx)=>{
       let questionProps = {
         key: question.id,
         id: question.id,
         value: this.state.answers[question.id],
-        index: index + 1,
+        index: idx + 1,
         onChange: (value)=> {
           this.setAnswer(question.id, value)
         },
       }
+
       questionProps = _.merge(questionProps, question)
       if (questionProps.properties) questionProps.properties = JSON.parse(questionProps.properties)
-
       switch (question.type) {
         case 'shortAnswer': return <View><ShortAnswer {...questionProps} /></View>
         case 'checkboxes': return <View><Checkboxes {...questionProps} /></View>
@@ -135,20 +156,22 @@ const FormPage = React.createClass ({
           return Platform.OS === 'ios' ?
             <View><DateQuestionIOS {...questionProps} mode="datetime" /></View> :
             <View><DatetimeQuestionAndroid {...questionProps} /></View>
-        default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.type}</Text>;
+        default: return <Text key={'unknown-question-'+idx}>Unknown Type: {question.type}</Text>;
       }
     })
-    newLast = (
-      <View>
-        {renderedQuestions[renderedQuestions.length-1]}
-        <Button onPress={this.submit} style={Styles.form.submitBtn}>Submit</Button>
-      </View>
-    )
+    let buttonText = "Complete survey"
+    if(nextForm){
+      buttonText = "Submit and continue"
+    }
+    newLast = <View>
+                {renderedQuestions[renderedQuestions.length-1]}
+                <Button onPress={this.submit} style={Styles.form.submitBtn}>{buttonText}</Button>
+              </View>
     renderedQuestions[renderedQuestions.length-1] = newLast
     return renderedQuestions;
-  } catch (e) {
-    console.error(e)
-  }
+  // } catch (e) {
+  //   console.error(e)
+  // }
   },
   render() {
     if (this.state.loading) {
@@ -163,7 +186,7 @@ const FormPage = React.createClass ({
         <Swiper
           style={{flex: 1}}
           activeDotColor={Color.background1}
-          index={this.state.index}
+          index={this.state.questionIndex}
           beforePageChange={this.beforePageChange}
           onPageChange={this.onPageChange}
           children={this.renderQuestions()}
