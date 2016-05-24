@@ -40,7 +40,7 @@ const FormPage = React.createClass ({
   },
 
   getInitialState() {
-    forms = Array(loadCachedForms(this.props.survey.id)[0])
+    forms = loadCachedForms(this.props.survey.id)
     // this.realm = new Realm({schema: [Submission]});
     index = 0
     if (this.props.index) {
@@ -121,7 +121,7 @@ const FormPage = React.createClass ({
   /* Render */
 
   renderQuestions() {
-    questArray = Array(this.state.questions[0])
+    // questArray = Array(this.state.questions[0])
     var renderedQuestions = this.state.questions.map((question, index)=>{
       let questionProps = {
         key: question.id,
