@@ -6,6 +6,7 @@ export default StyleSheet.create({
   container: {
     marginLeft: 20,
     marginTop: 30,
+    flex: 1
   },
   item: {
     flex: 1,
@@ -19,5 +20,9 @@ export default StyleSheet.create({
     color: Color.primary,
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 20,
   }
 })
