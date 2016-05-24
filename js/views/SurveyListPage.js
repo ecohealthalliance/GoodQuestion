@@ -15,6 +15,7 @@ import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys'
 import { loadForms } from '../api/Forms'
 import SurveyListItem from '../components/SurveyListItem'
 import Loading from '../components/Loading'
+import Color from '../styles/Color'
 
 const SurveyListPage = React.createClass ({
   title: 'Surveys',
@@ -45,7 +46,8 @@ const SurveyListPage = React.createClass ({
   componentWillReceiveProps(nextProps) {
     try {
       if (nextProps.navigator) {
-        let newPath = nextProps.navigator.state.routeStack[nextProps.navigator.state.routeStack.length-1].path
+        let routeStack = nextProps.navigator.state.routeStack
+        let newPath = routeStack[routeStack.length-1].path
         if (newPath === 'surveylist') this.loadList()
       }
     } catch(e) {
@@ -105,7 +107,13 @@ const SurveyListPage = React.createClass ({
   /* Render */
   renderItem(item, sectionId, rowId) {
     return (
-      <SurveyListItem item={item} onPressed={this.selectSurvey.bind(this, item)} onChecked={this.onChecked.bind(this, rowId)} />
+      <TouchableHighlight
+        onPress={() => this.selectSurvey(item)}
+        underlayColor={Color.background3}>
+        <View>
+          <SurveyListItem item={item} onChecked={this.onChecked.bind(this, rowId)} />
+        </View>
+      </TouchableHighlight>
     );
   },
 
