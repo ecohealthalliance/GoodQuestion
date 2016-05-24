@@ -43,6 +43,8 @@ export function configureGeolocationService() {
 
       disableMotionActivityUpdates: true, // iOS
 
+      // We are using the on/off schedule as a temporary event caller for  time triggers before we implement the geolocation triggers
+      // These triggers will have to be approached in other ways after that feature is developed.
       schedule: [
         '2-6 9:00-9:05',
         '2-6 10:00-10:05',
