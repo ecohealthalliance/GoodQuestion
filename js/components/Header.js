@@ -48,7 +48,7 @@ const Header = React.createClass ({
     return (
       <View style={Styles.header.navBarRightButton}>
         <TouchableWithoutFeedback onPress={this.props.openDrawer}>
-          <Icon name="bars" size={30} color="#FFFFFF" />
+          <Icon name="bars" size={25} color="#FFFFFF" />
         </TouchableWithoutFeedback>
       </View>
     );
@@ -79,17 +79,17 @@ const Header = React.createClass ({
   render() {
     return (
       <View style={Styles.header.navBar}>
-        {
+        <View style={Styles.header.navBarLeftButton}>
+          {
           this.state.index > 0 ?
-          <View style={Styles.header.navBarLeftButton}>
-            <TouchableWithoutFeedback onPress={this.navigateBack}>
-              <Icon name="chevron-left" size={30} color="#FFFFFF" />
-            </TouchableWithoutFeedback>
-          </View>
+          <TouchableWithoutFeedback onPress={this.navigateBack}>
+            <Icon name="chevron-left" size={20} color="#FFFFFF" />
+          </TouchableWithoutFeedback>
           : null
-        }
-        <View>
-          <Text>
+          }
+        </View>
+        <View style={Styles.header.navBarTitle}>
+          <Text numberOfLines={1} style={Styles.header.navBarTitleText}>
             {this.state.title}
           </Text>
         </View>
