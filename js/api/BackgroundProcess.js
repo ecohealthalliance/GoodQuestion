@@ -10,7 +10,7 @@ export const BackgroundGeolocation = Platform.OS === 'android' ?
 
 let startTimer = Date.now()
 
-export function configureGeolocationService() {
+export function configureGeolocationService(callback) {
   try {
     BackgroundGeolocation.stop()
     console.log('Configuring Geolocation...')
@@ -58,46 +58,43 @@ export function configureGeolocationService() {
 
         // '1-7 9:46-23:59', // for testing and debugging
       ]
-    })
-
-    console.log(BackgroundGeolocation)
+    }, callback)
   } catch (e) {
     console.error(e)
   }
 }
 
 export function initializeGeolocationService() {
-  configureGeolocationService()
+  configureGeolocationService((state) => {
+    // These events are triggered by the background process, they can be used to control geofence logic
+    // Until we implement those triggers these can still be used for testing background behavior.
+    BackgroundGeolocation.on('location', function(location) {
+      // printTimelog('location update')
+      // console.log(location)
+    })
 
-  // These events are triggered by the background process, they can be used to control geofence logic
-  // Until we implement those triggers these can still be used for testing background behavior.
+    BackgroundGeolocation.on('error', function(error) {
+      // printTimelog('error')
+      console.log(error.type + " Error: " + error.code)
+    })
 
-  BackgroundGeolocation.on('location', function(location) {
-    // printTimelog('location update')
-    // console.log(location)
-  })
+    BackgroundGeolocation.on('motionchange', function(location) {
+      // printTimelog('motion change')
+      // console.log(location)
+    })
 
-  BackgroundGeolocation.on('error', function(error) {
-    // printTimelog('error')
-    console.log(error.type + " Error: " + error.code)
-  })
+    BackgroundGeolocation.on('schedule', function(state) {
+      console.log('Schedule event triggered, tracking enabled:', state.enabled)
+      checkTimeTriggers()
+    })
 
-  BackgroundGeolocation.on('motionchange', function(location) {
-    // printTimelog('motion change')
-    // console.log(location)
-  })
+    BackgroundGeolocation.startSchedule(function() {
+      console.info('- Scheduler started')
+    })
 
-  BackgroundGeolocation.on('schedule', function(state) {
-    console.log('Schedule event triggered, tracking enabled:', state.enabled)
+    // Check the time triggers on start regardless if there is a schedule cycle running.
     checkTimeTriggers()
   })
-
-  BackgroundGeolocation.startSchedule(function() {
-    console.info('- Scheduler started')
-  })
-
-  // Check the time triggers on start regardless if there is a schedule cycle running.
-  checkTimeTriggers()
 }
 
 function printTimelog(msg) {

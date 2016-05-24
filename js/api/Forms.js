@@ -46,7 +46,7 @@ export function loadForms(survey, callback) {
       success: function(results) {
         for (var i = 0; i < results.length; i++) {
           cacheParseForm(results[i], survey.id)
-          loadTriggers(results[i])
+          loadTriggers(results[i], survey)
           loadQuestions(results[i])
         }
         if (callback) callback(null, results, survey)

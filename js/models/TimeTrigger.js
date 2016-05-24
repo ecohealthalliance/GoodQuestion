@@ -5,6 +5,7 @@ TimeTrigger.schema = {
   properties: {
   	id: 'string',
   	formId: 'string',
+  	surveyId: 'string',
     
     title: 'string',
     datetime: 'date',

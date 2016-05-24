@@ -111,6 +111,7 @@ const SharedNavigator = React.createClass ({
   routeMapper(route, nav) {
     const sharedProps = {
       navigator: nav,
+      logout: this.logoutHandler,
     };
 
     if (!this.state.isAuthenticated && !route.unsecured) {
