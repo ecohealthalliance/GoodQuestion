@@ -88,17 +88,15 @@ const SurveyListPage = React.createClass ({
     return;
   },
 
-  onPress(item) {
-
-    // TODO return the most recently triggered form that hasn't been filled out.
-    this.selectSurvey(item)
-  },
-
   selectSurvey(survey) {
     if (this.cancelCallbacks) return
     // TODO Support multiple forms
+    let path = 'survey-details'
+    if (survey.status == 'accepted') {
+        path = 'form'
+    }
     this.props.navigator.push({
-      path: 'survey-details',
+      path: path,
       title: survey.title,
       survey: survey
     })
@@ -107,7 +105,7 @@ const SurveyListPage = React.createClass ({
   /* Render */
   renderItem(item, sectionId, rowId) {
     return (
-      <SurveyListItem item={item} onPressed={this.onPress.bind(this, item)} onChecked={this.onChecked.bind(this, rowId)} />
+      <SurveyListItem item={item} onPressed={this.selectSurvey.bind(this, item)} onChecked={this.onChecked.bind(this, rowId)} />
     );
   },
 
