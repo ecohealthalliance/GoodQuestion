@@ -46,6 +46,7 @@ const FormPage = React.createClass ({
     if (this.props.index) {
       index = this.props.index;
     }
+    questionIndex = 0
     form = forms[index]
     nextForm = forms[index + 1]
     return {
@@ -84,9 +85,9 @@ const FormPage = React.createClass ({
     // TODO Get geolocation
     let answers = this.state.answers;
     let formId = form.id;
-    let index = this.props.index;
+    let index = this.state.index;
     let survey = this.props.survey;
-    let forms = this.props.forms;
+    // let forms = this.props.forms;
     realm.write(() => {
       let submission = realm.create('Submission', {
         formId: formId,
@@ -95,12 +96,12 @@ const FormPage = React.createClass ({
       });
     });
     //If there is another form continue onto that
-    if(forms[index+1]){
+    if(nextForm){
       this.props.navigator.push({ path: 'form', 
-                                  title: 'Survey: ' + survey.get('title'),
-                                  index: index +1,
+                                  title: 'Survey: ' + survey.title,
+                                  index: index + 1,
                                   survey: survey,
-                                  forms: forms,
+                                  // forms: forms,
                                 });
     }
     else{
@@ -114,7 +115,7 @@ const FormPage = React.createClass ({
 
   onPageChange(page) {
     this.setState({
-      index: page
+      questionIndex: page
     });
   },
 
@@ -122,12 +123,12 @@ const FormPage = React.createClass ({
 
   renderQuestions() {
     // questArray = Array(this.state.questions[0])
-    var renderedQuestions = this.state.questions.map((question, index)=>{
+    var renderedQuestions = this.state.questions.map((question, idx)=>{
       let questionProps = {
         key: question.id,
         id: question.id,
         value: this.state.answers[question.id],
-        index: index + 1,
+        index: idx + 1,
         onChange: (value)=> {
           this.setAnswer(question.id, value)
         },
@@ -150,7 +151,7 @@ const FormPage = React.createClass ({
           return Platform.OS === 'ios' ?
             <View><DateQuestionIOS {...questionProps} mode="datetime" /></View> :
             <View><DatetimeQuestionAndroid {...questionProps} /></View>
-        default: return <Text key={'unknown-question-'+index}>Unknown Type: {question.type}</Text>;
+        default: return <Text key={'unknown-question-'+idx}>Unknown Type: {question.type}</Text>;
       }
     })
     let buttonText = "Complete survey"
@@ -180,7 +181,7 @@ const FormPage = React.createClass ({
         <Swiper
           style={{flex: 1}}
           activeDotColor={Color.background1}
-          index={0}
+          index={this.state.questionIndex}
           beforePageChange={this.beforePageChange}
           onPageChange={this.onPageChange}
           children={this.renderQuestions()}
