@@ -5,6 +5,8 @@ import realm from '../data/Realm'
 
 import { loadQuestions } from './Questions'
 import { loadTriggers } from './Triggers'
+import Realm from 'realm';
+import Submission from '../models/Submission';
 
 
 // Saves a Form object from Parse into our Realm.io local database
@@ -33,7 +35,7 @@ export function loadForms(survey, callback) {
   const surveyFormRelations = survey.get('forms')
 
   if (surveyFormRelations) {
-    surveyFormRelations.query().find({
+    surveyFormRelations.query().ascending("createdAt").find({
       success: function(results) {
         for (var i = 0; i < results.length; i++) {
           cacheParseForm(results[i], survey.id)
