@@ -7,6 +7,7 @@ import React, {
   ListView,
   AsyncStorage,
   Platform,
+  Alert,
 } from 'react-native'
 import _ from 'lodash'
 
@@ -29,33 +30,37 @@ import Color from '../styles/Color';
 import Swiper from 'react-native-page-swiper'
 import { loadCachedForms } from '../api/Forms'
 
+import { loadCachedSubmissions, saveSubmission} from '../api/Submissions'
 import { loadQuestions, loadCachedQuestions } from '../api/Questions'
+
 import realm from '../data/Realm'
 
 const FormPage = React.createClass ({
+  form: null,
+  nextForm: null,
   propTypes: {
-    // forms: React.PropTypes.array.isRequired,
     survey: React.PropTypes.object.isRequired,
-    // index: React.PropTypes.number.isRequired
+    index: React.PropTypes.number,
   },
 
   getInitialState() {
-    forms = loadCachedForms(this.props.survey.id)
-    // this.realm = new Realm({schema: [Submission]});
-    index = 0
+    const forms = loadCachedForms(this.props.survey.id);
+    let index = 0
     if (this.props.index) {
       index = this.props.index;
     }
-    questionIndex = 0
-    form = forms[index]
-    nextForm = forms[index + 1]
+    this.form = forms[index]
+    this.nextForm = forms[index + 1]
     return {
-      questions: loadCachedQuestions(form.id),
+      questions: loadCachedQuestions(this.form.id),
       answers: {},
       loading: false,
-      index: index
+      index: index,
+      button_text: 'Submit',
+      questionIndex: 0,
     }
   },
+
   // beforePageChange(nextPage) {
   //   const shouldContinue = this.validatePage();
   //   if (!shouldContinue) {
@@ -66,13 +71,11 @@ const FormPage = React.createClass ({
   // },
 
   componentWillMount() {
-    let submissions = realm
-      .objects('Submission')
-      .filtered(`formId = "${form.id}"`)
-      .sorted('created');
+    console.log('this: ', this);
+    const submissions = loadCachedSubmissions(this.form.id);
     if(submissions.length > 0) {
       this.setState({answers: JSON.parse(submissions.slice(-1)[0].answers)})
-    }    
+    }
   },
 
   componentWillUnmount() {
@@ -82,36 +85,38 @@ const FormPage = React.createClass ({
   /* Methods */
 
   submit() {
-    // TODO Get geolocation
     let answers = this.state.answers;
-    let formId = form.id;
+    let formId = this.form.id;
     let index = this.state.index;
     let survey = this.props.survey;
-    // let forms = this.props.forms;
-    let notification = realm.objects('Notification').filtered(`formId = "${formId}"`)
-    realm.write(() => {
-      let submission = realm.create('Submission', {
-        formId: formId,
-        created: new Date(),
-        answers: JSON.stringify(answers),
+    this.setState({
+      button_text: 'Saving...'
+    });
+    saveSubmission(formId, answers, (err, res) => {
+      if (err) {
+        if (err === 'Invalid User') {
+          this.props.logout();
+          return;
+        }
+        Alert.alert('Error', err);
+        return;
+      }
+      this.setState({
+        button_text: 'Submit'
       });
 
-      if (notification) {
-        notification.complete = true
+      //If there is another form continue onto that
+      if(this.nextForm){
+        this.props.navigator.push({ path: 'form',
+                                    title: 'Survey: ' + survey.title,
+                                    index: index + 1,
+                                    survey: survey,
+                                  });
+      }
+      else{
+        this.props.navigator.push({name: 'surveyList', title: 'Surveys'});
       }
     });
-    //If there is another form continue onto that
-    if(nextForm){
-      this.props.navigator.push({ path: 'form', 
-                                  title: 'Survey: ' + survey.title,
-                                  index: index + 1,
-                                  survey: survey,
-                                  // forms: forms,
-                                });
-    }
-    else{
-      this.props.navigator.push({name: 'surveyList', title: 'Surveys'});
-    }
   },
 
   setAnswer(questionId, value) {
@@ -127,7 +132,6 @@ const FormPage = React.createClass ({
   /* Render */
 
   renderQuestions() {
-    // questArray = Array(this.state.questions[0])
     var renderedQuestions = this.state.questions.map((question, idx)=>{
       let questionProps = {
         key: question.id,
@@ -160,7 +164,7 @@ const FormPage = React.createClass ({
       }
     })
     let buttonText = "Complete survey"
-    if(nextForm){
+    if(this.nextForm){
       buttonText = "Submit and continue"
     }
     newLast = <View>
@@ -169,9 +173,6 @@ const FormPage = React.createClass ({
               </View>
     renderedQuestions[renderedQuestions.length-1] = newLast
     return renderedQuestions;
-  // } catch (e) {
-  //   console.error(e)
-  // }
   },
   render() {
     if (this.state.loading) {

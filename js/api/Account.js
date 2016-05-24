@@ -96,7 +96,6 @@ export function currentUser(done) {
       done('Invalid User');
     },
     function(err) {
-      console.error(err);
       done('Invalid User');
     }
   );
@@ -201,7 +200,6 @@ function parseRegister(email, password, props, done) {
         done(err.message);
         return;
       }
-      console.error(err);
       done('Error with signup process. Try again later.');
     }
   );
