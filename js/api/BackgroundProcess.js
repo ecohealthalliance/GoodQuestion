@@ -94,9 +94,10 @@ export function initializeGeolocationService() {
 
   BackgroundGeolocation.startSchedule(function() {
     console.info('- Scheduler started')
-    checkTimeTriggers()
   })
 
+  // Check the time triggers on start regardless if there is a schedule cycle running.
+  checkTimeTriggers()
 }
 
 function printTimelog(msg) {
