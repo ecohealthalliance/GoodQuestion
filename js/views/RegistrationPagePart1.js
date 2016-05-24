@@ -66,11 +66,11 @@ const RegistrationPagePart1 = React.createClass ({
       .label('Email'),
     password: Joi.string()
       .regex(/^([a-zA-Z0-9@*#]{8,15})$/)
-      .required().options({language: {string: {regex: {base: 'must be between 8 and 15 alpha numberic characters'}}}})
+      .required().options({language: {string: {regex: {base: 'must be between 8 and 15 alphanumeric characters'}}}})
       .label('Password'),
     confirmPassword: Joi.string()
       .regex(/^([a-zA-Z0-9@*#]{8,15})$/)
-      .required().options({language: {string: {regex: {base: 'must be between 8 and 15 alpha numberic characters'}}}})
+      .required().options({language: {string: {regex: {base: 'must be between 8 and 15 alphanumeric characters'}}}})
       .label('Confirm Password'),
     acceptedTerms: Joi.boolean()
       .required()
