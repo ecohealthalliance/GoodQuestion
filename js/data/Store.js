@@ -1,3 +1,4 @@
+// Used for global variables that do not fit in a Realm database
 const Store = {
   platform: null,
   server: 'local',
@@ -9,6 +10,8 @@ const Store = {
     lat: 0,
     long: 0,
   },
+
+  navigator: false,
 
   user: {
     objectId: 'SoMeH4sH',

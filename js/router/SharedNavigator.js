@@ -100,6 +100,14 @@ const SharedNavigator = React.createClass ({
     });
   },
 
+  closeControlPanel() {
+    this._drawer.close()
+  },
+
+  openControlPanel() {
+    this._drawer.open()
+  },
+
   routeMapper(route, nav) {
     const sharedProps = {
       navigator: nav,
@@ -135,23 +143,27 @@ const SharedNavigator = React.createClass ({
       return (
         <Drawer
           type="overlay"
+          ref={(ref) => this._drawer = ref}
           content={<ControlPanel
             navigator={navigator}
             logout={this.logoutHandler}
-            closeDrawer={()=>this.setState({drawerOpen: false})} />}
+            closeDrawer={this.closeControlPanel} />}
           tapToClose={true}
           openDrawerOffset={0.2} // 20% gap on the right side of drawer
           panCloseMask={0.2}
           closedDrawerOffset={-3}
           styles={Styles.drawer}
           open={this.state.drawerOpen}
-          onClose={()=>this.setState({drawerOpen: false})}
+          // onClose={()=>this.setState({drawerOpen: false})}
           tweenHandler={(ratio) => ({
             main: { opacity:(2-ratio)/2 }
           })}
           >
           <Navigator
-            ref={(nav) => { navigator = nav }}
+            ref={(nav) => { 
+              navigator = nav
+              Store.navigator = nav // Store globally so we can use the navigator outside components
+            }}
             initialRoute={initialRoute}
             renderScene={this.routeMapper}
             configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
@@ -159,7 +171,7 @@ const SharedNavigator = React.createClass ({
             navigationBar={
               <Header
                 title={this.state.title}
-                openDrawer={()=>this.setState({drawerOpen: true})} />
+                openDrawer={this.openControlPanel} />
             }
           />
         </Drawer>
