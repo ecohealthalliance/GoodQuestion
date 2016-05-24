@@ -6,7 +6,9 @@ import Variables from './Variables'
 const HeaderStyles = StyleSheet.create({
   navBar: {
     flex: 1,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    justifyContent: 'space-between',
     alignItems: 'center',
     position: 'absolute',
     top: 0,
@@ -16,29 +18,21 @@ const HeaderStyles = StyleSheet.create({
     paddingTop: Variables.HEADER_PADDING,
     backgroundColor: Color.background1,
   },
-  navBarText: {
-    color: Color.background2,
-    fontSize: 16,
-    marginVertical: 10,
+  navBarTitle: {
+    flex: .8,
+    marginRight: 10,
   },
   navBarTitleText: {
-    color: Color.background2,
-    fontWeight: '500',
-    marginVertical: 9,
+    paddingRight: 10,
+    textAlign: 'center',
   },
   navBarLeftButton: {
-    flex: 1,
-    position: 'absolute',
-    left: 10,
-    top: 16 + Variables.HEADER_PADDING,
-    paddingLeft: 10,
+    flex: .1,
+    marginLeft: Variables.HEADER_PADDING,
   },
   navBarRightButton: {
-    flex: 1,
-    position: 'absolute',
-    paddingRight: 10,
-    right: 10,
-    top: 16 + Variables.HEADER_PADDING,
+    flex: .1,
+    marginRight: Variables.HEADER_PADDING - 10,
   },
 })
 
