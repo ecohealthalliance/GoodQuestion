@@ -45,7 +45,6 @@ function createParseSubmission(id, formId, answers, currentUser, done) {
       done(null, s);
     },
     (e) => {
-      console.log('createParseSubmission:err: ', err);
       done('Error synchronizing to remote server.');
     }
   );
@@ -64,7 +63,6 @@ function updateParseSubmission(submission, answers, done) {
         done(null, s);
       },
       (e) => {
-        console.log('updateParseSubmission:err: ', err);
         done('Error synchronizing to remote server.');
       }
     );
@@ -108,7 +106,6 @@ function upsertRealmSubmission(id, formId, answers, dirty, done) {
     .objects('Submission')
     .filtered(`uniqueId = "${id}"`)
     .sorted('created');
-  console.log('submissions.length: ', submissions.length);
   if (submissions.length > 0) {
     const submission = submissions[0];
     try {
@@ -118,7 +115,6 @@ function upsertRealmSubmission(id, formId, answers, dirty, done) {
       });
       done(null, submission);
     } catch(e) {
-      console.log('upsertRealmSubmission.update.err: ', e);
       done('Error updating realm submission ' + id);
     }
   } else {
@@ -133,7 +129,6 @@ function upsertRealmSubmission(id, formId, answers, dirty, done) {
         });
         done(null, submission);
       } catch(e) {
-        console.log('upsertRealmSubmission.create.err: ', e);
         done('Error saving realm submission ' + id);
       }
     });
@@ -156,7 +151,6 @@ function markRealmSubmissionClean(id, done) {
       realm.write(() => {
         submission.dirty = false;
       });
-      console.log('submission: ', submission);
       done(null, submission);
     } catch(e) {
       done('Error update realm submission ' + id)
