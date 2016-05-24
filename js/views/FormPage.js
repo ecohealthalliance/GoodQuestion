@@ -78,12 +78,17 @@ const FormPage = React.createClass ({
     // TODO Get geolocation
     let answers = this.state.answers;
     let formId = this.props.form.id;
+    let notification = realm.objects('Notification').filtered(`formId = "${this.props.form.id}"`)
     realm.write(() => {
       let submission = realm.create('Submission', {
         formId: formId,
         created: new Date(),
         answers: JSON.stringify(answers),
       });
+
+      if (notification) {
+        notification.complete = true
+      }
     });
     this.props.navigator.push({name: 'surveyList', title: 'Surveys'});
   },

@@ -54,7 +54,7 @@ export function configureGeolocationService() {
         '2-6 16:00-16:05',
         '2-6 17:00-17:05',
 
-        '1-7 9:46-23:59', // for testing
+        // '1-7 9:46-23:59', // for testing and debugging
       ]
     })
 
