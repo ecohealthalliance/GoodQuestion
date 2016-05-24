@@ -35,7 +35,6 @@ const SurveyListItem = React.createClass ({
       <View style={Styles.survey.listitem}>
           <View style={Styles.container.col75}>
             <Text style={Styles.survey.title}>{this.props.item.title}</Text>
-            <Text style={Styles.survey.subtitle}>A subtitle</Text>
           </View>
         <View style={[Styles.container.col25, {alignItems: 'flex-end'}]}>
           {this.renderIcon()}
