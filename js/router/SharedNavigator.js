@@ -74,8 +74,11 @@ const SharedNavigator = React.createClass ({
     connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
   },
   componentDidMount() {
+    let self = this
     isAuthenticated((authenticated) => {
-      this.setState({
+      console.log('authenticated')
+      console.log(authenticated)
+      self.setState({
         isAuthenticated: authenticated,
         isLoading: false,
       });
@@ -114,7 +117,7 @@ const SharedNavigator = React.createClass ({
       logout: this.logoutHandler,
     };
 
-    if (!this.state.isAuthenticated && !route.unsecured) {
+    if (!this.state.isAuthenticated) {
       route.path = 'login'
       route.title = ''
     }

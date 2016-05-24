@@ -75,8 +75,9 @@ export function isAuthenticated(done) {
   currentUser(function(err, user) {
     if (err) {
       done(false);
+    } else {
+      done(true);
     }
-    done(true);
   });
 };
 
@@ -91,9 +92,9 @@ export function currentUser(done) {
     function(user) {
       if (user && typeof user.getSessionToken() !== 'undefined') {
         done(null, user);
-        return;
+      } else {
+        done('Invalid User');
       }
-      done('Invalid User');
     },
     function(err) {
       done('Invalid User');
@@ -310,7 +311,6 @@ export function updateProfile(name, phone, done) {
  * Checks for the current logged in user, navigates back to the login page if verification fails.
  */
 export function validateUser() {
-  console.log('VALIDATING USER')
   isAuthenticated((isValidUser) => {
     if (!isValidUser) {
       console.log('User validation failed, returning to login screen.')
