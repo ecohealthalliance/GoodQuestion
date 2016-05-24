@@ -28,6 +28,7 @@ function genSubmissionId(formId, currentUser, done) {
 
 /**
  * create a submission on parse-server
+ * TODO set ACL in cloud code afterSave
  *
  * @param {string} id, the unique id for the realm record
  * @param {string} formId, the unique id for the parse form record
@@ -35,17 +36,31 @@ function genSubmissionId(formId, currentUser, done) {
  * @param {object} currentUser, the current parse user saved to AsyncStorage
  */
 function createParseSubmission(id, formId, answers, currentUser, done) {
-  let submission = new Submission();
+  const submission = new Submission();
   submission.set('uniqueId', id);
   submission.set('formId', formId);
   submission.set('answers', answers);
-  submission.setACL(new Parse.ACL(currentUser));
-  submission.save(null).then(
-    (s) => {
-      done(null, s);
+  const query = new Parse.Query(Parse.Role)
+  query.equalTo('name', 'admin')
+  query.first(
+    (role) => {
+      const acl = new Parse.ACL();
+      acl.setReadAccess(currentUser, true);
+      acl.setWriteAccess(currentUser, true);
+      acl.setRoleReadAccess(role, true);
+      acl.setRoleWriteAccess(role, true);
+      submission.setACL(acl);
+      submission.save(null).then(
+        (s) => {
+          done(null, s);
+        },
+        (e) => {
+          done('Error synchronizing to remote server.');
+        }
+      );
     },
     (e) => {
-      done('Error synchronizing to remote server.');
+      done('Invalid role.')
     }
   );
 };
