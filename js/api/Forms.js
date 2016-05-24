@@ -35,7 +35,7 @@ export function loadForms(survey, callback) {
   const surveyFormRelations = survey.get('forms')
 
   if (surveyFormRelations) {
-    surveyFormRelations.query().find({
+    surveyFormRelations.query().ascending("createdAt").find({
       success: function(results) {
         for (var i = 0; i < results.length; i++) {
           cacheParseForm(results[i], survey.id)
