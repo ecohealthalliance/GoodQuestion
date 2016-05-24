@@ -1,4 +1,5 @@
 #! /usr/bin/env node
+
 var Parse = require('parse/node')
 var DummyData = require('./data/DummyData')
 var Store = require('./data/Store')
@@ -7,48 +8,50 @@ var Forms = require('./api/Forms')
 var Questions = require('./api/Questions')
 var Triggers = require('./api/Triggers')
 
+var Settings = require('./../js/settings.js')
+
 var program = require('commander');
- 
+
 program
   .option('-c, --create', 'Create data for your local Parse server.')
   .option('-r, --reset', 'Erase local Parse data.')
   .option('-p, --print', 'Prints the current data in your local server.')
   .parse(process.argv);
 
-Parse.initialize('testapp')
-Parse.serverURL = 'http://localhost:1337/parse'
-// Parse.initialize('UMassSurvey')
-// Parse.serverURL = 'https://survey.eha.io/parse'
+Parse.initialize(Settings.parse.appId)
+Parse.serverURL = Settings.parse.serverUrl
 
 if (program.reset) {
   resetLocalServer()
-} else if (program.create) { 
+} else if (program.create) {
   createData()
-} else if (program.print) { 
+} else if (program.print) {
   Surveys.loadSurveyList()
 } else {
   program.outputHelp()
 }
 
 // Run a log before closing
-process.on('exit', exitHandler.bind(null,{log:true}))
+process.on('exit', exitHandler.bind(null, {log:true}))
 process.on('uncaughtException', exitHandler.bind(null, {exit:true}))
 
 function exitHandler(options, err) {
-    if (err) console.log(err.stack)
+    if (err)
+      console.error(err.stack)
 
     if (program.reset) {
       console.log('Server Reset.')
-    } else if (program.create) { 
+    } else if (program.create) {
       console.log('Parse server populated.')
-    } else if (program.print) { 
-      console.log('Stored Data: ' + 
+    } else if (program.print) {
+      console.log('Stored Data: ' +
         Store.surveys.length + ' surveys, ' +
         Store.forms.length + ' forms, ' +
         Store.questions.length + ' questions, ' +
         Store.triggers.length + ' triggers.'
       )
     }
+
     process.exit()
 }
 
