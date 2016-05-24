@@ -34,9 +34,6 @@ export default React.createClass({
           text="Surveys"
         />
         <ControlPanelItem
-          text="Notifications"
-        />
-        <ControlPanelItem
           onPress={()=> this.navigateToView('profile', 'Profile')}
           text="Profile"
         />
