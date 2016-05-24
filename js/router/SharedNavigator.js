@@ -111,7 +111,7 @@ const SharedNavigator = React.createClass ({
       case 'terms': return <TermsOfServicePage {...sharedProps} />
       case 'registration': return <RegistrationPages {...sharedProps} index={route.index} />
       case 'profile': return <ProfilePage {...sharedProps} />
-      case 'form': return <FormPage {...sharedProps} form={route.form} survey={route.survey} />
+      case 'form': return <FormPage {...sharedProps} form={route.form} survey={route.survey} index={route.index} />
       case 'survey-details': return <SurveyDetailsPage {...sharedProps} survey={route.survey} />
       default: return <SurveyListPage {...sharedProps} />
     }
