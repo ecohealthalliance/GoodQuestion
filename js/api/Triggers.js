@@ -64,6 +64,8 @@ export function checkTimeTriggers() {
         if (survey) {
           surveyId = survey.id
           surveyAccepted = survey.status === 'accepted'
+        } else {
+          surveyAccepted = false
         }
       }
       if (surveyAccepted) {
