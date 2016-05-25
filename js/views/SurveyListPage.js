@@ -24,6 +24,7 @@ const SurveyListPage = React.createClass ({
     return {
       isLoading: true,
       list: [],
+      filteredList: [],
       dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
       })
@@ -71,17 +72,34 @@ const SurveyListPage = React.createClass ({
       if (this.mountTimeStamp + 750 > Date.now()) delay = 750
 
       setTimeout(() => {
-        console.log('loading timeout')
         if (!self.cancelCallbacks) {
-          console.log('loading setstate')
-          self.setState({
-            isLoading: false,
-            list: cachedSurveys,
-            dataSource: self.state.dataSource.cloneWithRows(cachedSurveys)
-          })
+          self.filterList('all', cachedSurveys)
         }
       }, delay)
     }
+  },
+
+  filterList(query, list) {
+    let filteredList = []
+    if (query !== 'all') {
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].status == query) {
+          filteredList.push(list[i])
+        }
+      }
+    } else {
+      filteredList = list
+    }
+    this.setState({
+      isLoading: false,
+      list: list,
+      filteredList: filteredList,
+      dataSource: this.state.dataSource.cloneWithRows(filteredList)
+    })
+  },
+
+  updateListFilter(query) {
+    this.filterList(query, this.state.list)
   },
 
   onChecked(rowId) {
@@ -105,10 +123,6 @@ const SurveyListPage = React.createClass ({
     })
   },
 
-  filterList() {
-
-  },
-
   /* Render */
   renderItem(item, sectionId, rowId) {
     return (
@@ -121,13 +135,13 @@ const SurveyListPage = React.createClass ({
       return (<Loading/>)
     } else {
       return (
-        <View>
+        <View style={{flex: 1}}>
           <ListView dataSource = { this.state.dataSource }
             renderRow = { this.renderItem }
             contentContainerStyle = { [Styles.container.default, Styles.survey.list] }
             enableEmptySections
           />
-          <SurveyListFilter filterList={this.filterList} />
+          <SurveyListFilter filterList={this.updateListFilter} />
         </View>
       )
     }

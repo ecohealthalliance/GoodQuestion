@@ -16,10 +16,15 @@ const SurveyStyles = StyleSheet.create({
     borderColor: Color.background1,
   },
   listfilter: {
-    flex: 1,
+    // flex: 1,
     flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderColor: Color.background1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 70,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: Color.background1,
   },
   checkbox: {
     backgroundColor: 'transparent',

@@ -15,30 +15,79 @@ const SurveyListFilter = React.createClass ({
     filterList: React.PropTypes.func.isRequired,
   },
 
+  getInitialState() {
+    return {
+      activeButton: 'all'
+    }
+  },
+
   /* Methods */
   handlePress(filter) {
     this.props.filterList(filter)
+    this.setState({
+      activeButton: filter
+    })
   },
 
   /* Render */
   render() {
     return (
       <View style={Styles.survey.listfilter}>
-        <Button action={this.handlePress} style={[Styles.container.col25, {margin: 5}]}>
-          <Text> AAA </Text>
-        </Button>
-        <Button action={this.handlePress} style={[Styles.container.col25, {margin: 5}]}>
-          <Text> AAA </Text>
-        </Button>
-        <Button action={this.handlePress} style={[Styles.container.col25, {margin: 5}]}>
-          <Text> AAA </Text>
-        </Button>
-        <Button action={this.handlePress} style={[Styles.container.col25, {margin: 5}]}>
-          <Text> AAA </Text>
-        </Button>
+        <SurveyListFilterButton
+          active={this.state.activeButton === 'all'}
+          onPress={this.handlePress.bind(this, 'all')}
+          icon='list-ul'
+          >
+          All
+        </SurveyListFilterButton>
+        <SurveyListFilterButton
+          active={this.state.activeButton === 'pending'}
+          onPress={this.handlePress.bind(this, 'pending')}
+          icon='circle-o'
+          >
+          Pending
+        </SurveyListFilterButton>
+        <SurveyListFilterButton
+          active={this.state.activeButton === 'accepted'}
+          onPress={this.handlePress.bind(this, 'accepted')}
+          icon='check-circle'
+          >
+          Accepted
+        </SurveyListFilterButton>
+        <SurveyListFilterButton
+          active={this.state.activeButton === 'declined'}
+          onPress={this.handlePress.bind(this, 'declined')}
+          icon='times-circle'
+          >
+          Declined
+        </SurveyListFilterButton>
       </View>
     )
   }
 })
+
+const SurveyListFilterButton = React.createClass ({
+  propTypes: {
+    active: React.PropTypes.bool.isRequired,
+    icon: React.PropTypes.string.isRequired,
+    onPress: React.PropTypes.func.isRequired,
+  },
+  render() {
+    let buttonViewStyle = {flex: 1, justifyContent: 'center', alignItems: 'center'}
+    let buttonContainerStyle = {marginHorizontal: 20, opacity: 0.5}
+    if (this.props.active) buttonContainerStyle.opacity = 1
+    return (
+      <View style={[buttonContainerStyle]}>
+        <TouchableWithoutFeedback onPress={this.props.onPress} >
+          <View style={buttonViewStyle}>
+            <Icon name={this.props.icon} size={24} color={Color.primary} />
+            <Text style={{flex: 1, fontSize: 10}}>{this.props.children}</Text>
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+    )
+  }
+})
+
 
 module.exports = SurveyListFilter
