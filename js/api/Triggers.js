@@ -60,9 +60,11 @@ export function checkTimeTriggers() {
   for (var i = 0; i < triggers.length; i++) {
     if (triggers[i].datetime < now && triggers[i].datetime > past) {
       if (triggers[i].surveyId !== surveyId) {
-        let survey = realm.objects('Survey').filtered(`id == "${triggers[i].surveyId}"`)
-        surveyId = survey.id
-        surveyAccepted = survey.status === 'accepted'
+        let survey = realm.objects('Survey').filtered(`id == "${triggers[i].surveyId}"`)[0]
+        if (survey) {
+          surveyId = survey.id
+          surveyAccepted = survey.status === 'accepted'
+        }
       }
       if (surveyAccepted) {
         validTriggers.push(triggers[i])
