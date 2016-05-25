@@ -11,7 +11,7 @@ var Triggers = require('./api/Triggers')
 
 var Settings = require('./../js/settings.js')
 
-var program = require('commander');
+var program = require('commander')
 
 program
   .option('-c, --create', 'Create data for your local Parse server.')
@@ -72,14 +72,13 @@ function createData() {
 }
 
 function createDemoData() {
+  // create the demo Survey
   Surveys.loadSurveyList({}, function (error, results) {
-    if (error) {
+    if (error)
       console.warn(error)
-    }
     console.log('Creating Parse server data...')
-    for (i = 0; i < DemoData.surveys.length; i++) {
-      Surveys.createSurvey(DemoData.surveys[i])
-    }
+    for (var i = 0, ilen = DemoData.surveys.length; i < ilen; i++)
+      Surveys.createDemoSurvey(DemoData.surveys[i], DemoData.startDate, DemoData.endDate)
   })
 }
 

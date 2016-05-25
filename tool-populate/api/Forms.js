@@ -23,6 +23,12 @@ function loadForms(options, callback) {
   })
 }
 
+function storeForms(newForms) {
+  if (!Array.isArray(newForms))
+    newForms = [newForms]
+  Store.forms = _.unionBy(Store.forms, newForms, 'id')
+}
+
 function createForms(parentSurvey) {
   var newForm = new Parse.Object('Form')
 
@@ -43,10 +49,40 @@ function createForms(parentSurvey) {
   })
 }
 
-function storeForms(newForms) {
-  if (!Array.isArray(newForms))
-    newForms = [newForms]
-  Store.forms = _.unionBy(Store.forms, newForms, 'id')
+/**
+  generate random time between 5am and 9pm for a given day
+*/
+function randomHour(dayTimestamp) {
+  var startHour = 5, endHour = 21;
+  var date = new Date(dayTimestamp)
+  var hour = startHour + Math.random() * (endHour - startHour) | 0;
+
+  date.setHours(hour);
+
+  return date;
 }
 
-module.exports = { loadForms, createForms, storeForms }
+function createDemoForm(parentSurvey, dayStartTimestamp) {
+  var newForm = new Parse.Object('Form')
+  newForm.set('title', 'Form ' + Date.now())
+  newForm.set('order', 1)
+  newForm.set('deleted', false)
+
+  newForm.save(null, {
+    success: function(response) {
+      if (parentSurvey) {
+        var relation = parentSurvey.relation('forms')
+        relation.add(newForm)
+        parentSurvey.save()
+      }
+      Questions.createDemoQuestions(response)
+      Triggers.createDemoTrigger(response, randomHour(dayStartTimestamp))
+      storeForms(response)
+    },
+    error: function(response, error) {
+      console.warn('Failed to create Form, with error code: ' + error.message)
+    }
+  })
+}
+
+module.exports = { loadForms, createForms, storeForms, createDemoForm }

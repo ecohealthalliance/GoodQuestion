@@ -21,6 +21,12 @@ function loadTriggers(options, callback) {
   })
 }
 
+function storeTriggers(newTriggers) {
+  if (!Array.isArray(newTriggers))
+    newTriggers = [newTriggers]
+  Store.triggers = _.unionBy(Store.triggers, newTriggers, 'id')
+}
+
 function createTriggers(parentForm) {
   var newTrigger = new Parse.Object('Trigger')
 
@@ -43,9 +49,26 @@ function createTriggers(parentForm) {
     })
 }
 
-function storeTriggers(newTriggers) {
-  if (!Array.isArray(newTriggers)) newTriggers = [newTriggers]
-  Store.triggers = _.unionBy(Store.triggers, newTriggers, 'id')
+function createDemoTrigger(parentForm, when) {
+  var newTrigger = new Parse.Object('Trigger')
+
+  newTrigger.set('type', 'datetime')
+  newTrigger.set('properties', {"datetime": when.toISOString()})
+  newTrigger.set('form', parentForm)
+
+  newTrigger.save(null, {
+    success: function(response) {
+        if (parentForm) {
+          var relation = parentForm.relation('triggers')
+          relation.add(newTrigger)
+          parentForm.save()
+        }
+        storeTriggers(response)
+      },
+      error: function(response, error) {
+        console.warn('Failed to create Trigger, with error code: ' + error.message)
+      }
+    })
 }
 
-module.exports = { loadTriggers, createTriggers, storeTriggers }
+module.exports = { loadTriggers, createTriggers, storeTriggers, createDemoTrigger }
