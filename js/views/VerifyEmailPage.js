@@ -34,7 +34,7 @@ const RegistrationPagePart1 = React.createClass ({
   /* Render */
   render() {
     return (
-      <View style={{flex: 1}}>
+      <View style={[Styles.container.default , {flex: 1}]}>
         <View style={Styles.container.compact}>
           <Text style={Styles.type.h1}>
             Verify Email

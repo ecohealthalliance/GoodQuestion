@@ -141,7 +141,7 @@ const SurveyListPage = React.createClass ({
       return (<Loading/>)
     } else {
       return (
-        <View style={{flex: 1}}>
+        <View style={[Styles.container.default , {flex: 1}]}>
           <ListView dataSource = { this.state.dataSource }
             renderRow = { this.renderItem }
             contentContainerStyle = { [Styles.container.default, Styles.survey.list] }

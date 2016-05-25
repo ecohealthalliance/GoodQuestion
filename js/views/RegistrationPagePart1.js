@@ -137,7 +137,7 @@ const RegistrationPagePart1 = React.createClass ({
   /* Render */
   render() {
     return (
-      <View>
+      <View style={[Styles.container.default]}>
         <View style={this.styles.registrationHeader}>
           <Image source={require('../images/logo_stacked.png')} style={this.styles.logo}></Image>
         </View>

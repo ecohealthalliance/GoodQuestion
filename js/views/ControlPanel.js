@@ -8,30 +8,17 @@ import ControlPanelItem from '../components/ControlPanelItem'
 import { version } from '../../package'
 
 export default React.createClass({
-  navigateToView(viewPath, title) {
-    console.log(this.props)
-    let props = this.props
-    let navigator = Store.navigator
-    console.log(navigator)
-    let routeStack = navigator.getCurrentRoutes()
-    let currentRoutePath = routeStack[routeStack.length-1].path
-    if (viewPath !== currentRoutePath) {
-      navigator.push({path: viewPath, title: title})
-    }
-    props.closeDrawer()
+  navigateToView(path, title) {
+    this.nextPath = path
+    this.nextTitle = title
+    this.props.closeDrawer()
   },
+
   render() {
 
     return (
       <View style={Styles.controlPanel.container}>
         <View style={Styles.controlPanel.itemList}>
-          <ControlPanelItem
-            onPress={()=>{
-              this.props.closeDrawer();
-              this.props.logout();
-            }}
-            text="Logout"
-          />
           <ControlPanelItem
             onPress={()=> this.navigateToView('surveylist', 'Surveys')}
             text="Surveys"
@@ -54,6 +41,13 @@ export default React.createClass({
               this.props.closeDrawer()
             }}
             text="Support"
+          />
+          <ControlPanelItem
+            onPress={()=>{
+              this.props.closeDrawer();
+              this.props.logout();
+            }}
+            text="Logout"
           />
         </View>
         <View style={Styles.controlPanel.footer}>
