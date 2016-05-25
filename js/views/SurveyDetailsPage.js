@@ -38,7 +38,7 @@ const SurveyDetailsPage = React.createClass ({
     }
 
     if (!cachedForms || !cachedForms[0]) {
-      alert('Error: Unable to fetch the Forms associated with this Survey.')
+      alert('There are currently no forms available for this survey.')
     } else if (!cachedQuestions || !cachedQuestions[0]) {
       alert('Error: Unable to fetch the Questions associated with this Survey.')
     }
@@ -94,7 +94,7 @@ const SurveyDetailsPage = React.createClass ({
   },
 
   selectForm(form) {
-    if (this.cancelCallbacks) return
+    if (this.cancelCallbacks || !form) return
 
     //Gather questions only for this form
     // let questions = realm.objects('Question').filtered(`formId = "${form.id}"`)
