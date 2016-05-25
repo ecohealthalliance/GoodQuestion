@@ -27,6 +27,8 @@ const SurveyDetailsPage = React.createClass ({
     try {
       cachedSurvey = this.props.survey
       cachedForms = loadCachedForms(this.props.survey.id)
+      console.log("Cached forms in surveyDetailspage")
+      console.log(cachedForms)
       for (var i = 0; i < cachedForms.length; i++) {
         cachedQuestions = _.merge(
           cachedQuestions,
@@ -38,7 +40,7 @@ const SurveyDetailsPage = React.createClass ({
     }
 
     if (!cachedForms || !cachedForms[0]) {
-      alert('Error: Unable to fetch the Forms associated with this Survey.')
+      alert('There are currently no forms available for this survey.')
     } else if (!cachedQuestions || !cachedQuestions[0]) {
       alert('Error: Unable to fetch the Questions associated with this Survey.')
     }
