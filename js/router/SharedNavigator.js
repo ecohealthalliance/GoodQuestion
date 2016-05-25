@@ -184,6 +184,8 @@ const SharedNavigator = React.createClass ({
           closedDrawerOffset={-4}
           styles={Styles.drawer}
           onClose={this.changeRoute}
+          tweenDuration={200}
+          tweenEasing='easeOutCubic'
           >
           <Navigator
             ref={(nav) => {
