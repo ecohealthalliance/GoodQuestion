@@ -11,6 +11,7 @@ const Button = React.createClass ({
   propTypes: {
     action: React.PropTypes.func.isRequired,
     color: React.PropTypes.string,
+    size: React.PropTypes.number,
     wide: React.PropTypes.bool,
     style: React.PropTypes.oneOfType([
       React.PropTypes.object,
@@ -34,6 +35,11 @@ const Button = React.createClass ({
 
     // Optional Rendering options
     if (this.props.wide) buttonStyle.push(Styles.form.wideButton)
+    if (this.props.size) {
+      buttonStyle.push({flex: this.props.size})
+    }
+
+
     if (this.props.color === 'primary') {
       buttonStyle.push(Styles.form.primaryButton)
       buttonTextStyle.push(Styles.form.primaryButtonText)
