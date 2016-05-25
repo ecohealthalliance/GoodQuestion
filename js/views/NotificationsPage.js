@@ -53,7 +53,6 @@ const NotificationsPage = React.createClass({
     if (this.cancelCallbacks) return
 
     let data = loadCachedFormDataById(notification.formId)
-    console.log(data)
     this.props.navigator.push({
       path: 'form',
       title: data.survey.title,

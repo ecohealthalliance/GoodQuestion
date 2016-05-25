@@ -11,13 +11,12 @@ export function connectToParseServer(server, appId) {
   }
 
   console.log('CONNECTING')
-  console.log(server)
 
   // Connect to the specified Parse server
   switch (Store.server) {
     case 'local': connectToLocalServer(); break;
     case 'remote-test': connectToRemoteTestServer(); break;
-    default: 
+    default:
       if (server && appId) {
         connectToCustomServer(server, appId);
       } else {
