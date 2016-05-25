@@ -11,6 +11,7 @@ const SurveyStyles = StyleSheet.create({
   listitem: {
     flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
     borderColor: Color.background1,
@@ -24,10 +25,6 @@ const SurveyStyles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    color: 'dimgray',
-  },
-  subtitle: {
-    fontSize: 12,
     color: 'dimgray',
   },
 

@@ -71,6 +71,7 @@ const SurveyDetailsPage = React.createClass ({
     realm.write(() => {
       survey.status = 'accepted'
     })
+    this.showForms()
   },
 
   declineSurvey() {
@@ -79,6 +80,8 @@ const SurveyDetailsPage = React.createClass ({
     realm.write(() => {
       survey.status = 'declined'
     })
+    this.props.navigator.pop()
+    // this.props.navigator.push({path: 'surveylist', title: 'Surveys', sceneConfig: 'FloatFromLeft'})
   },
 
   showForms(tab) {
