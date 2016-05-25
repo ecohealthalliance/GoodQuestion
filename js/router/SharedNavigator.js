@@ -109,6 +109,7 @@ const SharedNavigator = React.createClass ({
 
   openControlPanel() {
     this._drawer.open()
+  },
 
   setSceneConfig(route) {
     let config = route.sceneConfig
