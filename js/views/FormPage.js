@@ -23,6 +23,7 @@ import DateQuestionIOS from '../components/QuestionTypes/DateQuestionIOS'
 import DateQuestionAndroid from '../components/QuestionTypes/DateQuestionAndroid'
 import DatetimeQuestionAndroid from '../components/QuestionTypes/DatetimeQuestionAndroid'
 import TimeQuestionAndroid from '../components/QuestionTypes/TimeQuestionAndroid'
+import CompleteForm from '../components/QuestionTypes/CompleteForm'
 import Button from 'apsl-react-native-button';
 import Submission from '../models/Submission';
 import Loading from '../components/Loading';
@@ -168,15 +169,10 @@ const FormPage = React.createClass ({
         default: return <Text key={'unknown-question-'+idx}>Unknown Type: {question.type}</Text>;
       }
     })
-    let buttonText = "Complete survey"
-    if(this.nextForm){
-      buttonText = "Submit and continue"
-    }
-    newLast = <View>
-                {renderedQuestions[renderedQuestions.length-1]}
-                <Button onPress={this.submit} style={Styles.form.submitBtn}>{buttonText}</Button>
-              </View>
-    renderedQuestions[renderedQuestions.length-1] = newLast
+    completeFormView =  <View>
+                          <CompleteForm submit={this.submit} nextForm={this.nextForm}/>
+                        </View>
+    renderedQuestions[renderedQuestions.length-1] = completeFormView
     return renderedQuestions;
   },
   render() {

@@ -4,9 +4,6 @@ import Color from './Color'
 
 const QuestionStyles = StyleSheet.create({
   block: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'stretch',
     margin: 20,
     marginBottom: 45,
     paddingHorizontal: 10,
@@ -16,22 +13,35 @@ const QuestionStyles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
   },
-  
   header: {
-    flex: 1,
-    justifyContent: 'center',
     alignSelf: 'stretch',
+    flexDirection: 'row',
     marginHorizontal: -10,
     marginBottom: 10,
     paddingHorizontal: 15,
     paddingVertical: 10,
     backgroundColor: Color.background1,
   },
+  headerComplete: {
+    alignItems: 'center',
+    backgroundColor: Color.success
+  },
   headerText: {
     color: Color.primary,
     fontSize: 24,
   },
-
+  headerCompleteIcon: {
+    flex: .3,
+    marginRight: 5
+  },
+  headerCompleteView: {
+    flex: .7,
+  },
+  headerCompleteViewText: {
+    fontWeight: 'bold',
+    color: Color.primary,
+    fontSize: 25,
+  },
   text: {
     marginTop: 5,
     marginBottom: 15,
