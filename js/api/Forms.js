@@ -37,8 +37,27 @@ export function loadCachedForms(surveyId) {
   return realm.objects('Form').filtered(`surveyId = "${surveyId}"`)
 }
 
+//gets the parse survey so we can call loadForms with it.  Handles the disconnect between realm and parse.  We should eventually refactor this
+export function parseLoadFormsShim(survey){
+  const Survey = Parse.Object.extend("Survey")
+  const query = new Parse.Query(Survey)
+  query.get(survey.id, {
+    sucess: function(survey){
+      console.log("calling loadForms from shim")
+      console.log(survey)
+      loadForms(survey)
+    },
+    error: function(object, error){
+      console.log("Error in parseLoadFormsShim")
+      console.log(error)
+    }
+  })
+}
+
+
 // Loads Form data from a single Survey and retuns it via callback after the related questions have also been fetched.
 export function loadForms(survey, callback) {
+  console.log('inside loadForms')
   const surveyFormRelations = survey.get('forms')
 
   if (surveyFormRelations) {

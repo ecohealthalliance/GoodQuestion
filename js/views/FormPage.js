@@ -29,6 +29,7 @@ import Loading from '../components/Loading';
 import Color from '../styles/Color';
 import Swiper from 'react-native-page-swiper'
 import { loadCachedForms } from '../api/Forms'
+import { parseLoadFormsShim } from '../api/Forms'
 import { validateUser } from '../api/Account'
 
 import { loadCachedSubmissions, saveSubmission} from '../api/Submissions'
@@ -97,6 +98,8 @@ const FormPage = React.createClass ({
     this.setState({
       button_text: 'Saving...'
     });
+    console.log("submitting formpage")
+    parseLoadFormsShim(this.props.survey)
     saveSubmission(formId, answers, (err, res) => {
       if (err) {
         if (err === 'Invalid User') {
