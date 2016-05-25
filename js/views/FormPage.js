@@ -29,6 +29,7 @@ import Loading from '../components/Loading';
 import Color from '../styles/Color';
 import Swiper from 'react-native-page-swiper'
 import { loadCachedForms } from '../api/Forms'
+import { validateUser } from '../api/Account'
 
 import { loadCachedSubmissions, saveSubmission} from '../api/Submissions'
 import { loadQuestions, loadCachedQuestions } from '../api/Questions'
@@ -80,6 +81,10 @@ const FormPage = React.createClass ({
 
   componentWillUnmount() {
     this.cancelCallbacks = true
+  },
+
+  componentDidMount() {
+    validateUser()
   },
 
   /* Methods */

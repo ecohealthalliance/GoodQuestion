@@ -14,9 +14,11 @@ const Header = React.createClass ({
   },
 
   getInitialState() {
+    let routeStack = this.props.navState.routeStack
+    let title = routeStack[routeStack.length-1].title
     return {
       index: 0,
-      title: '',
+      title: title,
       path: 'none'
     }
   },

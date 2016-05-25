@@ -3,13 +3,16 @@ import React, {View, Text, Linking} from 'react-native'
 
 import {logout} from '../api/Account'
 import Styles from '../styles/Styles'
+import Store from '../data/Store'
 import ControlPanelItem from '../components/ControlPanelItem'
 import { version } from '../../package'
 
 export default React.createClass({
   navigateToView(viewPath, title) {
+    console.log(this.props)
     let props = this.props
-    let navigator = props.navigator
+    let navigator = Store.navigator
+    console.log(navigator)
     let routeStack = navigator.getCurrentRoutes()
     let currentRoutePath = routeStack[routeStack.length-1].path
     if (viewPath !== currentRoutePath) {
