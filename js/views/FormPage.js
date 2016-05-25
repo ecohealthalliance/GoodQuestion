@@ -73,7 +73,6 @@ const FormPage = React.createClass ({
   // },
 
   componentWillMount() {
-    console.log('this: ', this);
     const submissions = loadCachedSubmissions(this.form.id);
     if(submissions.length > 0) {
       this.setState({answers: JSON.parse(submissions.slice(-1)[0].answers)})
@@ -98,8 +97,6 @@ const FormPage = React.createClass ({
     this.setState({
       button_text: 'Saving...'
     });
-    console.log("submitting formpage")
-    parseLoadFormsShim(this.props.survey)
     saveSubmission(formId, answers, (err, res) => {
       if (err) {
         if (err === 'Invalid User') {

@@ -27,8 +27,6 @@ const SurveyDetailsPage = React.createClass ({
     try {
       cachedSurvey = this.props.survey
       cachedForms = loadCachedForms(this.props.survey.id)
-      console.log("Cached forms in surveyDetailspage")
-      console.log(cachedForms)
       for (var i = 0; i < cachedForms.length; i++) {
         cachedQuestions = _.merge(
           cachedQuestions,

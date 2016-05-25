@@ -38,54 +38,26 @@ export function loadCachedForms(surveyId) {
 }
 
 export function clearCachedForms(surveyId) {
-  console.log("clearingCachedForms",surveyId)
   let formsToDelete = realm.objects('Form').filtered(`surveyId = "${surveyId}"`);
-  console.log(formsToDelete)
     realm.write(() => {
       realm.delete(formsToDelete)
     })
   return
 }
 
-//gets the parse survey so we can call loadForms with it.  Handles the disconnect between realm and parse.  We should eventually refactor this
-export function parseLoadFormsShim(survey){
-  const Survey = Parse.Object.extend("Survey")
-  const query = new Parse.Query(Survey)
-  query.get(survey.id, {
-    sucess: function(survey){
-      console.log("calling loadForms from shim")
-      console.log(survey)
-      loadForms(survey)
-    },
-    error: function(object, error){
-      console.log("Error in parseLoadFormsShim")
-      console.log(error)
-    }
-  })
-}
-
-
 // Loads Form data from a single Survey and retuns it via callback after the related questions have also been fetched.
 export function loadForms(survey, callback) {
-  console.log('inside loadForms', survey.id)
   clearCachedForms(survey.id)
   const surveyFormRelations = survey.get('forms')
 
   if (surveyFormRelations) {
     surveyFormRelations.query().ascending("createdAt").find({
       success: function(results) {
-        // console.log("loadForms results")
-        // console.log(results)
         for (var i = 0; i < results.length; i++) {
           let form = results[i]
           let submission = realm.objects('Submission').filtered(`formId = "${form.id}"`)
           // Only include the current form if there have been no submissions to it yet.
-          console.log(survey.id)
-          console.log(submission)
           if(submission.length == 0){
-            // cacheParseForm(results[i], survey.id)
-            // loadQuestions(results[i])
-            console.log("Caching form....")
             cacheParseForm(form, survey.id)
             loadTriggers(form, survey)
             loadQuestions(form)
