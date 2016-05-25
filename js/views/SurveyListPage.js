@@ -14,6 +14,7 @@ import Styles from '../styles/Styles'
 import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys'
 import { loadForms } from '../api/Forms'
 import SurveyListItem from '../components/SurveyListItem'
+import SurveyListFilter from '../components/SurveyListFilter'
 import Loading from '../components/Loading'
 
 const SurveyListPage = React.createClass ({
@@ -104,6 +105,10 @@ const SurveyListPage = React.createClass ({
     })
   },
 
+  filterList() {
+
+  },
+
   /* Render */
   renderItem(item, sectionId, rowId) {
     return (
@@ -116,11 +121,14 @@ const SurveyListPage = React.createClass ({
       return (<Loading/>)
     } else {
       return (
-        <ListView dataSource = { this.state.dataSource }
-          renderRow = { this.renderItem }
-          contentContainerStyle = { [Styles.container.default, Styles.survey.list] }
-          enableEmptySections
-        />
+        <View>
+          <ListView dataSource = { this.state.dataSource }
+            renderRow = { this.renderItem }
+            contentContainerStyle = { [Styles.container.default, Styles.survey.list] }
+            enableEmptySections
+          />
+          <SurveyListFilter filterList={this.filterList} />
+        </View>
       )
     }
   }
