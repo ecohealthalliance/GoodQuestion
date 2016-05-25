@@ -169,11 +169,9 @@ const FormPage = React.createClass ({
         default: return <Text key={'unknown-question-'+idx}>Unknown Type: {question.type}</Text>;
       }
     })
-    completeFormView =  <View>
-                          <CompleteForm submit={this.submit} nextForm={this.nextForm}/>
-                        </View>
-    renderedQuestions[renderedQuestions.length-1] = completeFormView
-    return renderedQuestions;
+    completeFormView = <View><CompleteForm submit={this.submit} nextForm={this.nextForm}/></View>
+    renderedQuestions.push(completeFormView)
+    return renderedQuestions
   },
   render() {
     if (this.state.loading) {
