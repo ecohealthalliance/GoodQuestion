@@ -5,7 +5,7 @@ import Color from './Color'
 const QuestionStyles = StyleSheet.create({
   block: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'stretch',
     margin: 20,
     marginBottom: 45,
@@ -16,11 +16,9 @@ const QuestionStyles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
   },
-  
+
   header: {
-    flex: 1,
     justifyContent: 'center',
-    alignSelf: 'stretch',
     marginHorizontal: -10,
     marginBottom: 10,
     paddingHorizontal: 15,
