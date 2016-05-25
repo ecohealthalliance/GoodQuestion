@@ -11,6 +11,7 @@ const Color = {
   background3: '#EEF6F8',
   fadedRed: '#FEABAB',
   fadedGreen: '#BDE3A7',
+  darkGreen: '#87B46E'
 }
 
 module.exports = Color

@@ -34,10 +34,11 @@ const FormStyles = StyleSheet.create({
     backgroundColor: Color.background2,
   },
   button: {
-    backgroundColor: Color.positive,
+    backgroundColor: Color.primary,
     padding: 12,
     margin: 10,
     borderRadius: 5,
+    borderWidth: 0,
   },
   roundButton: {
     backgroundColor: Color.secondary,
@@ -56,6 +57,9 @@ const FormStyles = StyleSheet.create({
   },
   successButton: {
     backgroundColor: Color.success,
+  },
+  primaryButtonText: {
+    color: Color.background2
   },
   wideButton: {
     marginHorizontal: 0,
