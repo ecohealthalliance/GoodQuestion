@@ -91,7 +91,7 @@ const SurveyDetailsPage = React.createClass ({
   },
 
   selectForm(form) {
-    if (this.cancelCallbacks) return
+    if (this.cancelCallbacks || !form) return
 
     //Gather questions only for this form
     // let questions = realm.objects('Question').filtered(`formId = "${form.id}"`)
