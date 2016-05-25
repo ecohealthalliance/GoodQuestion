@@ -9,10 +9,8 @@ import { version } from '../../package'
 
 export default React.createClass({
   navigateToView(viewPath, title) {
-    console.log(this.props)
     let props = this.props
     let navigator = Store.navigator
-    console.log(navigator)
     let routeStack = navigator.getCurrentRoutes()
     let currentRoutePath = routeStack[routeStack.length-1].path
     if (viewPath !== currentRoutePath) {
