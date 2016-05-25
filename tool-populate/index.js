@@ -3,6 +3,7 @@
 var Parse = require('parse/node')
 var DummyData = require('./data/DummyData')
 var Store = require('./data/Store')
+var DemoData = require('./data/DemoData')
 var Surveys = require('./api/Surveys')
 var Forms = require('./api/Forms')
 var Questions = require('./api/Questions')
@@ -14,9 +15,10 @@ var program = require('commander');
 
 program
   .option('-c, --create', 'Create data for your local Parse server.')
+  .option('-d, --demo', 'Populate local Parse server with demo data.')
   .option('-r, --reset', 'Erase local Parse data.')
   .option('-p, --print', 'Prints the current data in your local server.')
-  .parse(process.argv);
+  .parse(process.argv)
 
 Parse.initialize(Settings.parse.appId)
 Parse.serverURL = Settings.parse.serverUrl
@@ -25,6 +27,8 @@ if (program.reset) {
   resetLocalServer()
 } else if (program.create) {
   createData()
+} else if (program.demo) {
+  createDemoData()
 } else if (program.print) {
   Surveys.loadSurveyList()
 } else {
@@ -32,8 +36,8 @@ if (program.reset) {
 }
 
 // Run a log before closing
-process.on('exit', exitHandler.bind(null, {log:true}))
-process.on('uncaughtException', exitHandler.bind(null, {exit:true}))
+process.on('exit', exitHandler.bind(null, {log: true}))
+process.on('uncaughtException', exitHandler.bind(null, {exit: true}))
 
 function exitHandler(options, err) {
     if (err)
@@ -55,17 +59,26 @@ function exitHandler(options, err) {
     process.exit()
 }
 
-
-
-
 function createData() {
   Surveys.loadSurveyList({}, function (error, results) {
     if (error) {
       console.warn(error)
     }
-    console.log('Creating Parse server data...')
-    for (i = 0; i < DummyData.surveys.length; i++) {
+    console.log('Creating Parse server demo data...')
+    for (var i = 0, ilen = DummyData.surveys.length; i < ilen; i++) {
       Surveys.createSurvey(DummyData.surveys[i])
+    }
+  })
+}
+
+function createDemoData() {
+  Surveys.loadSurveyList({}, function (error, results) {
+    if (error) {
+      console.warn(error)
+    }
+    console.log('Creating Parse server data...')
+    for (i = 0; i < DemoData.surveys.length; i++) {
+      Surveys.createSurvey(DemoData.surveys[i])
     }
   })
 }

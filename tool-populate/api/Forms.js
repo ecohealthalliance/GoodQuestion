@@ -44,7 +44,8 @@ function createForms(parentSurvey) {
 }
 
 function storeForms(newForms) {
-  if (!Array.isArray(newForms)) newForms = [newForms]
+  if (!Array.isArray(newForms))
+    newForms = [newForms]
   Store.forms = _.unionBy(Store.forms, newForms, 'id')
 }
 

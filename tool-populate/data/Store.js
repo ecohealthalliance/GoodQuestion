@@ -16,6 +16,7 @@ const Store = {
     email: 'john@doe.com',
     isAdmin: false,
   },
+
   surveys: [],
   forms: [],
   questions: [],
