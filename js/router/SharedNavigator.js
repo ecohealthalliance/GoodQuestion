@@ -144,7 +144,7 @@ const SharedNavigator = React.createClass ({
       logout: this.logoutHandler,
     };
 
-    if (!this.state.isAuthenticated) {
+    if (!this.state.isAuthenticated && !route.unsecured) {
       route.path = 'login'
       route.title = ''
     }
