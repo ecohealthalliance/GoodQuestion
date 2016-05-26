@@ -1,6 +1,5 @@
 const Store = {
   platform: null,
-  server: 'local',
 
   logged_in: false,
   email_verified: false,
@@ -16,6 +15,7 @@ const Store = {
     email: 'john@doe.com',
     isAdmin: false,
   },
+
   surveys: [],
   forms: [],
   questions: [],

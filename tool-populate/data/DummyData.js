@@ -5,12 +5,12 @@ const DummyData = {
       title: 'A New Survey',
       user: 'user1',
       created: Date.now() - 10000,
-    }, 
+    },
     // {
     //   title: 'Survey #2',
     //   user: 'user1',
     //   created: Date.now() - 50000,
-    // }, 
+    // },
     // {
     //   title: 'Survey #3',
     //   user: 'user1',
@@ -44,7 +44,7 @@ const DummyData = {
     }, {
       type: 'longAnswer',
       text: 'Describe any abnormalities in the location of the drag',
-      properties: { 
+      properties: {
         placeholder: 'Long Text...',
         maxlength: 150,
       },

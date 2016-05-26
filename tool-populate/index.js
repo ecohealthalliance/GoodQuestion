@@ -1,74 +1,95 @@
 #! /usr/bin/env node
+
 var Parse = require('parse/node')
 var DummyData = require('./data/DummyData')
 var Store = require('./data/Store')
+var DemoData = require('./data/DemoData')
 var Surveys = require('./api/Surveys')
 var Forms = require('./api/Forms')
 var Questions = require('./api/Questions')
 var Triggers = require('./api/Triggers')
 
-var program = require('commander');
- 
+var Settings = require('./../js/settings.js')
+
+var program = require('commander')
+
 program
   .option('-c, --create', 'Create data for your local Parse server.')
+  .option('-d, --demo', 'Populate local Parse server with demo data.')
   .option('-r, --reset', 'Erase local Parse data.')
   .option('-p, --print', 'Prints the current data in your local server.')
-  .parse(process.argv);
+  .parse(process.argv)
 
-Parse.initialize('testapp')
-Parse.serverURL = 'http://localhost:1337/parse'
-// Parse.initialize('UMassSurvey')
-// Parse.serverURL = 'https://survey.eha.io/parse'
+Parse.initialize(Settings.parse.appId, null, Settings.parse.masterKey)
+Parse.serverURL = Settings.parse.serverUrl
+
+var localRegExp = /^http:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?\/.*$/
+var runningLocal = Parse.serverURL.match(localRegExp)
 
 if (program.reset) {
   resetLocalServer()
-} else if (program.create) { 
+} else if (program.create) {
   createData()
-} else if (program.print) { 
+} else if (program.demo) {
+  createDemoData()
+} else if (program.print) {
   Surveys.loadSurveyList()
 } else {
   program.outputHelp()
 }
 
 // Run a log before closing
-process.on('exit', exitHandler.bind(null,{log:true}))
-process.on('uncaughtException', exitHandler.bind(null, {exit:true}))
+process.on('exit', exitHandler.bind(null, {log: true}))
+process.on('uncaughtException', exitHandler.bind(null, {exit: true}))
 
 function exitHandler(options, err) {
-    if (err) console.log(err.stack)
+    if (err)
+      console.error(err.stack)
 
     if (program.reset) {
-      console.log('Server Reset.')
-    } else if (program.create) { 
+      if (runningLocal)
+        console.log('Server Reset.')
+      else
+        console.warn('Denying to reset the remote server (' + Parse.serverURL + ')')
+    } else if (program.create) {
       console.log('Parse server populated.')
-    } else if (program.print) { 
-      console.log('Stored Data: ' + 
+    } else if (program.print) {
+      console.log('Stored Data: ' +
         Store.surveys.length + ' surveys, ' +
         Store.forms.length + ' forms, ' +
         Store.questions.length + ' questions, ' +
         Store.triggers.length + ' triggers.'
       )
     }
+
     process.exit()
 }
-
-
-
 
 function createData() {
   Surveys.loadSurveyList({}, function (error, results) {
     if (error) {
       console.warn(error)
     }
-    console.log('Creating Parse server data...')
-    for (i = 0; i < DummyData.surveys.length; i++) {
+    console.log('Creating Parse server demo data...')
+    for (var i = 0, ilen = DummyData.surveys.length; i < ilen; i++) {
       Surveys.createSurvey(DummyData.surveys[i])
     }
   })
 }
 
+function createDemoData() {
+  // create the demo Survey
+  Surveys.loadSurveyList({}, function (error, results) {
+    if (error)
+      console.warn(error)
+    console.log('Creating Parse server data...')
+    for (var i = 0, ilen = DemoData.surveys.length; i < ilen; i++)
+      Surveys.createDemoSurvey(DemoData.surveys[i], DemoData.startDate, DemoData.endDate)
+  })
+}
+
 function resetLocalServer() {
-  if (Store.server === 'local') {
+  if (runningLocal) {
     console.log('Destroying objects in local server...')
     Surveys.loadSurveyList()
     Forms.loadForms()
@@ -84,6 +105,6 @@ function resetLocalServer() {
 
 function destroyObjects(objects) {
   for (var i = objects.length - 1; i >= 0; i--) {
-    objects[i].destroy()
+    objects[i].destroy({useMasterKey: true})
   }
 }
