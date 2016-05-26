@@ -82,9 +82,6 @@ export function checkTimeTriggers() {
         triggered: true,
       }, true)
 
-      console.log(validTriggers[i])
-      console.log(validTriggers[i].datetime)
-
       realm.create('Notification', {
         formId: validTriggers[i].formId,
         title: validTriggers[i].title,
