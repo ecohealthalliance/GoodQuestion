@@ -44,6 +44,18 @@ const ContainerStyles = StyleSheet.create({
     paddingBottom: 110,
   },
 
+  attentionContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+
+  attentionText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: Color.background1
+  },
+
   fullView: {
     flex: 1,
     backgroundColor: Color.background2,

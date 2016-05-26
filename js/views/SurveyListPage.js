@@ -139,7 +139,7 @@ const SurveyListPage = React.createClass ({
   render() {
     if (this.state.isLoading) {
       return (<Loading/>)
-    } else {
+    } else if(this.state.dataSource.getRowCount() > 0) {
       return (
         <View style={{flex: 1}}>
           <ListView dataSource = { this.state.dataSource }
@@ -148,6 +148,13 @@ const SurveyListPage = React.createClass ({
             enableEmptySections
           />
           <SurveyListFilter filterList={this.updateListFilter} />
+        </View>
+      )
+    }
+    else{
+      return(
+        <View style={[Styles.container.attentionContainer]}>
+          <Text style={[Styles.container.attentionText]}>No surveys</Text>
         </View>
       )
     }
