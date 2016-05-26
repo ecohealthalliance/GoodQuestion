@@ -29,6 +29,7 @@ import Submission from '../models/Submission';
 import Loading from '../components/Loading';
 import Color from '../styles/Color';
 import Swiper from 'react-native-page-swiper'
+import { loadTriggers } from '../api/Triggers'
 
 import { validateUser } from '../api/Account'
 import { loadCachedForms } from '../api/Forms'
@@ -40,11 +41,11 @@ import realm from '../data/Realm'
 const FormPage = React.createClass ({
   form: null,
   nextForm: null,
+  formsWithTriggers: [],
   propTypes: {
     survey: React.PropTypes.object.isRequired,
     index: React.PropTypes.number,
   },
-
   getInitialState() {
     const forms = loadCachedForms(this.props.survey.id);
     let index = 0
@@ -127,10 +128,26 @@ const FormPage = React.createClass ({
   },
 
   componentWillMount() {
-    const submissions = loadCachedSubmissions(this.form.id);
-    if(submissions.length > 0) {
-      this.setState({answers: JSON.parse(submissions.slice(-1)[0].answers)})
-    }
+    let self = this,
+        index = this.state.index,
+        answers = null
+    this.loadTriggers(this.state.forms, function(forms){
+      forms = self.filterForms(forms)
+      if (forms.length > 1)
+        forms = self.sortForms(forms)
+      self.form = forms[index]
+      self.nextForm = forms[index + 1]
+      const submissions = loadCachedSubmissions(self.form.id)
+      if (submissions.length > 0) {
+        answers = JSON.parse(submissions.slice(-1)[0].answers)
+      }
+      self.setState({
+        questions: loadCachedQuestions(self.form.id),
+        forms: forms,
+        isLoading: false,
+        answers: answers
+      })
+    })
   },
 
   componentWillUnmount() {
@@ -141,7 +158,39 @@ const FormPage = React.createClass ({
     validateUser()
   },
 
+  triggers(form, self, callback){
+    loadTriggers(form, self.props.survey, function(err, triggers){
+      form.trigger = triggers[0].get('properties').datetime
+      callback(form)
+    })
+  },
+
   /* Methods */
+  filterForms(forms) {
+    let past = new Date()
+    past = past.setDate(past.getDate() - 3)
+    return _.filter(forms, function(form){
+      let triggerTime = form.trigger
+      return triggerTime > past && triggerTime < new Date()
+    })
+  },
+
+  sortForms(forms){
+    return _.sortBy(forms, 'trigger')
+  },
+
+  loadTriggers(forms, callback) {
+    let self = this
+    let formCount = forms.length
+    formsWithTriggers = []
+    forms.forEach(function(form, i){
+      self.triggers(form, self, function(f){
+        formsWithTriggers.push(f)
+        if (formsWithTriggers.length == formCount)
+          callback(formsWithTriggers)
+      })
+    })
+  },
 
   submit() {
     let answers = this.state.answers;

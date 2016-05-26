@@ -76,34 +76,3 @@ export function loadForms(survey, callback) {
     console.warn("Error: Unable to find relation \"forms\" for Survey object." )
   }
 }
-
-// Loads Form data from a single Survey and retuns it via callback after the related questions have also been fetched.
-export function loadPendingForms(survey, callback) {
-  const Survey = Parse.Object.extend("Survey")
-  const query = new Parse.Query(Survey)
-  query.get(survey.id, {
-    success: function (survey) {
-      const surveyFormRelations = survey.get('forms')
-      let past = new Date()
-      past = past.setDate(past.getDate() - 3)
-      surveyFormRelations.query().find({
-        success: function(forms) {
-          let pendingForms = []
-          if (forms.length) {
-            forms.forEach(function(form){
-              loadTriggers(form, survey, function(err, trigger){
-                triggerTime = trigger[0].get('properties').datetime
-                if (triggerTime > past && triggerTime < new Date()) {
-                  pendingForms.push(form)
-                  cacheParseForm(form, survey.id)
-                  loadQuestions(form)
-                }
-              })
-            })
-          }
-          if (callback) callback(null, pendingForms, survey)
-        }
-      })
-    }
-  })
-}

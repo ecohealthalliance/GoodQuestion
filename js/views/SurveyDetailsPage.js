@@ -56,20 +56,23 @@ const SurveyDetailsPage = React.createClass ({
   },
 
   setSurveyDetails(forms){
-    let questionCount = this.questionCount(forms)
-    if (!forms[0]) {
-      alert('There are currently no forms available for this survey.')
-    } else if (questionCount === 0) {
-      alert('Error: Unable to fetch the Questions associated with this Survey.')
-    }
-    this.setState({
-      isLoading: false,
-      formCount: forms.length || 0,
-      questionCount: questionCount || 0
-     })
+    let self = this
+    this.questionCount(forms, function(questionCount){
+      console.log(questionCount);
+      if (!forms[0]) {
+        alert('There are currently no forms available for this survey.')
+      } else if (questionCount === 0) {
+        alert('Error: Unable to fetch the Questions associated with this Survey.')
+      }
+      self.setState({
+        isLoading: false,
+        formCount: forms.length || 0,
+        questionCount: questionCount || 0
+       })
+    })
   },
 
-  questionCount(forms){
+  questionCount(forms, callback){
     let questionCount = 0
     forms.forEach(function(form){
       cachedQuestions = loadCachedQuestions(form.id)
@@ -79,7 +82,7 @@ const SurveyDetailsPage = React.createClass ({
         })
       } else questionCount += loadCachedQuestions(form.id).length
     })
-    return questionCount
+    if (callback) callback(questionCount)
   },
 
   acceptSurvey() {
