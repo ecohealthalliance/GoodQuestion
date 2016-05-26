@@ -6,12 +6,12 @@ import realm from '../data/Realm'
 
 
 // Saves a Question object from Parse into our Realm.io local database
-export function cacheParseQuestion(questions, formId) {
+export function cacheParseQuestions(questions, formId) {
   try {
     // InteractionManager.runAfterInteractions(() => {
       realm.write(() => {
         for (var i = 0; i < questions.length; i++) {
-          realm.create('Questions', {
+          realm.create('Question', {
             id: questions[i].id,
             formId: formId,
             order: questions[i].get('order'),

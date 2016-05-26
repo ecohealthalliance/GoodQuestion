@@ -25,9 +25,14 @@ export function loadSurveyList(options, callback) {
   query.find({
     success: function(results) {
       clearSurveyCache(results)
-      cacheParseSurveys(results)
+
+      let cachedSurveys = realm.objects('Survey')
       for (var i = 0; i < results.length; i++) {
-        loadForms(results[i])
+        let cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0]
+        if (!cachedSurvey || cachedSurvey.updatedAt.getTime() != results[i].updatedAt.getTime()) {
+          cacheParseSurveys(results[i])
+          loadForms(results[i])
+        }
       }
       Store.lastParseUpdate = Date.now()
       if (callback) callback(null, results)
@@ -40,29 +45,22 @@ export function loadSurveyList(options, callback) {
 }
 
 // Saves a Survey object from Parse into our Realm.io local database
-export function cacheParseSurveys(surveys) {
+export function cacheParseSurveys(survey) {
   try {
-    if (!Array.isArray(surveys)) surveys = [surveys]
-    let cachedSurveys = realm.objects('Survey')
-    for (var i = 0; i < surveys.length; i++) {
-      let cachedSurvey = cachedSurveys.filtered(`id = "${surveys[i].id}"`)[0]
-      if (true) {
-        realm.write(() => {
-          realm.create('Survey', {
-            id: surveys[i].id,
-            active: surveys[i].get('active') ? true : false,
-            createdAt: surveys[i].get('createdAt'),
-            updatedAt: surveys[i].get('updatedAt'),
-            title: surveys[i].get('title'),
-            description: surveys[i].get('description'),
-            user: 'Test University', // get parse user name
-            forms: [],
-            title: surveys[i].get('title'),
-          }, true)
-          getSurveyOwner(surveys[i])
-        })
-      }
-    }
+    realm.write(() => {
+      realm.create('Survey', {
+        id: survey.id,
+        active: survey.get('active') ? true : false,
+        createdAt: survey.get('createdAt'),
+        updatedAt: survey.get('updatedAt'),
+        title: survey.get('title'),
+        description: survey.get('description'),
+        user: 'Test University', // get parse user name
+        forms: [],
+        title: survey.get('title'),
+      }, true)
+      getSurveyOwner(survey)
+    })
   } catch(e) {
     console.error(e)
   }
@@ -71,7 +69,6 @@ export function cacheParseSurveys(surveys) {
 // Gets the name of the owner of a Survey and saves it to Realm database.
 // TODO Get the organization's name
 function getSurveyOwner(survey) {
-  console.log('owner')
   let owner = survey.get("createdBy")
   owner.fetch({
     success: function(owner) {

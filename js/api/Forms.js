@@ -12,9 +12,7 @@ import Submission from '../models/Submission';
 
 // Saves a Form object from Parse into our Realm.io local database
 export function cacheParseForm(form, surveyId) {
-  console.log('cacheParseForm')
   // InteractionManager.runAfterInteractions(() => {
-    console.log('cacheParseForm 2')
     try {
       realm.write(() => {
         let newForm = realm.create('Form', {
@@ -23,9 +21,7 @@ export function cacheParseForm(form, surveyId) {
           order: form.get('order'),
           title: form.get('title'),
         }, true)
-        console.log(newForm)
       })
-      console.log('cacheParseForm 3')
     } catch(e) {
       console.error(e)
     }
