@@ -28,7 +28,7 @@ export function loadTriggers(form, survey, callback) {
 // Saves a Form object from Parse into our Realm.io local database
 function cacheTimeTrigger(trigger, form, survey) {
   try {
-    InteractionManager.runAfterInteractions(() => {
+    // InteractionManager.runAfterInteractions(() => {
       let datetime = new Date(trigger.get('properties').datetime)
       realm.write(() => {
         realm.create('TimeTrigger', {
@@ -39,7 +39,7 @@ function cacheTimeTrigger(trigger, form, survey) {
           datetime: datetime,
         }, true)
       })
-    })
+    // })
   } catch(e) {
     console.error(e)
   }

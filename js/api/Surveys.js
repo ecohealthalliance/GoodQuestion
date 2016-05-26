@@ -46,7 +46,7 @@ export function cacheParseSurveys(surveys) {
     let cachedSurveys = realm.objects('Survey')
     for (var i = 0; i < surveys.length; i++) {
       let cachedSurvey = cachedSurveys.filtered(`id = "${surveys[i].id}"`)[0]
-      if (cachedSurvey.updatedAt.getTime() != surveys[i].updatedAt.getTime()) {
+      if (true) {
         realm.write(() => {
           realm.create('Survey', {
             id: surveys[i].id,
