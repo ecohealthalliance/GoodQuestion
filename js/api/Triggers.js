@@ -1,7 +1,7 @@
+import { InteractionManager } from 'react-native'
 import _ from 'lodash'
 import Parse from 'parse/react-native'
 import realm from '../data/Realm'
-
 
 
 // Queries the connected Parse server for a list of Triggers.
@@ -28,16 +28,18 @@ export function loadTriggers(form, survey, callback) {
 // Saves a Form object from Parse into our Realm.io local database
 function cacheTimeTrigger(trigger, form, survey) {
   try {
-    let datetime = new Date(trigger.get('properties').datetime)
-    realm.write(() => {
-      realm.create('TimeTrigger', {
-        id: trigger.id,
-        formId: form.id,
-        surveyId: survey.id,
-        title: form.get('title'),
-        datetime: datetime,
-      }, true)
-    })
+    // InteractionManager.runAfterInteractions(() => {
+      let datetime = new Date(trigger.get('properties').datetime)
+      realm.write(() => {
+        realm.create('TimeTrigger', {
+          id: trigger.id,
+          formId: form.id,
+          surveyId: survey.id,
+          title: form.get('title'),
+          datetime: datetime,
+        }, true)
+      })
+    // })
   } catch(e) {
     console.error(e)
   }

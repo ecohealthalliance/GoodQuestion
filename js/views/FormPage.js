@@ -29,11 +29,11 @@ import Submission from '../models/Submission';
 import Loading from '../components/Loading';
 import Color from '../styles/Color';
 import Swiper from 'react-native-page-swiper'
-import { loadCachedForms } from '../api/Forms'
-import { validateUser } from '../api/Account'
 
+import { validateUser } from '../api/Account'
+import { loadCachedForms } from '../api/Forms'
 import { loadCachedSubmissions, saveSubmission} from '../api/Submissions'
-import { loadQuestions, loadCachedQuestions } from '../api/Questions'
+import { loadCachedQuestions } from '../api/Questions'
 
 import realm from '../data/Realm'
 
@@ -53,9 +53,10 @@ const FormPage = React.createClass ({
     }
     this.form = forms[index]
     this.nextForm = forms[index + 1]
+    let submissions = loadCachedSubmissions(this.form.id)
     return {
       questions: loadCachedQuestions(this.form.id),
-      answers: {},
+      answers: submissions.length > 0 ? JSON.parse(submissions.slice(-1)[0].answers) : {},
       loading: false,
       index: index,
       button_text: 'Submit',
@@ -71,13 +72,6 @@ const FormPage = React.createClass ({
   //   this.setIndex(nextPage);
   //   return true;
   // },
-
-  componentWillMount() {
-    const submissions = loadCachedSubmissions(this.form.id);
-    if(submissions.length > 0) {
-      this.setState({answers: JSON.parse(submissions.slice(-1)[0].answers)})
-    }
-  },
 
   componentWillUnmount() {
     this.cancelCallbacks = true

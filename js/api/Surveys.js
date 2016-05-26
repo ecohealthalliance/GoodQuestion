@@ -1,3 +1,4 @@
+import { InteractionManager } from 'react-native'
 import _ from 'lodash'
 import Parse from 'parse/react-native'
 import Store from '../data/Store'
@@ -24,10 +25,16 @@ export function loadSurveyList(options, callback) {
   query.find({
     success: function(results) {
       clearSurveyCache(results)
-      cacheParseSurveys(results)
+
+      let cachedSurveys = realm.objects('Survey')
       for (var i = 0; i < results.length; i++) {
-        loadForms(results[i])
+        let cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0]
+        if (!cachedSurvey || cachedSurvey.updatedAt.getTime() != results[i].updatedAt.getTime()) {
+          cacheParseSurveys(results[i])
+          loadForms(results[i])
+        }
       }
+      Store.lastParseUpdate = Date.now()
       if (callback) callback(null, results)
     },
     error: function(error, results) {
@@ -38,24 +45,21 @@ export function loadSurveyList(options, callback) {
 }
 
 // Saves a Survey object from Parse into our Realm.io local database
-export function cacheParseSurveys(surveys) {
-  if (!Array.isArray(surveys)) surveys = [surveys]
+export function cacheParseSurveys(survey) {
   try {
     realm.write(() => {
-      for (var i = 0; i < surveys.length; i++) {
-        realm.create('Survey', {
-          id: surveys[i].id,
-          active: surveys[i].get('active') ? true : false,
-          createdAt: surveys[i].get('createdAt'),
-          updatedAt: surveys[i].get('updatedAt'),
-          title: surveys[i].get('title'),
-          description: surveys[i].get('description'),
-          user: 'Test University', // get parse user name
-          forms: [],
-          title: surveys[i].get('title'),
-        }, true)
-        getSurveyOwner(surveys[i])
-      }
+      realm.create('Survey', {
+        id: survey.id,
+        active: survey.get('active') ? true : false,
+        createdAt: survey.get('createdAt'),
+        updatedAt: survey.get('updatedAt'),
+        title: survey.get('title'),
+        description: survey.get('description'),
+        user: 'Test University', // get parse user name
+        forms: [],
+        title: survey.get('title'),
+      }, true)
+      getSurveyOwner(survey)
     })
   } catch(e) {
     console.error(e)
@@ -68,17 +72,20 @@ function getSurveyOwner(survey) {
   let owner = survey.get("createdBy")
   owner.fetch({
     success: function(owner) {
-      realm.write(() => {
-        try {
-          realm.create('Survey', {
-            id: survey.id,
-            user: 'Organization\'s Name',
-            // user: owner.get("name"),
-          }, true)
-        } catch(e) {
-          console.error(e)
-        }
-      })
+      // InteractionManager.runAfterInteractions(() => {
+        realm.write(() => {
+          try {
+            realm.create('Survey', {
+              id: survey.id,
+              user: 'Organization\'s Name',
+              // user: owner.get("name"),
+            }, true)
+          } catch(e) {
+            console.error(e)
+          }
+        })
+        console.log('finished surveys')
+      // })
     }
   })
 }

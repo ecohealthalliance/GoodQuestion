@@ -20,7 +20,7 @@ const TermsOfServicePage = React.createClass ({
   /* Render */
   render() {
     return (
-      <View style={{flex: 1}}>
+      <View style={[Styles.container.default , {flex: 1}]}>
         <ScrollView contentContainerStyle={Styles.container.informational}>
           <Text>
             {TermsOfService}

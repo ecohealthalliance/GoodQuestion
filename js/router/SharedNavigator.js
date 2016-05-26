@@ -5,6 +5,7 @@ import React, {
   BackAndroid,
   TouchableOpacity,
   Text,
+  InteractionManager,
 } from 'react-native'
 
 import Drawer from 'react-native-drawer'
@@ -108,7 +109,22 @@ const SharedNavigator = React.createClass ({
   },
 
   openControlPanel() {
+    this._controlPanel.navigating = false
     this._drawer.open()
+  },
+
+  changeRouteViaControlPanel() {
+    if (this._controlPanel.navigating) {
+      let path = this._controlPanel.nextPath
+      let title = this._controlPanel.nextTitle
+      if (navigator) {
+        let routeStack = navigator.getCurrentRoutes()
+        let currentRoutePath = routeStack[routeStack.length-1].path
+        if (path !== currentRoutePath) {
+          navigator.push({path: path, title: title})
+        }
+      }
+    }
   },
 
   setSceneConfig(route) {
@@ -118,7 +134,7 @@ const SharedNavigator = React.createClass ({
       return SceneConfigs[config]
     } else {
       // Default animation
-      return SceneConfigs.FloatFromRight
+      return SceneConfigs.FadeAndroid
     }
   },
 
@@ -147,6 +163,7 @@ const SharedNavigator = React.createClass ({
 
   /* Render */
   render() {
+    console.log(InteractionManager)
     const initialRoute = { path:'surveylist', title: 'Surveys' }
     // show loading component without the navigationBar
     if (this.state.isLoading) {
@@ -159,18 +176,23 @@ const SharedNavigator = React.createClass ({
         <Drawer
           type="overlay"
           ref={(ref) => this._drawer = ref}
-          content={<ControlPanel
+          content={
+            <ControlPanel
+            ref={(ref) => this._controlPanel = ref}
             navigator={navigator}
             logout={this.logoutHandler}
-            closeDrawer={this.closeControlPanel} />}
+            closeDrawer={this.closeControlPanel}
+            changeRoute={this.changeRouteViaControlPanel}
+            />
+          }
           tapToClose={true}
-          openDrawerOffset={0.2} // 20% gap on the right side of drawer
-          panCloseMask={0.1}
+          openDrawerOffset={0.20}
+          panCloseMask={0.25}
           closedDrawerOffset={-3}
           styles={Styles.drawer}
-          tweenHandler={(ratio) => ({
-            main: { opacity:(2-ratio)/2 }
-          })}
+          onClose={this.changeRouteViaControlPanel}
+          tweenDuration={200}
+          tweenEasing='easeOutCubic'
           >
           <Navigator
             ref={(nav) => {
