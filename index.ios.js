@@ -3,7 +3,7 @@
  * @flow
  */
 
-import React, { AppRegistry } from 'react-native'
+import React, { AppRegistry, PushNotificationIOS, Alert } from 'react-native'
 
 // Model
 import Store from './js/data/Store'
@@ -14,12 +14,9 @@ import SharedNavigator from './js/router/SharedNavigator'
 
 // Due to a bug in React Native, we must temporarily ignore propType warnings for some iOS components to work.
 // Affected component: DatePickerIOS
-//console.ignoredYellowBox = [
-//  'Warning: Failed propType',
-//]
-// TODO: fix yellowbox warning in upgrade from 0.24 to 0.25
-console.disableYellowBox = true;
-
+console.ignoredYellowBox = [
+  'Warning: Failed propType',
+]
 
 /* iOS App */
 const GoodQuestion = React.createClass ({
@@ -30,8 +27,27 @@ const GoodQuestion = React.createClass ({
     }
   },
 
+  componentWillMount() {
+    PushNotificationIOS.addEventListener('notification', this._onNotification);
+    PushNotificationIOS.addEventListener('localNotification', this._onLocalNotification);
+  },
+
+  componentWillUnmount() {
+    PushNotificationIOS.removeEventListener('notification', this._onNotification);
+    PushNotificationIOS.removeEventListener('localNotification', this._onLocalNotification);
+  },
+
+  _onNotification(notification) {
+    return;
+  },
+
+   _onLocalNotification(notification){
+     return;
+   },
+
   /* Render */
   render() {
+    PushNotificationIOS.requestPermissions();
     return ( <SharedNavigator /> )
   }
 })
