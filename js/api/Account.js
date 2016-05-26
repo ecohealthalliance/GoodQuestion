@@ -20,6 +20,7 @@ export function authenticate(username, password, done) {
      * @param {function} the callback when done with this async operation
      */
     openam: function(cb) {
+      if (Settings.dev) return cb(null, true);
       let authConfig = {
         method: 'POST',
         headers: {
