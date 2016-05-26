@@ -28,6 +28,7 @@ import Button from 'apsl-react-native-button';
 import Submission from '../models/Submission';
 import Loading from '../components/Loading';
 import Color from '../styles/Color';
+import Type from '../styles/_TypeStyles';
 import Swiper from 'react-native-page-swiper'
 import { loadTriggers } from '../api/Triggers'
 
@@ -56,6 +57,7 @@ const FormPage = React.createClass ({
       index: index,
       button_text: 'Submit',
       questionIndex: 0,
+      formsInQueue: false
     }
   },
 
@@ -104,8 +106,11 @@ const FormPage = React.createClass ({
         answers = {}
     this.loadTriggers(this.state.forms, function(forms){
       forms = self.filterForms(forms)
-      if (forms.length > 1)
-        forms = self.sortForms(forms)
+      if (forms.length === 0) {
+        self.setState({isLoading: false})
+        return
+      }
+      forms = self.sortForms(forms)
       self.form = forms[index]
       self.nextForm = forms[index + 1]
       let submissions = loadCachedSubmissions(self.form.id)
@@ -136,6 +141,8 @@ const FormPage = React.createClass ({
         answers: answers,
         forms: forms,
         isLoading: false,
+        answers: answers,
+        formsInQueue: true
       })
     })
   },
@@ -268,6 +275,12 @@ const FormPage = React.createClass ({
   render() {
     if (this.state.isLoading) {
       return (<Loading/>)
+    } else if (!this.state.formsInQueue){
+      return (
+        <View style={{flex: 1, justifyContent: 'center'}}>
+          <Text style={Type.statusMessage}>No active forms</Text>
+        </View>
+      )
     } else {
       return (
         <Swiper

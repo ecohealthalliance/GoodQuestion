@@ -24,6 +24,11 @@ const TypeStyles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
+  statusMessage: {
+    textAlign: 'center',
+    fontSize: 26,
+    color: Color.secondary
+  },
 
   // Interactive
   link: {
