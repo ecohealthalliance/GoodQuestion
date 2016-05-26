@@ -17,6 +17,18 @@ export function loadCachedSurveyList() {
   return realm.objects('Survey')
 }
 
+export function getSurveyForms(surveyId, callback){
+  const Survey = Parse.Object.extend("Survey")
+  const query = new Parse.Query(Survey)
+  query.get(surveyId, {
+    success: function(survey) {
+      loadForms(survey, function(err, forms){
+        if (callback) callback(null, forms)
+      })
+    }
+  })
+}
+
 // Queries the connected Parse server for a list of Surveys.
 export function loadSurveyList(options, callback) {
   const Survey = Parse.Object.extend("Survey")

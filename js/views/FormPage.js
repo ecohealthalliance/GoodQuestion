@@ -126,6 +126,13 @@ const FormPage = React.createClass ({
     return true;
   },
 
+  componentWillMount() {
+    const submissions = loadCachedSubmissions(this.form.id);
+    if(submissions.length > 0) {
+      this.setState({answers: JSON.parse(submissions.slice(-1)[0].answers)})
+    }
+  },
+
   componentWillUnmount() {
     this.cancelCallbacks = true
   },
@@ -220,13 +227,8 @@ const FormPage = React.createClass ({
     return renderedQuestions
   },
   render() {
-    if (this.state.loading) {
-      return (
-        <View>
-          <Loading />
-          <Text style={Styles.type.h1}>Loading questions...</Text>
-        </View>
-      )
+    if (this.state.isLoading) {
+      return (<Loading/>)
     } else {
       return (
         <Swiper

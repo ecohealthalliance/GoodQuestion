@@ -25,6 +25,12 @@ export function loadTriggers(form, survey, callback) {
   })
 }
 
+// Fetches the cached forms related to a specific survey
+export function loadCachedTrigger(formId) {
+  console.log(formId);
+  return realm.objects('TimeTrigger').filtered(`formId= "${formId}"`)
+}
+
 // Saves a Form object from Parse into our Realm.io local database
 function cacheTimeTrigger(trigger, form, survey) {
   try {
