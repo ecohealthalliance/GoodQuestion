@@ -1,6 +1,5 @@
 const Store = {
   platform: null,
-  server: 'local',
 
   logged_in: false,
   email_verified: false,

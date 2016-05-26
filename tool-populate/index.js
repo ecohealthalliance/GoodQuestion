@@ -23,6 +23,9 @@ program
 Parse.initialize(Settings.parse.appId, null, Settings.parse.masterKey)
 Parse.serverURL = Settings.parse.serverUrl
 
+var localRegExp = /^http:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?\/.*$/
+var runningLocal = Parse.serverURL.match(localRegExp)
+
 if (program.reset) {
   resetLocalServer()
 } else if (program.create) {
@@ -44,7 +47,10 @@ function exitHandler(options, err) {
       console.error(err.stack)
 
     if (program.reset) {
-      console.log('Server Reset.')
+      if (runningLocal)
+        console.log('Server Reset.')
+      else
+        console.warn('Denying to reset the remote server (' + Parse.serverURL + ')')
     } else if (program.create) {
       console.log('Parse server populated.')
     } else if (program.print) {
@@ -83,7 +89,7 @@ function createDemoData() {
 }
 
 function resetLocalServer() {
-  if (Store.server === 'local') {
+  if (runningLocal) {
     console.log('Destroying objects in local server...')
     Surveys.loadSurveyList()
     Forms.loadForms()
