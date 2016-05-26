@@ -80,7 +80,7 @@ function createDemoSurvey (surveyData, startDate, endDate) {
   newSurvey.set('description', surveyData.description)
   newSurvey.set('user', surveyData.user)
   newSurvey.set('createdAt', surveyData.created)
-  newSurvey.set('active', false)
+  newSurvey.set('active', true)
   newSurvey.set('deleted', false)
 
   newSurvey.save(null, {
