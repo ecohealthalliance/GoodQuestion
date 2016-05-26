@@ -75,7 +75,7 @@ function getSurveyOwner(survey) {
   let owner = survey.get("createdBy")
   owner.fetch({
     success: function(owner) {
-      InteractionManager.runAfterInteractions(() => {
+      // InteractionManager.runAfterInteractions(() => {
         realm.write(() => {
           try {
             realm.create('Survey', {
@@ -88,7 +88,7 @@ function getSurveyOwner(survey) {
           }
         })
         console.log('finished surveys')
-      })
+      // })
     }
   })
 }
