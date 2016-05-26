@@ -115,5 +115,5 @@ function clearSurveyCache(exclusions) {
     })
   } catch (e) {
     console.error(e)
-  } 
+  }
 }
