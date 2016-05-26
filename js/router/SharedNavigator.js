@@ -176,15 +176,19 @@ const SharedNavigator = React.createClass ({
         <Drawer
           type="overlay"
           ref={(ref) => this._drawer = ref}
-          content={<ControlPanel
+          content={
+            <ControlPanel
             ref={(ref) => this._controlPanel = ref}
             navigator={navigator}
             logout={this.logoutHandler}
-            closeDrawer={this.closeControlPanel} />}
+            closeDrawer={this.closeControlPanel}
+            changeRoute={this.changeRouteViaControlPanel}
+            />
+          }
           tapToClose={true}
-          openDrawerOffset={0.25} // 20% gap on the right side of drawer
+          openDrawerOffset={0.20}
           panCloseMask={0.25}
-          closedDrawerOffset={-4}
+          closedDrawerOffset={-3}
           styles={Styles.drawer}
           onClose={this.changeRouteViaControlPanel}
           tweenDuration={200}

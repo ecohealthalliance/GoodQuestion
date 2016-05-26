@@ -1,3 +1,4 @@
+import { InteractionManager } from 'react-native'
 import _ from 'lodash'
 import Parse from 'parse/react-native'
 import Store from '../data/Store'
@@ -40,24 +41,28 @@ export function loadSurveyList(options, callback) {
 
 // Saves a Survey object from Parse into our Realm.io local database
 export function cacheParseSurveys(surveys) {
-  if (!Array.isArray(surveys)) surveys = [surveys]
   try {
-    realm.write(() => {
-      for (var i = 0; i < surveys.length; i++) {
-        realm.create('Survey', {
-          id: surveys[i].id,
-          active: surveys[i].get('active') ? true : false,
-          createdAt: surveys[i].get('createdAt'),
-          updatedAt: surveys[i].get('updatedAt'),
-          title: surveys[i].get('title'),
-          description: surveys[i].get('description'),
-          user: 'Test University', // get parse user name
-          forms: [],
-          title: surveys[i].get('title'),
-        }, true)
-        getSurveyOwner(surveys[i])
+    if (!Array.isArray(surveys)) surveys = [surveys]
+    let cachedSurveys = realm.objects('Survey')
+    for (var i = 0; i < surveys.length; i++) {
+      let cachedSurvey = cachedSurveys.filtered(`id = "${surveys[i].id}"`)[0]
+      if (cachedSurvey.updatedAt.getTime() != surveys[i].updatedAt.getTime()) {
+        realm.write(() => {
+          realm.create('Survey', {
+            id: surveys[i].id,
+            active: surveys[i].get('active') ? true : false,
+            createdAt: surveys[i].get('createdAt'),
+            updatedAt: surveys[i].get('updatedAt'),
+            title: surveys[i].get('title'),
+            description: surveys[i].get('description'),
+            user: 'Test University', // get parse user name
+            forms: [],
+            title: surveys[i].get('title'),
+          }, true)
+          getSurveyOwner(surveys[i])
+        })
       }
-    })
+    }
   } catch(e) {
     console.error(e)
   }
@@ -66,19 +71,23 @@ export function cacheParseSurveys(surveys) {
 // Gets the name of the owner of a Survey and saves it to Realm database.
 // TODO Get the organization's name
 function getSurveyOwner(survey) {
+  console.log('owner')
   let owner = survey.get("createdBy")
   owner.fetch({
     success: function(owner) {
-      realm.write(() => {
-        try {
-          realm.create('Survey', {
-            id: survey.id,
-            user: 'Organization\'s Name',
-            // user: owner.get("name"),
-          }, true)
-        } catch(e) {
-          console.error(e)
-        }
+      InteractionManager.runAfterInteractions(() => {
+        realm.write(() => {
+          try {
+            realm.create('Survey', {
+              id: survey.id,
+              user: 'Organization\'s Name',
+              // user: owner.get("name"),
+            }, true)
+          } catch(e) {
+            console.error(e)
+          }
+        })
+        console.log('finished surveys')
       })
     }
   })

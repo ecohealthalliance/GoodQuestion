@@ -13,6 +13,7 @@ export default React.createClass({
     this.navigating = true
     this.nextPath = path
     this.nextTitle = title
+    // this.props.changeRoute()
     this.props.closeDrawer()
   },
 

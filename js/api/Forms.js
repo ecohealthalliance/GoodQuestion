@@ -1,3 +1,4 @@
+import { InteractionManager } from 'react-native'
 import _ from 'lodash'
 import Parse from 'parse/react-native'
 import Store from '../data/Store'
@@ -11,14 +12,16 @@ import Submission from '../models/Submission';
 
 // Saves a Form object from Parse into our Realm.io local database
 export function cacheParseForm(form, surveyId) {
-  realm.write(() => {
+  InteractionManager.runAfterInteractions(() => {
     try {
-      realm.create('Form', {
-        id: form.id,
-        surveyId: surveyId,
-        order: form.get('order'),
-        title: form.get('title'),
-      }, true)
+      realm.write(() => {
+        realm.create('Form', {
+          id: form.id,
+          surveyId: surveyId,
+          order: form.get('order'),
+          title: form.get('title'),
+        }, true)
+      })
     } catch(e) {
       console.error(e)
     }
