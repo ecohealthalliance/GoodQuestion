@@ -67,6 +67,7 @@ const SurveyListPage = React.createClass ({
 
     if (error) {
       console.warn(error)
+      this.filterList('all', [])
     } else {
       let self = this
       // Use the Realm cached versions to determine accept/decline status
@@ -159,7 +160,7 @@ const SurveyListPage = React.createClass ({
     else{
       return(
         <View style={[Styles.container.attentionContainer]}>
-          <Text style={[Styles.container.attentionText]}>No surveys</Text>
+          <Text style={[Styles.container.attentionText]}>No surveys available.</Text>
         </View>
       )
     }

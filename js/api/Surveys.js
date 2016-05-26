@@ -38,7 +38,7 @@ export function loadSurveyList(options, callback) {
       if (callback) callback(null, results)
     },
     error: function(error, results) {
-      console.warn("Error: " + error.code + " " + error.message)
+      console.warn("Error: " + error.code + " - " + error.message)
       if (callback) callback(error, results)
     }
   })

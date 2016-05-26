@@ -13,7 +13,7 @@ export function connectToParseServer(server, appId) {
   console.log('CONNECTING')
 
   // Connect to the specified Parse server
-  switch (Store.server) {
+  switch (server) {
     case 'local': connectToLocalServer(); break;
     case 'remote-test': connectToRemoteTestServer(); break;
     default:
@@ -43,4 +43,13 @@ function connectToRemoteTestServer() {
 function connectToCustomServer(server, appId) {
   Parse.initialize(appId)
   Parse.serverURL = server
+  // testConnection(5000, () => {})
+}
+
+function testConnection(delay, callback) {
+  setTimeout(() => {
+    console.log(Parse.Session.current())
+    console.log(Parse.Session.current()._rejected)
+    callback(Parse.Session.current()._rejected)
+  }, delay)
 }
