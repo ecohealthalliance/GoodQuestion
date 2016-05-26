@@ -75,8 +75,7 @@ export function checkTimeTriggers() {
       }
     }
   }
-  console.log('validTriggers: ', validTriggers);
-  
+
   realm.write(() => {
     for (var i = 0; i < validTriggers.length; i++) {
       realm.create('TimeTrigger', {
