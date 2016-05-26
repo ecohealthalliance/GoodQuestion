@@ -1,10 +1,12 @@
-// Used for global variables that do not fit in a Realm database
+// Used for caching global variables that may not fit in a Realm database
 const Store = {
   platform: null,
   server: 'local',
 
   logged_in: false,
   email_verified: false,
+
+  lastParseUpdate: 0, // Timestamp
 
   location: {
     lat: 0,

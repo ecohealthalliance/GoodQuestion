@@ -46,7 +46,10 @@ const FormPage = React.createClass ({
   },
 
   getInitialState() {
+    console.log('this.props')
+    console.log(this.props)
     const forms = loadCachedForms(this.props.survey.id);
+    console.log(forms)
     let index = 0
     if (this.props.index) {
       index = this.props.index;

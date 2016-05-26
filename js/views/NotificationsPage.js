@@ -18,16 +18,18 @@ const NotificationsPage = React.createClass({
   title: 'Notifications',
 
   getInitialState() {
+    let pendingNotifications = loadNotifications()
+    let dataSource = new ListView.DataSource({
+      rowHasChanged: (row1, row2) => row1 !== row2,
+    })
     return {
-      list: [],
-      dataSource: new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2,
-      })
+      list: pendingNotifications,
+      dataSource: dataSource.cloneWithRows(pendingNotifications)
     }
   },
 
   componentDidMount() {
-    this.loadList()
+    // this.loadList()
   },
 
   componentWillUnmount() {
