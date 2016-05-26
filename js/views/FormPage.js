@@ -73,7 +73,6 @@ const FormPage = React.createClass ({
   // },
 
   componentWillMount() {
-    console.log('this: ', this);
     const submissions = loadCachedSubmissions(this.form.id);
     if(submissions.length > 0) {
       this.setState({answers: JSON.parse(submissions.slice(-1)[0].answers)})

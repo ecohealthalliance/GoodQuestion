@@ -28,6 +28,7 @@ export function loadSurveyList(options, callback) {
       for (var i = 0; i < results.length; i++) {
         loadForms(results[i])
       }
+      Store.lastParseUpdate = Date.now()
       if (callback) callback(null, results)
     },
     error: function(error, results) {

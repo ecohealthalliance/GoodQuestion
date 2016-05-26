@@ -18,8 +18,7 @@ const NotificationsPage = React.createClass({
   title: 'Notifications',
 
   getInitialState() {
-    // let pendingNotifications = loadNotifications()
-    let pendingNotifications = []
+    let pendingNotifications = loadNotifications()
     let dataSource = new ListView.DataSource({
       rowHasChanged: (row1, row2) => row1 !== row2,
     })

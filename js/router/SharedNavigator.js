@@ -109,17 +109,20 @@ const SharedNavigator = React.createClass ({
   },
 
   openControlPanel() {
+    this._controlPanel.navigating = false
     this._drawer.open()
   },
 
-  changeRoute() {
-    let path = this._controlPanel.nextPath
-    let title = this._controlPanel.nextTitle
-    if (navigator) {
-      let routeStack = navigator.getCurrentRoutes()
-      let currentRoutePath = routeStack[routeStack.length-1].path
-      if (path !== currentRoutePath) {
-        navigator.push({path: path, title: title})
+  changeRouteViaControlPanel() {
+    if (this._controlPanel.navigating) {
+      let path = this._controlPanel.nextPath
+      let title = this._controlPanel.nextTitle
+      if (navigator) {
+        let routeStack = navigator.getCurrentRoutes()
+        let currentRoutePath = routeStack[routeStack.length-1].path
+        if (path !== currentRoutePath) {
+          navigator.push({path: path, title: title})
+        }
       }
     }
   },
@@ -183,7 +186,7 @@ const SharedNavigator = React.createClass ({
           panCloseMask={0.25}
           closedDrawerOffset={-4}
           styles={Styles.drawer}
-          onClose={this.changeRoute}
+          onClose={this.changeRouteViaControlPanel}
           tweenDuration={200}
           tweenEasing='easeOutCubic'
           >

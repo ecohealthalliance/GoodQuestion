@@ -9,6 +9,7 @@ import { version } from '../../package'
 
 export default React.createClass({
   navigateToView(path, title) {
+    this.navigating = true
     this.nextPath = path
     this.nextTitle = title
     this.props.closeDrawer()

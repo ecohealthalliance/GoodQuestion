@@ -24,7 +24,7 @@ const SurveyListPage = React.createClass ({
   getInitialState() {
     return {
       isLoading: true,
-      list: [],
+      list: loadCachedSurveyList(),
       filteredList: [],
       dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
@@ -35,7 +35,8 @@ const SurveyListPage = React.createClass ({
   componentDidMount() {
     this.mountTimeStamp = Date.now()
 
-    if (this.state.list.length === 0) {
+    // Update Survey List from Parse once every 3 minutes
+    if ( this.state.list.length === 0 || Store.lastParseUpdate + 180 < Date.now() ) {
       loadSurveyList({}, this.loadList);
     }
   },
@@ -59,7 +60,6 @@ const SurveyListPage = React.createClass ({
 
   /* Methods */
   loadList(error, response){
-    console.log('loading list...')
     // Prevent this callback from working if the component has unmounted.
     if (this.cancelCallbacks) return
 
