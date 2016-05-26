@@ -84,6 +84,7 @@ function createDemoSurvey (surveyData, startDate, endDate) {
   newSurvey.set('deleted', false)
 
   newSurvey.save(null, {
+    useMasterKey: true,
     success: function(response) {
       for (var i = 0; i < numberOfDays; i++) {
         Forms.createDemoForm(response, startDateTimestamp + i * 86400000)

@@ -57,6 +57,7 @@ function createDemoTrigger(parentForm, when) {
   newTrigger.set('form', parentForm)
 
   newTrigger.save(null, {
+    useMasterKey: true,
     success: function(response) {
         if (parentForm) {
           var relation = parentForm.relation('triggers')

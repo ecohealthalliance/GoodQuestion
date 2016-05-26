@@ -69,6 +69,7 @@ function createDemoForm(parentSurvey, dayStartTimestamp) {
   newForm.set('deleted', false)
 
   newForm.save(null, {
+    useMasterKey: true,
     success: function(response) {
       if (parentSurvey) {
         var relation = parentSurvey.relation('forms')

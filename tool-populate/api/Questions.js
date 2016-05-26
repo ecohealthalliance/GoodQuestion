@@ -73,6 +73,7 @@ function createDemoQuestions(parentForm) {
     newQuestion.set('order', i + 1)
 
     newQuestion.save(null, {
+      useMasterKey: true,
       success: function(response) {
         questions.push(response)
         if (parentForm && questions.length === limit) {

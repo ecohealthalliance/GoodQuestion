@@ -20,7 +20,7 @@ program
   .option('-p, --print', 'Prints the current data in your local server.')
   .parse(process.argv)
 
-Parse.initialize(Settings.parse.appId)
+Parse.initialize(Settings.parse.appId, null, Settings.parse.masterKey)
 Parse.serverURL = Settings.parse.serverUrl
 
 if (program.reset) {
