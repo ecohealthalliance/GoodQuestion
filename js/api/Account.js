@@ -249,6 +249,7 @@ export function register(email, password, props, done) {
     },
     //authenticates against openam as admin
     openamAuth: ['registered', function(cb, results) {
+      if (Settings.dev) return cb(null, true);
       if (results.registered) {
         cb('The email is already registered.');
         return;
@@ -257,18 +258,17 @@ export function register(email, password, props, done) {
     }],
     //register a user with openAm
     openamRegister: ['openamAuth', function(cb, results) {
+      if (Settings.dev) return cb(null, true);
       const user = {
         username: email,
         userpassword: password,
         email: email,
       };
       openamRegister(user, results.openamAuth, cb);
-      //cb(null, true); // testing
     }],
     //register a user with parse
     parseRegister: ['openamRegister', function(cb, results) {
       parseRegister(email, password, props, cb);
-      //cb(null, true); // testing
     }],
   }, function(err, results) {
     if (err) {
@@ -319,5 +319,3 @@ export function validateUser() {
     }
   })
 }
-
-
