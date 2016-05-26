@@ -190,8 +190,6 @@ const SurveyDetailsPage = React.createClass ({
               </View>
             </View>
 
-            {this.renderFormButtons()}
-
             <View style={Styles.survey.surveyNotes}>
               <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>Administered by:</Text>
               <Text style={[Styles.type.h2, {marginTop: 0, fontWeight: 'normal'}]}>{this.state.user}</Text>
