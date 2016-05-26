@@ -37,7 +37,7 @@ function createForms(parentSurvey) {
       if (parentSurvey) {
         var relation = parentSurvey.relation('forms')
         relation.add(newForm)
-        parentSurvey.save()
+        parentSurvey.save(null, {useMasterKey: true})
       }
       Questions.createQuestions(response)
       Triggers.createTriggers(response)
@@ -74,7 +74,7 @@ function createDemoForm(parentSurvey, dayStartTimestamp) {
       if (parentSurvey) {
         var relation = parentSurvey.relation('forms')
         relation.add(newForm)
-        parentSurvey.save()
+        parentSurvey.save(null, {useMasterKey: true})
       }
       Questions.createDemoQuestions(response)
       Triggers.createDemoTrigger(response, randomHour(dayStartTimestamp))

@@ -39,7 +39,7 @@ function createTriggers(parentForm) {
         if (parentForm) {
           var relation = parentForm.relation('triggers')
           relation.add(newTrigger)
-          parentForm.save()
+          parentForm.save(null, {useMasterKey: true})
         }
         storeTriggers(response)
       },
@@ -62,7 +62,7 @@ function createDemoTrigger(parentForm, when) {
         if (parentForm) {
           var relation = parentForm.relation('triggers')
           relation.add(newTrigger)
-          parentForm.save()
+          parentForm.save(null, {useMasterKey: true})
         }
         storeTriggers(response)
       },

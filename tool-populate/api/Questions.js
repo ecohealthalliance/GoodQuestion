@@ -43,7 +43,7 @@ function createQuestions(parentForm) {
         if (parentForm && questions.length === DummyData.questions.length) {
           var relation = parentForm.relation('questions')
           relation.add(questions)
-          parentForm.save()
+          parentForm.save(null, {useMasterKey: true})
         }
         storeQuestions(response)
       },
@@ -79,7 +79,7 @@ function createDemoQuestions(parentForm) {
         if (parentForm && questions.length === limit) {
           var relation = parentForm.relation('questions')
           relation.add(questions)
-          parentForm.save()
+          parentForm.save(null, {useMasterKey: true})
         }
         storeQuestions(response)
       },

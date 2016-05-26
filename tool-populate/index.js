@@ -105,6 +105,6 @@ function resetLocalServer() {
 
 function destroyObjects(objects) {
   for (var i = objects.length - 1; i >= 0; i--) {
-    objects[i].destroy()
+    objects[i].destroy({useMasterKey: true})
   }
 }
