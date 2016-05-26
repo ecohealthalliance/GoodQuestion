@@ -40,7 +40,6 @@ const SurveyDetailsPage = React.createClass ({
   componentWillMount() {
     let cachedForms = loadCachedForms(this.state.id)
     if (cachedForms.length === 0) {
-      console.log('fetching');
       this.fetchForms()
     } else {
       this.setSurveyDetails(cachedForms)
@@ -71,11 +70,13 @@ const SurveyDetailsPage = React.createClass ({
        })
     })
   },
+
   loadQuestions(form, callback) {
     loadQuestions(form, function(err, questions){
       if (questions) callback(questions)
     })
   },
+
   questionCount(forms, callback){
     let questionCount = 0,
         self = this,
@@ -85,8 +86,7 @@ const SurveyDetailsPage = React.createClass ({
       if (cachedQuestions.length === 0) {
         self.loadQuestions(form, function(questions) {
           questionCount += questions.length
-          if (formCount == i+1)
-            callback(questionCount)
+          if (formCount == i+1) callback(questionCount)
         })
       } else {
         questionCount += loadCachedQuestions(form.id).length
@@ -101,7 +101,7 @@ const SurveyDetailsPage = React.createClass ({
     realm.write(() => {
       survey.status = 'accepted'
     })
-    this.showForms()
+    this.selectForm()
   },
 
   declineSurvey() {
@@ -111,7 +111,6 @@ const SurveyDetailsPage = React.createClass ({
       survey.status = 'declined'
     })
     this.props.navigator.pop()
-    // this.props.navigator.push({path: 'surveylist', title: 'Surveys', sceneConfig: 'FloatFromLeft'})
   },
 
   showForms(tab) {
@@ -124,7 +123,7 @@ const SurveyDetailsPage = React.createClass ({
   },
 
   selectForm(form) {
-    if (this.cancelCallbacks || !form) return
+    // if (this.cancelCallbacks || !form) return
 
     //Gather questions only for this form
     // let questions = realm.objects('Question').filtered(`formId = "${form.id}"`)
@@ -133,7 +132,6 @@ const SurveyDetailsPage = React.createClass ({
     this.props.navigator.push({
       path: 'form',
       title: this.props.survey.title,
-      form: form,
       survey: this.state.cachedSurvey,
     })
   },

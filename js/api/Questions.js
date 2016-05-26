@@ -42,7 +42,7 @@ export function loadQuestions(form, callback) {
       const formQuestionRelations = form.get('questions')
       formQuestionRelations.query().find({
         success: function(results) {
-          cacheParseQuestion(results[i], form.id)
+          cacheParseQuestions(results, form.id)
           if (callback) callback(null, results)
         },
         error: function(error, results) {
@@ -50,6 +50,10 @@ export function loadQuestions(form, callback) {
           if (callback) callback(error, results)
         }
       })
+    },
+    error: function(error, results) {
+      console.warn("Error: " + error.code + " " + error.message)
+      if (callback) callback(error, results)
     }
   })
 }

@@ -53,6 +53,7 @@ const FormPage = React.createClass ({
       index = this.props.index;
     }
     return {
+      forms: forms,
       isLoading: true,
       index: index,
       button_text: 'Submit',
@@ -177,8 +178,8 @@ const FormPage = React.createClass ({
   },
 
   loadTriggers(forms, callback) {
-    let self = this
-    let formCount = forms.length
+    let self = this,
+        formCount = forms.length
     formsWithTriggers = []
     forms.forEach(function(form, i){
       self.triggers(form, self, function(f){
