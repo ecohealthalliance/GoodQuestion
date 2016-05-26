@@ -84,7 +84,6 @@ function getSurveyOwner(survey) {
             console.error(e)
           }
         })
-        console.log('finished surveys')
       // })
     }
   })
