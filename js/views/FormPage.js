@@ -41,7 +41,6 @@ import realm from '../data/Realm'
 const FormPage = React.createClass ({
   form: null,
   nextForm: null,
-  formsWithTriggers: [],
   propTypes: {
     survey: React.PropTypes.object.isRequired,
     index: React.PropTypes.number,
@@ -52,36 +51,8 @@ const FormPage = React.createClass ({
     if (this.props.index) {
       index = this.props.index;
     }
-    this.form = forms[index]
-    this.nextForm = forms[index + 1]
-    let submissions = loadCachedSubmissions(this.form.id)
-    let questions = loadCachedQuestions(this.form.id)
-    let answers = {}
-    if(submissions.length > 0){
-      answers = JSON.parse(submissions.slice(-1)[0].answers)
-    } else {
-      // Set default values
-      questions.forEach((question, idx)=>{
-        let properties = JSON.parse(question.properties)
-        answers[question.id] = (()=>{
-          switch (question.type) {
-            case 'shortAnswer': return ""
-            case 'checkboxes': return []
-            case 'multipleChoice': return properties.choices[0]
-            case 'longAnswer': return ""
-            case 'number': return properties.min || 0
-            case 'scale': return properties.min || 0
-            case 'date': return new Date()
-            case 'datetime': return new Date()
-            default: return null
-          }
-        })()
-      })
-    }
     return {
-      questions: questions,
-      answers: answers,
-      loading: false,
+      isLoading: true,
       index: index,
       button_text: 'Submit',
       questionIndex: 0,
@@ -130,22 +101,41 @@ const FormPage = React.createClass ({
   componentWillMount() {
     let self = this,
         index = this.state.index,
-        answers = null
+        answers = {}
     this.loadTriggers(this.state.forms, function(forms){
       forms = self.filterForms(forms)
       if (forms.length > 1)
         forms = self.sortForms(forms)
       self.form = forms[index]
       self.nextForm = forms[index + 1]
-      const submissions = loadCachedSubmissions(self.form.id)
-      if (submissions.length > 0) {
+      let submissions = loadCachedSubmissions(self.form.id)
+      let questions = loadCachedQuestions(self.form.id)
+      if(submissions.length > 0){
         answers = JSON.parse(submissions.slice(-1)[0].answers)
+      } else {
+        // Set default values
+        questions.forEach((question, idx)=>{
+          let properties = JSON.parse(question.properties)
+          answers[question.id] = (()=>{
+            switch (question.type) {
+              case 'shortAnswer': return ""
+              case 'checkboxes': return []
+              case 'multipleChoice': return properties.choices[0]
+              case 'longAnswer': return ""
+              case 'number': return properties.min || 0
+              case 'scale': return properties.min || 0
+              case 'date': return new Date()
+              case 'datetime': return new Date()
+              default: return null
+            }
+          })()
+        })
       }
       self.setState({
-        questions: loadCachedQuestions(self.form.id),
+        questions: questions,
+        answers: answers,
         forms: forms,
         isLoading: false,
-        answers: answers
       })
     })
   },
@@ -156,13 +146,6 @@ const FormPage = React.createClass ({
 
   componentDidMount() {
     validateUser()
-  },
-
-  triggers(form, self, callback){
-    loadTriggers(form, self.props.survey, function(err, triggers){
-      form.trigger = triggers[0].get('properties').datetime
-      callback(form)
-    })
   },
 
   /* Methods */
@@ -177,6 +160,13 @@ const FormPage = React.createClass ({
 
   sortForms(forms){
     return _.sortBy(forms, 'trigger')
+  },
+
+  triggers(form, self, callback){
+    loadTriggers(form, self.props.survey, function(err, triggers){
+      form.trigger = triggers[0].get('properties').datetime
+      callback(form)
+    })
   },
 
   loadTriggers(forms, callback) {
