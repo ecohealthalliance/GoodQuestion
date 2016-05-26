@@ -111,6 +111,9 @@ const SurveyListPage = React.createClass ({
 
   selectSurvey(survey) {
     if (this.cancelCallbacks) return
+    if (survey.getForms().length === 0) {
+      return Alert.alert('Survey has no active forms.')
+    }
     // TODO Support multiple forms
     let path = 'survey-details'
     if (survey.status == 'accepted') {
