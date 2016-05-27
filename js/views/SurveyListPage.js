@@ -67,6 +67,7 @@ const SurveyListPage = React.createClass ({
 
     if (error) {
       console.warn(error)
+      this.filterList('all', [])
     } else {
       let self = this
       // Use the Realm cached versions to determine accept/decline status
@@ -144,22 +145,22 @@ const SurveyListPage = React.createClass ({
   render() {
     if (this.state.isLoading) {
       return (<Loading/>)
-    } else if(this.state.dataSource.getRowCount() > 0) {
+    } else {
       return (
         <View style={[Styles.container.default , {flex: 1}]}>
-          <ListView dataSource = { this.state.dataSource }
-            renderRow = { this.renderItem }
-            contentContainerStyle = { [Styles.container.default, Styles.survey.list] }
-            enableEmptySections
-          />
+          {
+            this.state.dataSource.getRowCount() > 0 ?
+            <ListView dataSource = { this.state.dataSource }
+              renderRow = { this.renderItem }
+              contentContainerStyle = { [Styles.container.default, Styles.survey.list] }
+              enableEmptySections
+            />
+            :
+            <View style={[Styles.container.attentionContainer]}>
+              <Text style={[Styles.container.attentionText]}>No surveys available.</Text>
+            </View>
+          }
           <SurveyListFilter filterList={this.updateListFilter} />
-        </View>
-      )
-    }
-    else{
-      return(
-        <View style={[Styles.container.attentionContainer]}>
-          <Text style={[Styles.container.attentionText]}>No surveys</Text>
         </View>
       )
     }

@@ -76,8 +76,6 @@ const SharedNavigator = React.createClass ({
   componentDidMount() {
     let self = this
     isAuthenticated((authenticated) => {
-      console.log('authenticated')
-      console.log(authenticated)
       self.setState({
         isAuthenticated: authenticated,
         isLoading: false,
@@ -163,7 +161,6 @@ const SharedNavigator = React.createClass ({
 
   /* Render */
   render() {
-    console.log(InteractionManager)
     const initialRoute = { path:'surveylist', title: 'Surveys' }
     // show loading component without the navigationBar
     if (this.state.isLoading) {
