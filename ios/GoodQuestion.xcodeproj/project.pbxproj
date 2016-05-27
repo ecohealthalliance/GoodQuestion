@@ -20,6 +20,9 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
+		34A45F451CF87A320019BEA9 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34A45F441CF87A320019BEA9 /* Bolts.framework */; };
+		34A45F551CF87A400019BEA9 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34A45F541CF87A400019BEA9 /* Parse.framework */; };
+		34A45F561CF87DB70019BEA9 /* libRealmJS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 59027C1D1CE4ED4200110480 /* libRealmJS.a */; };
 		3747C1091CD93D11001D3CF1 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3747C1081CD93D11001D3CF1 /* FontAwesome.ttf */; };
 		376AE00E1CF63AD3007ADFDC /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 376AE0051CF63ABE007ADFDC /* libRCTPushNotification.a */; };
 		71488E640C714937B5D999AE /* libRealmReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2CB1BF2A142467BBF1AFBE0 /* libRealmReact.a */; };
@@ -158,6 +161,8 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = GoodQuestion/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = GoodQuestion/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
+		34A45F441CF87A320019BEA9 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bolts.framework; sourceTree = "<group>"; };
+		34A45F541CF87A400019BEA9 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		3747C1081CD93D11001D3CF1 /* FontAwesome.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = FontAwesome.ttf; path = Fonts/FontAwesome.ttf; sourceTree = "<group>"; };
 		376ADFFB1CF63ABE007ADFDC /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		59027C1D1CE4ED4200110480 /* libRealmJS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRealmJS.a; path = "../node_modules/realm/src/ios/build/Debug-iphoneos/libRealmJS.a"; sourceTree = "<group>"; };
@@ -197,8 +202,11 @@
 				139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */,
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
+				34A45F551CF87A400019BEA9 /* Parse.framework in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				71488E640C714937B5D999AE /* libRealmReact.a in Frameworks */,
+				34A45F561CF87DB70019BEA9 /* libRealmJS.a in Frameworks */,
+				34A45F451CF87A320019BEA9 /* Bolts.framework in Frameworks */,
 				DC9DEC7AD32346D29CD99AB0 /* libc++.tbd in Frameworks */,
 				B4F2DC7E18D9455C8FAE85AA /* libz.tbd in Frameworks */,
 			);
@@ -379,6 +387,8 @@
 		C14AEA65D20A42DCB351B9A6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				34A45F541CF87A400019BEA9 /* Parse.framework */,
+				34A45F441CF87A320019BEA9 /* Bolts.framework */,
 				D49CD8261CEE5AF000178F0F /* libsqlite3.tbd */,
 				D49CD8241CEE5AE000178F0F /* TSLocationManager.framework */,
 				59027C1D1CE4ED4200110480 /* libRealmJS.a */,
@@ -753,10 +763,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Dan Nyanko (SVMV72ANRB)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Dan Nyanko (SVMV72ANRB)";
 				DEAD_CODE_STRIPPING = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../node_modules/react-native-background-geolocation/**";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../node_modules/react-native-background-geolocation/**",
+					"$(PROJECT_DIR)",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -769,7 +782,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = io.eha.goodquestion;
 				PRODUCT_NAME = GoodQuestion;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "a9e08285-e4bc-4594-8271-a8a0fc221ba3";
 			};
 			name = Debug;
 		};
@@ -778,10 +791,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Dan Nyanko (SVMV72ANRB)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Dan Nyanko (SVMV72ANRB)";
 				DEAD_CODE_STRIPPING = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../node_modules/react-native-background-geolocation/**";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../node_modules/react-native-background-geolocation/**",
+					"$(PROJECT_DIR)",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -794,7 +810,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = io.eha.goodquestion;
 				PRODUCT_NAME = GoodQuestion;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "a9e08285-e4bc-4594-8271-a8a0fc221ba3";
 			};
 			name = Release;
 		};

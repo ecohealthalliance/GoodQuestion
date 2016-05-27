@@ -14,8 +14,22 @@
 
 @implementation AppDelegate
 
+- (void)loadParseWithLaunchOptions:(NSDictionary *)launchOptions {
+  [Parse initializeWithConfiguration:[ParseClientConfiguration configurationWithBlock:^(id<ParseMutableClientConfiguration> configuration) {
+    configuration.applicationId = @"UMassSurvey";
+    configuration.clientKey = @"";
+    configuration.server = @"https://survey.eha.io/parse";
+  }]];
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [self loadParseWithLaunchOptions:launchOptions];
+  self.currentInstallation = [PFInstallation currentInstallation];
+  if (self.currentInstallation.badge != 0) {
+    self.currentInstallation.badge = 0;
+    [self.currentInstallation saveInBackground];
+  }
   NSURL *jsCodeLocation;
 
   /**
@@ -66,6 +80,10 @@
 // Required for the register event.
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
+  // Store the deviceToken in the current installation and save it to Parse.
+  [self.currentInstallation setDeviceTokenFromData:deviceToken];
+  self.currentInstallation.channels = @[ @"global" ];
+  [self.currentInstallation saveInBackground];
   [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 // Required for the notification event.

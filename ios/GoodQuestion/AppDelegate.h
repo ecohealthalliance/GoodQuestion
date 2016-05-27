@@ -8,9 +8,11 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <Parse/Parse.h>
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (nonatomic, strong) UIWindow *window;
+@property (nonatomic, strong, readwrite) PFInstallation *currentInstallation;
 
 @end
