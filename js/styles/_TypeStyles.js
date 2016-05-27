@@ -24,12 +24,20 @@ const TypeStyles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
+  statusMessageContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop:100
+  },
   statusMessage: {
     textAlign: 'center',
     fontSize: 26,
-    color: Color.secondary
+    color: Color.primary
   },
-
+  statusMessageSecondary: {
+    color: Color.secondary,
+    fontSize: 14
+  },
   // Interactive
   link: {
     color: Color.primary,

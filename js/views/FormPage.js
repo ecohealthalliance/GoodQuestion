@@ -28,10 +28,11 @@ import Button from 'apsl-react-native-button';
 import Submission from '../models/Submission';
 import Loading from '../components/Loading';
 import Color from '../styles/Color';
-import Type from '../styles/_TypeStyles';
+import TypeStyles from '../styles/_TypeStyles';
 import Swiper from 'react-native-page-swiper'
-import { loadTriggers } from '../api/Triggers'
+import Icon from 'react-native-vector-icons/FontAwesome'
 
+import { loadTriggers } from '../api/Triggers'
 import { validateUser } from '../api/Account'
 import { loadCachedForms } from '../api/Forms'
 import { loadCachedSubmissions, saveSubmission} from '../api/Submissions'
@@ -106,9 +107,13 @@ const FormPage = React.createClass ({
         index = this.state.index,
         answers = {}
     this.loadTriggers(this.state.forms, function(forms){
+      allForms = forms
       forms = self.filterForms(forms)
       if (forms.length === 0) {
-        self.setState({isLoading: false})
+        futureForms = _.filter(allForms, function(form){
+          return form.trigger > new Date()
+        })
+        self.setState({isLoading: false, futureFormCount: futureForms.length})
         return
       }
       forms = self.sortForms(forms)
@@ -188,6 +193,16 @@ const FormPage = React.createClass ({
           callback(formsWithTriggers)
       })
     })
+  },
+
+  showFutureFormCount(){
+    if (this.state.futureFormCount > 0) {
+      return (
+        <Text style={[TypeStyles.statusMessage, TypeStyles.statusMessageSecondary]}>
+          Stay tuned, there are {this.state.futureFormCount} forms remaining...
+        </Text>
+      )
+    }
   },
 
   submit() {
@@ -278,8 +293,10 @@ const FormPage = React.createClass ({
       return (<Loading/>)
     } else if (!this.state.formsInQueue){
       return (
-        <View style={{flex: 1, justifyContent: 'center'}}>
-          <Text style={Type.statusMessage}>No active forms</Text>
+        <View style={TypeStyles.statusMessageContainer}>
+          <Icon name="clock-o" size={100} color={Color.fadedRed} />
+          <Text style={TypeStyles.statusMessage}>No active forms</Text>
+          {this.showFutureFormCount()}
         </View>
       )
     } else {
