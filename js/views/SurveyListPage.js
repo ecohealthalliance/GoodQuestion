@@ -96,10 +96,11 @@ const SurveyListPage = React.createClass ({
       filteredList = list
     }
     this.setState({
-      isLoading: false,
-      list: list,
+      isLoading   : false,
+      list        : list,
       filteredList: filteredList,
-      dataSource: this.state.dataSource.cloneWithRows(filteredList)
+      filterType  : query !== 'all' ? query+' ' : '',
+      dataSource  : this.state.dataSource.cloneWithRows(filteredList)
     })
   },
 
@@ -128,7 +129,25 @@ const SurveyListPage = React.createClass ({
       survey: survey
     })
   },
-
+  showList(){
+    if (this.state.dataSource.getRowCount() > 0) {
+      return (
+        <ListView dataSource = { this.state.dataSource }
+          renderRow = { this.renderItem }
+          contentContainerStyle = { [Styles.container.default, Styles.survey.list] }
+          enableEmptySections
+        />
+      )
+    } else {
+      return (
+        <View style={[Styles.container.attentionContainer]}>
+          <Text style={[Styles.container.attentionText]}>
+            No {this.state.filterType}surveys
+          </Text>
+        </View>
+      )
+    }
+  },
   /* Render */
   renderItem(item, sectionId, rowId) {
     return (
@@ -148,18 +167,7 @@ const SurveyListPage = React.createClass ({
     } else {
       return (
         <View style={[Styles.container.default , {flex: 1}]}>
-          {
-            this.state.dataSource.getRowCount() > 0 ?
-            <ListView dataSource = { this.state.dataSource }
-              renderRow = { this.renderItem }
-              contentContainerStyle = { [Styles.container.default, Styles.survey.list] }
-              enableEmptySections
-            />
-            :
-            <View style={[Styles.container.attentionContainer]}>
-              <Text style={[Styles.container.attentionText]}>No surveys available.</Text>
-            </View>
-          }
+          {this.showList()}
           <SurveyListFilter filterList={this.updateListFilter} />
         </View>
       )
