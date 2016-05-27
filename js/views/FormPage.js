@@ -166,7 +166,7 @@ const FormPage = React.createClass ({
                                   });
       }
       else{
-        this.props.navigator.push({name: 'surveyList', title: 'Surveys'});
+        this.props.navigator.resetTo({name: 'surveyList', title: 'Surveys'});
       }
     });
   },
