@@ -8,6 +8,11 @@ import ControlPanelItem from '../components/ControlPanelItem'
 import { version } from '../../package'
 
 export default React.createClass({
+  componentWillMount() {
+    this.navigating = false
+    this.nextPath = ''
+    this.nextTitle = ''
+  },
 
   navigateToView(path, title) {
     this.navigating = true
@@ -15,6 +20,12 @@ export default React.createClass({
     this.nextTitle = title
     // this.props.changeRoute()
     this.props.closeDrawer()
+  },
+
+  handleLogout() {
+    this.navigating = false
+    this.props.closeDrawer();
+    this.props.logout();
   },
 
   render() {
@@ -46,10 +57,7 @@ export default React.createClass({
             text="Support"
           />
           <ControlPanelItem
-            onPress={()=>{
-              this.props.closeDrawer();
-              this.props.logout();
-            }}
+            onPress={this.handleLogout}
             text="Logout"
           />
         </View>

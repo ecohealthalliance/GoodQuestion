@@ -114,7 +114,7 @@ const SharedNavigator = React.createClass ({
   },
 
   changeRouteViaControlPanel() {
-    if (this._controlPanel.navigating) {
+    if (this._controlPanel && this._controlPanel.navigating) {
       let path = this._controlPanel.nextPath
       let title = this._controlPanel.nextTitle
       if (navigator) {
