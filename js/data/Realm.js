@@ -17,7 +17,7 @@ const realmInstance = new Realm({
     TimeTrigger,
     Submission,
   ],
-  schemaVersion: 26,
+  schemaVersion: 27,
 })
 
 // Erases the current cache of a target object
@@ -45,7 +45,7 @@ export function clearRealmCache(objectName, idExclusions) {
     })
   } catch (e) {
     console.error(e)
-  } 
+  }
 }
 
 export default realmInstance;

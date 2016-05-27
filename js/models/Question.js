@@ -9,6 +9,7 @@ Question.schema = {
   	order: 'int',
     text: 'string',
     type: 'string',
+    required: 'bool',
     properties: 'string',
   }
 }

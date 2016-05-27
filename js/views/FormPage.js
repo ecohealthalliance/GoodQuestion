@@ -54,9 +54,32 @@ const FormPage = React.createClass ({
     this.form = forms[index]
     this.nextForm = forms[index + 1]
     let submissions = loadCachedSubmissions(this.form.id)
+    let questions = loadCachedQuestions(this.form.id)
+    let answers = {}
+    if(submissions.length > 0){
+      answers = JSON.parse(submissions.slice(-1)[0].answers)
+    } else {
+      // Set default values
+      questions.forEach((question, idx)=>{
+        let properties = JSON.parse(question.properties)
+        answers[question.id] = (()=>{
+          switch (question.type) {
+            case 'shortAnswer': return ""
+            case 'checkboxes': return []
+            case 'multipleChoice': return properties.choices[0]
+            case 'longAnswer': return ""
+            case 'number': return properties.min || 0
+            case 'scale': return properties.min || 0
+            case 'date': return new Date()
+            case 'datetime': return new Date()
+            default: return null
+          }
+        })()
+      })
+    }
     return {
-      questions: loadCachedQuestions(this.form.id),
-      answers: submissions.length > 0 ? JSON.parse(submissions.slice(-1)[0].answers) : {},
+      questions: questions,
+      answers: answers,
       loading: false,
       index: index,
       button_text: 'Submit',
@@ -64,14 +87,44 @@ const FormPage = React.createClass ({
     }
   },
 
-  // beforePageChange(nextPage) {
-  //   const shouldContinue = this.validatePage();
-  //   if (!shouldContinue) {
-  //     return false;
-  //   }
-  //   this.setIndex(nextPage);
-  //   return true;
-  // },
+  validatePage() {
+    let question = this.state.questions[this.state.questionIndex]
+    let answer = this.state.answers[question.id]
+    let properties = JSON.parse(question.properties)
+    if(question.type == "number" || question.type == "scale") {
+      if(properties.min && answer < properties.min) {
+        return false
+      }
+      if(properties.max && answer > properties.max) {
+        return false
+      }
+      return true
+    }
+    if(question.required) {
+      if(question.type == "longAnswer" || question.type == "shortAnswer") {
+        if(!answer) {
+          Alert.alert("A response is required")
+        }
+        return Boolean(answer)
+      } else {
+        return true
+      }
+    } else {
+      return true
+    }
+  },
+
+  beforePageChange(nextPage) {
+    // Don't validate when going backwards
+    if(nextPage < this.state.questionIndex) return true
+    // Don't validate final page
+    if(this.state.questionIndex >= this.state.questions.length) return true
+    const shouldContinue = this.validatePage();
+    if (!shouldContinue) {
+      return false;
+    }
+    return true;
+  },
 
   componentWillUnmount() {
     this.cancelCallbacks = true
