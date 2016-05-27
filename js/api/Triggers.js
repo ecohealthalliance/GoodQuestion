@@ -33,7 +33,6 @@ export function loadTriggers(form, survey, callback) {
 
 // Fetches the cached forms related to a specific survey
 export function loadCachedTrigger(formId) {
-  console.log(formId);
   return realm.objects('TimeTrigger').filtered(`formId= "${formId}"`)
 }
 

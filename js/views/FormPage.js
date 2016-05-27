@@ -32,7 +32,7 @@ import TypeStyles from '../styles/_TypeStyles';
 import Swiper from 'react-native-page-swiper'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
-import { loadTriggers } from '../api/Triggers'
+import { loadTriggers, loadCachedTrigger } from '../api/Triggers'
 import { validateUser } from '../api/Account'
 import { loadCachedForms } from '../api/Forms'
 import { loadCachedSubmissions, saveSubmission} from '../api/Submissions'
@@ -106,50 +106,49 @@ const FormPage = React.createClass ({
     let self = this,
         index = this.state.index,
         answers = {}
-    this.loadTriggers(this.state.forms, function(forms){
-      allForms = forms
-      forms = self.filterForms(forms)
-      if (forms.length === 0) {
-        futureForms = _.filter(allForms, function(form){
-          return form.trigger > new Date()
-        })
-        self.setState({isLoading: false, futureFormCount: futureForms.length})
-        return
-      }
-      forms = self.sortForms(forms)
-      self.form = forms[index]
-      self.nextForm = forms[index + 1]
-      let submissions = loadCachedSubmissions(self.form.id)
-      let questions = loadCachedQuestions(self.form.id)
-      if(submissions.length > 0){
-        answers = JSON.parse(submissions.slice(-1)[0].answers)
-      } else {
-        // Set default values
-        questions.forEach((question, idx)=>{
-          let properties = JSON.parse(question.properties)
-          answers[question.id] = (()=>{
-            switch (question.type) {
-              case 'shortAnswer': return ""
-              case 'checkboxes': return []
-              case 'multipleChoice': return properties.choices[0]
-              case 'longAnswer': return ""
-              case 'number': return properties.min || 0
-              case 'scale': return properties.min || 0
-              case 'date': return new Date()
-              case 'datetime': return new Date()
-              default: return null
-            }
-          })()
-        })
-      }
-      self.setState({
-        questions: questions,
-        answers: answers,
-        forms: forms,
-        isLoading: false,
-        answers: answers,
-        formsInQueue: true
+    forms = this.addTriggersToForms()
+    allForms = forms
+    forms = self.filterForms(forms)
+    if (forms.length === 0) {
+      futureForms = _.filter(allForms, function(form){
+        return form.trigger > new Date()
       })
+      self.setState({isLoading: false, futureFormCount: futureForms.length})
+      return
+    }
+    forms = self.sortForms(forms)
+    self.form = forms[index]
+    self.nextForm = forms[index + 1]
+    let submissions = loadCachedSubmissions(self.form.id)
+    let questions = loadCachedQuestions(self.form.id)
+    if(submissions.length > 0){
+      answers = JSON.parse(submissions.slice(-1)[0].answers)
+    } else {
+      // Set default values
+      questions.forEach((question, idx)=>{
+        let properties = JSON.parse(question.properties)
+        answers[question.id] = (()=>{
+          switch (question.type) {
+            case 'shortAnswer': return ""
+            case 'checkboxes': return []
+            case 'multipleChoice': return properties.choices[0]
+            case 'longAnswer': return ""
+            case 'number': return properties.min || 0
+            case 'scale': return properties.min || 0
+            case 'date': return new Date()
+            case 'datetime': return new Date()
+            default: return null
+          }
+        })()
+      })
+    }
+    self.setState({
+      questions: questions,
+      answers: answers,
+      forms: forms,
+      isLoading: false,
+      answers: answers,
+      formsInQueue: true
     })
   },
 
@@ -175,23 +174,11 @@ const FormPage = React.createClass ({
     return _.sortBy(forms, 'trigger')
   },
 
-  triggers(form, self, callback){
-    loadTriggers(form, self.props.survey, function(err, triggers){
-      form.trigger = triggers[0].get('properties').datetime
-      callback(form)
-    })
-  },
-
-  loadTriggers(forms, callback) {
-    let self = this,
-        formCount = forms.length
-    formsWithTriggers = []
-    forms.forEach(function(form, i){
-      self.triggers(form, self, function(f){
-        formsWithTriggers.push(f)
-        if (formsWithTriggers.length == formCount)
-          callback(formsWithTriggers)
-      })
+  addTriggersToForms() {
+    return _.map(this.state.forms, function(form){
+      loadCachedTrigger(form.id)
+        .forEach(function(trigger){ form.trigger = trigger.datetime })
+      return form
     })
   },
 
