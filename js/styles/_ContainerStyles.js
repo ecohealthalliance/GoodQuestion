@@ -10,11 +10,19 @@ const ContainerStyles = StyleSheet.create({
     backgroundColor: Color.background3,
   },
 
+  wrapperClearHeader: {
+    flex: 1,
+    paddingTop: Variables.HEADER_SIZE_SMALL,
+    backgroundColor: Color.background3,
+  },
+
   default: {
+    flex: 1,
     backgroundColor: Color.background3,
   },
 
   defaultWhite: {
+    flex: 1,
     backgroundColor: Color.background2,
   },
 

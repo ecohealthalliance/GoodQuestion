@@ -27,15 +27,6 @@ const LoginPage = React.createClass ({
   title: ' ',
 
   styles: {
-    loginHeader: {
-      flex: 1,
-      height: 125,
-      alignItems:'center',
-      justifyContent:'center',
-      backgroundColor: Color.background1,
-      paddingBottom: 25,
-      marginBottom: 25,
-    },
     loginFooter: {
       flex: 1,
       height: 75,
@@ -51,10 +42,6 @@ const LoginPage = React.createClass ({
       fontSize: 16,
       fontWeight: 'bold',
       color: '#4E546A',
-    },
-    logo: {
-      width: 240,
-      resizeMode: 'contain',
     },
   },
 
@@ -133,10 +120,10 @@ const LoginPage = React.createClass ({
   /* Render */
   render() {
     return (
-      <View style={{flex: 1, backgroundColor: '#fff'}}>
+      <View style={[Styles.container.defaultWhite]}>
         <View>
-          <View style={this.styles.loginHeader}>
-            <Image source={require('../images/logo_stacked.png')} style={this.styles.logo}></Image>
+          <View style={Styles.header.banner}>
+            <Image source={require('../images/logo_stacked.png')} style={Styles.header.logo}></Image>
           </View>
           <View style={Styles.form.inputGroup}>
             <Text style={Styles.form.errorText}>

@@ -2,7 +2,8 @@ import React, {
   View,
   Text,
   TouchableWithoutFeedback,
-  Alert
+  Alert,
+  Platform,
 } from 'react-native'
 
 import Styles from '../styles/Styles'
@@ -31,6 +32,7 @@ const Header = React.createClass ({
     try {
       let title = this.state.title
       let routeStack = nextProps.navState.routeStack
+      console.log(routeStack)
       let position = routeStack.length - 1
       let nextTitle = routeStack[routeStack.length-1].title
       if (nextTitle && nextTitle !== title) {
@@ -43,17 +45,6 @@ const Header = React.createClass ({
     } catch(e) {
       console.warn(e)
     }
-  },
-
-  renderDrawer() {
-    if (typeof this.props.openDrawer === 'undefined') return;
-    return (
-      <View style={Styles.header.navBarRightButton}>
-        <TouchableWithoutFeedback onPress={this.props.openDrawer}>
-          <Icon name="bars" size={25} color="#FFFFFF" />
-        </TouchableWithoutFeedback>
-      </View>
-    );
   },
 
   /* Methods */
@@ -78,9 +69,34 @@ const Header = React.createClass ({
   },
 
   /* Render */
-  render() {
+  renderDrawer() {
+    if (typeof this.props.openDrawer === 'undefined') return;
     return (
-      <View style={Styles.header.navBar}>
+      <View style={Styles.header.navBarRightButton}>
+        <TouchableWithoutFeedback onPress={this.props.openDrawer}>
+          <Icon name="bars" size={25} color="#FFFFFF" />
+        </TouchableWithoutFeedback>
+      </View>
+    );
+  },
+
+  renderIOSPadding() {
+    if (Platform.OS === 'ios') {
+      return <View style={Styles.header.iOSPadding}></View>
+    }
+  },
+
+  render() {
+    let title = this.props.title
+    let navbarStyles = [Styles.header.navBar]
+    if (true) {
+      navbarStyles.push(Styles.header.navBarClear)
+      title = ''
+    }
+
+    return (
+      <View style={navbarStyles}>
+        {this.renderIOSPadding()}
         <View style={Styles.header.navBarLeftButton}>
           {
           this.state.index > 0 ?
@@ -92,7 +108,7 @@ const Header = React.createClass ({
         </View>
         <View style={Styles.header.navBarTitle}>
           <Text numberOfLines={1} style={Styles.header.navBarTitleText}>
-            {this.state.title}
+            {title}
           </Text>
         </View>
         {this.renderDrawer()}

@@ -191,8 +191,8 @@ const RegistrationPages = React.createClass ({
   render() {
     return (
       <View style={{flex: 1, backgroundColor: '#fff'}}>
-        <View style={this.styles.registrationHeader}>
-          <Image source={require('../images/logo_stacked.png')} style={this.styles.logo}></Image>
+        <View style={Styles.header.banner}>
+          <Image source={require('../images/logo_stacked.png')} style={Styles.header.logo}></Image>
         </View>
         <Swiper
           activeDotColor={Color.background1}

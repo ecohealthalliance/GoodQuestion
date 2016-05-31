@@ -18,6 +18,19 @@ const HeaderStyles = StyleSheet.create({
     paddingTop: Variables.HEADER_PADDING,
     backgroundColor: Color.background1,
   },
+  navBarClear: {
+    backgroundColor: 'transparent'
+  },
+  iOSPadding: {
+    flex: 1,
+    height: 20,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: Color.background1,
+  },
+
   navBarTitle: {
     flex: .8,
     marginRight: 10,
@@ -26,6 +39,21 @@ const HeaderStyles = StyleSheet.create({
     paddingRight: 10,
     textAlign: 'center',
   },
+
+  banner: {
+    // flex: 1,
+    height: 160,
+    alignItems:'center',
+    justifyContent:'center',
+    backgroundColor: Color.background1,
+    paddingVertical: 25,
+    marginBottom: 25,
+  },
+  logo: {
+    width: 240,
+    resizeMode: 'contain',
+  },
+
   navBarLeftButton: {
     flex: .1,
     marginLeft: Variables.HEADER_PADDING,
