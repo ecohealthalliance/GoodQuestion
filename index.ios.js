@@ -53,37 +53,6 @@ const GoodQuestion = React.createClass ({
 
    _onRegister(token) {
      console.log('token: ', token);
-     /*
-      * TODO avoid using Objective-C Parse SDK by figuring out a way to create
-      * installation object in JavaScript. The following code will fail due to
-      * recent security restriction on parse-server.
-     Parse._getInstallationId()
-       .then(function(id) {
-         var Installation = Parse.Object.extend("_Installation");
-         var query = new Parse.Query(Installation);
-         query.equalTo("installationId", id);
-         query.find()
-           .then((installations) => {
-             var installation;
-             if (installations.length == 0) {
-               // No previous installation object, create new one.
-               installation = new Installation();
-             } else {
-               // Found previous one, update.
-               installation = installations[0];
-             }
-             installation.set("channels", []);
-             installation.set("deviceToken", token);
-             installation.set("deviceType", "ios");
-             installation.set("installationId", id);
-             return installation.save()
-           })
-           .catch((error) => {
-             console.log("Error:");
-             console.log(error);
-           });
-       });
-       */
    },
 
   /* Render */
