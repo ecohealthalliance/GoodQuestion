@@ -31,16 +31,19 @@ const Header = React.createClass ({
   componentWillReceiveProps(nextProps) {
     try {
       let title = this.state.title
-      let routeStack = nextProps.navState.routeStack
-      console.log(routeStack)
+      let path = this.state.path
+      let routeStack = nextProps.navigator.getCurrentRoutes()
       let position = routeStack.length - 1
       let nextTitle = routeStack[routeStack.length-1].title
-      if (nextTitle && nextTitle !== title) {
-        title = nextTitle
-      }
+      let nextPath = routeStack[routeStack.length-1].path
+
+      if (nextTitle && nextTitle !== title) title = nextTitle
+      if (nextPath && nextPath !== path) path = nextPath
+
       this.setState({
         title: title,
-        index: position
+        index: position,
+        path: path,
       })
     } catch(e) {
       console.warn(e)
@@ -87,11 +90,14 @@ const Header = React.createClass ({
   },
 
   render() {
-    let title = this.props.title
+    let title = this.state.title
     let navbarStyles = [Styles.header.navBar]
-    if (true) {
-      navbarStyles.push(Styles.header.navBarClear)
-      title = ''
+
+    switch(this.state.path) {
+      case 'login':
+      case 'registration':
+        navbarStyles.push(Styles.header.navBarClear)
+        title = ''
     }
 
     return (
