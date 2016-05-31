@@ -5,7 +5,7 @@ import Store from '../data/Store'
 import realm from '../data/Realm'
 
 import { loadQuestions } from './Questions'
-import { loadTriggers } from './Triggers'
+import { loadTriggers, loadCachedTrigger } from './Triggers'
 import Realm from 'realm';
 import Submission from '../models/Submission';
 
@@ -52,7 +52,6 @@ export function clearCachedForms(surveyId) {
 export function loadForms(survey, callback) {
   clearCachedForms(survey.id)
   const surveyFormRelations = survey.get('forms')
-
   if (surveyFormRelations) {
     surveyFormRelations.query().ascending("createdAt").find({
       success: function(results) {
