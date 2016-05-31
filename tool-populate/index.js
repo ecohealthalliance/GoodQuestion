@@ -8,12 +8,14 @@ var Surveys = require('./api/Surveys')
 var Forms = require('./api/Forms')
 var Questions = require('./api/Questions')
 var Triggers = require('./api/Triggers')
+var Roles = require('./api/Roles')
 
 var Settings = require('./../js/settings.js')
 
 var program = require('commander')
 
 program
+  .option('-i, --init', 'Create inital role and user classes.')
   .option('-c, --create', 'Create data for your local Parse server.')
   .option('-d, --demo', 'Populate local Parse server with demo data.')
   .option('-r, --reset', 'Erase local Parse data.')
@@ -23,13 +25,12 @@ program
 Parse.initialize(Settings.parse.appId, null, Settings.parse.masterKey)
 Parse.serverURL = Settings.parse.serverUrl
 
-var localRegExp = /^http:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?\/.*$/
-var runningLocal = Parse.serverURL.match(localRegExp)
-
 if (program.reset) {
-  resetLocalServer()
+  resetServer()
 } else if (program.create) {
   createData()
+} else if (program.init) {
+  initRoles()
 } else if (program.demo) {
   createDemoData()
 } else if (program.print) {
@@ -43,26 +44,25 @@ process.on('exit', exitHandler.bind(null, {log: true}))
 process.on('uncaughtException', exitHandler.bind(null, {exit: true}))
 
 function exitHandler(options, err) {
-    if (err)
-      console.error(err.stack)
+  if (err)
+    console.error(err.stack)
 
-    if (program.reset) {
-      if (runningLocal)
-        console.log('Server Reset.')
-      else
-        console.warn('Denying to reset the remote server (' + Parse.serverURL + ')')
-    } else if (program.create) {
-      console.log('Parse server populated.')
-    } else if (program.print) {
-      console.log('Stored Data: ' +
-        Store.surveys.length + ' surveys, ' +
-        Store.forms.length + ' forms, ' +
-        Store.questions.length + ' questions, ' +
-        Store.triggers.length + ' triggers.'
-      )
-    }
+  if (program.reset) {
+    console.log('Server Reset.')
+  } else if (program.create) {
+    console.log('Parse server populated.')
+  } else if (program.demo) {
+    console.log('Parse server populated with demo data.')
+  } else if (program.print) {
+    console.log('Stored Data: ' +
+      Store.surveys.length + ' surveys, ' +
+      Store.forms.length + ' forms, ' +
+      Store.questions.length + ' questions, ' +
+      Store.triggers.length + ' triggers.'
+    )
+  }
 
-    process.exit()
+  process.exit()
 }
 
 function createData() {
@@ -88,23 +88,34 @@ function createDemoData() {
   })
 }
 
-function resetLocalServer() {
-  if (runningLocal) {
-    console.log('Destroying objects in local server...')
-    Surveys.loadSurveyList()
-    Forms.loadForms()
-    Triggers.loadTriggers()
-    Questions.loadQuestions({}, function () {
-      destroyObjects(Store.surveys)
-      destroyObjects(Store.forms)
-      destroyObjects(Store.questions)
-      destroyObjects(Store.triggers)
-    })
-  }
+function resetServer() {
+  Surveys.loadSurveyList()
+  Forms.loadForms()
+  Triggers.loadTriggers()
+  Questions.loadQuestions({}, function () {
+    destroyObjects(Store.surveys)
+    destroyObjects(Store.forms)
+    destroyObjects(Store.questions)
+    destroyObjects(Store.triggers)
+  })
 }
 
 function destroyObjects(objects) {
   for (var i = objects.length - 1; i >= 0; i--) {
     objects[i].destroy({useMasterKey: true})
   }
+}
+
+function initRoles() {
+  // check if any roles exist
+  Roles.loadRoles({}, function (error, results) {
+    if (!Store.roles.length) {
+      Roles.createRoles()
+      console.log('Initial Parse data is ready')
+    } else {
+      console.log("The Parse database already has Roles")
+    }
+  })
+
+  // if true, then populate the database with inital role data
 }

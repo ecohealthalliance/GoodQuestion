@@ -9,15 +9,16 @@ function loadQuestions(options, callback) {
   var query = new Parse.Query(Question)
   query.limit = 1000
 
-
   query.find({
     success: function(results) {
       storeQuestions(results)
-      if (callback) callback(null, results)
+      if (callback)
+        callback(null, results)
     },
     error: function(error, results) {
       console.warn("Error: " + error.code + " " + error.message)
-      if (callback) callback(error, results)
+      if (callback)
+        callback(error, results)
     }
   })
 }
