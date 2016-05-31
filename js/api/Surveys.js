@@ -70,6 +70,7 @@ export function cacheParseSurveys(survey) {
 // TODO Get the organization's name
 function getSurveyOwner(survey) {
   let owner = survey.get("createdBy")
+  if (!owner) return;
   owner.fetch({
     success: function(owner) {
       // InteractionManager.runAfterInteractions(() => {

@@ -2,7 +2,7 @@ import { InteractionManager } from 'react-native'
 import _ from 'lodash'
 import Parse from 'parse/react-native'
 import realm from '../data/Realm'
-
+import { PushNotificationIOS } from 'react-native'
 
 // Queries the connected Parse server for a list of Triggers.
 export function loadTriggers(form, survey, callback) {
@@ -76,7 +76,6 @@ export function checkTimeTriggers() {
     }
   }
 
-
   realm.write(() => {
     for (var i = 0; i < validTriggers.length; i++) {
       realm.create('TimeTrigger', {
@@ -84,17 +83,19 @@ export function checkTimeTriggers() {
         triggered: true,
       }, true)
 
-      realm.create('Notification', {
+      const notification = realm.create('Notification', {
         formId: validTriggers[i].formId,
         title: validTriggers[i].title,
-        description: 'A scheduled survey form is available.', // TODO Replace with more descriptive messages in the future. 
+        description: 'A scheduled survey form is available.', // TODO Replace with more descriptive messages in the future.
         datetime: validTriggers[i].datetime,
-      }, true)
-    }
-  })
+      }, true);
 
-  if (validTriggers.length > 0) {
-    // TODO call for local notifications
-    // callLocalNotification(`You have notifications from GoodQuestion!`)
-  }
+      PushNotificationIOS.presentLocalNotification({
+        alertBody: notification.description,
+        applicationIconBadgeNumber: 1
+      });
+
+    }
+  });
+
 }
