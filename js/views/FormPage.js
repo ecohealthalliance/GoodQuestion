@@ -64,9 +64,9 @@ const FormPage = React.createClass ({
   },
 
   validatePage() {
-    let question = this.state.questions[this.state.questionIndex]
-    let answer = this.state.answers[question.id]
-    let properties = JSON.parse(question.properties)
+    let question = this.state.questions[this.state.questionIndex],
+        answer = this.state.answers[question.id],
+        properties = JSON.parse(question.properties)
     if(question.type == "number" || question.type == "scale") {
       if(properties.min && answer < properties.min) {
         return false
@@ -105,9 +105,9 @@ const FormPage = React.createClass ({
   componentWillMount() {
     let self = this,
         index = this.state.index,
+        forms = this.formsWithTriggers(),
+        allForms = forms,
         answers = {}
-    forms = this.addTriggersToForms()
-    allForms = forms
     forms = self.filterForms(forms)
     if (forms.length === 0) {
       futureForms = _.filter(allForms, function(form){
@@ -117,10 +117,11 @@ const FormPage = React.createClass ({
       return
     }
     forms = self.sortForms(forms)
-    self.form = forms[index]
-    self.nextForm = forms[index + 1]
-    let submissions = loadCachedSubmissions(self.form.id)
-    let questions = loadCachedQuestions(self.form.id)
+
+    this.form = forms[index]
+    this.nextForm = forms[index + 1]
+    let submissions = loadCachedSubmissions(this.form.id),
+        questions = loadCachedQuestions(this.form.id)
     if(submissions.length > 0){
       answers = JSON.parse(submissions.slice(-1)[0].answers)
     } else {
@@ -174,7 +175,7 @@ const FormPage = React.createClass ({
     return _.sortBy(forms, 'trigger')
   },
 
-  addTriggersToForms() {
+  formsWithTriggers() {
     return _.map(this.state.forms, function(form){
       loadCachedTrigger(form.id)
         .forEach(function(trigger){ form.trigger = trigger.datetime })
@@ -193,10 +194,10 @@ const FormPage = React.createClass ({
   },
 
   submit() {
-    let answers = this.state.answers;
-    let formId = this.form.id;
-    let index = this.state.index;
-    let survey = this.props.survey;
+    let answers = this.state.answers,
+        formId = this.form.id,
+        index = this.state.index,
+        survey = this.props.survey
     this.setState({
       button_text: 'Saving...'
     });
