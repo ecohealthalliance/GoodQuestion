@@ -238,6 +238,7 @@ const FormPage = React.createClass ({
         <View style={{flex: 1, paddingHorizontal: 20}}>
           <Swiper
             style={{flex: 1}}
+            containerStyle={{overflow: 'visible'}}
             activeDotColor={Color.background1}
             index={this.state.questionIndex}
             beforePageChange={this.beforePageChange}
