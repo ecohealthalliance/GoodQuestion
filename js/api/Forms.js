@@ -37,7 +37,27 @@ export function loadCachedFormDataById(formId) {
 
 // Fetches the cached forms related to a specific survey
 export function loadCachedForms(surveyId) {
-  return realm.objects('Form').filtered(`surveyId = "${surveyId}"`)
+  let forms = realm.objects('Form').filtered(`surveyId = "${surveyId}"`)
+  let submissions = realm.objects('Submission')
+  let formList = []
+
+  // Switch out from Realm list to standard array
+  for (var i = 0; i < forms.length; i++) {
+    formList.push(forms[i])
+  }
+
+  // Exclude forms with existing submissions from query
+  _.remove(formList, function(form) {
+    let exclude = false
+    for (var i = 0; i < submissions.length; i++) {
+      if (submissions[i].formId === form.id) {
+        exclude = true
+      }
+    }
+    return exclude
+  })
+
+  return formList
 }
 
 export function clearCachedForms(surveyId) {
