@@ -17,6 +17,18 @@ export function loadCachedSurveyList() {
   return realm.objects('Survey')
 }
 
+export function getSurveyForms(surveyId, callback){
+  const Survey = Parse.Object.extend("Survey")
+  const query = new Parse.Query(Survey)
+  query.get(surveyId, {
+    success: function(survey) {
+      loadForms(survey, function(err, forms){
+        if (callback) callback(null, forms)
+      })
+    }
+  })
+}
+
 // Queries the connected Parse server for a list of Surveys.
 export function loadSurveyList(options, callback) {
   const Survey = Parse.Object.extend("Survey")
@@ -38,7 +50,7 @@ export function loadSurveyList(options, callback) {
       if (callback) callback(null, results)
     },
     error: function(error, results) {
-      console.warn("Error: " + error.code + " " + error.message)
+      console.warn("Error: " + error.code + " - " + error.message)
       if (callback) callback(error, results)
     }
   })
@@ -70,6 +82,7 @@ export function cacheParseSurveys(survey) {
 // TODO Get the organization's name
 function getSurveyOwner(survey) {
   let owner = survey.get("createdBy")
+  if (!owner) return;
   owner.fetch({
     success: function(owner) {
       // InteractionManager.runAfterInteractions(() => {
@@ -84,7 +97,6 @@ function getSurveyOwner(survey) {
             console.error(e)
           }
         })
-        console.log('finished surveys')
       // })
     }
   })

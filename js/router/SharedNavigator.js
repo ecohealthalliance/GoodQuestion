@@ -39,7 +39,7 @@ import ControlPanel from '../views/ControlPanel'
 import ProfilePage from '../views/ProfilePage'
 
 // Background
-import { initializeGeolocationService } from '../api/BackgroundProcess'
+// import { initializeGeolocationService } from '../api/BackgroundProcess'
 
 /* Configuration */
 if (Platform.OS === 'ios') {
@@ -48,7 +48,7 @@ if (Platform.OS === 'ios') {
   Store.platform = 'android'
 }
 
-initializeGeolocationService()
+// initializeGeolocationService()
 
 let navigator;
 // Binds the hardware "back button" from Android devices
@@ -76,8 +76,6 @@ const SharedNavigator = React.createClass ({
   componentDidMount() {
     let self = this
     isAuthenticated((authenticated) => {
-      console.log('authenticated')
-      console.log(authenticated)
       self.setState({
         isAuthenticated: authenticated,
         isLoading: false,
@@ -114,7 +112,7 @@ const SharedNavigator = React.createClass ({
   },
 
   changeRouteViaControlPanel() {
-    if (this._controlPanel.navigating) {
+    if (this._controlPanel && this._controlPanel.navigating) {
       let path = this._controlPanel.nextPath
       let title = this._controlPanel.nextTitle
       if (navigator) {
@@ -163,7 +161,6 @@ const SharedNavigator = React.createClass ({
 
   /* Render */
   render() {
-    console.log(InteractionManager)
     const initialRoute = { path:'surveylist', title: 'Surveys' }
     // show loading component without the navigationBar
     if (this.state.isLoading) {

@@ -16,7 +16,6 @@
     "react": "0.14.8",
     "react-native": "0.25.1",
     "react-native-background-geolocation": "^1.0.0",
-    "react-native-background-geolocation-android": "git+ssh://git@github.com/transistorsoft/react-native-background-geolocation-android.git",
     "react-native-checkbox": "https://github.com/dan-nyanko/react-native-checkbox#master",
     "react-native-drawer": "^2.2.2",
     "react-native-page-swiper": "https://github.com/dan-nyanko/react-native-page-swiper#master",
