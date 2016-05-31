@@ -18,7 +18,7 @@
   [Parse initializeWithConfiguration:[ParseClientConfiguration configurationWithBlock:^(id<ParseMutableClientConfiguration> configuration) {
     configuration.applicationId = @"UMassSurvey";
     configuration.clientKey = @"";
-    configuration.server = @"https://survey.eha.io/parse";
+    configuration.server = @"https://dev-survey.eha.io/parse";
   }]];
 }
 
