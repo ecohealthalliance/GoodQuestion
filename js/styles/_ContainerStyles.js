@@ -12,9 +12,10 @@ const ContainerStyles = StyleSheet.create({
 
   default: {
     backgroundColor: Color.background3,
-    // borderLeftWidth: 1,
-    // borderRightWidth: 1,
-    // borderColor: Color.background1,
+  },
+
+  defaultWhite: {
+    backgroundColor: Color.background2,
   },
 
   compact: {

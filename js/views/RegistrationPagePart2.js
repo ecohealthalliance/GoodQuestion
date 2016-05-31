@@ -28,24 +28,11 @@ const RegistrationPagePart4 = React.createClass ({
   },
 
   styles: {
-    registrationHeader: {
-      flex: 1,
-      height: 125,
-      alignItems:'center',
-      justifyContent:'center',
-      backgroundColor: Color.background1,
-      paddingBottom: 25,
-      marginBottom: 5,
-    },
     checkboxWrapper: {
       alignItems:'center',
       justifyContent:'center',
       marginLeft: 50,
       height: 35,
-    },
-    logo: {
-      width: 240,
-      resizeMode: 'contain',
     },
   },
 
@@ -95,9 +82,6 @@ const RegistrationPagePart4 = React.createClass ({
   render() {
     return (
       <View>
-        <View style={this.styles.registrationHeader}>
-          <Image source={require('../images/logo_stacked.png')} style={this.styles.logo}></Image>
-        </View>
         <ScrollView style={{height: this.props.calculateScrollViewHeight()}}>
           <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
             Location Services

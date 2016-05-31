@@ -3,6 +3,7 @@ import React, {
   Text,
   TextInput,
   View,
+  Image,
   TouchableWithoutFeedback,
   StyleSheet,
   Dimensions,
@@ -29,7 +30,25 @@ const RegistrationPages = React.createClass ({
     navigator: React.PropTypes.object.isRequired,
     index: React.PropTypes.number,
   },
+
   alerts: 0,
+
+  styles: {
+    registrationHeader: {
+      height: Variables.REGISTRATION_HEIGHT,
+      alignItems:'center',
+      justifyContent:'center',
+      backgroundColor: Color.background1,
+      paddingBottom: 25,
+      marginBottom: 30,
+      height: 130,
+    },
+    logo: {
+      width: 240,
+      resizeMode: 'contain',
+    },
+  },
+
   getInitialState() {
     let index = 0
     if (this.props.index) {
@@ -172,6 +191,9 @@ const RegistrationPages = React.createClass ({
   render() {
     return (
       <View style={{flex: 1, backgroundColor: '#fff'}}>
+        <View style={this.styles.registrationHeader}>
+          <Image source={require('../images/logo_stacked.png')} style={this.styles.logo}></Image>
+        </View>
         <Swiper
           activeDotColor={Color.background1}
           index={this.state.index}
