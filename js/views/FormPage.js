@@ -216,14 +216,14 @@ const FormPage = React.createClass ({
 
       //If there is another form continue onto that
       if(this.nextForm){
-        this.props.navigator.push({ path: 'form',
+        this.props.navigator.replace({ path: 'form',
                                     title: 'Survey: ' + survey.title,
                                     index: index + 1,
                                     survey: survey,
                                   });
       }
       else{
-        this.props.navigator.push({name: 'surveyList', title: 'Surveys'});
+        this.props.navigator.resetTo({name: 'surveyList', title: 'Surveys'});
       }
     });
   },
