@@ -1,6 +1,9 @@
-
-import React, {View, Text, Linking} from 'react-native'
-
+import React, {
+  Alert,
+  View,
+  Text,
+  Linking,
+} from 'react-native'
 import {logout} from '../api/Account'
 import Styles from '../styles/Styles'
 import Store from '../data/Store'
@@ -24,8 +27,17 @@ export default React.createClass({
 
   handleLogout() {
     this.navigating = false
-    this.props.closeDrawer();
-    this.props.logout();
+    Alert.alert(
+      'Logout',
+      'Are you sure you\'d like to sign out?',
+      [
+        {text: 'Cancel', onPress: () => {console.log('Logout Canceled')}, style: 'cancel'},
+        {text: 'OK', onPress: () => {
+          this.props.closeDrawer()
+          this.props.logout()
+        }},
+      ]
+    )
   },
 
   render() {
