@@ -125,7 +125,7 @@ const LoginPage = React.createClass ({
           <View style={Styles.header.banner}>
             <Image source={require('../images/logo_stacked.png')} style={Styles.header.logo}></Image>
           </View>
-          <View style={Styles.form.inputGroup}>
+          <View style={{paddingVertical: 45, paddingHorizontal: 15}}>
             <Text style={Styles.form.errorText}>
               {this.decodeText(this.state.errors.email)}
             </Text>

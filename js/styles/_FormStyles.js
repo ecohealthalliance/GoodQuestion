@@ -85,15 +85,14 @@ const FormStyles = StyleSheet.create({
     fontWeight: 'bold',
   },
   inputGroup: {
-    paddingVertical: 45,
-    paddingHorizontal: 15,
+    padding: 5,
   },
   input: {
     height: 50,
     borderColor: 'gray',
     borderWidth: 1,
     marginHorizontal: 20,
-    marginBottom: 10,
+    marginVertical: 10,
     paddingHorizontal: 15,
     paddingTop: 2,
     borderRadius: 3,
