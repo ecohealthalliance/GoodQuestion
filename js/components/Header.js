@@ -17,10 +17,11 @@ const Header = React.createClass ({
   getInitialState() {
     let routeStack = this.props.navState.routeStack
     let title = routeStack[routeStack.length-1].title
+    let path = routeStack[routeStack.length-1].path
     return {
       index: 0,
       title: title,
-      path: 'none'
+      path: path,
     }
   },
 
@@ -97,6 +98,7 @@ const Header = React.createClass ({
     let navbarStyles = [Styles.header.navBar]
 
     switch(this.state.path) {
+      case 'none':
       case 'login':
       case 'registration':
         navbarStyles.push(Styles.header.navBarClear)

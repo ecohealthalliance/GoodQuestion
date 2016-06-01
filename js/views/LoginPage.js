@@ -120,7 +120,7 @@ const LoginPage = React.createClass ({
   /* Render */
   render() {
     return (
-      <View style={[Styles.container.defaultWhite]}>
+      <View style={[Styles.container.defaultWhite, {paddingTop: 0}]}>
         <View>
           <View style={Styles.header.banner}>
             <Image source={require('../images/logo_stacked.png')} style={Styles.header.logo}></Image>
