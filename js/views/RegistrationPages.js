@@ -118,13 +118,15 @@ const RegistrationPages = React.createClass ({
   /**
    * event handler for the swiper, return false to stop, true to continue
    */
-  beforePageChange(nextPage) {
+  beforePageChange(currentPage, nextPage) {
     const shouldContinue = this.validatePage();
-    if (!shouldContinue) {
+    console.log(currentPage + ' : ' + nextPage)
+    if (shouldContinue || nextPage < currentPage) {
+      this.setIndex(nextPage);
+      return true;
+    } else {
       return false;
     }
-    this.setIndex(nextPage);
-    return true;
   },
 
   /**
@@ -203,7 +205,15 @@ const RegistrationPages = React.createClass ({
         </View>
         <Swiper
           index={this.state.index}
+          containerStyle={{flex: 1, overflow:'visible'}}
+          loop={false}
+          showsPagination={true}
+          showsHorizontalScrollIndicator={true}
           beforePageChange={this.beforePageChange}
+
+          dotContainerStyle={{top: -16, bottom: null}}
+          dotStyle={this.styles.dotStyle}
+          activeDotStyle={[this.styles.dotStyle, {backgroundColor: Color.primary, borderColor: Color.primary}]}
           children={this.getChildren()}>
         </Swiper>
       </View>

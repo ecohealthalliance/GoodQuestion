@@ -61,19 +61,19 @@ export default class Swiper extends Component {
       const relativeGestureDistance = gestureState.dx / this.state.viewWidth
       const { vx } = gestureState
 
+      let shouldContinue 
+      let currentIndex = this.state.index
       let newIndex = this.state.index
 
       if (relativeGestureDistance < -0.5 || (relativeGestureDistance < 0 && vx <= -0.5)) {
-        const shouldContinue = this.shouldContinue(newIndex);
-        if (shouldContinue) {
-          newIndex = newIndex + 1
-        }
+        newIndex = newIndex + 1
+        shouldContinue = this.shouldContinue(currentIndex, newIndex);
       } else if (relativeGestureDistance > 0.5 || (relativeGestureDistance > 0 && vx >= 0.5)) {
-        const shouldContinue = this.shouldContinue(newIndex);
-        if (shouldContinue) {
-          newIndex = newIndex - 1
-        }
+        newIndex = newIndex - 1
+        shouldContinue = this.shouldContinue(currentIndex, newIndex);
       }
+
+      if (!shouldContinue) newIndex = currentIndex;
 
       this.goToPage(newIndex)
     }
@@ -110,8 +110,8 @@ export default class Swiper extends Component {
     })
   }
 
-  shouldContinue(pageNumber) {
-    let shouldContinue = this.props.beforePageChange(pageNumber);
+  shouldContinue(currentPage, nextPage) {
+    let shouldContinue = this.props.beforePageChange(currentPage, nextPage);
     if (typeof shouldContinue !== 'undefined' && !shouldContinue) {
       return false;
     };
