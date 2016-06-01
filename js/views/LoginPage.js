@@ -137,8 +137,6 @@ const LoginPage = React.createClass ({
               autoCorrect={false}
               placeholder='Email'
             />
-          </View>
-          <View style={Styles.form.inputGroup}>
             <Text style={Styles.form.errorText}>
               {this.decodeText(this.state.errors.password)}
             </Text>
@@ -151,12 +149,13 @@ const LoginPage = React.createClass ({
               autoCorrect={false}
               placeholder='Password'
             />
+            <Button action={this.handleVerifyLogin} color='success' style={{marginVertical: 30, marginHorizontal: 20}}>
+              {this.state.button_text}
+            </Button>
           </View>
 
           <View style={Styles.form.bottomForm}>
-            <Button action={this.handleVerifyLogin} color='success' wide>
-              {this.state.button_text}
-            </Button>
+            
           </View>
         </View>
 
