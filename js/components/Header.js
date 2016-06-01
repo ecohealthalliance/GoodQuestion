@@ -57,7 +57,7 @@ const Header = React.createClass ({
   },
 
   navigateBack() {
-    if (this.state.title == "Registration") {
+    if (this.state.path == "registration") {
       Alert.alert(
         'Exit registration?',
         '',
@@ -73,14 +73,17 @@ const Header = React.createClass ({
 
   /* Render */
   renderDrawer() {
-    if (typeof this.props.openDrawer === 'undefined') return;
-    return (
-      <View style={Styles.header.navBarRightButton}>
-        <TouchableWithoutFeedback onPress={this.props.openDrawer}>
-          <Icon name="bars" size={25} color="#FFFFFF" />
-        </TouchableWithoutFeedback>
-      </View>
-    );
+    if (typeof this.props.openDrawer === 'undefined'){
+      return <View style={Styles.header.navBarRightButton}></View>
+    } else {
+      return (
+        <View style={Styles.header.navBarRightButton}>
+          <TouchableWithoutFeedback onPress={this.props.openDrawer}>
+            <Icon name="bars" size={25} color="#FFFFFF" />
+          </TouchableWithoutFeedback>
+        </View>
+      );
+    }
   },
 
   renderIOSPadding() {

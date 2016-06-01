@@ -83,7 +83,7 @@ const RegistrationPagePart1 = React.createClass ({
 
   /* Methods */
   goToTermsPage() {
-    this.props.navigator.push({path: 'terms', unsecured: true})
+    this.props.navigator.push({path: 'terms', unsecured: true, title: 'Terms of Service'})
   },
 
   goToNextPage() {
@@ -113,9 +113,9 @@ const RegistrationPagePart1 = React.createClass ({
     return (
       <Text style={[Styles.type.h3, {textAlign: 'center', paddingBottom: 2}]}>
         <Text>I accept the </Text>
-        <TouchableWithoutFeedback onPress={this.goToTermsPage}>
+        {/*<TouchableWithoutFeedback onPress={this.goToTermsPage}>
           <Text style={Styles.type.link}>Terms of Service.</Text>
-        </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>*/}
       </Text>
     );
     this.props.navigator.push({path: 'terms', title: 'Terms of Service'})
@@ -125,7 +125,7 @@ const RegistrationPagePart1 = React.createClass ({
   render() {
     return (
       <View style={[Styles.container.defaultWhite]}>
-        <ScrollView style={{height: this.props.calculateScrollViewHeight()}}>
+        <ScrollView style={{}}>
           <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
             Create an Account
           </Text>

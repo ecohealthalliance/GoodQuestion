@@ -23,6 +23,7 @@ const ContainerStyles = StyleSheet.create({
 
   defaultWhite: {
     flex: 1,
+    paddingTop: 15,
     backgroundColor: Color.background2,
   },
 
@@ -49,8 +50,7 @@ const ContainerStyles = StyleSheet.create({
   informational: {
     backgroundColor: Color.background2,
     paddingHorizontal: 30,
-    paddingTop: 10,
-    paddingBottom: 110,
+    paddingVertical: 10,
   },
 
   attentionContainer: {

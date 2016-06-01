@@ -14,7 +14,7 @@ import Styles from '../styles/Styles'
 import Button from '../components/Button'
 import Color from '../styles/Color'
 
-import Swiper from 'react-native-page-swiper'
+import Swiper from '../components/Swiper/Swiper'
 
 import RegistrationPagePart1 from '../views/RegistrationPagePart1'
 import RegistrationPagePart2 from '../views/RegistrationPagePart2'
@@ -43,10 +43,17 @@ const RegistrationPages = React.createClass ({
       marginBottom: 30,
       height: 130,
     },
-    logo: {
-      width: 240,
-      resizeMode: 'contain',
-    },
+    dotStyle: {
+      // flex: 1,
+      // alignSelf: 'center',
+      backgroundColor: Color.background2,
+      borderColor: Color.background1,
+      borderWidth: 1,
+      width: 28,
+      height: 28,
+      borderRadius: 50,
+      marginHorizontal: 8,
+    }
   },
 
   getInitialState() {
@@ -195,10 +202,8 @@ const RegistrationPages = React.createClass ({
           <Image source={require('../images/logo_stacked.png')} style={Styles.header.logo}></Image>
         </View>
         <Swiper
-          activeDotColor={Color.background1}
           index={this.state.index}
           beforePageChange={this.beforePageChange}
-          onPageChange={this.onPageChange}
           children={this.getChildren()}>
         </Swiper>
       </View>

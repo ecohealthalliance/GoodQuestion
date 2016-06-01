@@ -47,7 +47,6 @@ const HeaderStyles = StyleSheet.create({
     justifyContent:'center',
     backgroundColor: Color.background1,
     paddingVertical: 25,
-    marginBottom: 25,
   },
   logo: {
     width: 240,
