@@ -2,27 +2,38 @@ import { InteractionManager } from 'react-native'
 import _ from 'lodash'
 import Parse from 'parse/react-native'
 import realm from '../data/Realm'
-
+import { PushNotificationIOS } from 'react-native'
 
 // Queries the connected Parse server for a list of Triggers.
 export function loadTriggers(form, survey, callback) {
-  const formTriggerRelations = form.get('triggers')
-  formTriggerRelations.query().find({
-    success: function(results) {
-      for (var i = 0; i < results.length; i++) {
-        if (results[i].get('type') === 'datetime') {
-          cacheTimeTrigger(results[i], form, survey)
-        } else {
-          // TODO Create/Cache Geofence trigger
+  const Form= Parse.Object.extend("Form")
+  const query = new Parse.Query(Form)
+  query.get(form.id, {
+    success: function(form){
+      const formTriggerRelations = form.get('triggers')
+      formTriggerRelations.query().find({
+        success: function(results) {
+          for (var i = 0; i < results.length; i++) {
+            if (results[i].get('type') === 'datetime') {
+              cacheTimeTrigger(results[i], form, survey)
+            } else {
+              // TODO Create/Cache Geofence trigger
+            }
+          }
+          if (callback) callback(null, results)
+        },
+        error: function(error, results) {
+          console.warn("Error: " + error.code + " " + error.message)
+          if (callback) callback(error, results)
         }
-      }
-      if (callback) callback(null, results)
-    },
-    error: function(error, results) {
-      console.warn("Error: " + error.code + " " + error.message)
-      if (callback) callback(error, results)
+      })
     }
   })
+}
+
+// Fetches the cached forms related to a specific survey
+export function loadCachedTrigger(formId) {
+  return realm.objects('TimeTrigger').filtered(`formId= "${formId}"`)
 }
 
 // Saves a Form object from Parse into our Realm.io local database
@@ -76,7 +87,6 @@ export function checkTimeTriggers() {
     }
   }
 
-
   realm.write(() => {
     for (var i = 0; i < validTriggers.length; i++) {
       realm.create('TimeTrigger', {
@@ -84,17 +94,19 @@ export function checkTimeTriggers() {
         triggered: true,
       }, true)
 
-      realm.create('Notification', {
+      const notification = realm.create('Notification', {
         formId: validTriggers[i].formId,
         title: validTriggers[i].title,
-        description: 'A scheduled survey form is available.', // TODO Replace with more descriptive messages in the future. 
+        description: 'A scheduled survey form is available.', // TODO Replace with more descriptive messages in the future.
         datetime: validTriggers[i].datetime,
-      }, true)
-    }
-  })
+      }, true);
 
-  if (validTriggers.length > 0) {
-    // TODO call for local notifications
-    // callLocalNotification(`You have notifications from GoodQuestion!`)
-  }
+      PushNotificationIOS.presentLocalNotification({
+        alertBody: notification.description,
+        applicationIconBadgeNumber: 1
+      });
+
+    }
+  });
+
 }

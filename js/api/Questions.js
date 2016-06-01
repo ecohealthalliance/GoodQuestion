@@ -35,11 +35,21 @@ export function loadCachedQuestions(formId) {
 
 // Queries the connected Parse server for a list of Questions.
 export function loadQuestions(form, callback) {
-  const formQuestionRelations = form.get('questions')
-  formQuestionRelations.query().find({
-    success: function(results) {
-      cacheParseQuestions(results, form.id)
-      if (callback) callback(null, results)
+  const Form = Parse.Object.extend("Form")
+  const query = new Parse.Query(Form)
+  query.get(form.id, {
+    success: function(form) {
+      const formQuestionRelations = form.get('questions')
+      formQuestionRelations.query().find({
+        success: function(results) {
+          cacheParseQuestions(results, form.id)
+          if (callback) callback(null, results)
+        },
+        error: function(error, results) {
+          console.warn("Error: " + error.code + " " + error.message)
+          if (callback) callback(error, results)
+        }
+      })
     },
     error: function(error, results) {
       console.warn("Error: " + error.code + " " + error.message)
