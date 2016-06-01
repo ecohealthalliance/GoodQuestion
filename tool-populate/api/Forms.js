@@ -3,10 +3,12 @@ var Parse = require('parse/node')
 var Store = require('../data/Store')
 var Questions = require('./Questions')
 var Triggers = require('./Triggers')
+var Form = Parse.Object.extend("Form")
+
 
 function loadForms(options, callback) {
-  var Form = Parse.Object.extend("Form")
-  var query = new Parse.Query(Form)
+  form = new Form()
+  var query = new Parse.Query(form)
   query.limit = 1000
 
   query.find({
@@ -30,15 +32,12 @@ function storeForms(newForms) {
 }
 
 function createForms(parentSurvey) {
-  var newForm = new Parse.Object('Form')
-
+  var newForm = new Form()
+  var relation = parentSurvey.relation('forms')
+  relation.add(newForm)
   newForm.save(null, {
     success: function(response) {
-      if (parentSurvey) {
-        var relation = parentSurvey.relation('forms')
-        relation.add(newForm)
-        parentSurvey.save(null, {useMasterKey: true})
-      }
+      parentSurvey.save(null, {useMasterKey: true})
       Questions.createQuestions(response)
       Triggers.createTriggers(response)
       storeForms(response)
@@ -63,27 +62,26 @@ function randomHour(dayTimestamp) {
 }
 
 function createDemoForm(parentSurvey, dayStartTimestamp) {
-  var newForm = new Parse.Object('Form')
+  newForm = new Form()
   newForm.set('title', 'Form ' + Date.now())
   newForm.set('order', 1)
   newForm.set('deleted', false)
-
   newForm.save(null, {
     useMasterKey: true,
-    success: function(response) {
-      if (parentSurvey) {
-        var relation = parentSurvey.relation('forms')
-        relation.add(newForm)
-        parentSurvey.save(null, {useMasterKey: true})
-      }
-      Questions.createDemoQuestions(response)
-      Triggers.createDemoTrigger(response, randomHour(dayStartTimestamp))
-      storeForms(response)
+    success: function(form) {
+      parentSurvey.fetch().then(function(survey){
+        var relation = survey.relation('forms')
+        relation.add(form)
+        survey.save(null, {useMasterKey: true})
+      })
+      Questions.createDemoQuestions(form)
+      Triggers.createDemoTrigger(form, randomHour(dayStartTimestamp))
+      storeForms(form)
     },
-    error: function(response, error) {
+    error: function(form, error) {
       console.warn('Failed to create Form, with error code: ' + error.message)
     }
   })
 }
 
-module.exports = { loadForms, createForms, storeForms, createDemoForm }
+module.exports = { Form, loadForms, createForms, storeForms, createDemoForm }
