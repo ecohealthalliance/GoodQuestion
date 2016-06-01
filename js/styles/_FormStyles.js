@@ -95,7 +95,7 @@ const FormStyles = StyleSheet.create({
     marginVertical: 10,
     paddingHorizontal: 15,
     paddingTop: 2,
-    borderRadius: 5,
+    borderRadius: 3,
   },
   inputWide: {
     height: 50,
