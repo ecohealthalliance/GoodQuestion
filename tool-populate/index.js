@@ -79,13 +79,9 @@ function createData() {
 
 function createDemoData() {
   // create the demo Survey
-  Surveys.loadSurveyList({}, function (error, results) {
-    if (error)
-      console.warn(error)
-    console.log('Creating Parse server data...')
-    for (var i = 0, ilen = DemoData.surveys.length; i < ilen; i++)
-      Surveys.createDemoSurvey(DemoData.surveys[i], DemoData.startDate, DemoData.endDate)
-  })
+  console.log('Creating Parse server data...')
+  for (var i = 0, ilen = DemoData.surveys.length; i < ilen; i++)
+    Surveys.createDemoSurvey(DemoData.surveys[i], DemoData.startDate, DemoData.endDate)
 }
 
 function resetServer() {
@@ -107,15 +103,26 @@ function destroyObjects(objects) {
 }
 
 function initRoles() {
-  // check if any roles exist
-  Roles.loadRoles({}, function (error, results) {
-    if (!Store.roles.length) {
-      Roles.createRoles()
-      console.log('Initial Parse data is ready')
-    } else {
-      console.log("The Parse database already has Roles")
-    }
-  })
+  var rolesToCreate = ["admin", "user"];
 
-  // if true, then populate the database with inital role data
+  Roles.loadRoles({}, function (error, results) {
+    console.log(results)
+    for (var i = 0, ilen = rolesToCreate.length; i < ilen; i++) {
+      (function(roleToCreate){
+        var queryRole = new Parse.Query(Parse.Role);
+        queryRole.equalTo('name', roleToCreate);
+        queryRole.first({
+          success: function (result) { // Role Object
+            console.log(result)
+            if (result) {
+              console.log('Role "' + roleToCreate + '" already exists');
+            } else {
+              Roles.createRole(roleToCreate);
+            }
+          },
+          error: function(error) {}
+        });
+      })(rolesToCreate[i])
+    }
+  });
 }

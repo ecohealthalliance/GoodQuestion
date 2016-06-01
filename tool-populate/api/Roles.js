@@ -21,23 +21,20 @@ function loadRoles(options, callback) {
   })
 }
 
-function createRoles(parseRoles) {
-  if (parseRoles.length)
-    return;
-
+function createRole(roleToCreate) {
   var roleACL = new Parse.ACL();
   roleACL.setPublicReadAccess(true);
-  var role = new Parse.Role("admin", roleACL);
+
+  console.log('Creating role "' + roleToCreate + '"')
+
+  var role = new Parse.Role(roleToCreate, roleACL);
   role.save(null, {
     success: function(response) {
       storeRoles(response)
-      if (callback)
-        callback(null, results)
+      console.log('Created role "' + roleToCreate + '"')
     },
     error: function(response, error) {
-      console.warn('Failed to create Form, with error code: ' + error.message)
-      if (callback)
-        callback(error, results)
+      console.warn('Failed to create Role, with error code: ' + error.message)
     }
   })
 }
@@ -48,4 +45,4 @@ function storeRoles(newRoles) {
   Store.roles = _.unionBy(Store.roles, newRoles, 'id')
 }
 
-module.exports = { loadRoles, createRoles }
+module.exports = { loadRoles, createRole }
