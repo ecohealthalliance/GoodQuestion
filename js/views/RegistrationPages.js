@@ -120,7 +120,6 @@ const RegistrationPages = React.createClass ({
    */
   beforePageChange(currentPage, nextPage) {
     const shouldContinue = this.validatePage();
-    console.log(currentPage + ' : ' + nextPage)
     if (shouldContinue || nextPage < currentPage) {
       this.setIndex(nextPage);
       return true;

@@ -113,9 +113,9 @@ const RegistrationPagePart1 = React.createClass ({
     return (
       <Text style={[Styles.type.h3, {textAlign: 'center', paddingBottom: 2}]}>
         <Text>I accept the </Text>
-        {/*<TouchableWithoutFeedback onPress={this.goToTermsPage}>
+        <TouchableWithoutFeedback onPress={this.goToTermsPage}>
           <Text style={Styles.type.link}>Terms of Service.</Text>
-        </TouchableWithoutFeedback>*/}
+        </TouchableWithoutFeedback>
       </Text>
     );
     this.props.navigator.push({path: 'terms', title: 'Terms of Service'})
