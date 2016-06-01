@@ -242,6 +242,7 @@ const FormPage = React.createClass ({
 
   renderQuestions() {
     var renderedQuestions = this.state.questions.map((question, idx)=>{
+      let questionComponent
       let questionProps = {
         key: question.id,
         id: question.id,
@@ -255,22 +256,27 @@ const FormPage = React.createClass ({
       questionProps = _.merge(questionProps, question)
       if (questionProps.properties) questionProps.properties = JSON.parse(questionProps.properties)
       switch (question.type) {
-        case 'shortAnswer': return <View><ShortAnswer {...questionProps} /></View>
-        case 'checkboxes': return <View><Checkboxes {...questionProps} /></View>
-        case 'multipleChoice': return <View><MultipleChoice {...questionProps} /></View>
-        case 'longAnswer': return <View><LongAnswerQuestion {...questionProps} /></View>
-        case 'number': return <View><NumberQuestion {...questionProps} /></View>
-        case 'scale': return <View><ScaleQuestion {...questionProps} /></View>
+        case 'shortAnswer': questionComponent = <ShortAnswer {...questionProps} />; break;
+        case 'checkboxes': questionComponent = <Checkboxes {...questionProps} />; break;
+        case 'multipleChoice': questionComponent = <MultipleChoice {...questionProps} />; break;
+        case 'longAnswer': questionComponent = <LongAnswerQuestion {...questionProps} />; break;
+        case 'number': questionComponent = <NumberQuestion {...questionProps} />; break;
+        case 'scale': questionComponent = <ScaleQuestion {...questionProps} />; break;
         case 'date':
-          return Platform.OS === 'ios' ?
-            <View><DateQuestionIOS {...questionProps} /></View>  :
-            <View><DateQuestionAndroid {...questionProps} /></View>
+          questionComponent = Platform.OS === 'ios' ?
+            <DateQuestionIOS {...questionProps} />  :
+            <DateQuestionAndroid {...questionProps} />; break;
         case 'datetime':
-          return Platform.OS === 'ios' ?
-            <View><DateQuestionIOS {...questionProps} mode="datetime" /></View> :
-            <View><DatetimeQuestionAndroid {...questionProps} /></View>
-        default: return <Text key={'unknown-question-'+idx}>Unknown Type: {question.type}</Text>;
+          questionComponent = Platform.OS === 'ios' ?
+            <DateQuestionIOS {...questionProps} mode="datetime" /> :
+            <DatetimeQuestionAndroid {...questionProps} />; break;
+        default: questionComponent = <Text key={'unknown-question-'+idx}>Unknown Type: {question.type}</Text>; break;
       }
+      return (
+        <View style={{flex: 1}}>
+          {questionComponent}
+        </View>
+      )
     })
     completeFormView = <View><CompleteForm submit={this.submit} nextForm={this.nextForm}/></View>
     renderedQuestions.push(completeFormView)
@@ -289,15 +295,18 @@ const FormPage = React.createClass ({
       )
     } else {
       return (
-        <Swiper
-          style={{flex: 1}}
-          activeDotColor={Color.background1}
-          index={this.state.questionIndex}
-          beforePageChange={this.beforePageChange}
-          onPageChange={this.onPageChange}
-          children={this.renderQuestions()}
-          threshold={50}>
-        </Swiper>
+        <View style={{flex: 1, paddingHorizontal: 20}}>
+          <Swiper
+            style={{flex: 1}}
+            containerStyle={{overflow: 'visible'}}
+            activeDotColor={Color.background1}
+            index={this.state.questionIndex}
+            beforePageChange={this.beforePageChange}
+            onPageChange={this.onPageChange}
+            children={this.renderQuestions()}
+            threshold={50}>
+          </Swiper>
+        </View>
       )
     }
   }
