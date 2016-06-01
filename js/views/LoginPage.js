@@ -148,6 +148,8 @@ const LoginPage = React.createClass ({
               value={this.state.email}
               autoCapitalize='none'
               autoCorrect={false}
+              returnKeyType='done'
+              keyboardType='email-address'
               placeholder='Email'
             />
           </View>
@@ -162,6 +164,7 @@ const LoginPage = React.createClass ({
               value={this.state.password}
               autoCapitalize='none'
               autoCorrect={false}
+              returnKeyType='done'
               placeholder='Password'
             />
           </View>
