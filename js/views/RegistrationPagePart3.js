@@ -72,7 +72,7 @@ const RegistrationPagePart3 = React.createClass ({
   render() {
     return (
       <View style={[Styles.container.defaultWhite]}>
-        <ScrollView style={{height: this.props.calculateScrollViewHeight()}}>
+        <ScrollView style={{height: this.props.calculateScrollViewHeight(), paddingTop: 15}}>
           <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
             User Information
           </Text>

@@ -23,7 +23,6 @@ const ContainerStyles = StyleSheet.create({
 
   defaultWhite: {
     flex: 1,
-    paddingTop: 15,
     backgroundColor: Color.background2,
   },
 

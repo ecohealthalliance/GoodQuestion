@@ -125,7 +125,7 @@ const RegistrationPagePart1 = React.createClass ({
   render() {
     return (
       <View style={[Styles.container.defaultWhite]}>
-        <ScrollView style={{}}>
+        <ScrollView style={{paddingTop: 15}}>
           <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
             Create an Account
           </Text>
