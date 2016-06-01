@@ -45,6 +45,7 @@ function createParseSubmission(id, formId, answers, currentUser, done) {
   query.find(
     (roles) => {
       if (roles.length <= 0) return done('Invalid role.');
+      const role = roles[0];
       const acl = new Parse.ACL();
       acl.setReadAccess(currentUser, true);
       acl.setWriteAccess(currentUser, true);
