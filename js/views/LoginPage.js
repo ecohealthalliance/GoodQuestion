@@ -27,15 +27,6 @@ const LoginPage = React.createClass ({
   title: ' ',
 
   styles: {
-    loginHeader: {
-      flex: 1,
-      height: 125,
-      alignItems:'center',
-      justifyContent:'center',
-      backgroundColor: Color.background1,
-      paddingBottom: 25,
-      marginBottom: 25,
-    },
     loginFooter: {
       flex: 1,
       height: 75,
@@ -51,10 +42,6 @@ const LoginPage = React.createClass ({
       fontSize: 16,
       fontWeight: 'bold',
       color: '#4E546A',
-    },
-    logo: {
-      width: 240,
-      resizeMode: 'contain',
     },
   },
 
@@ -133,12 +120,12 @@ const LoginPage = React.createClass ({
   /* Render */
   render() {
     return (
-      <View style={{flex: 1, backgroundColor: '#fff'}}>
+      <View style={[Styles.container.defaultWhite]}>
         <View>
-          <View style={this.styles.loginHeader}>
-            <Image source={require('../images/logo_stacked.png')} style={this.styles.logo}></Image>
+          <View style={Styles.header.banner}>
+            <Image source={require('../images/logo_stacked.png')} style={Styles.header.logo}></Image>
           </View>
-          <View style={Styles.form.inputGroup}>
+          <View style={{paddingVertical: 45, paddingHorizontal: 15}}>
             <Text style={Styles.form.errorText}>
               {this.decodeText(this.state.errors.email)}
             </Text>
@@ -150,8 +137,6 @@ const LoginPage = React.createClass ({
               autoCorrect={false}
               placeholder='Email'
             />
-          </View>
-          <View style={Styles.form.inputGroup}>
             <Text style={Styles.form.errorText}>
               {this.decodeText(this.state.errors.password)}
             </Text>
@@ -164,12 +149,13 @@ const LoginPage = React.createClass ({
               autoCorrect={false}
               placeholder='Password'
             />
+            <Button action={this.handleVerifyLogin} color='success' style={{marginVertical: 30, marginHorizontal: 20}}>
+              {this.state.button_text}
+            </Button>
           </View>
 
           <View style={Styles.form.bottomForm}>
-            <Button action={this.handleVerifyLogin} color='success' wide>
-              {this.state.button_text}
-            </Button>
+            
           </View>
         </View>
 

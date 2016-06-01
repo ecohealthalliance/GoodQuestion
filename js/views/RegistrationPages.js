@@ -3,6 +3,7 @@ import React, {
   Text,
   TextInput,
   View,
+  Image,
   TouchableWithoutFeedback,
   StyleSheet,
   Dimensions,
@@ -13,7 +14,7 @@ import Styles from '../styles/Styles'
 import Button from '../components/Button'
 import Color from '../styles/Color'
 
-import Swiper from 'react-native-page-swiper'
+import Swiper from '../components/Swiper/Swiper'
 
 import RegistrationPagePart1 from '../views/RegistrationPagePart1'
 import RegistrationPagePart2 from '../views/RegistrationPagePart2'
@@ -29,7 +30,32 @@ const RegistrationPages = React.createClass ({
     navigator: React.PropTypes.object.isRequired,
     index: React.PropTypes.number,
   },
+
   alerts: 0,
+
+  styles: {
+    registrationHeader: {
+      height: Variables.REGISTRATION_HEIGHT,
+      alignItems:'center',
+      justifyContent:'center',
+      backgroundColor: Color.background1,
+      paddingBottom: 25,
+      marginBottom: 30,
+      height: 130,
+    },
+    dotStyle: {
+      // flex: 1,
+      // alignSelf: 'center',
+      backgroundColor: Color.background2,
+      borderColor: Color.background1,
+      borderWidth: 1,
+      width: 28,
+      height: 28,
+      borderRadius: 50,
+      marginHorizontal: 8,
+    }
+  },
+
   getInitialState() {
     let index = 0
     if (this.props.index) {
@@ -92,13 +118,14 @@ const RegistrationPages = React.createClass ({
   /**
    * event handler for the swiper, return false to stop, true to continue
    */
-  beforePageChange(nextPage) {
+  beforePageChange(currentPage, nextPage) {
     const shouldContinue = this.validatePage();
-    if (!shouldContinue) {
+    if (shouldContinue || nextPage < currentPage) {
+      this.setIndex(nextPage);
+      return true;
+    } else {
       return false;
     }
-    this.setIndex(nextPage);
-    return true;
   },
 
   /**
@@ -172,11 +199,20 @@ const RegistrationPages = React.createClass ({
   render() {
     return (
       <View style={{flex: 1, backgroundColor: '#fff'}}>
+        <View style={Styles.header.banner}>
+          <Image source={require('../images/logo_stacked.png')} style={Styles.header.logo}></Image>
+        </View>
         <Swiper
-          activeDotColor={Color.background1}
           index={this.state.index}
+          containerStyle={{flex: 1, overflow:'visible'}}
+          loop={false}
+          showsPagination={true}
+          showsHorizontalScrollIndicator={true}
           beforePageChange={this.beforePageChange}
-          onPageChange={this.onPageChange}
+
+          dotContainerStyle={{top: -16, bottom: null}}
+          dotStyle={this.styles.dotStyle}
+          activeDotStyle={[this.styles.dotStyle, {backgroundColor: Color.primary, borderColor: Color.primary}]}
           children={this.getChildren()}>
         </Swiper>
       </View>
