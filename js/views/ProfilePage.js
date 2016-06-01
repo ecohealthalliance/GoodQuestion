@@ -7,7 +7,6 @@ import React, {
   View,
   Alert,
   Image,
-  ScrollView,
   Dimensions,
 } from 'react-native'
 
@@ -20,6 +19,8 @@ import Button from '../components/Button'
 import Joi from '../lib/joi-browser.min'
 import JoiMixins from '../mixins/joi-mixins'
 import EventMixins from '../mixins/event-mixins'
+
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const {height, width} = Dimensions.get('window')
 
@@ -76,20 +77,16 @@ const ProfilePage = React.createClass ({
     });
   },
 
-  calculateScrollViewHeight() {
-    return height - (Variables.HEADER_SIZE + Variables.PROFILE_HEIGHT);
-  },
-
   /* Render */
   render() {
     return (
       <View style={{flex: 1, backgroundColor: '#fff'}}>
-        <View style={Styles.profile.header}>
-          <Image source={require('../images/profile_logo.png')} style={Styles.profile.picture}></Image>
-          <Text style={Styles.profile.name}> {this.state.name} </Text>
-          <Text style={Styles.profile.phone}> {this.state.phone} </Text>
-        </View>
-        <ScrollView style={{height: this.calculateScrollViewHeight()}}>
+        <KeyboardAwareScrollView style={{height: height}}>
+          <View style={Styles.profile.header}>
+            <Image source={require('../images/profile_logo.png')} style={Styles.profile.picture}></Image>
+            <Text style={Styles.profile.name}> {this.state.name} </Text>
+            <Text style={Styles.profile.phone}> {this.state.phone} </Text>
+          </View>
           <Text style={[Styles.type.h1, {textAlign: 'center'}]}>
             Update your Profile
           </Text>
@@ -103,6 +100,7 @@ const ProfilePage = React.createClass ({
               value={this.state.name}
               autoCapitalize='none'
               autoCorrect={false}
+              returnKeyType='done'
               placeholder="Full Name"
             />
             <Text style={Styles.form.errorText}>
@@ -114,6 +112,7 @@ const ProfilePage = React.createClass ({
               value={this.state.phone}
               autoCapitalize='none'
               autoCorrect={false}
+              returnKeyType='done'
               placeholder="Phone Number"
             />
           </View>
@@ -122,7 +121,7 @@ const ProfilePage = React.createClass ({
               {this.state.button_text}
             </Button>
           </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </View>
     )
   }

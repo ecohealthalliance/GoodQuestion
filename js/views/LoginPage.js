@@ -9,6 +9,7 @@ import React, {
   View,
   TouchableOpacity,
   Image,
+  Dimensions,
 } from 'react-native'
 
 import Styles from '../styles/Styles'
@@ -22,6 +23,10 @@ import JoiMixins from '../mixins/joi-mixins'
 import he from 'he' // HTML entity encode and decode
 
 import async from 'async'
+
+const {height, width} = Dimensions.get('window')
+
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const LoginPage = React.createClass ({
   title: ' ',
@@ -135,42 +140,44 @@ const LoginPage = React.createClass ({
     return (
       <View style={{flex: 1, backgroundColor: '#fff'}}>
         <View>
-          <View style={this.styles.loginHeader}>
-            <Image source={require('../images/logo_stacked.png')} style={this.styles.logo}></Image>
-          </View>
-          <View style={Styles.form.inputGroup}>
-            <Text style={Styles.form.errorText}>
-              {this.decodeText(this.state.errors.email)}
-            </Text>
-            <TextInput
-              style={Styles.form.input}
-              onChangeText={this.textFieldChangeHandler.bind(this, 'email')}
-              value={this.state.email}
-              autoCapitalize='none'
-              autoCorrect={false}
-              placeholder='Email'
-            />
-          </View>
-          <View style={Styles.form.inputGroup}>
-            <Text style={Styles.form.errorText}>
-              {this.decodeText(this.state.errors.password)}
-            </Text>
-            <TextInput
-              secureTextEntry={true}
-              style={Styles.form.input}
-              onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
-              value={this.state.password}
-              autoCapitalize='none'
-              autoCorrect={false}
-              placeholder='Password'
-            />
-          </View>
+          <KeyboardAwareScrollView style={{height: height}}>
+            <View style={this.styles.loginHeader}>
+              <Image source={require('../images/logo_stacked.png')} style={this.styles.logo}></Image>
+            </View>
+            <View style={Styles.form.inputGroup}>
+              <Text style={Styles.form.errorText}>
+                {this.decodeText(this.state.errors.email)}
+              </Text>
+              <TextInput
+                style={Styles.form.input}
+                onChangeText={this.textFieldChangeHandler.bind(this, 'email')}
+                value={this.state.email}
+                autoCapitalize='none'
+                autoCorrect={false}
+                placeholder='Email'
+              />
+            </View>
+            <View style={Styles.form.inputGroup}>
+              <Text style={Styles.form.errorText}>
+                {this.decodeText(this.state.errors.password)}
+              </Text>
+              <TextInput
+                secureTextEntry={true}
+                style={Styles.form.input}
+                onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
+                value={this.state.password}
+                autoCapitalize='none'
+                autoCorrect={false}
+                placeholder='Password'
+              />
+            </View>
 
-          <View style={Styles.form.bottomForm}>
-            <Button action={this.handleVerifyLogin} color='success' wide>
-              {this.state.button_text}
-            </Button>
-          </View>
+            <View style={Styles.form.bottomForm}>
+              <Button action={this.handleVerifyLogin} color='success' wide>
+                {this.state.button_text}
+              </Button>
+            </View>
+          </KeyboardAwareScrollView>
         </View>
 
         <TouchableWithoutFeedback onPress={this.handleRegistration}>
