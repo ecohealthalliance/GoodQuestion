@@ -61,11 +61,11 @@ const RegistrationPagePart3 = React.createClass ({
           button_text: 'Finish'
         });
       });
-      return;
+    } else {
+      this.setState({
+        button_text: 'Finish'
+      });
     }
-    this.setState({
-      button_text: 'Finish'
-    });
   },
 
   /* Render */

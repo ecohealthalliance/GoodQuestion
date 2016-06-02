@@ -134,7 +134,7 @@ const RegistrationPages = React.createClass ({
   /**
    * finish user registration
    */
-  finish() {
+  finish(callback) {
     const self = this;
     const props = {
       role: 'user',
@@ -166,11 +166,14 @@ const RegistrationPages = React.createClass ({
     register(email, password, props, function(err, success) {
       if (err) {
         Alert.alert('Error', err);
-        return;
+        self.setIndex(0)
+        callback()
+      } else {
+        Alert.alert('Success', 'You have successfully registered to Good Question');
+        // go to the default route
+        self.props.navigator.resetTo({});
       }
-      Alert.alert('Success', 'You have successfully registered to Good Question');
-      // go to the default route
-      self.props.navigator.resetTo({});
+      
     });
   },
 
