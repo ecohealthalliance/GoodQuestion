@@ -185,9 +185,13 @@ const FormPage = React.createClass ({
 
   showFutureFormCount(){
     if (this.state.futureFormCount > 0) {
+      let message = `Stay tuned, there is ${this.state.futureFormCount} form remaining...`;
+      if (this.state.futureFormCount > 1) {
+        message = `Stay tuned, there are ${this.state.futureFormCount} forms remaining...`;
+      }
       return (
         <Text style={[TypeStyles.statusMessage, TypeStyles.statusMessageSecondary]}>
-          Stay tuned, there are {this.state.futureFormCount} forms remaining...
+          {message}
         </Text>
       )
     }
