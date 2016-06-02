@@ -108,13 +108,9 @@ const RegistrationPagePart3 = React.createClass ({
             />
           </View>
         </ScrollView>
-        <TouchableHighlight onPress={this.finish} activeOpacity={.8}>
-          <View style={this.buttonStyles}>
-            <Text style={this.buttonTextStyles}>
-              {this.state.button_text}
-            </Text>
-          </View>
-        </TouchableHighlight>
+        <Button action={this.finish}  style={this.buttonStyles} textStyle={this.buttonTextStyles}>
+          {this.state.button_text}
+        </Button>
       </View>
     )
   }

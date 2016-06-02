@@ -150,6 +150,8 @@ const FormStyles = StyleSheet.create({
     bottom: 0,
     paddingVertical: 20,
     paddingHorizontal: 10,
+    marginHorizontal: 0,
+    borderRadius: 0,
     alignSelf: 'flex-end',
     alignItems: 'center',
     justifyContent: 'center',
