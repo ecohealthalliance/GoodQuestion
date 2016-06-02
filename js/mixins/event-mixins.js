@@ -1,3 +1,4 @@
+import React from 'react-native'
 import he from 'he' // HTML entity encode and decode
 
 export default {
@@ -42,4 +43,27 @@ export default {
     }
     this.defaultChangeHandler(name, value);
   },
+
+  scrollToViewWrapper(scrollRef, viewWrapperRef, offset, syntheticEvent) {
+    const scrollElement = this.refs[scrollRef];
+    const viewWrapperElement = this.refs[viewWrapperRef];
+    if (typeof scrollElement === 'undefined') {
+      console.warn('The <ScrollView> must have a ref assigned');
+      return;
+    }
+    if (typeof viewWrapperElement === 'undefined') {
+      console.warn('The <View> wrapper must have a ref assigned');
+    }
+    if (typeof offset !== 'number') {
+      syntheticEvent = offset
+      offset = 0;
+    }
+    const scrollResponder = scrollElement.getScrollResponder();
+    scrollResponder.scrollResponderScrollNativeHandleToKeyboard(
+      React.findNodeHandle(viewWrapperElement),
+      offset,
+      true
+    );
+  },
+
 };
