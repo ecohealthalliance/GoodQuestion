@@ -86,7 +86,7 @@ const RegistrationPages = React.createClass ({
     return height - this.calculateOffset(); // site of the pagination footer
   },
   calculateOffset() {
-    return height - (Variables.HEADER_SIZE + Variables.REGISTRATION_HEIGHT);
+    return  Variables.HEADER_SIZE + Variables.REGISTRATION_HEIGHT;
   },
 
   /**
