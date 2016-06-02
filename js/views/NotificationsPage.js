@@ -72,11 +72,13 @@ const NotificationsPage = React.createClass({
 
   render() {
     return (
-      <ListView dataSource = { this.state.dataSource }
-        renderRow = { this.renderItem }
-        contentContainerStyle = { [Styles.container.default, Styles.survey.list] }
-        enableEmptySections
-      />
+      <View style={[Styles.container.default , {flex: 1}]}>
+        <ListView dataSource = { this.state.dataSource }
+          renderRow = { this.renderItem }
+          contentContainerStyle = { [Styles.container.default, Styles.survey.list, {flex: 0}] }
+          enableEmptySections
+        />
+      </View>
     )
   }
 })
