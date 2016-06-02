@@ -91,7 +91,7 @@ const FormPage = React.createClass ({
     }
   },
 
-  beforePageChange(nextPage) {
+  beforePageChange(currentPage, nextPage) {
     // Don't validate when going backwards
     if(nextPage < this.state.questionIndex) return true
     // Don't validate final page
