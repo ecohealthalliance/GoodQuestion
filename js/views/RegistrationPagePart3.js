@@ -2,6 +2,7 @@
 import React, {
   Text,
   TextInput,
+  TouchableHighlight,
   View,
   Image,
   ScrollView,
@@ -28,6 +29,11 @@ const RegistrationPagePart3 = React.createClass ({
       height: 35,
     },
   },
+
+  formInputs: [
+    'name',
+    'phone'
+  ],
 
   mixins: [
     JoiMixins,
@@ -70,9 +76,10 @@ const RegistrationPagePart3 = React.createClass ({
 
   /* Render */
   render() {
+    this.props.buttonStyles(this, this.formInputs)
     return (
       <View style={[Styles.container.defaultWhite]}>
-        <ScrollView style={{height: this.props.calculateScrollViewHeight(), paddingTop: 15}}>
+        <ScrollView style={[Styles.form.registrationView, {height: this.props.calculateScrollViewHeight()}]}>
           <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
             User Information
           </Text>
@@ -100,12 +107,10 @@ const RegistrationPagePart3 = React.createClass ({
               placeholder="Phone Number"
             />
           </View>
-          <View style={Styles.form.bottomForm}>
-            <Button action={this.finish} color='primary' wide>
-              {this.state.button_text}
-            </Button>
-          </View>
         </ScrollView>
+        <Button action={this.finish}  style={this.buttonStyles} textStyle={this.buttonTextStyles}>
+          {this.state.button_text}
+        </Button>
       </View>
     )
   }

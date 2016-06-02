@@ -2,6 +2,7 @@
 import React, {
   Text,
   TextInput,
+  TouchableHighlight,
   View,
   Image,
   ScrollView,
@@ -35,6 +36,10 @@ const RegistrationPagePart4 = React.createClass ({
       height: 35,
     },
   },
+
+  formInputs: [
+    'allowLocationServices',
+  ],
 
   mixins: [
     JoiMixins,
@@ -70,6 +75,14 @@ const RegistrationPagePart4 = React.createClass ({
     // Call API for location permissions
   },
 
+  buttonStyles() {
+    let styles = [Styles.form.footerButton]
+    if (_.isEmpty(this.state.errors) && this.state.email && this.state.password) {
+      styles.push(Styles.form.footerButtonActive)
+    }
+    return styles
+  },
+
   renderLocationServices() {
     return (
       <Text style={[Styles.type.h3, {textAlign: 'center', paddingBottom: 2}]}>
@@ -80,9 +93,10 @@ const RegistrationPagePart4 = React.createClass ({
 
   /* Render */
   render() {
+    this.props.buttonStyles(this, this.formInputs)
     return (
       <View style={[Styles.container.defaultWhite]}>
-        <ScrollView style={{height: this.props.calculateScrollViewHeight(), paddingTop: 15}}>
+        <ScrollView style={[Styles.form.registrationView, {height: this.props.calculateScrollViewHeight()}]}>
           <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
             Location Services
           </Text>
@@ -103,12 +117,13 @@ const RegistrationPagePart4 = React.createClass ({
               />
             </View>
           </View>
-          <View style={Styles.form.bottomForm}>
-            <Button action={this.goToNextPage} color='primary' wide>
-              {this.state.button_text}
-            </Button>
-          </View>
         </ScrollView>
+        <Button
+          action={this.goToNextPage}
+          style={this.buttonStyles}
+          textStyle={this.buttonTextStyles}>
+          {this.state.button_text}
+        </Button>
       </View>
     )
   }

@@ -15,11 +15,11 @@ export default {
         this.setState({errors: errors});
         err = res.error.details[0];
       } else {
-        errors[name] = '';
+        delete errors[name]
         this.setState({errors: errors});
       }
     } else {
-      errors[name] = '';
+      delete errors[name]
       this.setState({errors: errors});
     }
     return err;
