@@ -106,7 +106,10 @@ const LoginPage = React.createClass ({
           <View style={Styles.header.banner}>
             <Image source={require('../images/logo_stacked.png')} style={Styles.header.logo}></Image>
           </View>
-          <ScrollView ref='scrollView' horizontal={false} style={{height: this.calculateScrollViewHeight(), overflow: 'hidden'}}>
+          <ScrollView
+            ref='scrollView'
+            horizontal={false}
+            style={[Styles.form.registrationView, {height: this.calculateScrollViewHeight(), overflow: 'hidden'}]}>
             <View style={Styles.form.inputGroup}>
               <Text style={Styles.form.errorText}>
                 {this.decodeText(this.state.errors.email)}

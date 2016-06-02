@@ -133,68 +133,70 @@ const RegistrationPagePart1 = React.createClass ({
     this.props.buttonStyles(this, this.formInputs)
     return (
       <View style={[Styles.container.defaultWhite]}>
-        <ScrollView ref='scrollView' horizontal={false} style={{height: this.props.calculateScrollViewHeight(), overflow: 'hidden'}}>
-          <View>
-            <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
-              Create an Account
+        <ScrollView
+          ref='scrollView'
+          horizontal={false}
+          style={[Styles.form.registrationView,
+            {height: this.props.calculateScrollViewHeight(), overflow: 'hidden'}]}>
+          <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
+            Create an Account
+          </Text>
+          <View style={Styles.form.inputGroup}>
+            <Text style={Styles.form.errorText}>
+              {this.decodeText(this.state.errors.email)}
             </Text>
-            <View style={Styles.form.inputGroup}>
-              <Text style={Styles.form.errorText}>
-                {this.decodeText(this.state.errors.email)}
-              </Text>
-              <View ref='emailView'>
-                <TextInput
-                  style={Styles.form.input}
-                  onChangeText={this.textFieldChangeHandler.bind(this, 'email')}
-                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'emailView', this.props.calculateOffset())}
-                  value={this.state.email}
-                  autoCapitalize='none'
-                  autoCorrect={false}
-                  placeholder='Email'
-                />
-              </View>
-              <Text style={Styles.form.errorText}>
-                {this.decodeText(this.state.errors.password)}
-              </Text>
-              <View ref='passwordView'>
-                <TextInput
-                  secureTextEntry={true}
-                  style={Styles.form.input}
-                  onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
-                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'passwordView', this.props.calculateOffset())}
-                  value={this.state.password}
-                  autoCapitalize='none'
-                  autoCorrect={false}
-                  placeholder='Password'
-                />
-              </View>
-              <Text style={Styles.form.errorText}>
-                {this.decodeText(this.state.errors.confirmPassword)}
-              </Text>
-              <View ref='confirmPasswordView'>
-                <TextInput
-                  secureTextEntry={true}
-                  style={Styles.form.input}
-                  onChangeText={this.confirmPasswordChangeHandler.bind(this, 'confirmPassword')}
-                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'confirmPasswordView', this.props.calculateOffset())}
-                  value={this.state.confirmPassword}
-                  autoCapitalize='none'
-                  autoCorrect={false}
-                  placeholder='Confirm Password'
-                />
-              </View>
-              <Text style={Styles.form.errorText}>
-                {this.decodeText(this.state.errors.acceptedTerms)}
-              </Text>
-              <View style={this.styles.checkboxWrapper}>
-                <Checkbox
-                  children={this.renderTerms()}
-                  checked={this.state.acceptedTerms}
-                  uncheckedComponent={uncheckedComponent}
-                  checkedComponent={checkedComponent}
-                  onChange={this.checkboxChangeHandler.bind(this, 'acceptedTerms')}
-                />
-              </View>
+            <View ref='emailView'>
+              <TextInput
+                style={Styles.form.input}
+                onChangeText={this.textFieldChangeHandler.bind(this, 'email')}
+                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'emailView', this.props.calculateOffset())}
+                value={this.state.email}
+                autoCapitalize='none'
+                autoCorrect={false}
+                placeholder='Email'
+              />
+            </View>
+            <Text style={Styles.form.errorText}>
+              {this.decodeText(this.state.errors.password)}
+            </Text>
+            <View ref='passwordView'>
+              <TextInput
+                secureTextEntry={true}
+                style={Styles.form.input}
+                onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
+                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'passwordView', this.props.calculateOffset())}
+                value={this.state.password}
+                autoCapitalize='none'
+                autoCorrect={false}
+                placeholder='Password'
+              />
+            </View>
+            <Text style={Styles.form.errorText}>
+              {this.decodeText(this.state.errors.confirmPassword)}
+            </Text>
+            <View ref='confirmPasswordView'>
+              <TextInput
+                secureTextEntry={true}
+                style={Styles.form.input}
+                onChangeText={this.confirmPasswordChangeHandler.bind(this, 'confirmPassword')}
+                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'confirmPasswordView', this.props.calculateOffset())}
+                value={this.state.confirmPassword}
+                autoCapitalize='none'
+                autoCorrect={false}
+                placeholder='Confirm Password'
+              />
+            </View>
+            <Text style={Styles.form.errorText}>
+              {this.decodeText(this.state.errors.acceptedTerms)}
+            </Text>
+            <View style={this.styles.checkboxWrapper}>
+              <Checkbox
+                children={this.renderTerms()}
+                checked={this.state.acceptedTerms}
+                uncheckedComponent={uncheckedComponent}
+                checkedComponent={checkedComponent}
+                onChange={this.checkboxChangeHandler.bind(this, 'acceptedTerms')}
+              />
             </View>
           </View>
         </ScrollView>

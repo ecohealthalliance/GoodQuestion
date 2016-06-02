@@ -159,6 +159,10 @@ const FormStyles = StyleSheet.create({
   footerButtonActive:{
     backgroundColor: Color.success,
   },
+  registrationView: {
+    paddingTop: 25,
+    paddingBottom: 35,
+  },
   registerText: {
     fontSize: 16,
     fontWeight: 'bold',
