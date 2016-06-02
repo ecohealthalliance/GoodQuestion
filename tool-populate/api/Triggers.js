@@ -2,10 +2,10 @@ var _ = require('lodash')
 var Parse = require('parse/node')
 var Store = require('../data/Store')
 var DummyData = require('../data/DummyData')
+var Trigger = Parse.Object.extend("Trigger")
 
 
 function loadTriggers(options, callback) {
-  var Trigger = Parse.Object.extend("Trigger")
   var query = new Parse.Query(Trigger)
   query.limit = 1000
 
@@ -28,7 +28,7 @@ function storeTriggers(newTriggers) {
 }
 
 function createTriggers(parentForm) {
-  var newTrigger = new Parse.Object('Trigger')
+  var newTrigger = new Trigger()
 
   newTrigger.set('triggerType', DummyData.trigger.triggerType)
   newTrigger.set('properties', DummyData.trigger.properties)
@@ -50,7 +50,7 @@ function createTriggers(parentForm) {
 }
 
 function createDemoTrigger(parentForm, when) {
-  var newTrigger = new Parse.Object('Trigger')
+  var newTrigger = new Trigger()
 
   newTrigger.set('type', 'datetime')
   newTrigger.set('properties', {"datetime": when.toISOString()})
@@ -72,4 +72,4 @@ function createDemoTrigger(parentForm, when) {
     })
 }
 
-module.exports = { loadTriggers, createTriggers, storeTriggers, createDemoTrigger }
+module.exports = { Trigger, loadTriggers, createTriggers, storeTriggers, createDemoTrigger }
