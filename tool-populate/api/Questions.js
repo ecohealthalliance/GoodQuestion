@@ -3,21 +3,22 @@ var Parse = require('parse/node')
 var Store = require('../data/Store')
 var DummyData = require('../data/DummyData')
 var DemoData = require('../data/DemoData')
+var Question = Parse.Object.extend("Question")
 
 function loadQuestions(options, callback) {
-  var Question = Parse.Object.extend("Question")
   var query = new Parse.Query(Question)
   query.limit = 1000
-
 
   query.find({
     success: function(results) {
       storeQuestions(results)
-      if (callback) callback(null, results)
+      if (callback)
+        callback(null, results)
     },
     error: function(error, results) {
       console.warn("Error: " + error.code + " " + error.message)
-      if (callback) callback(error, results)
+      if (callback)
+        callback(error, results)
     }
   })
 }
@@ -30,7 +31,7 @@ function storeQuestions(newQuestions) {
 function createQuestions(parentForm) {
   var questions = []
   for (var i = 0; i < DummyData.questions.length; i++) {
-    var newQuestion = new Parse.Object('Question')
+    var newQuestion = new Question()
 
     newQuestion.set('text', DummyData.questions[i].text)
     newQuestion.set('type', DummyData.questions[i].type)
@@ -63,7 +64,7 @@ function createDemoQuestions(parentForm) {
   questionOrder = _.shuffle(questionOrder)
 
   for (var i = 0; i < limit; i++) {
-    var newQuestion = new Parse.Object('Question')
+    var newQuestion = new Question()
 
     var randomQuestionIndex = questionOrder[i]
 
@@ -90,4 +91,4 @@ function createDemoQuestions(parentForm) {
   }
 }
 
-module.exports = { loadQuestions, createQuestions, storeQuestions, createDemoQuestions }
+module.exports = { Question, loadQuestions, createQuestions, storeQuestions, createDemoQuestions }
