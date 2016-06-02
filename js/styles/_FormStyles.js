@@ -156,12 +156,16 @@ const FormStyles = StyleSheet.create({
   },
   footerButtonActive:{
     backgroundColor: Color.success,
-    color: Color.primary
   },
   registerText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#4E546A',
+  },
+  registerTextActive: {
+    color: Color.primary
+  },
+  registerTextInactive: {
+    color: Color.secondary
   },
 })
 

@@ -178,12 +178,31 @@ const RegistrationPages = React.createClass ({
     this.setState({index: idx});
   },
 
+  emptyTextImputs(formInputs, state) {
+    return _.find(formInputs, function(formInput){
+      return !state[formInput]
+    })
+  },
+
+  buttonStyles(registrationView, formInputs) {
+    let buttonStyles = [Styles.form.footerButton],
+        buttonTextStyles = [Styles.form.registerText, Styles.form.registerTextInactive]
+    const state = registrationView.state
+    if (_.isEmpty(state.errors) && !this.emptyTextImputs(formInputs, state)) {
+      buttonStyles.push(Styles.form.footerButtonActive)
+      buttonTextStyles.push(Styles.form.registerTextActive)
+    }
+    registrationView.buttonStyles = buttonStyles
+    registrationView.buttonTextStyles = buttonTextStyles
+  },
+
   getChildren() {
     const sharedProps = Object.assign({
       calculateOffset: this.calculateOffset,
       calculateScrollViewHeight: this.calculateScrollViewHeight,
       validatePage: this.validatePage,
       setIndex: this.setIndex,
+      buttonStyles: this.buttonStyles
     }, this.props);
     const pages = [];
     for (let i = 0; i < totalPages; i++) {

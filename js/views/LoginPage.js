@@ -149,7 +149,7 @@ const LoginPage = React.createClass ({
         </ScrollView>
         <TouchableHighlight onPress={this.handleRegistration} activeOpacity={.8}>
           <View style={Styles.form.footerButton}>
-            <Text style={Styles.form.registerText}> Register an Account </Text>
+            <Text style={[Styles.form.registerText, Styles.form.registerTextActive]}> Register an Account </Text>
           </View>
         </TouchableHighlight>
       </View>

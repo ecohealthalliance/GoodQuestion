@@ -30,6 +30,11 @@ const RegistrationPagePart3 = React.createClass ({
     },
   },
 
+  formInputs: [
+    'name',
+    'phone'
+  ],
+
   mixins: [
     JoiMixins,
     EventMixins,
@@ -71,6 +76,7 @@ const RegistrationPagePart3 = React.createClass ({
 
   /* Render */
   render() {
+    this.props.buttonStyles(this, this.formInputs)
     return (
       <View style={[Styles.container.defaultWhite]}>
         <ScrollView style={{height: this.props.calculateScrollViewHeight(), paddingTop: 15}}>
@@ -101,14 +107,14 @@ const RegistrationPagePart3 = React.createClass ({
               placeholder="Phone Number"
             />
           </View>
-          <TouchableHighlight onPress={this.finish} activeOpacity={.8}>
-            <View style={[Styles.form.footerButton]}>
-              <Text style={Styles.form.registerText}>
-                {this.state.button_text}
-              </Text>
-            </View>
-          </TouchableHighlight>
         </ScrollView>
+        <TouchableHighlight onPress={this.finish} activeOpacity={.8}>
+          <View style={this.buttonStyles}>
+            <Text style={this.buttonTextStyles}>
+              {this.state.button_text}
+            </Text>
+          </View>
+        </TouchableHighlight>
       </View>
     )
   }

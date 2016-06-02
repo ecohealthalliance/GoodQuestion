@@ -41,6 +41,12 @@ const RegistrationPagePart1 = React.createClass ({
     },
   },
 
+  formInputs: [
+    'email',
+    'password',
+    'confirmPassword',
+    'acceptedTerms'
+  ],
   mixins: [
     JoiMixins,
     EventMixins,
@@ -125,6 +131,7 @@ const RegistrationPagePart1 = React.createClass ({
 
   /* Render */
   render() {
+    this.props.buttonStyles(this, this.formInputs)
     return (
       <View style={[Styles.container.defaultWhite]}>
         <ScrollView ref='scrollView' horizontal={false} style={{height: this.props.calculateScrollViewHeight(), overflow: 'hidden'}}>
@@ -193,8 +200,8 @@ const RegistrationPagePart1 = React.createClass ({
           </View>
         </ScrollView>
         <TouchableHighlight onPress={this.goToNextPage} activeOpacity={.8}>
-          <View style={[Styles.form.footerButton]}>
-            <Text style={Styles.form.registerText}>
+          <View style={this.buttonStyles}>
+            <Text style={this.buttonTextStyles}>
               {this.state.button_text}
             </Text>
           </View>

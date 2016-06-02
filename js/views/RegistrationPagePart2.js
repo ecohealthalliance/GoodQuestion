@@ -37,6 +37,10 @@ const RegistrationPagePart4 = React.createClass ({
     },
   },
 
+  formInputs: [
+    'allowLocationServices',
+  ],
+
   mixins: [
     JoiMixins,
     EventMixins,
@@ -71,6 +75,14 @@ const RegistrationPagePart4 = React.createClass ({
     // Call API for location permissions
   },
 
+  buttonStyles() {
+    let styles = [Styles.form.footerButton]
+    if (_.isEmpty(this.state.errors) && this.state.email && this.state.password) {
+      styles.push(Styles.form.footerButtonActive)
+    }
+    return styles
+  },
+
   renderLocationServices() {
     return (
       <Text style={[Styles.type.h3, {textAlign: 'center', paddingBottom: 2}]}>
@@ -81,6 +93,7 @@ const RegistrationPagePart4 = React.createClass ({
 
   /* Render */
   render() {
+    this.props.buttonStyles(this, this.formInputs)
     return (
       <View style={[Styles.container.defaultWhite]}>
         <ScrollView style={{height: this.props.calculateScrollViewHeight(), paddingTop: 15}}>
@@ -88,7 +101,7 @@ const RegistrationPagePart4 = React.createClass ({
             Location Services
           </Text>
           <View style={Styles.form.inputGroup}>
-            <Text style={[Styles.type.h3, {textAlign: 'center'}]}>
+            <Text style={[Styles.type.h2, {textAlign: 'center'}]}>
               GoodQuestion administers surveys which may need access to your location.
             </Text>
             <Text style={Styles.form.errorText}>
@@ -104,14 +117,14 @@ const RegistrationPagePart4 = React.createClass ({
               />
             </View>
           </View>
-          <TouchableHighlight onPress={this.goToNextPage} activeOpacity={.8}>
-            <View style={[Styles.form.footerButton]}>
-                <Text style={Styles.form.registerText}>
-                  {this.state.button_text}
-                </Text>
-            </View>
-          </TouchableHighlight>
         </ScrollView>
+        <TouchableHighlight onPress={this.goToNextPage} activeOpacity={.8}>
+          <View style={this.buttonStyles}>
+            <Text style={this.buttonTextStyles}>
+              {this.state.button_text}
+            </Text>
+          </View>
+        </TouchableHighlight>
       </View>
     )
   }
