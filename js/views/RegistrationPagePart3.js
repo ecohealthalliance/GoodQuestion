@@ -2,6 +2,7 @@
 import React, {
   Text,
   TextInput,
+  TouchableHighlight,
   View,
   Image,
   ScrollView,
@@ -100,11 +101,13 @@ const RegistrationPagePart3 = React.createClass ({
               placeholder="Phone Number"
             />
           </View>
-          <View style={Styles.form.bottomForm}>
-            <Button action={this.finish} color='primary' wide>
-              {this.state.button_text}
-            </Button>
-          </View>
+          <TouchableHighlight onPress={this.finish} activeOpacity={.8}>
+            <View style={[Styles.form.footerButton]}>
+              <Text style={Styles.form.registerText}>
+                {this.state.button_text}
+              </Text>
+            </View>
+          </TouchableHighlight>
         </ScrollView>
       </View>
     )

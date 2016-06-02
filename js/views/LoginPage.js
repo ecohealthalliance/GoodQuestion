@@ -3,7 +3,6 @@ import React, {
   Alert,
   StyleSheet,
   TouchableHighlight,
-  TouchableWithoutFeedback,
   Text,
   TextInput,
   View,
@@ -32,25 +31,6 @@ const {height, width} = Dimensions.get('window')
 
 const LoginPage = React.createClass ({
   title: ' ',
-
-  styles: {
-    loginFooter: {
-      flex: 1,
-      height: 75,
-      backgroundColor: '#F0F0F0',
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      bottom: 0,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    registerText: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      color: '#4E546A',
-    },
-  },
 
   mixins: [
     JoiMixins,
@@ -167,11 +147,11 @@ const LoginPage = React.createClass ({
             </Button>
           </View>
         </ScrollView>
-        <TouchableWithoutFeedback onPress={this.handleRegistration}>
-          <View style={this.styles.loginFooter}>
-              <Text style={this.styles.registerText}> Register an Account </Text>
+        <TouchableHighlight onPress={this.handleRegistration} activeOpacity={.8}>
+          <View style={Styles.form.footerButton}>
+            <Text style={Styles.form.registerText}> Register an Account </Text>
           </View>
-        </TouchableWithoutFeedback>
+        </TouchableHighlight>
       </View>
     )
   }

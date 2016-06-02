@@ -2,6 +2,7 @@
 import React, {
   Text,
   TextInput,
+  TouchableHighlight,
   View,
   Image,
   ScrollView,
@@ -87,7 +88,7 @@ const RegistrationPagePart4 = React.createClass ({
             Location Services
           </Text>
           <View style={Styles.form.inputGroup}>
-            <Text style={[Styles.type.h2, {textAlign: 'center'}]}>
+            <Text style={[Styles.type.h3, {textAlign: 'center'}]}>
               GoodQuestion administers surveys which may need access to your location.
             </Text>
             <Text style={Styles.form.errorText}>
@@ -103,11 +104,13 @@ const RegistrationPagePart4 = React.createClass ({
               />
             </View>
           </View>
-          <View style={Styles.form.bottomForm}>
-            <Button action={this.goToNextPage} color='primary' wide>
-              {this.state.button_text}
-            </Button>
-          </View>
+          <TouchableHighlight onPress={this.goToNextPage} activeOpacity={.8}>
+            <View style={[Styles.form.footerButton]}>
+                <Text style={Styles.form.registerText}>
+                  {this.state.button_text}
+                </Text>
+            </View>
+          </TouchableHighlight>
         </ScrollView>
       </View>
     )

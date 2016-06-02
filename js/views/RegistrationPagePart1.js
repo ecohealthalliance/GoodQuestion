@@ -3,6 +3,7 @@ import React, {
   Text,
   TextInput,
   View,
+  TouchableHighlight,
   TouchableWithoutFeedback,
   Image,
   Alert,
@@ -112,7 +113,7 @@ const RegistrationPagePart1 = React.createClass ({
 
   renderTerms() {
     return (
-      <Text style={[Styles.type.h3, {textAlign: 'center', paddingBottom: 2}]}>
+      <Text style={[Styles.type.h3, {textAlign: 'center', paddingBottom: 2, position: 'relative'}]}>
         <Text>I accept the </Text>
         <TouchableWithoutFeedback onPress={this.goToTermsPage}>
           <Text style={Styles.type.link}>Terms of Service.</Text>
@@ -189,13 +190,15 @@ const RegistrationPagePart1 = React.createClass ({
                 />
               </View>
             </View>
-            <View style={Styles.form.bottomForm}>
-              <Button action={this.goToNextPage} color='primary' wide>
-                {this.state.button_text}
-              </Button>
-            </View>
           </View>
         </ScrollView>
+        <TouchableHighlight onPress={this.goToNextPage} activeOpacity={.8}>
+          <View style={[Styles.form.footerButton]}>
+            <Text style={Styles.form.registerText}>
+              {this.state.button_text}
+            </Text>
+          </View>
+        </TouchableHighlight>
       </View>
     )
   }

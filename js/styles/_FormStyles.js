@@ -140,7 +140,29 @@ const FormStyles = StyleSheet.create({
   questionLabel: {
     color: Color.primary,
     fontSize: 20,
-  }
+  },
+  footerButton: {
+    flex: 1,
+    backgroundColor: '#F0F0F0',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  footerButtonActive:{
+    backgroundColor: Color.success,
+    color: Color.primary
+  },
+  registerText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#4E546A',
+  },
 })
 
 module.exports = FormStyles
