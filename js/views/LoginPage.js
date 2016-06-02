@@ -135,6 +135,8 @@ const LoginPage = React.createClass ({
               value={this.state.email}
               autoCapitalize='none'
               autoCorrect={false}
+              returnKeyType='done'
+              keyboardType='email-address'
               placeholder='Email'
             />
             <Text style={Styles.form.errorText}>
@@ -147,6 +149,7 @@ const LoginPage = React.createClass ({
               value={this.state.password}
               autoCapitalize='none'
               autoCorrect={false}
+              returnKeyType='done'
               placeholder='Password'
             />
             <Button action={this.handleVerifyLogin} color='success' style={{marginVertical: 30, marginHorizontal: 20}}>
