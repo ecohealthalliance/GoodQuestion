@@ -2,11 +2,10 @@ var _ = require('lodash')
 var Parse = require('parse/node')
 var Forms = require('./Forms')
 var Store = require('../data/Store')
-
+var Survey = new Parse.Object.extend('Survey')
 // import { loadForms } from './Forms'
 
 function loadCachedSurvey (id) {
-  var Survey = Parse.Object.extend("Survey")
   var result
   for (var i = Store.surveys.length - 1; i >= 0; i--) {
     if (Store.surveys[i].id === id) result = Store.surveys[i]
@@ -15,7 +14,6 @@ function loadCachedSurvey (id) {
 }
 
 function loadSurveyList (options, callback) {
-  var Survey = Parse.Object.extend("Survey")
   var query = new Parse.Query(Survey)
   query.limit = 1000
 
@@ -38,7 +36,7 @@ function storeSurveys (newSurveys) {
 }
 
 function createSurvey (surveyData) {
-  var newSurvey = new Parse.Object('Survey')
+  var newSurvey = new Survey()
 
   newSurvey.set('title', surveyData.title)
   newSurvey.set('user', surveyData.user)
@@ -71,25 +69,24 @@ function parseDate(str) {
 }
 
 function createDemoSurvey (surveyData, startDate, endDate) {
-  var newSurvey = new Parse.Object('Survey')
   var startDateTimestamp = parseDate(startDate)
   var endDateTimestamp = parseDate(endDate)
   var numberOfDays = dayDiff(startDateTimestamp, endDateTimestamp)
-
+  var newSurvey = new Survey()
   newSurvey.set('title', surveyData.title)
   newSurvey.set('description', surveyData.description)
   newSurvey.set('user', surveyData.user)
   newSurvey.set('createdAt', surveyData.created)
-  newSurvey.set('active', true)
+  newSurvey.set('active', false)
   newSurvey.set('deleted', false)
 
   newSurvey.save(null, {
     useMasterKey: true,
-    success: function(response) {
+    success: function(survey) {
       for (var i = 0; i < numberOfDays; i++) {
-        Forms.createDemoForm(response, startDateTimestamp + i * 86400000)
+        Forms.createDemoForm(survey, startDateTimestamp + i * 86400000)
       }
-      storeSurveys(response)
+      storeSurveys(survey)
     },
     error: function(response, error) {
       console.warn('Failed to create demo Survey, error code: ' + error.message)
@@ -98,4 +95,4 @@ function createDemoSurvey (surveyData, startDate, endDate) {
 }
 
 
-module.exports = { loadCachedSurvey, loadSurveyList, storeSurveys, createSurvey, createDemoSurvey }
+module.exports = { Survey, loadCachedSurvey, loadSurveyList, storeSurveys, createSurvey, createDemoSurvey }

@@ -10,11 +10,20 @@ const ContainerStyles = StyleSheet.create({
     backgroundColor: Color.background3,
   },
 
-  default: {
+  wrapperClearHeader: {
+    flex: 1,
+    paddingTop: Variables.HEADER_SIZE_SMALL,
     backgroundColor: Color.background3,
-    // borderLeftWidth: 1,
-    // borderRightWidth: 1,
-    // borderColor: Color.background1,
+  },
+
+  default: {
+    flex: 1,
+    backgroundColor: Color.background3,
+  },
+
+  defaultWhite: {
+    flex: 1,
+    backgroundColor: Color.background2,
   },
 
   compact: {
@@ -40,8 +49,7 @@ const ContainerStyles = StyleSheet.create({
   informational: {
     backgroundColor: Color.background2,
     paddingHorizontal: 30,
-    paddingTop: 10,
-    paddingBottom: 110,
+    paddingVertical: 10,
   },
 
   attentionContainer: {

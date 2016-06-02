@@ -34,15 +34,6 @@ const LoginPage = React.createClass ({
   title: ' ',
 
   styles: {
-    loginHeader: {
-      flex: 1,
-      height: Variables.LOGIN_HEIGHT,
-      alignItems:'center',
-      justifyContent:'center',
-      backgroundColor: Color.background1,
-      paddingBottom: 25,
-      marginBottom: 25,
-    },
     loginFooter: {
       flex: 1,
       height: 75,
@@ -58,10 +49,6 @@ const LoginPage = React.createClass ({
       fontSize: 16,
       fontWeight: 'bold',
       color: '#4E546A',
-    },
-    logo: {
-      width: 240,
-      resizeMode: 'contain',
     },
   },
 
@@ -135,56 +122,56 @@ const LoginPage = React.createClass ({
   /* Render */
   render() {
     return (
-      <View style={{flex: 1, backgroundColor: '#fff'}}>
+      <View style={[Styles.container.defaultWhite]}>
         <ScrollView ref='scrollView' horizontal={false} style={{height: this.calculateScrollViewHeight(), overflow: 'hidden'}}>
-          <View style={this.styles.loginHeader}>
-            <Image source={require('../images/logo_stacked.png')} style={this.styles.logo}></Image>
+          <View style={Styles.header.banner}>
+            <Image source={require('../images/logo_stacked.png')} style={Styles.header.logo}></Image>
           </View>
-            <View style={Styles.form.inputGroup}>
-              <Text style={Styles.form.errorText}>
-                {this.decodeText(this.state.errors.email)}
-              </Text>
-              <View ref='emailView'>
-                <TextInput
-                  style={Styles.form.input}
-                  onChangeText={this.textFieldChangeHandler.bind(this, 'email')}
-                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'emailView', this.calculateOffset())}
-                  value={this.state.email}
-                  autoCapitalize='none'
-                  autoCorrect={false}
-                  placeholder='Email'
-                />
-              </View>
+          <View style={Styles.form.inputGroup}>
+            <Text style={Styles.form.errorText}>
+              {this.decodeText(this.state.errors.email)}
+            </Text>
+            <View ref='emailView'>
+              <TextInput
+                style={Styles.form.input}
+                onChangeText={this.textFieldChangeHandler.bind(this, 'email')}
+                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'emailView', this.calculateOffset())}
+                value={this.state.email}
+                autoCapitalize='none'
+                autoCorrect={false}
+                placeholder='Email'
+              />
             </View>
-            <View style={Styles.form.inputGroup}>
-              <Text style={Styles.form.errorText}>
-                {this.decodeText(this.state.errors.password)}
-              </Text>
-              <View ref='passwordView'>
-                <TextInput
-                  secureTextEntry={true}
-                  style={Styles.form.input}
-                  onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
-                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'passwordView', Variables.HEADER_SIZE + Variables.LOGIN_HEIGHT + 80)}
-                  value={this.state.password}
-                  autoCapitalize='none'
-                  autoCorrect={false}
-                  placeholder='Password'
-                />
-              </View>
+          </View>
+          <View style={Styles.form.inputGroup}>
+            <Text style={Styles.form.errorText}>
+              {this.decodeText(this.state.errors.password)}
+            </Text>
+            <View ref='passwordView'>
+              <TextInput
+                secureTextEntry={true}
+                style={Styles.form.input}
+                onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
+                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'passwordView', Variables.HEADER_SIZE + Variables.LOGIN_HEIGHT + 80)}
+                value={this.state.password}
+                autoCapitalize='none'
+                autoCorrect={false}
+                placeholder='Password'
+              />
             </View>
+          </View>
 
-            <View style={Styles.form.bottomForm}>
-              <Button action={this.handleVerifyLogin} color='success' wide>
-                {this.state.button_text}
-              </Button>
-            </View>
-          </ScrollView>
-          <TouchableWithoutFeedback onPress={this.handleRegistration}>
-            <View style={this.styles.loginFooter}>
-                <Text style={this.styles.registerText}> Register an Account </Text>
-            </View>
-          </TouchableWithoutFeedback>
+          <View style={Styles.form.bottomForm}>
+            <Button action={this.handleVerifyLogin} color='success' wide>
+              {this.state.button_text}
+            </Button>
+          </View>
+        </ScrollView>
+        <TouchableWithoutFeedback onPress={this.handleRegistration}>
+          <View style={this.styles.loginFooter}>
+              <Text style={this.styles.registerText}> Register an Account </Text>
+          </View>
+        </TouchableWithoutFeedback>
       </View>
     )
   }

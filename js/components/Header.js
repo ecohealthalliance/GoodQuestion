@@ -2,7 +2,8 @@ import React, {
   View,
   Text,
   TouchableWithoutFeedback,
-  Alert
+  Alert,
+  Platform,
 } from 'react-native'
 
 import Styles from '../styles/Styles'
@@ -14,12 +15,14 @@ const Header = React.createClass ({
   },
 
   getInitialState() {
-    let routeStack = this.props.navState.routeStack
-    let title = routeStack[routeStack.length-1].title
+    const routeStack = this.props.navState.routeStack
+    const position = routeStack.length - 1
+    let title = routeStack[position].title
+    let path = routeStack[position].path
     return {
       index: 0,
       title: title,
-      path: 'none'
+      path: path,
     }
   },
 
@@ -29,31 +32,24 @@ const Header = React.createClass ({
 
   componentWillReceiveProps(nextProps) {
     try {
+      const routeStack = nextProps.navigator.getCurrentRoutes()
+      const position = routeStack.length - 1
       let title = this.state.title
-      let routeStack = nextProps.navState.routeStack
-      let position = routeStack.length - 1
-      let nextTitle = routeStack[routeStack.length-1].title
-      if (nextTitle && nextTitle !== title) {
-        title = nextTitle
-      }
+      let path = this.state.path
+      let nextTitle = routeStack[position].title
+      let nextPath = routeStack[position].path
+
+      if (nextTitle && nextTitle !== title) title = nextTitle
+      if (nextPath && nextPath !== path) path = nextPath
+
       this.setState({
         title: title,
-        index: position
+        index: position,
+        path: path,
       })
     } catch(e) {
       console.warn(e)
     }
-  },
-
-  renderDrawer() {
-    if (typeof this.props.openDrawer === 'undefined') return;
-    return (
-      <View style={Styles.header.navBarRightButton}>
-        <TouchableWithoutFeedback onPress={this.props.openDrawer}>
-          <Icon name="bars" size={25} color="#FFFFFF" />
-        </TouchableWithoutFeedback>
-      </View>
-    );
   },
 
   /* Methods */
@@ -63,7 +59,7 @@ const Header = React.createClass ({
   },
 
   navigateBack() {
-    if (this.state.title == "Registration") {
+    if (this.state.path == "registration") {
       Alert.alert(
         'Exit registration?',
         '',
@@ -78,9 +74,41 @@ const Header = React.createClass ({
   },
 
   /* Render */
+  renderDrawer() {
+    if (typeof this.props.openDrawer === 'undefined'){
+      return <View style={Styles.header.navBarRightButton}></View>
+    } else {
+      return (
+        <View style={Styles.header.navBarRightButton}>
+          <TouchableWithoutFeedback onPress={this.props.openDrawer}>
+            <Icon name="bars" size={25} color="#FFFFFF" />
+          </TouchableWithoutFeedback>
+        </View>
+      );
+    }
+  },
+
+  renderIOSPadding() {
+    if (Platform.OS === 'ios') {
+      return <View style={Styles.header.iOSPadding}></View>
+    }
+  },
+
   render() {
+    let title = this.state.title
+    let navbarStyles = [Styles.header.navBar]
+
+    switch(this.state.path) {
+      case 'none':
+      case 'login':
+      case 'registration':
+        navbarStyles.push(Styles.header.navBarClear)
+        title = ''
+    }
+
     return (
-      <View style={Styles.header.navBar}>
+      <View style={navbarStyles}>
+        {this.renderIOSPadding()}
         <View style={Styles.header.navBarLeftButton}>
           {
           this.state.index > 0 ?
@@ -92,7 +120,7 @@ const Header = React.createClass ({
         </View>
         <View style={Styles.header.navBarTitle}>
           <Text numberOfLines={1} style={Styles.header.navBarTitleText}>
-            {this.state.title}
+            {title}
           </Text>
         </View>
         {this.renderDrawer()}

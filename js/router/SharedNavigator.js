@@ -39,7 +39,7 @@ import ControlPanel from '../views/ControlPanel'
 import ProfilePage from '../views/ProfilePage'
 
 // Background
-// import { initializeGeolocationService } from '../api/BackgroundProcess'
+import { initializeGeolocationService } from '../api/BackgroundProcess'
 
 /* Configuration */
 if (Platform.OS === 'ios') {
@@ -48,7 +48,7 @@ if (Platform.OS === 'ios') {
   Store.platform = 'android'
 }
 
-// initializeGeolocationService()
+initializeGeolocationService()
 
 let navigator;
 // Binds the hardware "back button" from Android devices
@@ -137,6 +137,7 @@ const SharedNavigator = React.createClass ({
   },
 
   routeMapper(route, nav) {
+    let viewComponent
     const sharedProps = {
       navigator: nav,
       logout: this.logoutHandler,
@@ -146,28 +147,45 @@ const SharedNavigator = React.createClass ({
       route.path = 'login'
       route.title = ''
     }
+
     switch (route.path) {
-      case 'login': return <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />
-      case 'surveylist': return <SurveyListPage {...sharedProps} />
-      case 'notifications': return <NotificationsPage {...sharedProps} />
-      case 'terms': return <TermsOfServicePage {...sharedProps} />
-      case 'registration': return <RegistrationPages {...sharedProps} index={route.index} />
-      case 'profile': return <ProfilePage {...sharedProps} />
-      case 'form': return <FormPage {...sharedProps} form={route.form} survey={route.survey} index={route.index} />
-      case 'survey-details': return <SurveyDetailsPage {...sharedProps} survey={route.survey} />
-      default: return <SurveyListPage {...sharedProps} />
+      case 'login': viewComponent = <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />; break;
+      case 'surveylist': viewComponent = <SurveyListPage {...sharedProps} />; break;
+      case 'notifications': viewComponent = <NotificationsPage {...sharedProps} />; break;
+      case 'terms': viewComponent = <TermsOfServicePage {...sharedProps} />; break;
+      case 'registration': viewComponent = <RegistrationPages {...sharedProps} index={route.index} />; break;
+      case 'profile': viewComponent = <ProfilePage {...sharedProps} />; break;
+      case 'form': viewComponent = <FormPage {...sharedProps} form={route.form} survey={route.survey} index={route.index} />; break;
+      case 'survey-details': viewComponent = <SurveyDetailsPage {...sharedProps} survey={route.survey} />; break;
+      default: viewComponent = <SurveyListPage {...sharedProps} />; break;
     }
+
+    // Special wrapper styles
+    switch (route.path) {
+      case 'login':
+      case 'registration':
+        wrapperStyles = Styles.container.wrapperClearHeader;
+        break;
+
+      default: wrapperStyles = Styles.container.wrapper; break;
+    }
+
+    return (
+      <View style={wrapperStyles}>
+        {viewComponent}
+      </View>
+    )
   },
 
   /* Render */
   render() {
     const initialRoute = { path:'surveylist', title: 'Surveys' }
+
     // show loading component without the navigationBar
     if (this.state.isLoading) {
       return (<Loading/>);
     }
-    // if this.sceneConfig Navigator.SceneConfigs.FloatFromRight
-    // show the navigator
+
     if (this.state.isAuthenticated) {
       return (
         <Drawer
@@ -199,7 +217,7 @@ const SharedNavigator = React.createClass ({
             initialRoute={initialRoute}
             renderScene={this.routeMapper}
             configureScene={(route, routeStack) => this.setSceneConfig(route)}
-            style={Styles.container.wrapper}
+            style={{flex: 1}}
             navigationBar={
               <Header
                 title={this.state.title}
@@ -216,7 +234,7 @@ const SharedNavigator = React.createClass ({
         initialRoute={initialRoute}
         renderScene={this.routeMapper}
         configureScene={(route, routeStack) => this.setSceneConfig(route)}
-        style={Styles.container.wrapper}
+        style={{flex: 1}}
         navigationBar={
           <Header
             title={this.state.title} />

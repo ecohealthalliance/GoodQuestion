@@ -29,7 +29,7 @@ import Submission from '../models/Submission';
 import Loading from '../components/Loading';
 import Color from '../styles/Color';
 import TypeStyles from '../styles/_TypeStyles';
-import Swiper from 'react-native-page-swiper'
+import Swiper from '../components/Swiper/Swiper';
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 import { loadTriggers, loadCachedTrigger } from '../api/Triggers'
@@ -185,9 +185,13 @@ const FormPage = React.createClass ({
 
   showFutureFormCount(){
     if (this.state.futureFormCount > 0) {
+      let message = `Stay tuned, there is ${this.state.futureFormCount} form remaining...`;
+      if (this.state.futureFormCount > 1) {
+        message = `Stay tuned, there are ${this.state.futureFormCount} forms remaining...`;
+      }
       return (
         <Text style={[TypeStyles.statusMessage, TypeStyles.statusMessageSecondary]}>
-          Stay tuned, there are {this.state.futureFormCount} forms remaining...
+          {message}
         </Text>
       )
     }
