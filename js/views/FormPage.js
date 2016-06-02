@@ -31,6 +31,7 @@ import Color from '../styles/Color';
 import TypeStyles from '../styles/_TypeStyles';
 import Swiper from '../components/Swiper/Swiper';
 import Icon from 'react-native-vector-icons/FontAwesome'
+import moment from 'moment'
 
 import { loadTriggers, loadCachedTrigger } from '../api/Triggers'
 import { validateUser } from '../api/Account'
@@ -113,7 +114,7 @@ const FormPage = React.createClass ({
       futureForms = _.filter(allForms, function(form){
         return form.trigger > new Date()
       })
-      self.setState({isLoading: false, futureFormCount: futureForms.length})
+      self.setState({isLoading: false, futureForms: futureForms, futureFormCount: futureForms.length})
       return
     }
     forms = self.sortForms(forms)
@@ -185,14 +186,26 @@ const FormPage = React.createClass ({
 
   showFutureFormCount(){
     if (this.state.futureFormCount > 0) {
+      const futureForm = this.state.futureForms[0];
+      const title = futureForm.title.trim();
+      // TODO support triggers other than time
+      const timeTrigger = moment(futureForm.trigger).fromNow();
       let message = `Stay tuned, there is ${this.state.futureFormCount} form remaining...`;
+      let due = `The next form '${title}' is due in ${timeTrigger}.`
       if (this.state.futureFormCount > 1) {
         message = `Stay tuned, there are ${this.state.futureFormCount} forms remaining...`;
       }
       return (
-        <Text style={[TypeStyles.statusMessage, TypeStyles.statusMessageSecondary]}>
-          {message}
-        </Text>
+        <View>
+          <Text style={[TypeStyles.statusMessage, TypeStyles.statusMessageSecondary]}>
+            {message}
+          </Text>
+          <View style={{paddingTop: 15}}>
+            <Text style={[TypeStyles.statusMessage, TypeStyles.statusMessageSecondary]}>
+              {due}
+            </Text>
+          </View>
+        </View>
       )
     }
   },
