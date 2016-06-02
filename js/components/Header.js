@@ -31,9 +31,14 @@ const Header = React.createClass ({
   },
 
   componentWillReceiveProps(nextProps) {
+    this.updateTitle(nextProps.navigator)
+  },
+
+  /* Methods */
+  updateTitle(navigator, indexOffset = 0) {
     try {
-      const routeStack = nextProps.navigator.getCurrentRoutes()
-      const position = routeStack.length - 1
+      const routeStack = navigator.getCurrentRoutes()
+      const position = routeStack.length - 1 - indexOffset
       let title = this.state.title
       let path = this.state.path
       let nextTitle = routeStack[position].title
@@ -52,7 +57,6 @@ const Header = React.createClass ({
     }
   },
 
-  /* Methods */
   backToLogin() {
     this.props.navigator.resetTo({path:'login', title: ''})
     this.setState({title: ''})
@@ -69,6 +73,7 @@ const Header = React.createClass ({
         ]
       )
     } else {
+      this.updateTitle(this.props.navigator, 1)
       this.props.navigator.pop()
     }
   },
