@@ -4,6 +4,8 @@ import React, {
   TouchableWithoutFeedback,
   Alert,
   Platform,
+  Animated,
+  Easing,
 } from 'react-native'
 
 import Styles from '../styles/Styles'
@@ -23,6 +25,9 @@ const Header = React.createClass ({
       index: 0,
       title: title,
       path: path,
+      bounceValue: new Animated.Value(0),
+      fadeAnim: new Animated.Value(0),
+      translateAnim: new Animated.Value(0),
     }
   },
 
@@ -31,17 +36,41 @@ const Header = React.createClass ({
   },
 
   componentWillReceiveProps(nextProps) {
+    this.updateTitle(nextProps.navigator)
+  },
+
+  componentDidMount() {
+    Animated.timing(
+      this.state.fadeAnim,
+      {toValue: 1}
+    ).start()
+  },
+
+  /* Methods */
+  updateTitle(navigator, indexOffset = 0) {
     try {
-      const routeStack = nextProps.navigator.getCurrentRoutes()
-      const position = routeStack.length - 1
+      const routeStack = navigator.getCurrentRoutes()
+      const position = routeStack.length - 1 - indexOffset
       let title = this.state.title
       let path = this.state.path
       let nextTitle = routeStack[position].title
       let nextPath = routeStack[position].path
 
-      if (nextTitle && nextTitle !== title) title = nextTitle
-      if (nextPath && nextPath !== path) path = nextPath
+      if (nextPath && nextPath !== path || nextTitle && nextTitle !== title) {
+        path = nextPath
+        title = nextTitle
 
+        this.state.fadeAnim.setValue(0.5)
+        this.state.translateAnim.setValue(indexOffset ? -10 : 10)
+        Animated.timing(
+          this.state.fadeAnim,
+          {toValue: 1, duration: 300, easing: Easing.out(Easing.quad),}
+        ).start()
+        Animated.timing(
+          this.state.translateAnim,
+          {toValue: 0, duration: 300, easing: Easing.out(Easing.quad),}
+        ).start()
+      }
       this.setState({
         title: title,
         index: position,
@@ -52,7 +81,6 @@ const Header = React.createClass ({
     }
   },
 
-  /* Methods */
   backToLogin() {
     this.props.navigator.resetTo({path:'login', title: ''})
     this.setState({title: ''})
@@ -69,6 +97,7 @@ const Header = React.createClass ({
         ]
       )
     } else {
+      this.updateTitle(this.props.navigator, 1)
       this.props.navigator.pop()
     }
   },
@@ -84,7 +113,7 @@ const Header = React.createClass ({
             <Icon name="bars" size={25} color="#FFFFFF" />
           </TouchableWithoutFeedback>
         </View>
-      );
+      )
     }
   },
 
@@ -119,9 +148,17 @@ const Header = React.createClass ({
           }
         </View>
         <View style={Styles.header.navBarTitle}>
-          <Text numberOfLines={1} style={Styles.header.navBarTitleText}>
-            {title}
-          </Text>
+          <Animated.Text                         // Base: Image, Text, View
+            source={{uri: 'http://i.imgur.com/XMKOH81.jpg'}}
+            style={[Styles.header.navBarTitleText, {
+              opacity: this.state.fadeAnim,
+              transform: [
+                {translateX: this.state.translateAnim},
+              ],
+            }]}
+          >
+          {title}
+          </Animated.Text>
         </View>
         {this.renderDrawer()}
       </View>
