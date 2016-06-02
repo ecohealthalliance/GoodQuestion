@@ -40,6 +40,7 @@ function createParseSubmission(id, formId, answers, currentUser, done) {
   submission.set('uniqueId', id);
   submission.set('formId', formId);
   submission.set('answers', answers);
+  submission.set('userId', currentUser);
   const query = new Parse.Query(Parse.Role)
   query.equalTo('name', 'admin')
   query.find(
