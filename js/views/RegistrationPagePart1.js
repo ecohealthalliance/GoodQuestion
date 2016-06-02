@@ -5,9 +5,9 @@ import React, {
   View,
   TouchableWithoutFeedback,
   Image,
-  ScrollView,
   Alert,
   Dimensions,
+  ScrollView,
 } from 'react-native'
 
 import Variables from '../styles/Variables'
@@ -106,6 +106,7 @@ const RegistrationPagePart1 = React.createClass ({
     }
   },
 
+
   confirmPasswordChangeHandler(name, value) {
     const password = this.state.password;
     const errors = Object.assign({}, this.state.errors);
@@ -138,66 +139,77 @@ const RegistrationPagePart1 = React.createClass ({
   render() {
     return (
       <View style={[Styles.container.default]}>
-        <View style={this.styles.registrationHeader}>
-          <Image source={require('../images/logo_stacked.png')} style={this.styles.logo}></Image>
-        </View>
-        <ScrollView style={{height: this.props.calculateScrollViewHeight()}}>
-          <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
-            Create an Account
-          </Text>
-          <View style={Styles.form.inputGroup}>
-            <Text style={Styles.form.errorText}>
-              {this.decodeText(this.state.errors.email)}
-            </Text>
-            <TextInput
-              style={Styles.form.input}
-              onChangeText={this.textFieldChangeHandler.bind(this, 'email')}
-              value={this.state.email}
-              autoCapitalize='none'
-              autoCorrect={false}
-              placeholder='Email'
-            />
-            <Text style={Styles.form.errorText}>
-              {this.decodeText(this.state.errors.password)}
-            </Text>
-            <TextInput
-              secureTextEntry={true}
-              style={Styles.form.input}
-              onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
-              value={this.state.password}
-              autoCapitalize='none'
-              autoCorrect={false}
-              placeholder='Password'
-            />
-            <Text style={Styles.form.errorText}>
-              {this.decodeText(this.state.errors.confirmPassword)}
-            </Text>
-            <TextInput
-              secureTextEntry={true}
-              style={Styles.form.input}
-              onChangeText={this.confirmPasswordChangeHandler.bind(this, 'confirmPassword')}
-              value={this.state.confirmPassword}
-              autoCapitalize='none'
-              autoCorrect={false}
-              placeholder='Confirm Password'
-            />
-            <Text style={Styles.form.errorText}>
-              {this.decodeText(this.state.errors.acceptedTerms)}
-            </Text>
-            <View style={this.styles.checkboxWrapper}>
-              <Checkbox
-                children={this.renderTerms()}
-                checked={this.state.acceptedTerms}
-                uncheckedComponent={uncheckedComponent}
-                checkedComponent={checkedComponent}
-                onChange={this.checkboxChangeHandler.bind(this, 'acceptedTerms')}
-              />
-            </View>
+        <ScrollView ref='scrollView' horizontal={false} style={{height: this.props.calculateScrollViewHeight(), overflow: 'hidden'}}>
+          <View style={this.styles.registrationHeader}>
+            <Image source={require('../images/logo_stacked.png')} style={this.styles.logo}></Image>
           </View>
-          <View style={Styles.form.bottomForm}>
-            <Button action={this.goToNextPage} color='primary' wide>
-              {this.state.button_text}
-            </Button>
+          <View style={{backgroundColor: '#fff'}}>
+            <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
+              Create an Account
+            </Text>
+            <View style={Styles.form.inputGroup}>
+              <Text style={Styles.form.errorText}>
+                {this.decodeText(this.state.errors.email)}
+              </Text>
+              <View ref='emailView'>
+                <TextInput
+                  style={Styles.form.input}
+                  onChangeText={this.textFieldChangeHandler.bind(this, 'email')}
+                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'emailView', this.props.calculateOffset())}
+                  value={this.state.email}
+                  autoCapitalize='none'
+                  autoCorrect={false}
+                  placeholder='Email'
+                />
+              </View>
+              <Text style={Styles.form.errorText}>
+                {this.decodeText(this.state.errors.password)}
+              </Text>
+              <View ref='passwordView'>
+                <TextInput
+                  secureTextEntry={true}
+                  style={Styles.form.input}
+                  onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
+                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'passwordView', this.props.calculateOffset())}
+                  value={this.state.password}
+                  autoCapitalize='none'
+                  autoCorrect={false}
+                  placeholder='Password'
+                />
+              </View>
+              <Text style={Styles.form.errorText}>
+                {this.decodeText(this.state.errors.confirmPassword)}
+              </Text>
+              <View ref='confirmPasswordView'>
+                <TextInput
+                  secureTextEntry={true}
+                  style={Styles.form.input}
+                  onChangeText={this.confirmPasswordChangeHandler.bind(this, 'confirmPassword')}
+                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'confirmPasswordView', this.props.calculateOffset())}
+                  value={this.state.confirmPassword}
+                  autoCapitalize='none'
+                  autoCorrect={false}
+                  placeholder='Confirm Password'
+                />
+              </View>
+              <Text style={Styles.form.errorText}>
+                {this.decodeText(this.state.errors.acceptedTerms)}
+              </Text>
+              <View style={this.styles.checkboxWrapper}>
+                <Checkbox
+                  children={this.renderTerms()}
+                  checked={this.state.acceptedTerms}
+                  uncheckedComponent={uncheckedComponent}
+                  checkedComponent={checkedComponent}
+                  onChange={this.checkboxChangeHandler.bind(this, 'acceptedTerms')}
+                />
+              </View>
+            </View>
+            <View style={Styles.form.bottomForm}>
+              <Button action={this.goToNextPage} color='primary' wide>
+                {this.state.button_text}
+              </Button>
+            </View>
           </View>
         </ScrollView>
       </View>

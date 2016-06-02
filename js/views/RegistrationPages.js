@@ -57,7 +57,10 @@ const RegistrationPages = React.createClass ({
    * @return {number} ideal height of the ScrollView
    */
   calculateScrollViewHeight() {
-    return height - (Variables.HEADER_SIZE + Variables.REGISTRATION_HEIGHT + 80);
+    return height - 150; // site of the pagination footer
+  },
+  calculateOffset() {
+    return Variables.HEADER_SIZE + Variables.REGISTRATION_HEIGHT + 80;
   },
 
   /**
@@ -150,6 +153,7 @@ const RegistrationPages = React.createClass ({
 
   getChildren() {
     const sharedProps = Object.assign({
+      calculateOffset: this.calculateOffset,
       calculateScrollViewHeight: this.calculateScrollViewHeight,
       validatePage: this.validatePage,
       setIndex: this.setIndex,

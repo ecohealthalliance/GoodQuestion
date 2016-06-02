@@ -8,9 +8,11 @@ import React, {
   Alert,
   Image,
   Dimensions,
+  ScrollView,
 } from 'react-native'
 
 import Variables from '../styles/Variables'
+import Color from '../styles/Color'
 import Styles from '../styles/Styles'
 import {currentUser, updateProfile} from '../api/Account'
 
@@ -19,8 +21,6 @@ import Button from '../components/Button'
 import Joi from '../lib/joi-browser.min'
 import JoiMixins from '../mixins/joi-mixins'
 import EventMixins from '../mixins/event-mixins'
-
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const {height, width} = Dimensions.get('window')
 
@@ -63,7 +63,21 @@ const ProfilePage = React.createClass ({
       });
     });
   },
+
   /* Methods */
+  /**
+   * dynamically calculate scroll view height
+   *
+   * @return {number} ideal height of the ScrollView
+   */
+  calculateScrollViewHeight() {
+    return height - this.calculateOffset();
+  },
+  calculateOffset() {
+    return Variables.HEADER_SIZE + Variables.PROFILE_HEIGHT + 80;
+  },
+
+
   submit() {
     const self = this;
     this.setState({button_text: 'Updating...'});
@@ -81,47 +95,55 @@ const ProfilePage = React.createClass ({
   render() {
     return (
       <View style={{flex: 1, backgroundColor: '#fff'}}>
-        <KeyboardAwareScrollView style={{height: height}}>
+        <ScrollView ref='scrollView' horizontal={false} style={{height: this.calculateScrollViewHeight(), overflow: 'hidden'}}>
           <View style={Styles.profile.header}>
             <Image source={require('../images/profile_logo.png')} style={Styles.profile.picture}></Image>
             <Text style={Styles.profile.name}> {this.state.name} </Text>
             <Text style={Styles.profile.phone}> {this.state.phone} </Text>
           </View>
-          <Text style={[Styles.type.h1, {textAlign: 'center'}]}>
-            Update your Profile
-          </Text>
-          <View style={Styles.form.inputGroup}>
-            <Text style={Styles.form.errorText}>
-              {this.decodeText(this.state.errors.name)}
+          <View style={{backgroundColor: '#fff'}}>
+            <Text style={[Styles.type.h1, {textAlign: 'center'}]}>
+              Update your Profile
             </Text>
-            <TextInput
-              style={Styles.form.input}
-              onChangeText={this.textFieldChangeHandler.bind(this, 'name')}
-              value={this.state.name}
-              autoCapitalize='none'
-              autoCorrect={false}
-              returnKeyType='done'
-              placeholder="Full Name"
-            />
-            <Text style={Styles.form.errorText}>
-              {this.decodeText(this.state.errors.phone)}
-            </Text>
-            <TextInput
-              style={Styles.form.input}
-              onChangeText={this.textFieldChangeHandler.bind(this, 'phone')}
-              value={this.state.phone}
-              autoCapitalize='none'
-              autoCorrect={false}
-              returnKeyType='done'
-              placeholder="Phone Number"
-            />
+            <View style={Styles.form.inputGroup}>
+              <Text style={Styles.form.errorText}>
+                {this.decodeText(this.state.errors.name)}
+              </Text>
+              <View ref='nameView'>
+                <TextInput
+                  style={Styles.form.input}
+                  onChangeText={this.textFieldChangeHandler.bind(this, 'name')}
+                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'nameView', this.calculateOffset())}
+                  value={this.state.name}
+                  autoCapitalize='none'
+                  autoCorrect={false}
+                  returnKeyType='done'
+                  placeholder="Full Name"
+                />
+              </View>
+              <Text style={Styles.form.errorText}>
+                {this.decodeText(this.state.errors.phone)}
+              </Text>
+              <View ref='phoneView'>
+                <TextInput
+                  style={Styles.form.input}
+                  onChangeText={this.textFieldChangeHandler.bind(this, 'phone')}
+                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'phoneView', this.calculateOffset())}
+                  value={this.state.phone}
+                  autoCapitalize='none'
+                  autoCorrect={false}
+                  returnKeyType='done'
+                  placeholder="Phone Number"
+                />
+              </View>
+            </View>
+            <View style={Styles.form.bottomForm}>
+              <Button action={this.submit} color='primary' wide>
+                {this.state.button_text}
+              </Button>
+            </View>
           </View>
-          <View style={Styles.form.bottomForm}>
-            <Button action={this.submit} color='primary' wide>
-              {this.state.button_text}
-            </Button>
-          </View>
-        </KeyboardAwareScrollView>
+        </ScrollView>
       </View>
     )
   }
