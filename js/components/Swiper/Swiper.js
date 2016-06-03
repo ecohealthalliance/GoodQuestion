@@ -145,6 +145,7 @@ export default class Swiper extends Component {
         style={this.props.dotContainerStyle}
         dotStyle={ this.props.dotStyle }
         activeDotStyle={ this.props.activeDotStyle }
+        activeColor={ this.props.activeDotColor }
       />
     }
   }
