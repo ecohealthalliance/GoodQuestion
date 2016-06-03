@@ -52,9 +52,9 @@ const TermsOfServicePage = React.createClass ({
 
     // generate some dummy markers for testing
     markers = [
-      { title: 'marker 1', description: 'geofence survey', position: {latitude: 40.767721, longitude: -73.980388} },
-      { title: 'marker 2', description: 'geofence survey', position: {latitude: 40.767954, longitude: -73.982363} },
-      { title: 'marker 3', description: 'geofence survey', position: {latitude: 40.768523, longitude: -73.981048} },
+      { title: 'marker 1', description: 'geofence survey', position: {latitude: 40.767721, longitude: -73.980388}, radius: 25 },
+      { title: 'marker 2', description: 'geofence survey', position: {latitude: 40.767954, longitude: -73.982363}, radius: 25 },
+      { title: 'marker 3', description: 'geofence survey', position: {latitude: 40.768523, longitude: -73.981048}, radius: 25 },
     ]
     this.setState({
       markers: markers
@@ -83,7 +83,17 @@ const TermsOfServicePage = React.createClass ({
           followsUserLocation={true}
           showsPointsOfInterest={false}
           showsCompass={true}
-        >
+        > 
+          {
+            this.state.markers.map(marker => (
+              <MapView.Circle
+                center={marker.position}
+                radius={marker.radius}
+                strokeColor='#700'
+                fillColor='rgba(100, 30, 30, 0.5)'
+              />
+            ))
+          }
           {
             this.state.markers.map(marker => (
               <MapView.Marker

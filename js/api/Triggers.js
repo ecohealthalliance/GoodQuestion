@@ -57,6 +57,31 @@ function cacheTimeTrigger(trigger, form, survey) {
 }
 
 
+/**
+ * Saves a geofence 'Trigger' object from Parse into our Realm.io local database
+ * @param  {object} trigger Parse 'Trigger' object.
+ * @param  {object} form    Parse 'Form' object.
+ * @param  {object} survey  Parse 'Survey' object.
+ */
+function cacheGeofenceTrigger(trigger, form, survey) {
+  try {
+    realm.write(() => {
+      realm.create('GeofenceTrigger', {
+        id: trigger.id,
+        formId: form.id,
+        surveyId: survey.id,
+
+        title: form.get('title'),
+        latitude: trigger.get('properties').latitude,
+        longitude: trigger.get('properties').longitude,
+        radius: trigger.get('properties').radius || 10,
+      }, true)
+    })
+  } catch(e) {
+    console.warn(e)
+  }
+}
+
 // Checks for any time triggers activating in this cycle.
 export function checkTimeTriggers() {
   let now = new Date()
@@ -108,5 +133,4 @@ export function checkTimeTriggers() {
 
     }
   });
-
 }
