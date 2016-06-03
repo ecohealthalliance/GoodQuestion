@@ -33,6 +33,7 @@ import SurveyListPage from '../views/SurveyListPage'
 import TermsOfServicePage from '../views/TermsOfServicePage'
 import SurveyDetailsPage from '../views/SurveyDetailsPage'
 import NotificationsPage from '../views/NotificationsPage'
+import MapPage from '../views/MapPage'
 import RegistrationPages from '../views/RegistrationPages'
 import FormPage from '../views/FormPage'
 import ControlPanel from '../views/ControlPanel'
@@ -152,6 +153,7 @@ const SharedNavigator = React.createClass ({
       case 'login': viewComponent = <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />; break;
       case 'surveylist': viewComponent = <SurveyListPage {...sharedProps} />; break;
       case 'notifications': viewComponent = <NotificationsPage {...sharedProps} />; break;
+      case 'map': viewComponent = <MapPage {...sharedProps} />; break;
       case 'terms': viewComponent = <TermsOfServicePage {...sharedProps} />; break;
       case 'registration': viewComponent = <RegistrationPages {...sharedProps} index={route.index} />; break;
       case 'profile': viewComponent = <ProfilePage {...sharedProps} />; break;
@@ -180,6 +182,7 @@ const SharedNavigator = React.createClass ({
   /* Render */
   render() {
     const initialRoute = { path:'surveylist', title: 'Surveys' }
+    // const initialRoute = { path:'map', title: 'Test Maps' }
 
     // show loading component without the navigationBar
     if (this.state.isLoading) {
