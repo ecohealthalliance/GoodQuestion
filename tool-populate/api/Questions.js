@@ -41,29 +41,28 @@ function createDemoQuestions(parentForm) {
 
   for (var i = 0; i < limit; i++) {
     var newQuestion = new Question()
-
     var randomQuestionIndex = questionOrder[i]
-    Helpers.setAdminACL(newQuestion).then(function(){
-      newQuestion.set('text', DemoData.questions[randomQuestionIndex].text)
-      newQuestion.set('type', DemoData.questions[randomQuestionIndex].type)
-      newQuestion.set('properties', DemoData.questions[randomQuestionIndex].properties)
-      newQuestion.set('order', i + 1)
+    newQuestion.set('text', DemoData.questions[randomQuestionIndex].text)
+    newQuestion.set('type', DemoData.questions[randomQuestionIndex].type)
+    newQuestion.set('properties', DemoData.questions[randomQuestionIndex].properties)
+    newQuestion.set('order', i + 1)
 
-      newQuestion.save(null, {
-        useMasterKey: true,
-        success: function(response) {
-          questions.push(response)
+    newQuestion.save(null, {
+      useMasterKey: true,
+      success: function(question) {
+        Helpers.setAdminACL(question).then(function(){
+          questions.push(question)
           if (parentForm && questions.length === limit) {
             var relation = parentForm.relation('questions')
             relation.add(questions)
             parentForm.save(null, useMasterKey)
           }
-          storeQuestions(response)
-        },
-        error: function(response, error) {
-          console.warn('Failed to create Question, with error code: ' + error.message)
-        }
-      })
+          storeQuestions(question)
+        })
+      },
+      error: function(response, error) {
+        console.warn('Failed to create Question, with error code: ' + error.message)
+      }
     })
   }
 }

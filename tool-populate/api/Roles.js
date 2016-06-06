@@ -1,6 +1,7 @@
 var _ = require('lodash')
 var Parse = require('parse/node')
 var Store = require('../data/Store')
+var Helpers = require('./helpers')
 
 function loadRoles(options, callback) {
   var Role = Parse.Role
@@ -23,13 +24,11 @@ function loadRoles(options, callback) {
 }
 
 function createRole(roleToCreate) {
-  var roleACL = new Parse.ACL();
-  roleACL.setPublicReadAccess(true);
-
+  var acl = new Parse.ACL()
+  acl.setPublicReadAccess(true)
+  var role = new Parse.Role(roleToCreate, acl)
   console.log('Creating role "' + roleToCreate + '"')
-
-  var role = new Parse.Role(roleToCreate, roleACL);
-  role.save(null, {
+  return role.save(null, {
     useMasterKey: true,
     success: function(response) {
       storeRoles(response)

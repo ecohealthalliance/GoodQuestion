@@ -104,24 +104,42 @@ function destroyObjects(objects) {
   }
 }
 
+function setRoleACLs() {
+  var query = new Parse.Query(Parse.Role)
+  query.equalTo('name', 'admin')
+  query.first({useMasterKey: true})
+    .then(function(adminRole) {
+      var query = new Parse.Query(Parse.Role)
+      query.find(useMasterKey)
+        .then(function(roles) {
+          roles.forEach(function(role){
+            acl = role.getACL()
+            acl.setReadAccess(adminRole, true)
+            acl.setWriteAccess(adminRole, true)
+            role.setACL(acl)
+                .save(null, useMasterKey)
+          })
+        })
+    })
+}
+
 function initRoles() {
   var rolesToCreate = ["admin", "user"];
   Roles.loadRoles({}, function (error, results) {
-    console.log(results)
     for (var i = 0, ilen = rolesToCreate.length; i < ilen; i++) {
       (function(roleToCreate){
-        var queryRole = new Parse.Query(Parse.Role);
-        queryRole.equalTo('name', roleToCreate);
+        var queryRole = new Parse.Query(Parse.Role)
+        queryRole.equalTo('name', roleToCreate)
         queryRole.first({
+          useMasterKey: true,
           success: function (result) { // Role Object
-            console.log(result)
             if (result) {
-              console.log('Role "' + roleToCreate + '" already exists');
+              console.log('Role "' + roleToCreate + '" already exists')
             } else {
-              Roles.createRole(roleToCreate);
+              Roles.createRole(roleToCreate).then(setRoleACLs)
             }
           },
-          error: function(error) {console.log(error);}
+          error: function(error) {console.log(error)}
         });
       })(rolesToCreate[i])
     }

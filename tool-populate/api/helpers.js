@@ -15,6 +15,7 @@ function setAdminACL(obj) {
       acl.setWriteAccess(adminRole, true)
       obj.setACL(acl)
     })
+    .fail(function(err){console.log(err);})
 }
 
 module.exports = { setAdminACL }
