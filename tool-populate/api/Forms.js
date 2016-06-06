@@ -34,24 +34,6 @@ function storeForms(newForms) {
   Store.forms = _.unionBy(Store.forms, newForms, 'id')
 }
 
-function createForms(parentSurvey) {
-  var newForm = new Form()
-  var relation = parentSurvey.relation('forms')
-  relation.add(newForm)
-  newForm.save(null, {
-    useMasterKey: true,
-    success: function(response) {
-      parentSurvey.save(null, useMasterKey)
-      Questions.createQuestions(response)
-      Triggers.createTriggers(response)
-      storeForms(response)
-    },
-    error: function(response, error) {
-      console.warn('Failed to create Form, with error code: ' + error.message)
-    }
-  })
-}
-
 /**
   generate random time between 5am and 9pm for a given day
 */
@@ -91,4 +73,4 @@ function createDemoForm(parentSurvey, dayStartTimestamp) {
   })
 }
 
-module.exports = { Form, loadForms, createForms, storeForms, createDemoForm }
+module.exports = { Form, loadForms, storeForms, createDemoForm }

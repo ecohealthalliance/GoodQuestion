@@ -31,33 +31,6 @@ function storeQuestions(newQuestions) {
   Store.questions = _.unionBy(Store.questions, newQuestions, 'id')
 }
 
-function createQuestions(parentForm) {
-  var questions = []
-  for (var i = 0; i < DummyData.questions.length; i++) {
-    var newQuestion = new Question()
-
-    newQuestion.set('text', DummyData.questions[i].text)
-    newQuestion.set('type', DummyData.questions[i].type)
-    newQuestion.set('properties', DummyData.questions[i].properties)
-    newQuestion.set('order', DummyData.questions[i].order)
-
-    newQuestion.save(null, {
-      success: function(response) {
-        questions.push(response)
-        if (parentForm && questions.length === DummyData.questions.length) {
-          var relation = parentForm.relation('questions')
-          relation.add(questions)
-          parentForm.save(null, useMasterKey)
-        }
-        storeQuestions(response)
-      },
-      error: function(response, error) {
-        console.warn('Failed to create Question, with error code: ' + error.message)
-      }
-    })
-  }
-}
-
 function createDemoQuestions(parentForm) {
   var questions = []
   var limit = DemoData.questions.length < 10 ? DemoData.questions.length : 10
@@ -95,4 +68,4 @@ function createDemoQuestions(parentForm) {
   }
 }
 
-module.exports = { Question, loadQuestions, createQuestions, storeQuestions, createDemoQuestions }
+module.exports = { Question, loadQuestions, storeQuestions, createDemoQuestions }

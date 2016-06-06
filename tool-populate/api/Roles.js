@@ -8,6 +8,7 @@ function loadRoles(options, callback) {
   query.limit = 1000
 
   query.find({
+    useMasterKey: true,
     success: function(results) {
       storeRoles(results)
       if (callback)
@@ -29,6 +30,7 @@ function createRole(roleToCreate) {
 
   var role = new Parse.Role(roleToCreate, roleACL);
   role.save(null, {
+    useMasterKey: true,
     success: function(response) {
       storeRoles(response)
       console.log('Created role "' + roleToCreate + '"')

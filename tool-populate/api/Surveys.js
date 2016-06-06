@@ -38,24 +38,6 @@ function storeSurveys (newSurveys) {
   Store.surveys = _.unionBy(Store.surveys, newSurveys, 'id')
 }
 
-function createSurvey (surveyData) {
-  var newSurvey = new Survey()
-
-  newSurvey.set('title', surveyData.title)
-  newSurvey.set('user', surveyData.user)
-  newSurvey.set('createdAt', surveyData.created)
-
-  newSurvey.save(null, {
-    success: function(response) {
-      Forms.createForms(response)
-      storeSurveys(response)
-    },
-    error: function(response, error) {
-      console.warn('Failed to create Survey, with error code: ' + error.message)
-    }
-  })
-}
-
 /**
   find out the amount of days between two timestamps
 */
@@ -99,4 +81,4 @@ function createDemoSurvey (surveyData, startDate, endDate) {
 }
 
 
-module.exports = { Survey, loadCachedSurvey, loadSurveyList, storeSurveys, createSurvey, createDemoSurvey }
+module.exports = { Survey, loadCachedSurvey, loadSurveyList, storeSurveys, createDemoSurvey }

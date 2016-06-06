@@ -29,26 +29,6 @@ function storeTriggers(newTriggers) {
   Store.triggers = _.unionBy(Store.triggers, newTriggers, 'id')
 }
 
-function createTriggers(parentForm) {
-  var newTrigger = new Trigger()
-  newTrigger.set('triggerType', DummyData.trigger.triggerType)
-  newTrigger.set('properties', DummyData.trigger.properties)
-  newTrigger.set('form', parentForm)
-  newTrigger.save(null, {
-    success: function(response) {
-      if (parentForm) {
-        var relation = parentForm.relation('triggers')
-        relation.add(newTrigger)
-        parentForm.save(null, useMasterKey)
-      }
-      storeTriggers(response)
-    },
-    error: function(response, error) {
-      console.warn('Failed to create Trigger, with error code: ' + error.message)
-    }
-  })
-}
-
 function createDemoTrigger(parentForm, when) {
   var newTrigger = new Trigger()
   Helpers.setAdminACL(newTrigger).then(function() {
@@ -73,4 +53,4 @@ function createDemoTrigger(parentForm, when) {
   })
 }
 
-module.exports = { Trigger, loadTriggers, createTriggers, storeTriggers, createDemoTrigger }
+module.exports = { Trigger, loadTriggers, storeTriggers, createDemoTrigger }
