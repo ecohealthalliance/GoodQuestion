@@ -38,6 +38,9 @@ import FormPage from '../views/FormPage'
 import ControlPanel from '../views/ControlPanel'
 import ProfilePage from '../views/ProfilePage'
 
+import { NativeModules } from 'react-native';
+// var ParseSettingsManager = require('NativeModules').ParseSettingsManager;
+
 // Background
 // import { initializeGeolocationService } from '../api/BackgroundProcess'
 
@@ -71,6 +74,10 @@ const SharedNavigator = React.createClass ({
     }
   },
   componentWillMount() {
+    var ParseSettingsManager = NativeModules.ParseSettingsManager;
+    console.log(NativeModules)
+    console.log(ParseSettingsManager)
+    ParseSettingsManager.setParse();
     connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
   },
   componentDidMount() {

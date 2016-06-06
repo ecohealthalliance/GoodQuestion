@@ -11,11 +11,14 @@
 
 #import "RCTRootView.h"
 #import "RCTPushNotificationManager.h"
+#import "RCTParseSettingsManager.h"
+
 
 @implementation AppDelegate
 
 - (void)loadParseWithLaunchOptions:(NSDictionary *)launchOptions {
   [Parse initializeWithConfiguration:[ParseClientConfiguration configurationWithBlock:^(id<ParseMutableClientConfiguration> configuration) {
+    NSLog(@"test!!!");
     configuration.applicationId = @"UMassSurvey";
     configuration.clientKey = @"";
     configuration.server = @"https://dev-survey.eha.io/parse";
