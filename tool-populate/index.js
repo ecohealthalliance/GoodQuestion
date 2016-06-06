@@ -14,6 +14,8 @@ var Settings = require('./../js/settings.js')
 
 var program = require('commander')
 
+var useMasterKey = {useMasterKey: true}
+
 program
   .option('-i, --init', 'Create inital role and user classes.')
   .option('-c, --create', 'Create data for your local Parse server.')
@@ -98,13 +100,12 @@ function resetServer() {
 
 function destroyObjects(objects) {
   for (var i = objects.length - 1; i >= 0; i--) {
-    objects[i].destroy({useMasterKey: true})
+    objects[i].destroy(useMasterKey).fail(function(e){console.log(e);})
   }
 }
 
 function initRoles() {
   var rolesToCreate = ["admin", "user"];
-
   Roles.loadRoles({}, function (error, results) {
     console.log(results)
     for (var i = 0, ilen = rolesToCreate.length; i < ilen; i++) {
@@ -120,7 +121,7 @@ function initRoles() {
               Roles.createRole(roleToCreate);
             }
           },
-          error: function(error) {}
+          error: function(error) {console.log(error);}
         });
       })(rolesToCreate[i])
     }

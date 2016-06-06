@@ -4,14 +4,17 @@ var Store = require('../data/Store')
 var Questions = require('./Questions')
 var Triggers = require('./Triggers')
 var Form = Parse.Object.extend("Form")
+var Helpers = require('./helpers')
+var useMasterKey = {useMasterKey: true}
 
 
 function loadForms(options, callback) {
-  form = new Form()
+  var form = new Form()
   var query = new Parse.Query(form)
   query.limit = 1000
 
   query.find({
+    useMasterKey: true,
     success: function(results) {
       storeForms(results)
       Triggers.loadTriggers()
@@ -36,8 +39,9 @@ function createForms(parentSurvey) {
   var relation = parentSurvey.relation('forms')
   relation.add(newForm)
   newForm.save(null, {
+    useMasterKey: true,
     success: function(response) {
-      parentSurvey.save(null, {useMasterKey: true})
+      parentSurvey.save(null, useMasterKey)
       Questions.createQuestions(response)
       Triggers.createTriggers(response)
       storeForms(response)
@@ -62,25 +66,28 @@ function randomHour(dayTimestamp) {
 }
 
 function createDemoForm(parentSurvey, dayStartTimestamp) {
-  newForm = new Form()
-  newForm.set('title', 'Form ' + Date.now())
-  newForm.set('order', 1)
-  newForm.set('deleted', false)
-  newForm.save(null, {
-    useMasterKey: true,
-    success: function(form) {
-      parentSurvey.fetch().then(function(survey){
-        var relation = survey.relation('forms')
-        relation.add(form)
-        survey.save(null, {useMasterKey: true})
-      })
-      Questions.createDemoQuestions(form)
-      Triggers.createDemoTrigger(form, randomHour(dayStartTimestamp))
-      storeForms(form)
-    },
-    error: function(form, error) {
-      console.warn('Failed to create Form, with error code: ' + error.message)
-    }
+  var newForm = new Form()
+  var acl = new Parse.ACL()
+  Helpers.setAdminACL(newForm).then(function() {
+    newForm.set('title', 'Form ' + Date.now())
+    newForm.set('order', 1)
+    newForm.set('deleted', false)
+    newForm.save(null, {
+      useMasterKey: true,
+      success: function(form) {
+        parentSurvey.fetch(useMasterKey).then(function(survey){
+          var relation = survey.relation('forms')
+          relation.add(form)
+          survey.save(null, useMasterKey)
+        }).fail(function(e){console.log(e);})
+        Questions.createDemoQuestions(form)
+        Triggers.createDemoTrigger(form, randomHour(dayStartTimestamp))
+        storeForms(form)
+      },
+      error: function(form, error) {
+        console.warn('Failed to create Form, with error code: ' + error.message)
+      }
+    })
   })
 }
 
