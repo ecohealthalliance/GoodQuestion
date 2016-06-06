@@ -28,10 +28,6 @@ const SurveyFormNavigator = React.createClass ({
       this.props.onPressed(this.state.index-1)      
     } else if (direction === 'next' && this.state.index < this.state.total) {
       this.props.onPressed(this.state.index+1) 
-    } else {
-      console.log('not valid')
-      console.log(direction)
-      console.log(this.state.index)
     }
   },
 

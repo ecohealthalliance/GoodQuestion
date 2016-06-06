@@ -57,12 +57,12 @@ const FormPage = React.createClass ({
     if (this.props.index) {
       index = this.props.index;
     }
+
     return {
       forms: forms,
       isLoading: true,
       index: index,
       button_text: 'Submit',
-      // questionIndex: 0,
       formsInQueue: false
     }
   },
@@ -171,7 +171,7 @@ const FormPage = React.createClass ({
   /* Methods */
   filterForms(forms) {
     let past = new Date()
-    past = past.setDate(past.getDate() - 3)
+    past = past.setDate(past.getDate() - 90) // Temporary 90-day expiration date for forms.
     return _.filter(forms, function(form){
       let triggerTime = form.trigger
       return triggerTime > past && triggerTime < new Date()
@@ -224,6 +224,7 @@ const FormPage = React.createClass ({
     this.setState({
       button_text: 'Saving...'
     });
+
     saveSubmission(formId, answers, (err, res) => {
       if (err) {
         if (err === 'Invalid User') {
@@ -326,7 +327,6 @@ const FormPage = React.createClass ({
         <View style={{flex: 1}}>
           <View style={{flex: 1, paddingHorizontal: 20, overflow: 'hidden'}}>
             <Swiper
-              key={'form-swiper-'+this.state.formId}
               ref={(swiper) => {this._swiper = swiper}}
               style={{flex: 1}}
               containerStyle={{overflow: 'visible'}}
