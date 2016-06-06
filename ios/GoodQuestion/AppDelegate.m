@@ -11,7 +11,7 @@
 
 #import "RCTRootView.h"
 #import "RCTPushNotificationManager.h"
-#import "RCTParseSettingsManager.h"
+#import "ParseSettingsManager.h"
 
 
 @implementation AppDelegate
