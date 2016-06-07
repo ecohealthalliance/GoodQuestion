@@ -86,6 +86,8 @@ const SurveyListPage = React.createClass ({
 
   filterList(query, list) {
     let filteredList = []
+
+    // Filter the survey by category
     if (query !== 'all') {
       for (var i = 0; i < list.length; i++) {
         if (list[i].status == query) {
@@ -95,6 +97,7 @@ const SurveyListPage = React.createClass ({
     } else {
       filteredList = list
     }
+
     this.setState({
       isLoading   : false,
       list        : list,

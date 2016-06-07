@@ -58,12 +58,13 @@ function cacheTimeTrigger(trigger, form, survey) {
 
 
 // Checks for any time triggers activating in this cycle.
-export function checkTimeTriggers() {
+export function checkTimeTriggers(omitNotifications) {
+  console.log('checking time triggers')
   let now = new Date()
 
-  // Make the cut-off date 3 days
+  // Make the expiration date 90 days
   let past = new Date()
-  past = past.setDate(past.getDate() - 3)
+  past = past.setDate(past.getDate() - 90)
 
   // The JavaScript version of Realm does not seem to support Date queries yet, the filtering has to be done manually.
   let triggers = realm.objects('TimeTrigger').filtered(`triggered == false`)
@@ -94,18 +95,21 @@ export function checkTimeTriggers() {
         triggered: true,
       }, true)
 
-      const notification = realm.create('Notification', {
-        formId: validTriggers[i].formId,
-        title: validTriggers[i].title,
-        description: 'A scheduled survey form is available.', // TODO Replace with more descriptive messages in the future.
-        datetime: validTriggers[i].datetime,
-      }, true);
+      if (!omitNotifications) {
+        const notification = realm.create('Notification', {
+          surveyId: validTriggers[i].surveyId,
+          formId: validTriggers[i].formId,
+          title: validTriggers[i].title,
+          description: 'A scheduled survey form is available.', // TODO Replace with more descriptive messages in the future.
+          datetime: validTriggers[i].datetime,
+        }, true);
 
-      PushNotificationIOS.presentLocalNotification({
-        alertBody: notification.description,
-        applicationIconBadgeNumber: 1
-      });
-
+        PushNotificationIOS.presentLocalNotification({
+          alertBody: notification.description,
+          applicationIconBadgeNumber: 1
+        });
+      }
+      
     }
   });
 

@@ -165,7 +165,7 @@ const FormPage = React.createClass ({
   /* Methods */
   filterForms(forms) {
     let past = new Date()
-    past = past.setDate(past.getDate() - 3)
+    past = past.setDate(past.getDate() - 90)
     return _.filter(forms, function(form){
       let triggerTime = form.trigger
       return triggerTime > past && triggerTime < new Date()

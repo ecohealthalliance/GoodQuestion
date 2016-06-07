@@ -38,6 +38,11 @@ const SurveyStyles = StyleSheet.create({
     fontSize: 18,
     color: 'dimgray',
   },
+  itemDescription: {
+    paddingTop: 6,
+    fontSize: 12,
+    color: 'dimgray',
+  },
 
   // Survey Details
   surveyDescription: {
