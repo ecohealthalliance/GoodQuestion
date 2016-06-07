@@ -13,7 +13,7 @@ import Color from '../styles/Color'
 import { getSurveyForms } from '../api/Surveys'
 import { loadCachedForms } from '../api/Forms'
 import { loadCachedQuestions, loadQuestions } from '../api/Questions'
-import { checkTimeTriggers } from '../api/Triggers'
+import { checkSurveyTimeTriggers } from '../api/Triggers'
 import realm from '../data/Realm'
 import SurveyListItem from '../components/SurveyListItem'
 import Loading from '../components/Loading'
@@ -102,7 +102,7 @@ const SurveyDetailsPage = React.createClass ({
     realm.write(() => {
       survey.status = 'accepted'
     })
-    checkTimeTriggers(true)
+    checkSurveyTimeTriggers(survey, true)
     this.selectForm()
   },
 

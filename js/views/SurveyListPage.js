@@ -20,6 +20,7 @@ import Color from '../styles/Color'
 
 const SurveyListPage = React.createClass ({
   title: 'Surveys',
+  _preventUpdate: false,
 
   getInitialState() {
     return {
@@ -35,7 +36,7 @@ const SurveyListPage = React.createClass ({
   componentDidMount() {
     this.mountTimeStamp = Date.now()
 
-    // Update Survey List from Parse once every 3 minutes
+    // Update Survey List from Parse only once every 3 minutes
     if ( this.state.list.length === 0 || Store.lastParseUpdate + 180000 < Date.now() ) {
       loadSurveyList({}, this.loadList);
     } else {
@@ -53,10 +54,28 @@ const SurveyListPage = React.createClass ({
       if (nextProps.navigator) {
         let routeStack = nextProps.navigator.state.routeStack
         let newPath = routeStack[routeStack.length-1].path
-        if (newPath === 'surveylist') this.loadList()
+        if (newPath === 'surveylist') {
+          this.loadList()
+        }
       }
     } catch(e) {
       console.error(e)
+    }
+  },
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.navigator) {
+      let routeStack = nextProps.navigator.state.routeStack
+      let newPath = routeStack[routeStack.length-1].path
+
+      return  newPath === 'surveylist' ||
+              this.state.isLoading != nextState.isLoading ||
+              this.state.dataSource != nextState.dataSource ||
+              this.state.filterType != nextState.filterType ||
+              this.state.filteredList != nextState.filteredList
+
+    } else {
+      return true
     }
   },
 
@@ -158,13 +177,14 @@ const SurveyListPage = React.createClass ({
         onPress={() => this.selectSurvey(item)}
         underlayColor={Color.background3}>
         <View>
-          <SurveyListItem item={item} onChecked={this.onChecked.bind(this, rowId)} />
+          <SurveyListItem {...item} getFormAvailability={item.getFormAvailability} />
         </View>
       </TouchableHighlight>
     );
   },
 
   render() {
+    console.log('rendering survey list')
     if (this.state.isLoading) {
       return (<Loading/>)
     } else {

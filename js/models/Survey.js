@@ -4,7 +4,7 @@ export default class Survey {
     return Array.from(realm.objects('Form').filtered(`surveyId="${this.id}"`))
   }
 
-  getAvailabilityText() {
+  getFormAvailability() {
     let result = {
       availableTimeTriggers: 0,
       nextTimeTrigger: false,
@@ -20,6 +20,7 @@ export default class Survey {
         result.availableTimeTriggers = availableTimeTriggers.length
       }
 
+      // Check for the next future time trigger.
       let nextTimeTriggers = timeTriggers.filtered(`triggered == false`).sorted('datetime')
       if (nextTimeTriggers && nextTimeTriggers.length > 0) {
         result.nextTimeTrigger = nextTimeTriggers[0].datetime
@@ -30,9 +31,6 @@ export default class Survey {
     } catch (e) {
       console.warn(e)
     }
-    
-
-    
 
     return result
   }

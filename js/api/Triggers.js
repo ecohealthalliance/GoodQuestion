@@ -57,7 +57,10 @@ function cacheTimeTrigger(trigger, form, survey) {
 }
 
 
-// Checks for any time triggers activating in this cycle.
+/**
+ * Checks the time triggers of all accepted surveys
+ * @param  {bool} omitNotifications   Set to true to prevent Notifications from being generated when the triggers become active
+ */
 export function checkTimeTriggers(omitNotifications) {
   console.log('checking time triggers')
   let now = new Date()
@@ -67,49 +70,51 @@ export function checkTimeTriggers(omitNotifications) {
   past = past.setDate(past.getDate() - 90)
 
   // The JavaScript version of Realm does not seem to support Date queries yet, the filtering has to be done manually.
-  let triggers = realm.objects('TimeTrigger').filtered(`triggered == false`)
-  let validTriggers = []
-  let surveyId = ''
-  let surveyAccepted = false
-  for (var i = 0; i < triggers.length; i++) {
-    if (triggers[i].datetime < now && triggers[i].datetime > past) {
-      if (triggers[i].surveyId !== surveyId) {
-        let survey = realm.objects('Survey').filtered(`id == "${triggers[i].surveyId}"`)[0]
-        if (survey) {
-          surveyId = survey.id
-          surveyAccepted = survey.status === 'accepted'
-        } else {
-          surveyAccepted = false
+  let surveys = realm.objects('Survey').filtered(`status == "accepted"`)
+
+  for (var i = 0; i < surveys.length; i++) {
+    checkSurveyTimeTriggers(surveys[i], omitNotifications)
+  }
+}
+
+
+/**
+ * Checks the time triggers of a single survey.
+ * @param  {ibject} survey            Realm 'Survey' object to be checked
+ * @param  {bool} omitNotifications   Set to true to prevent Notifications from being generated when the triggers become active
+ */
+export function checkSurveyTimeTriggers(survey, omitNotifications) {
+  let triggers = realm.objects('TimeTrigger').filtered(`surveyId="${survey.id}" AND triggered == false`)
+  let now = new Date()
+
+  // Make the expiration date 90 days
+  let past = new Date()
+  past = past.setDate(past.getDate() - 90)
+
+  // Record the new trigger 
+  realm.write(() => {
+    for (var i = 0; i < triggers.length; i++) {
+      if (triggers[i].datetime < now && triggers[i].datetime > past) {
+        realm.create('TimeTrigger', {
+          id: triggers[i].id,
+          triggered: true,
+        }, true)
+
+        if (!omitNotifications) {
+          const notification = realm.create('Notification', {
+            surveyId: triggers[i].surveyId,
+            formId: triggers[i].formId,
+            title: triggers[i].title,
+            description: 'A scheduled survey form is available.', // TODO Replace with more descriptive messages in the future.
+            datetime: triggers[i].datetime,
+          }, true);
+
+          PushNotificationIOS.presentLocalNotification({
+            alertBody: notification.description,
+            applicationIconBadgeNumber: 1
+          });
         }
       }
-      if (surveyAccepted) {
-        validTriggers.push(triggers[i])
-      }
-    }
-  }
-
-  realm.write(() => {
-    for (var i = 0; i < validTriggers.length; i++) {
-      realm.create('TimeTrigger', {
-        id: validTriggers[i].id,
-        triggered: true,
-      }, true)
-
-      if (!omitNotifications) {
-        const notification = realm.create('Notification', {
-          surveyId: validTriggers[i].surveyId,
-          formId: validTriggers[i].formId,
-          title: validTriggers[i].title,
-          description: 'A scheduled survey form is available.', // TODO Replace with more descriptive messages in the future.
-          datetime: validTriggers[i].datetime,
-        }, true);
-
-        PushNotificationIOS.presentLocalNotification({
-          alertBody: notification.description,
-          applicationIconBadgeNumber: 1
-        });
-      }
-      
     }
   });
 
