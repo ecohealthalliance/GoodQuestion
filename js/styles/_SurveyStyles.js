@@ -7,6 +7,8 @@ const SurveyStyles = StyleSheet.create({
   list: {
     alignSelf: 'stretch',
     backgroundColor: Color.background2,
+    borderTopWidth: 1,
+    borderColor: Color.background1,
   },
   listitem: {
     flex: 1,

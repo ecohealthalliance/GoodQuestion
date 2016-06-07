@@ -137,7 +137,7 @@ const SurveyListPage = React.createClass ({
       return (
         <ListView dataSource = { this.state.dataSource }
           renderRow = { this.renderItem }
-          contentContainerStyle = { [Styles.container.default, Styles.survey.list] }
+          contentContainerStyle = { [Styles.survey.list] }
           enableEmptySections
         />
       )
@@ -169,8 +169,10 @@ const SurveyListPage = React.createClass ({
       return (<Loading/>)
     } else {
       return (
-        <View style={[Styles.container.default , {flex: 1}]}>
-          {this.showList()}
+        <View style={[Styles.container.default]}>
+          <View style={{flex:1}}>
+            {this.showList()}
+          </View>
           <SurveyListFilter filterList={this.updateListFilter} />
         </View>
       )
