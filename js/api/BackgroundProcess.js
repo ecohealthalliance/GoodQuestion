@@ -4,7 +4,9 @@ import Settings from '../settings'
 import { addSchedule } from './Schedule'
 import { checkTimeTriggers } from './Triggers'
 
-export const BackgroundGeolocation = require('react-native-background-geolocation')
+export const BackgroundGeolocation = Platform.OS === 'ios' ?
+                                      require('react-native-background-geolocation') :
+                                      require('react-native-background-geolocation-android')
 
 let startTimer = Date.now()
 

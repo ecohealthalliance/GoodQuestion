@@ -40,7 +40,7 @@ import ControlPanel from '../views/ControlPanel'
 import ProfilePage from '../views/ProfilePage'
 
 // Background
-// import { initializeGeolocationService } from '../api/BackgroundProcess'
+import { initializeGeolocationService } from '../api/BackgroundProcess'
 
 /* Configuration */
 if (Platform.OS === 'ios') {
@@ -49,7 +49,7 @@ if (Platform.OS === 'ios') {
   Store.platform = 'android'
 }
 
-// initializeGeolocationService()
+initializeGeolocationService()
 
 let navigator;
 // Binds the hardware "back button" from Android devices
