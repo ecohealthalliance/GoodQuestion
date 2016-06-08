@@ -4,7 +4,8 @@ import React, {
   StyleSheet,
   TouchableHighlight,
   Text,
-  View
+  Platform,
+  View,
 } from 'react-native'
 
 import Button from '../components/Button'
@@ -67,11 +68,15 @@ const TermsOfServicePage = React.createClass ({
 
   /* Render */
   render() {
+    const containerStyle = []
+    const mapStyle = []
+
+
     return (
-      <View style={[Styles.container.default , {flex: 1, overflow: 'hidden'}]}>
+      <View style={[Styles.container.default, { flex: 1, overflow: 'hidden' }]}>
         <MapView
           ref={(ref) => this._map = ref}
-          style={{flex: 1}}
+          style={Platform.OS === 'ios' ? _styles.iosMap : _styles.androidMap}
           region={{
             latitude: this.state.latitude,
             longitude: this.state.longitude,
@@ -87,6 +92,7 @@ const TermsOfServicePage = React.createClass ({
           {
             this.state.markers.map(marker => (
               <MapView.Circle
+                key={'circle-'+marker.title}
                 center={marker.position}
                 radius={marker.radius}
                 strokeColor='#700'
@@ -97,6 +103,7 @@ const TermsOfServicePage = React.createClass ({
           {
             this.state.markers.map(marker => (
               <MapView.Marker
+                key={'marker-'+marker.title}
                 coordinate={marker.position}
                 title={marker.title}
                 description={marker.description}
@@ -107,6 +114,19 @@ const TermsOfServicePage = React.createClass ({
       </View>
     )
   }
+})
+
+const _styles = StyleSheet.create({
+  iosMap: {
+    flex: 1,
+  },
+  androidMap: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
 })
 
 module.exports = TermsOfServicePage

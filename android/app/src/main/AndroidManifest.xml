@@ -49,8 +49,12 @@
               <action android:name="android.intent.action.BOOT_COMPLETED" />
           </intent-filter>
       </receiver>
+      
+      <!-- Google Maps API key -->
+      <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyD3tJy2Eb_gp1KSxGsVKN-BY1XgytmHQTY" />
 
-      <!-- /background-location -->
     </application>
 
 </manifest>

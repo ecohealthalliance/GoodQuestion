@@ -11,6 +11,9 @@ import { connectToParseServer } from './js/api/ParseServer'
 // Router
 import SharedNavigator from './js/router/SharedNavigator'
 
+console.disableYellowBox = true;
+
+
 /* Android App */
 const GoodQuestion = React.createClass ({
   /* Life Cycle */

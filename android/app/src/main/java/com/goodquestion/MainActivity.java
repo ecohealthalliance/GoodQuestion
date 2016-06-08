@@ -1,12 +1,13 @@
 package com.goodquestion;
 
 import com.facebook.react.ReactActivity;
-import com.oblador.vectoricons.VectorIconsPackage;
-import com.AirMaps.AirPackage;
-import io.realm.react.RealmReactPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
+
+import com.oblador.vectoricons.VectorIconsPackage;
+import io.realm.react.RealmReactPackage;
 import com.transistorsoft.rnbackgroundgeolocation.*;
+import com.AirMaps.AirPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -40,9 +41,9 @@ public class MainActivity extends ReactActivity {
         return Arrays.<ReactPackage>asList(
             new RNBackgroundGeolocation(this),      // <-- for background-geolocation
             new MainReactPackage(),
+            new RealmReactPackage(),
             new VectorIconsPackage(),
-            new AirPackage(),
-            new RealmReactPackage()
+            new AirPackage()
         );
     }
 }
