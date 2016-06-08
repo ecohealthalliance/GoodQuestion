@@ -7,8 +7,10 @@ import Form from '../models/Form'
 import Question from '../models/Question'
 import Notification from '../models/Notification'
 import TimeTrigger from '../models/TimeTrigger'
+import Test from '../models/Test'
 
 const realmInstance = new Realm({
+  schemaVersion: 39,
   schema: [
     Survey,
     Form,
@@ -16,11 +18,15 @@ const realmInstance = new Realm({
     Notification,
     TimeTrigger,
     Submission,
-  ],
-  schemaVersion: 36,
+    Test,
+  ]
 })
 
-// Erases the current cache of a target object
+/**
+ * Erases the current cache of a target object
+ * @param  {string} objectName   Realm object to search for and delete
+ * @param  {array}  idExclusions Array of strings containing ids to be ignored by the function
+ */
 export function clearRealmCache(objectName, idExclusions) {
   try {
     let objects = realm.objects(objectName)
