@@ -17,7 +17,7 @@ const realmInstance = new Realm({
     TimeTrigger,
     Submission,
   ],
-  schemaVersion: 35,
+  schemaVersion: 40,
 })
 
 // Erases the current cache of a target object
