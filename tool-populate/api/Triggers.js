@@ -31,7 +31,7 @@ function storeTriggers(newTriggers) {
 
 function createDemoTrigger(parentForm, when) {
   var newTrigger = new Trigger()
-  Helpers.setAdminACL(newTrigger).then(function() {
+  Helpers.setAdminACL(newTrigger).then(function(newTrigger) {
     newTrigger.set('type', 'datetime')
     newTrigger.set('properties', {"datetime": when.toISOString()})
     newTrigger.set('form', parentForm)

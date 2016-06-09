@@ -46,11 +46,10 @@ function createDemoQuestions(parentForm) {
     newQuestion.set('type', DemoData.questions[randomQuestionIndex].type)
     newQuestion.set('properties', DemoData.questions[randomQuestionIndex].properties)
     newQuestion.set('order', i + 1)
-
-    newQuestion.save(null, {
-      useMasterKey: true,
-      success: function(question) {
-        Helpers.setAdminACL(question).then(function(){
+    Helpers.setAdminACL(newQuestion).then(function(newQuestion) {
+      newQuestion.save(null, {
+        useMasterKey: true,
+        success: function(question) {
           questions.push(question)
           if (parentForm && questions.length === limit) {
             var relation = parentForm.relation('questions')
@@ -58,11 +57,11 @@ function createDemoQuestions(parentForm) {
             parentForm.save(null, useMasterKey)
           }
           storeQuestions(question)
-        })
-      },
-      error: function(response, error) {
-        console.warn('Failed to create Question, with error code: ' + error.message)
-      }
+        },
+        error: function(response, error) {
+          console.warn('Failed to create Question, with error code: ' + error.message)
+        }
+      })
     })
   }
 }

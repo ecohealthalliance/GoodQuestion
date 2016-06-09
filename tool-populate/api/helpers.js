@@ -14,6 +14,7 @@ function setAdminACL(obj) {
       acl.setReadAccess(adminRole, true)
       acl.setWriteAccess(adminRole, true)
       obj.setACL(acl)
+      return obj
     })
     .fail(function(err){console.log(err);})
 }

@@ -50,7 +50,7 @@ function randomHour(dayTimestamp) {
 function createDemoForm(parentSurvey, dayStartTimestamp) {
   var newForm = new Form()
   var acl = new Parse.ACL()
-  Helpers.setAdminACL(newForm).then(function() {
+  Helpers.setAdminACL(newForm).then(function(newForm) {
     newForm.set('title', 'Form ' + Date.now())
     newForm.set('order', 1)
     newForm.set('deleted', false)

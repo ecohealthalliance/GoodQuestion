@@ -58,7 +58,7 @@ function createDemoSurvey (surveyData, startDate, endDate) {
   var endDateTimestamp = parseDate(endDate)
   var numberOfDays = dayDiff(startDateTimestamp, endDateTimestamp)
   var newSurvey = new Survey()
-  Helpers.setAdminACL(newSurvey).then(function(){
+  Helpers.setAdminACL(newSurvey).then(function(newSurvey){
     newSurvey.set('title', surveyData.title)
     newSurvey.set('description', surveyData.description)
     newSurvey.set('user', surveyData.user)
