@@ -32,14 +32,14 @@ const SurveyListItem = React.createClass ({
 
   render() {
     return (
-      <View style={Styles.survey.listitem}>
-          <View style={Styles.container.col75}>
-            <Text style={Styles.survey.title}>{this.props.item.title}</Text>
+        <View style={Styles.survey.listitem}>
+            <View style={Styles.container.col75}>
+              <Text style={Styles.survey.title}>{this.props.item.title}</Text>
+            </View>
+          <View style={[Styles.container.col25, {alignItems: 'flex-end'}]}>
+            {this.renderIcon()}
           </View>
-        <View style={[Styles.container.col25, {alignItems: 'flex-end'}]}>
-          {this.renderIcon()}
         </View>
-      </View>
     )
   }
 });
