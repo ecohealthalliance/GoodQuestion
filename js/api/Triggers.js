@@ -1,8 +1,9 @@
-import { InteractionManager } from 'react-native'
+import { InteractionManager, Platform } from 'react-native'
 import _ from 'lodash'
 import Parse from 'parse/react-native'
 import realm from '../data/Realm'
-import { PushNotificationIOS } from 'react-native'
+
+import PushNotification from 'react-native-push-notification';
 
 // Queries the connected Parse server for a list of Triggers.
 export function loadTriggers(form, survey, callback) {
@@ -101,11 +102,9 @@ export function checkTimeTriggers() {
         datetime: validTriggers[i].datetime,
       }, true);
 
-      PushNotificationIOS.presentLocalNotification({
-        alertBody: notification.description,
-        applicationIconBadgeNumber: 1
+      PushNotification.localNotification({
+          message: notification.description,
       });
-
     }
   });
 
