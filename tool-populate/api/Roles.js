@@ -1,7 +1,6 @@
 var _ = require('lodash')
 var Parse = require('parse/node')
 var Store = require('../data/Store')
-var Helpers = require('./helpers')
 
 function loadRoles(options, callback) {
   var Role = Parse.Role
@@ -9,7 +8,6 @@ function loadRoles(options, callback) {
   query.limit = 1000
 
   query.find({
-    useMasterKey: true,
     success: function(results) {
       storeRoles(results)
       if (callback)
@@ -24,12 +22,13 @@ function loadRoles(options, callback) {
 }
 
 function createRole(roleToCreate) {
-  var acl = new Parse.ACL()
-  acl.setPublicReadAccess(true)
-  var role = new Parse.Role(roleToCreate, acl)
+  var roleACL = new Parse.ACL();
+  roleACL.setPublicReadAccess(true);
+
   console.log('Creating role "' + roleToCreate + '"')
-  return role.save(null, {
-    useMasterKey: true,
+
+  var role = new Parse.Role(roleToCreate, roleACL);
+  role.save(null, {
     success: function(response) {
       storeRoles(response)
       console.log('Created role "' + roleToCreate + '"')
