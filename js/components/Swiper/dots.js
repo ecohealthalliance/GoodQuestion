@@ -15,6 +15,7 @@ export default class Dots extends Component {
     style: View.propTypes.style,
     dotStyle: View.propTypes.style,
     activeDotStyle: View.propTypes.style,
+    activeColor: React.PropTypes.string,
   };
 
   static defaultProps = {
