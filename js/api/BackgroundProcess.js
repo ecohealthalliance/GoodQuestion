@@ -93,7 +93,8 @@ export function initializeGeolocationService() {
     })
 
     // Check the time triggers on start regardless if there is a schedule cycle running.
-    checkTimeTriggers()
+    // Ommit notifications to prevent spam on login.
+    checkTimeTriggers(true)
   })
 }
 

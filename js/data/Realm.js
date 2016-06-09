@@ -8,8 +8,10 @@ import Question from '../models/Question'
 import Notification from '../models/Notification'
 import TimeTrigger from '../models/TimeTrigger'
 import GeofenceTrigger from '../models/GeofenceTrigger'
+import Test from '../models/Test'
 
 const realmInstance = new Realm({
+  schemaVersion: 42,
   schema: [
     Survey,
     Form,
@@ -18,11 +20,15 @@ const realmInstance = new Realm({
     TimeTrigger,
     GeofenceTrigger,
     Submission,
+    Test,
   ],
-  schemaVersion: 41,
 })
 
-// Erases the current cache of a target object
+/**
+ * Erases the current cache of a target object
+ * @param  {string} objectName   Realm object to search for and delete
+ * @param  {array}  idExclusions Array of strings containing ids to be ignored by the function
+ */
 export function clearRealmCache(objectName, idExclusions) {
   try {
     let objects = realm.objects(objectName)

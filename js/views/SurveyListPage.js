@@ -21,6 +21,7 @@ import Color from '../styles/Color'
 
 const SurveyListPage = React.createClass ({
   title: 'Surveys',
+  _preventUpdate: false,
 
   getInitialState() {
     return {
@@ -37,7 +38,7 @@ const SurveyListPage = React.createClass ({
   componentDidMount() {
     this.mountTimeStamp = Date.now()
 
-    // Update Survey List from Parse once every 3 minutes
+    // Update Survey List from Parse only once every 3 minutes
     if ( this.state.list.length === 0 || Store.lastParseUpdate + 180000 < Date.now() ) {
       loadSurveyList({}, this.loadList);
     } else {
@@ -55,10 +56,28 @@ const SurveyListPage = React.createClass ({
       if (nextProps.navigator) {
         let routeStack = nextProps.navigator.state.routeStack
         let newPath = routeStack[routeStack.length-1].path
-        if (newPath === 'surveylist') this.loadList()
+        if (newPath === 'surveylist') {
+          this.loadList()
+        }
       }
     } catch(e) {
       console.error(e)
+    }
+  },
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.navigator) {
+      let routeStack = nextProps.navigator.state.routeStack
+      let newPath = routeStack[routeStack.length-1].path
+
+      return  newPath === 'surveylist' ||
+              this.state.isLoading != nextState.isLoading ||
+              this.state.dataSource != nextState.dataSource ||
+              this.state.filterType != nextState.filterType ||
+              this.state.filteredList != nextState.filteredList
+
+    } else {
+      return true
     }
   },
 
@@ -89,6 +108,8 @@ const SurveyListPage = React.createClass ({
 
   filterList(query, list) {
     let filteredList = []
+
+    // Filter the survey by category
     if (query !== 'all') {
       for (var i = 0; i < list.length; i++) {
         if (list[i].status == query) {
@@ -98,6 +119,7 @@ const SurveyListPage = React.createClass ({
     } else {
       filteredList = list
     }
+
     this.setState({
       isLoading   : false,
       list        : list,
@@ -137,7 +159,7 @@ const SurveyListPage = React.createClass ({
       return (
         <ListView dataSource = { this.state.dataSource }
           renderRow = { this.renderItem }
-          contentContainerStyle = { [Styles.container.default, Styles.survey.list] }
+          contentContainerStyle = { [Styles.survey.list] }
           enableEmptySections 
           refreshControl={
                 <RefreshControl
@@ -172,7 +194,7 @@ const SurveyListPage = React.createClass ({
         onPress={() => this.selectSurvey(item)}
         underlayColor={Color.background3}>
         <View>
-          <SurveyListItem item={item} onChecked={this.onChecked.bind(this, rowId)} />
+          <SurveyListItem {...item} getFormAvailability={item.getFormAvailability} />
         </View>
       </TouchableHighlight>
     );
@@ -186,8 +208,10 @@ const SurveyListPage = React.createClass ({
       return (<Loading/>)
     } else {
       return (
-        <View style={[Styles.container.default , {flex: 1}]}>
-          {this.showList()}
+        <View style={[Styles.container.default]}>
+          <View style={{flex:1}}>
+            {this.showList()}
+          </View>
           <SurveyListFilter filterList={this.updateListFilter} />
         </View>
       )

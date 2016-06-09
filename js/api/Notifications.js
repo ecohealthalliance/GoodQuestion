@@ -14,10 +14,11 @@ export function loadNotifications() {
 }
 
 // Creates a new notification for an active Time Trigger
-export function addTimeTriggerNotification( formId, title, description, time ) {
+export function addTimeTriggerNotification( surveyId, formId, title, description, time ) {
   try {
     realm.write(() => {
       realm.create('Notification', {
+        surveyId: surveyId,
         formId: formId,
         title: title,
         description: description,

@@ -41,7 +41,12 @@ export function loadSurveyList(options, callback) {
       let cachedSurveys = realm.objects('Survey')
       for (var i = 0; i < results.length; i++) {
         let cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0]
-        if (!cachedSurvey || cachedSurvey.updatedAt.getTime() != results[i].updatedAt.getTime()) {
+        let cachedSurveyTriggers = realm.objects('TimeTrigger').filtered(`surveyId = "${results[i].id}"`)
+        if( !cachedSurvey ||
+            !cachedSurveyTriggers ||
+            cachedSurveyTriggers.length == 0 ||
+            cachedSurvey.updatedAt.getTime() != results[i].updatedAt.getTime()
+          ) {
           cacheParseSurveys(results[i])
           loadForms(results[i])
         }

@@ -124,8 +124,9 @@ function upsertRealmSubmission(id, formId, answers, dirty, done) {
     .objects('Submission')
     .filtered(`uniqueId = "${id}"`)
     .sorted('created');
-  let notification = realm.objects('Notification')
-    .filtered(`formId = "${formId}"`);
+  let notification = realm.objects('Notification').filtered(`formId = "${formId}"`)
+  let timeTrigger = realm.objects('TimeTrigger').filtered(`formId = "${formId}"`)
+  // let geofenceTrigger = realm.objects('GeofenceTrigger').filtered(`formId = "${formId}"`)
   if (submissions.length > 0) {
     const submission = submissions[0];
     try {
@@ -147,9 +148,9 @@ function upsertRealmSubmission(id, formId, answers, dirty, done) {
           created: new Date(),
           answers: JSON.stringify(answers),
         });
-        if (notification) {
-          notification.complete = true
-        }
+        if (notification) notification.complete = true
+        if (timeTrigger) timeTrigger.complete = true
+        // if (geofenceTrigger) geofenceTrigger.complete = true
         done(null, submission);
       } catch(e) {
         done('Error saving realm submission ' + id);
