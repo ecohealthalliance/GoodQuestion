@@ -72,7 +72,7 @@ const FormPage = React.createClass ({
         answer = this.state.answers[question.id],
         properties = JSON.parse(question.properties)
 
-    
+
     if(question.type == "number" || question.type == "scale") {
       if(properties.min && answer < properties.min) {
         return false
@@ -197,7 +197,7 @@ const FormPage = React.createClass ({
       // TODO support triggers other than time
       const timeTrigger = moment(futureForm.trigger).fromNow();
       let message = `Stay tuned, there is ${this.state.futureFormCount} form remaining...`;
-      let due = `The next form '${title}' is due in ${timeTrigger}.`
+      let due = `The next form '${title}' is due ${timeTrigger}.`
       if (this.state.futureFormCount > 1) {
         message = `Stay tuned, there are ${this.state.futureFormCount} forms remaining...`;
       }
