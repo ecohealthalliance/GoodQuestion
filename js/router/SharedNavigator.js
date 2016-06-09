@@ -41,13 +41,6 @@ import ProfilePage from '../views/ProfilePage'
 // Background
 import { initializeGeolocationService } from '../api/BackgroundProcess'
 
-/* Configuration */
-if (Platform.OS === 'ios') {
-  Store.platform = 'ios'
-} else {
-  Store.platform = 'android'
-}
-
 initializeGeolocationService()
 
 let navigator;
@@ -70,13 +63,14 @@ const SharedNavigator = React.createClass ({
       isAuthenticated: false,
     }
   },
+
   componentWillMount() {
     connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
   },
+
   componentDidMount() {
-    let self = this
     isAuthenticated((authenticated) => {
-      self.setState({
+      this.setState({
         isAuthenticated: authenticated,
         isLoading: false,
       });
@@ -100,7 +94,6 @@ const SharedNavigator = React.createClass ({
       navigator.resetTo({path:'login',title:''});
     });
   },
-
 
   closeControlPanel() {
     this._drawer.close()

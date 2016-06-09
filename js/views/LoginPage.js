@@ -110,7 +110,7 @@ const LoginPage = React.createClass ({
             ref='scrollView'
             horizontal={false}
             style={[Styles.form.registrationView, {height: this.calculateScrollViewHeight(), overflow: 'hidden'}]}>
-            <View style={Styles.form.inputGroup}>
+            <View style={{paddingVertical: 30, paddingHorizontal: 15}}>
               <Text style={Styles.form.errorText}>
                 {this.decodeText(this.state.errors.email)}
               </Text>
@@ -126,8 +126,6 @@ const LoginPage = React.createClass ({
                   placeholder='Email'
                 />
               </View>
-            </View>
-            <View style={Styles.form.inputGroup}>
               <Text style={Styles.form.errorText}>
                 {this.decodeText(this.state.errors.password)}
               </Text>
@@ -145,12 +143,12 @@ const LoginPage = React.createClass ({
                 />
               </View>
             </View>
-
-            <View style={Styles.form.bottomForm}>
-              <Button action={this.handleVerifyLogin} color='success' wide>
-                {this.state.button_text}
-              </Button>
-            </View>
+            <Button 
+              action={this.handleVerifyLogin}
+              color='success'
+              style={{marginVertical: 30, marginHorizontal: 35}}>
+              {this.state.button_text}
+            </Button>
           </ScrollView>
         <Button
           action={this.handleRegistration}

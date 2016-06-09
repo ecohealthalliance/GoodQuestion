@@ -11,7 +11,7 @@ const Variables = {
 
 if ( Platform.OS === 'android' ) {
   Variables.HEADER_SIZE = 60
-  Variables.HEADER_SIZE_SMALL = 10
+  Variables.HEADER_SIZE_SMALL = 0
   Variables.HEADER_PADDING = 0
 }
 

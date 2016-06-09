@@ -30,6 +30,7 @@ import Loading from '../components/Loading';
 import Color from '../styles/Color';
 import TypeStyles from '../styles/_TypeStyles';
 import Swiper from '../components/Swiper/Swiper';
+import SurveyFormNavigator from '../components/SurveyFormNavigator'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import moment from 'moment'
 
@@ -44,30 +45,34 @@ import realm from '../data/Realm'
 const FormPage = React.createClass ({
   form: null,
   nextForm: null,
+  _questionIndex: 0,
   propTypes: {
     survey: React.PropTypes.object.isRequired,
     index: React.PropTypes.number,
   },
+
   getInitialState() {
     const forms = loadCachedForms(this.props.survey.id);
     let index = 0
     if (this.props.index) {
       index = this.props.index;
     }
+
     return {
       forms: forms,
       isLoading: true,
       index: index,
       button_text: 'Submit',
-      questionIndex: 0,
       formsInQueue: false
     }
   },
 
   validatePage() {
-    let question = this.state.questions[this.state.questionIndex],
+    let question = this.state.questions[this._questionIndex],
         answer = this.state.answers[question.id],
         properties = JSON.parse(question.properties)
+
+    
     if(question.type == "number" || question.type == "scale") {
       if(properties.min && answer < properties.min) {
         return false
@@ -93,9 +98,9 @@ const FormPage = React.createClass ({
 
   beforePageChange(currentPage, nextPage) {
     // Don't validate when going backwards
-    if(nextPage < this.state.questionIndex) return true
+    if(nextPage < this._questionIndex) return true
     // Don't validate final page
-    if(this.state.questionIndex >= this.state.questions.length) return true
+    if(this._questionIndex >= this.state.questions.length) return true
     const shouldContinue = this.validatePage();
     if (!shouldContinue) {
       return false;
@@ -148,6 +153,7 @@ const FormPage = React.createClass ({
       questions: questions,
       answers: answers,
       forms: forms,
+      formId: this.form.id,
       isLoading: false,
       answers: answers,
       formsInQueue: true
@@ -165,7 +171,7 @@ const FormPage = React.createClass ({
   /* Methods */
   filterForms(forms) {
     let past = new Date()
-    past = past.setDate(past.getDate() - 90)
+    past = past.setDate(past.getDate() - 90) // Temporary 90-day expiration date for forms.
     return _.filter(forms, function(form){
       let triggerTime = form.trigger
       return triggerTime > past && triggerTime < new Date()
@@ -218,6 +224,7 @@ const FormPage = React.createClass ({
     this.setState({
       button_text: 'Saving...'
     });
+
     saveSubmission(formId, answers, (err, res) => {
       if (err) {
         if (err === 'Invalid User') {
@@ -249,10 +256,15 @@ const FormPage = React.createClass ({
     this.state.answers[questionId] = value;
   },
 
+  changePage(newIndex) {
+    this._swiper.goToPage(newIndex)
+  },
+
   onPageChange(page) {
-    this.setState({
-      questionIndex: page
-    });
+    this._questionIndex = page
+    if (this._nav) {
+      this._nav.update(this._questionIndex, this.state.questions.length)
+    }
   },
 
   /* Render */
@@ -312,17 +324,27 @@ const FormPage = React.createClass ({
       )
     } else {
       return (
-        <View style={{flex: 1, paddingHorizontal: 20}}>
-          <Swiper
-            style={{flex: 1}}
-            containerStyle={{overflow: 'visible'}}
-            activeDotColor={Color.background1}
-            index={this.state.questionIndex}
-            beforePageChange={this.beforePageChange}
-            onPageChange={this.onPageChange}
-            children={this.renderQuestions()}
-            threshold={50}>
-          </Swiper>
+        <View style={{flex: 1}}>
+          <View style={{flex: 1, paddingHorizontal: 20, overflow: 'hidden'}}>
+            <Swiper
+              ref={(swiper) => {this._swiper = swiper}}
+              style={{flex: 1}}
+              containerStyle={{overflow: 'visible'}}
+              pager={false}
+              index={this._questionIndex}
+              beforePageChange={this.beforePageChange}
+              onPageChange={this.onPageChange}
+              children={this.renderQuestions()}
+              threshold={50}>
+            </Swiper>
+          </View>
+
+          <SurveyFormNavigator
+            ref={(nav) => {this._nav = nav}}
+            index={this._questionIndex}
+            total={this.state.questions.length}
+            onPressed={this.changePage}
+           />
         </View>
       )
     }

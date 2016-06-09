@@ -115,6 +115,7 @@ const SurveyStyles = StyleSheet.create({
     paddingTop: 15,
   },
 
+  // Survey Form components
   formButtons: {
     justifyContent: 'space-between',
     alignItems: 'stretch',
@@ -137,6 +138,18 @@ const SurveyStyles = StyleSheet.create({
     backgroundColor: Color.background2,
     margin: 0,
     paddingTop: 10,
+  },
+  navMenu: {
+    // flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: 50,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: 20,
+    backgroundColor: Color.background1,
   },
 })
 

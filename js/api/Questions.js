@@ -30,7 +30,9 @@ export function cacheParseQuestions(questions, formId) {
 
 // Loads a question list from the Realm.io database
 export function loadCachedQuestions(formId) {
-  return realm.objects('Question').filtered(`formId = "${formId}"`)
+  return realm.objects('Question')
+          .filtered(`formId = "${formId}"`)
+          .sorted('order')
 }
 
 // Queries the connected Parse server for a list of Questions.

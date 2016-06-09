@@ -6,6 +6,7 @@ import React, {
   View,
   ListView,
   Alert,
+  RefreshControl,
 } from 'react-native'
 
 import _ from 'lodash'
@@ -25,6 +26,7 @@ const SurveyListPage = React.createClass ({
   getInitialState() {
     return {
       isLoading: true,
+      isRefreshing: false,
       list: loadCachedSurveyList(),
       filteredList: [],
       dataSource: new ListView.DataSource({
@@ -91,12 +93,13 @@ const SurveyListPage = React.createClass ({
       let self = this
       // Use the Realm cached versions to determine accept/decline status
       let cachedSurveys = loadCachedSurveyList()
-
       let delay = 0
+
       if (this.mountTimeStamp + 750 > Date.now()) delay = 750
 
       setTimeout(() => {
         if (!self.cancelCallbacks) {
+          this.setState({isRefreshing: false});
           self.filterList('all', cachedSurveys)
         }
       }, delay)
@@ -157,7 +160,18 @@ const SurveyListPage = React.createClass ({
         <ListView dataSource = { this.state.dataSource }
           renderRow = { this.renderItem }
           contentContainerStyle = { [Styles.survey.list] }
-          enableEmptySections
+          enableEmptySections 
+          refreshControl={
+                <RefreshControl
+                  refreshing={this.state.isRefreshing}
+                  onRefresh={this._onRefresh}
+                  tintColor="#ff0000"
+                  title="Loading..."
+                  titleColor="#00ff00"
+                  colors={['#ff0000', '#00ff00', '#0000ff']}
+                  progressBackgroundColor="#ffff00"
+                />
+              }
         />
       )
     } else {
@@ -172,6 +186,9 @@ const SurveyListPage = React.createClass ({
   },
   /* Render */
   renderItem(item, sectionId, rowId) {
+    if(!item){
+      return (<View></View>)
+    }
     return (
       <TouchableHighlight
         onPress={() => this.selectSurvey(item)}
@@ -182,7 +199,10 @@ const SurveyListPage = React.createClass ({
       </TouchableHighlight>
     );
   },
-
+  _onRefresh() {
+    this.setState({isRefreshing: true});
+    loadSurveyList({}, this.loadList);
+  },
   render() {
     console.log('rendering survey list')
     if (this.state.isLoading) {

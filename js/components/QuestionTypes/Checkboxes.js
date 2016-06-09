@@ -60,10 +60,12 @@ const Checkboxes = React.createClass ({
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         {this.props.properties.choices.map((choice, idx)=>{
           return (
-            <View style={{marginHorizontal: 15, marginVertical:5}} key={idx}>
+            <View style={{ marginHorizontal: 15, marginVertical:5}} key={idx}>
               <Checkbox
+                containerStyle={{flex: 1, alignItems: 'flex-start'}}
+                labelContainerStyle={{flex: 1}}
                 label={choice}
-                labelStyle={{height:34, paddingTop: 9, textAlignVertical: "center", color: Color.primary}}
+                labelStyle={{paddingTop: 5, color: Color.primary, lineHeight: 18}}
                 checked={selectedChoices.has(choice)}
                 uncheckedComponent={uncheckedComponent}
                 checkedComponent={checkedComponent}

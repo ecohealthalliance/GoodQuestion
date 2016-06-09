@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Platform } from 'react-native'
 import Color from './Color'
 import Variables from './Variables'
 
@@ -16,6 +16,7 @@ const HeaderStyles = StyleSheet.create({
     right: 0,
     height: Variables.HEADER_SIZE,
     paddingTop: Variables.HEADER_PADDING,
+    paddingHorizontal: Platform.OS === 'android' ? 15 : 0,
     backgroundColor: Color.background1,
   },
   navBarClear: {

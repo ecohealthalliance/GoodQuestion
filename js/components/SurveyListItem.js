@@ -97,9 +97,9 @@ const SurveyListItem = React.createClass ({
 
   render() {
     return (
-      <View style={Styles.survey.listitem}>
+        <View style={Styles.survey.listitem}>
           <View style={Styles.container.col75}>
-            <ViewText textStyle={Styles.survey.title}>{this.props.title}</ViewText>
+            <Text style={Styles.survey.title}>{this.props.item.title}</Text>
             {this.renderAvailabilityText()}
           </View>
         <View style={[Styles.container.col25, {alignItems: 'flex-end'}]}>

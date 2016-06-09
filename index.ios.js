@@ -9,15 +9,14 @@ import Parse from 'parse/react-native'
 // Model
 import Store from './js/data/Store'
 import { connectToParseServer } from './js/api/ParseServer'
+import { upsertInstallation } from './js/api/Installations'
 
 // Router
 import SharedNavigator from './js/router/SharedNavigator'
 
-// Due to a bug in React Native, we must temporarily ignore propType warnings for some iOS components to work.
-// Affected component: DatePickerIOS
-//console.ignoredYellowBox = [
-// 'Warning: Failed propType',
-//]
+const PushNotification = require('react-native-push-notification');
+
+
 console.disableYellowBox = true;
 
 /* iOS App */
@@ -30,34 +29,31 @@ const GoodQuestion = React.createClass ({
   },
 
   componentWillMount() {
-    PushNotificationIOS.addEventListener('notification', this._onNotification);
-    PushNotificationIOS.addEventListener('localNotification', this._onLocalNotification);
-    PushNotificationIOS.addEventListener('register', this._onRegister);
-  },
-
-  componentWillUnmount() {
-    PushNotificationIOS.removeEventListener('notification', this._onNotification);
-    PushNotificationIOS.removeEventListener('localNotification', this._onLocalNotification);
-    PushNotificationIOS.removeEventListener('register', this._onRegister);
+    PushNotification.configure({
+      onRegister: this._onRegister,
+      onNotification: this._onNotification,
+    });
   },
 
   _onNotification(notification) {
     console.log('notification: ', notification);
-    return;
   },
 
-   _onLocalNotification(notification){
-     console.log('notification: ', notification);
-     return;
-   },
-
-   _onRegister(token) {
-     console.log('token: ', token);
-   },
+  _onRegister(registration) {
+    console.log('registration: ', registration);
+    const token = registration.token;
+    const platform = registration.os;
+    upsertInstallation(token, platform, (err, res) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+    });
+  },
 
   /* Render */
   render() {
-    PushNotificationIOS.requestPermissions();
+    PushNotification.requestPermissions();
     return ( <SharedNavigator /> )
   }
 })
