@@ -8,9 +8,9 @@ GeofenceTrigger.schema = {
   	surveyId: 'string',
     
     title: 'string',
-    latitude: 'number',
-    longitude: 'number',
-    radius: 'number',
+    latitude: 'double',
+    longitude: 'double',
+    radius: 'double',
     triggered: {type: 'bool', default: false},
   }
 }

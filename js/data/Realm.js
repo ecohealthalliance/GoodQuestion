@@ -7,6 +7,7 @@ import Form from '../models/Form'
 import Question from '../models/Question'
 import Notification from '../models/Notification'
 import TimeTrigger from '../models/TimeTrigger'
+import GeofenceTrigger from '../models/GeofenceTrigger'
 
 const realmInstance = new Realm({
   schema: [
@@ -15,9 +16,10 @@ const realmInstance = new Realm({
     Question,
     Notification,
     TimeTrigger,
+    GeofenceTrigger,
     Submission,
   ],
-  schemaVersion: 40,
+  schemaVersion: 41,
 })
 
 // Erases the current cache of a target object
