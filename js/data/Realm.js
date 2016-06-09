@@ -10,7 +10,7 @@ import TimeTrigger from '../models/TimeTrigger'
 import Test from '../models/Test'
 
 const realmInstance = new Realm({
-  schemaVersion: 39,
+  schemaVersion: 41,
   schema: [
     Survey,
     Form,

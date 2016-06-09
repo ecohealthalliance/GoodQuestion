@@ -94,20 +94,21 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
 
   // Record the new trigger 
   realm.write(() => {
+    console.log(triggers)
     for (var i = 0; i < triggers.length; i++) {
       if (triggers[i].datetime < now && triggers[i].datetime > past) {
-        realm.create('TimeTrigger', {
+        let activeTrigger = realm.create('TimeTrigger', {
           id: triggers[i].id,
           triggered: true,
         }, true)
 
         if (!omitNotifications) {
           const notification = realm.create('Notification', {
-            surveyId: triggers[i].surveyId,
-            formId: triggers[i].formId,
-            title: triggers[i].title,
+            surveyId: activeTrigger.surveyId,
+            formId: activeTrigger.formId,
+            title: activeTrigger.title,
             description: 'A scheduled survey form is available.', // TODO Replace with more descriptive messages in the future.
-            datetime: triggers[i].datetime,
+            datetime: activeTrigger.datetime,
           }, true);
 
           PushNotification.localNotification({

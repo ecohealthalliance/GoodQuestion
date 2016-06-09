@@ -204,7 +204,6 @@ const SurveyListPage = React.createClass ({
     loadSurveyList({}, this.loadList);
   },
   render() {
-    console.log('rendering survey list')
     if (this.state.isLoading) {
       return (<Loading/>)
     } else {
