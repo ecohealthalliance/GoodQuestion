@@ -74,7 +74,6 @@ function createDemoTrigger(parentForm, when) {
 }
 
 function createDemoGeofenceTrigger(parentForm, geofence) {
-  console.log('geo trigger')
   var data = DemoGeofenceData.geofence[ parentForm.get('order') - 1 ]
   var newTrigger = new Trigger()
 

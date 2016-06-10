@@ -95,7 +95,6 @@ function createDemoSurvey (surveyData, startDate, endDate) {
 }
 
 function createDemoGeofenceSurvey (surveyData) {
-  console.log('geo survey')
   var newSurvey = new Survey()
   newSurvey.set('title', surveyData.title)
   newSurvey.set('description', surveyData.description)

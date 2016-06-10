@@ -34,24 +34,24 @@ const DemoGeofenceData = {
 
   geofence: [
     {
-      latitude: 40,
-      longitude: 213,
+      latitude: 40.767721,
+      longitude: -73.980388,
       radius: 25,
     },
     {
-      latitude: 670,
-      longitude: 02,
-      radius: 2,
+      latitude: 40.767954,
+      longitude: -73.982363,
+      radius: 30,
     },
     {
-      latitude: 10,
-      longitude: 10,
-      radius: 5,
+      latitude: 40.768523,
+      longitude: -73.981048,
+      radius: 25,
     },
     {
-      latitude: 0,
-      longitude: 100,
-      radius: 15,
+      latitude: 40.769090,
+      longitude: -73.979963,
+      radius: 40,
     },
   ],
 

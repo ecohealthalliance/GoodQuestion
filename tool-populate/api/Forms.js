@@ -86,7 +86,6 @@ function createDemoForm(parentSurvey, dayStartTimestamp) {
 }
 
 function createDemoGeofenceForms(parentSurvey) {
-  console.log('geo form')
   var data = DemoGeofenceData.forms
   for (var i = 0; i < data.length; i++) {
     
