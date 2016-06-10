@@ -7,6 +7,8 @@ const SurveyStyles = StyleSheet.create({
   list: {
     alignSelf: 'stretch',
     backgroundColor: Color.background2,
+    borderTopWidth: 1,
+    borderColor: Color.background1,
   },
   listitem: {
     flex: 1,
@@ -36,6 +38,11 @@ const SurveyStyles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
+    color: 'dimgray',
+  },
+  itemDescription: {
+    paddingTop: 6,
+    fontSize: 12,
     color: 'dimgray',
   },
 

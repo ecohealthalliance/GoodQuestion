@@ -4,6 +4,7 @@ Notification.schema = {
   primaryKey: 'formId',
   properties: {
   	formId: 'string',
+  	surveyId: 'string',
     
     title: 'string',
     description: 'string',

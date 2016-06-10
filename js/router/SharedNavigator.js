@@ -40,6 +40,7 @@ import ProfilePage from '../views/ProfilePage'
 
 // Background
 import { initializeGeolocationService } from '../api/BackgroundProcess'
+
 initializeGeolocationService()
 
 let navigator;
