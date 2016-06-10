@@ -17,8 +17,8 @@ export function loadTriggers(form, survey, callback) {
           for (var i = 0; i < results.length; i++) {
             if (results[i].get('type') === 'datetime') {
               cacheTimeTrigger(results[i], form, survey)
-            } else {
-              // TODO Create/Cache Geofence trigger
+            } else if (results[i].get('type') === 'geofence') {
+              cacheGeofenceTrigger(results[i], form, survey)
             }
           }
           if (callback) callback(null, results)
@@ -36,6 +36,16 @@ export function loadTriggers(form, survey, callback) {
 export function loadCachedTrigger(formId) {
   return realm.objects('TimeTrigger').filtered(`formId= "${formId}"`)
 }
+
+
+/**
+ * Fetches all cached geofence triggers
+ * @return {object}  Realm object containing an array of 'GeofenceTrigger' objects,
+ */
+export function loadAllCachedGeofenceTriggers() {
+  return realm.objects('GeofenceTrigger')
+}
+
 
 // Saves a Form object from Parse into our Realm.io local database
 function cacheTimeTrigger(trigger, form, survey) {
@@ -59,7 +69,6 @@ function cacheTimeTrigger(trigger, form, survey) {
 
 
 /**
-<<<<<<< HEAD
  * Saves a geofence 'Trigger' object from Parse into our Realm.io local database
  * @param  {object} trigger Parse 'Trigger' object.
  * @param  {object} form    Parse 'Form' object.

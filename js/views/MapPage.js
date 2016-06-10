@@ -13,19 +13,28 @@ import TermsOfService from '../data/TermsOfService'
 import Styles from '../styles/Styles'
 import MapView from 'react-native-maps'
 
+import { loadAllCachedGeofenceTriggers } from '../api/Triggers'
+
 
 const TermsOfServicePage = React.createClass ({
   propTypes: {
     navigator: React.PropTypes.object.isRequired,
+    triggers: React.PropTypes.object
   },
 
   getInitialState() {
+    let triggers = this.props.triggers
+    // Load all triggers if none were provided via props
+    if (!triggers) {
+      triggers = loadAllCachedGeofenceTriggers()
+    }
     this.markers = []
     return {
       latitude: 40.768169,
       longitude: -73.981190,
       zoom: 0.01,
-      markers: []
+      markers: [],
+      triggers: triggers,
     }
   },
 
@@ -38,25 +47,18 @@ const TermsOfServicePage = React.createClass ({
     this.wipeMarkers()
     let markers = []
 
-    if (this.props.geotriggers) {
-      markers = this.props.geotriggers.map((trigger, index) => {
-        return {
-          title: trigger.title,
-          description: trigger.description,
-          position: {
-            latitude: trigger.latitude,
-            longitude: trigger.longitude,
-          }
-        }
-      })
-    }
+    markers = this.state.triggers.map((trigger, index) => {
+      return {
+        title: trigger.title,
+        description: trigger.description,
+        position: {
+          latitude: trigger.latitude,
+          longitude: trigger.longitude,
+        },
+        radius: trigger.radius
+      }
+    })
 
-    // generate some dummy markers for testing
-    markers = [
-      { title: 'marker 1', description: 'geofence survey', position: {latitude: 40.767721, longitude: -73.980388}, radius: 25 },
-      { title: 'marker 2', description: 'geofence survey', position: {latitude: 40.767954, longitude: -73.982363}, radius: 25 },
-      { title: 'marker 3', description: 'geofence survey', position: {latitude: 40.768523, longitude: -73.981048}, radius: 25 },
-    ]
     this.setState({
       markers: markers
     })
