@@ -14,6 +14,8 @@ import Styles from '../styles/Styles'
 import MapView from 'react-native-maps'
 
 import { loadAllCachedGeofenceTriggers } from '../api/Triggers'
+import { BackgroundGeolocation } from '../api/BackgroundProcess'
+import { setActiveMap, clearActiveMap } from '../api/GeoFencing'
 
 
 const TermsOfServicePage = React.createClass ({
@@ -40,6 +42,8 @@ const TermsOfServicePage = React.createClass ({
 
   componentDidMount() {
     this.generateTriggerMarkers()
+    setActiveMap(this)
+    this.active = true
   },
 
   /* Methods */
@@ -64,8 +68,20 @@ const TermsOfServicePage = React.createClass ({
     })
   },
 
+  updateMarkers(geofence) {
+    console.log("- A Geofence transition occurred")
+    console.log("  geofence: ", geofence)
+    console.log("  identifier: ", geofence.identifier)
+    console.log("  action: ", geofence.action)
+  },
+
   wipeMarkers() {
     this.setState({markers: []})
+  },
+
+  componentWillUnmount() {
+    clearActiveMap(this)
+    this.active = false
   },
 
   /* Render */

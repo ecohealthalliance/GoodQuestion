@@ -6,7 +6,6 @@ import realm from '../data/Realm'
 
 import { loadQuestions } from './Questions'
 import { loadTriggers, loadCachedTrigger } from './Triggers'
-import Realm from 'realm';
 import Submission from '../models/Submission';
 
 
