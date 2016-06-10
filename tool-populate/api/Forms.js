@@ -3,6 +3,7 @@ var Parse = require('parse/node')
 var Store = require('../data/Store')
 var Questions = require('./Questions')
 var Triggers = require('./Triggers')
+var DemoGeofenceData = require('../data/DemoGeofenceData')
 var Form = Parse.Object.extend("Form")
 
 
@@ -62,7 +63,7 @@ function randomHour(dayTimestamp) {
 }
 
 function createDemoForm(parentSurvey, dayStartTimestamp) {
-  newForm = new Form()
+  var newForm = new Form()
   newForm.set('title', 'Form ' + Date.now())
   newForm.set('order', 1)
   newForm.set('deleted', false)
@@ -84,4 +85,33 @@ function createDemoForm(parentSurvey, dayStartTimestamp) {
   })
 }
 
-module.exports = { Form, loadForms, createForms, storeForms, createDemoForm }
+function createDemoGeofenceForms(parentSurvey) {
+  console.log('geo form')
+  var data = DemoGeofenceData.forms
+  for (var i = 0; i < data.length; i++) {
+    
+    var newForm = new Form()
+    newForm.set('title', data[i].title)
+    newForm.set('order', data[i].order)
+    newForm.set('deleted', false)
+    newForm.save(null, {
+      useMasterKey: true,
+      success: function(form) {
+        parentSurvey.fetch().then(function(survey){
+          var relation = survey.relation('forms')
+          relation.add(form)
+          survey.save(null, {useMasterKey: true})
+        })
+        Questions.createDemoGeofenceQuestions(form)
+        Triggers.createDemoGeofenceTrigger(form)
+        storeForms(form)
+      },
+      error: function(form, error) {
+        console.warn('Failed to create Form, with error code: ' + error.message)
+      }
+    })
+  }
+  
+}
+
+module.exports = { Form, loadForms, createForms, storeForms, createDemoForm, createDemoGeofenceForms }

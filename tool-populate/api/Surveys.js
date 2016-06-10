@@ -94,5 +94,27 @@ function createDemoSurvey (surveyData, startDate, endDate) {
   })
 }
 
+function createDemoGeofenceSurvey (surveyData) {
+  console.log('geo survey')
+  var newSurvey = new Survey()
+  newSurvey.set('title', surveyData.title)
+  newSurvey.set('description', surveyData.description)
+  newSurvey.set('user', surveyData.user)
+  newSurvey.set('createdAt', surveyData.created)
+  newSurvey.set('active', true)
+  newSurvey.set('deleted', false)
 
-module.exports = { Survey, loadCachedSurvey, loadSurveyList, storeSurveys, createSurvey, createDemoSurvey }
+  newSurvey.save(null, {
+    useMasterKey: true,
+    success: function(survey) {
+      Forms.createDemoGeofenceForms(survey)
+      storeSurveys(survey)
+    },
+    error: function(response, error) {
+      console.warn('Failed to create demo Survey, error code: ' + error.message)
+    }
+  })
+}
+
+
+module.exports = { Survey, loadCachedSurvey, loadSurveyList, storeSurveys, createSurvey, createDemoSurvey, createDemoGeofenceSurvey }

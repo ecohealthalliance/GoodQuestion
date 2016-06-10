@@ -4,6 +4,7 @@ var Parse = require('parse/node')
 var DummyData = require('./data/DummyData')
 var Store = require('./data/Store')
 var DemoData = require('./data/DemoData')
+var DemoGeofenceData = require('./data/DemoGeofenceData')
 var Surveys = require('./api/Surveys')
 var Forms = require('./api/Forms')
 var Questions = require('./api/Questions')
@@ -18,6 +19,7 @@ program
   .option('-i, --init', 'Create inital role and user classes.')
   .option('-c, --create', 'Create data for your local Parse server.')
   .option('-d, --demo', 'Populate local Parse server with demo data.')
+  .option('-g, --demoGeofence', 'Populate local Parse server with geofence demo data.')
   .option('-r, --reset', 'Erase local Parse data.')
   .option('-p, --print', 'Prints the current data in your local server.')
   .parse(process.argv)
@@ -33,6 +35,8 @@ if (program.reset) {
   initRoles()
 } else if (program.demo) {
   createDemoData()
+}  else if (program.demoGeofence) {
+  createDemoGeofenceData()
 } else if (program.print) {
   Surveys.loadSurveyList()
 } else {
@@ -52,6 +56,8 @@ function exitHandler(options, err) {
   } else if (program.create) {
     console.log('Parse server populated.')
   } else if (program.demo) {
+    console.log('Parse server populated with demo data.')
+  } else if (program.demoGeofence) {
     console.log('Parse server populated with demo data.')
   } else if (program.print) {
     console.log('Stored Data: ' +
@@ -82,6 +88,14 @@ function createDemoData() {
   console.log('Creating Parse server data...')
   for (var i = 0, ilen = DemoData.surveys.length; i < ilen; i++)
     Surveys.createDemoSurvey(DemoData.surveys[i], DemoData.startDate, DemoData.endDate)
+}
+
+function createDemoGeofenceData() {
+  // create the demo Survey for geofence triggers
+  console.log('Creating Parse server data...')
+  for (var i = 0; i < DemoGeofenceData.surveys.length; i++) {
+    Surveys.createDemoGeofenceSurvey(DemoGeofenceData.surveys[i])
+  }    
 }
 
 function resetServer() {

@@ -3,6 +3,7 @@ var Parse = require('parse/node')
 var Store = require('../data/Store')
 var DummyData = require('../data/DummyData')
 var DemoData = require('../data/DemoData')
+var DemoGeofenceData = require('../data/DemoGeofenceData')
 var Question = Parse.Object.extend("Question")
 
 function loadQuestions(options, callback) {
@@ -91,4 +92,35 @@ function createDemoQuestions(parentForm) {
   }
 }
 
-module.exports = { Question, loadQuestions, createQuestions, storeQuestions, createDemoQuestions }
+function createDemoGeofenceQuestions(parentForm) {
+  var data = DemoGeofenceData.questions
+  var questions = []
+  var limit = data.length < 10 ? data.length : 10
+
+  for (var i = 0; i < data.length; i++) {
+    var newQuestion = new Question()
+    
+    newQuestion.set('text', data[i].text)
+    newQuestion.set('type', data[i].type)
+    newQuestion.set('properties', data[i].properties)
+    newQuestion.set('order', i + 1)
+
+    newQuestion.save(null, {
+      useMasterKey: true,
+      success: function(response) {
+        questions.push(response)
+        if (parentForm && questions.length === limit) {
+          var relation = parentForm.relation('questions')
+          relation.add(questions)
+          parentForm.save(null, {useMasterKey: true})
+        }
+        storeQuestions(response)
+      },
+      error: function(response, error) {
+        console.warn('Failed to create Question, with error code: ' + error.message)
+      }
+    })
+  }
+}
+
+module.exports = { Question, loadQuestions, createQuestions, storeQuestions, createDemoQuestions, createDemoGeofenceQuestions }
