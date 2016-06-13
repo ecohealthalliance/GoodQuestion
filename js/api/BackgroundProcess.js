@@ -3,6 +3,7 @@ import Settings from '../settings'
 
 import { addSchedule } from './Schedule'
 import { checkTimeTriggers } from './Triggers'
+import { setupGeofences } from './GeoFencing'
 
 export const BackgroundGeolocation = Platform.OS === 'ios' ?
                                       require('react-native-background-geolocation') :
@@ -95,6 +96,9 @@ export function initializeGeolocationService() {
     // Check the time triggers on start regardless if there is a schedule cycle running.
     // Ommit notifications to prevent spam on login.
     checkTimeTriggers(true)
+    
+    // Create initial geofence hooks.
+    setupGeofences()
   })
 }
 

@@ -32,8 +32,8 @@ const TermsOfServicePage = React.createClass ({
     }
     this.markers = []
     return {
-      latitude: 40.768169,
-      longitude: -73.981190,
+      latitude: 28.46986,
+      longitude: -81.58495,
       zoom: 0.01,
       markers: [],
       triggers: triggers,

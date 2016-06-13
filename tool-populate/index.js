@@ -25,7 +25,7 @@ program
   .parse(process.argv)
 
 Parse.initialize(Settings.parse.appId, null, Settings.parse.masterKey)
-Parse.serverURL = Settings.parse.serverUrl
+Parse.serverURL = Settings.parse.feedServerUrl
 
 if (program.reset) {
   resetServer()
