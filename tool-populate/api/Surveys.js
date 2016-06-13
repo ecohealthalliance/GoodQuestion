@@ -73,18 +73,23 @@ function createDemoSurvey (surveyData, startDate, endDate) {
   var endDateTimestamp = parseDate(endDate)
   var numberOfDays = dayDiff(startDateTimestamp, endDateTimestamp)
   var newSurvey = new Survey()
-  newSurvey.set('title', surveyData.title)
-  newSurvey.set('description', surveyData.description)
-  newSurvey.set('user', surveyData.user)
-  newSurvey.set('createdAt', surveyData.created)
-  newSurvey.set('active', false)
-  newSurvey.set('deleted', false)
-
-  newSurvey.save(null, {
-    useMasterKey: true,
-    success: function(survey) {
-      for (var i = 0; i < numberOfDays; i++) {
-        Forms.createDemoForm(survey, startDateTimestamp + i * 86400000)
+  Helpers.setAdminACL(newSurvey).then(function(newSurvey){
+    newSurvey.set('title', surveyData.title)
+    newSurvey.set('description', surveyData.description)
+    newSurvey.set('user', surveyData.user)
+    newSurvey.set('createdAt', surveyData.created)
+    newSurvey.set('active', true)
+    newSurvey.set('deleted', false)
+    newSurvey.save(null, {
+      useMasterKey: true,
+      success: function(survey) {
+        for (var i = 0; i < numberOfDays; i++) {
+          Forms.createDemoForm(survey, startDateTimestamp + i * 86400000)
+        }
+        storeSurveys(survey)
+      },
+      error: function(response, error) {
+        console.warn('Failed to create demo Survey, error code: ' + error.message)
       }
       storeSurveys(survey)
     },

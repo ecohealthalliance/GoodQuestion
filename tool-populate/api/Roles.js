@@ -1,6 +1,8 @@
 var _ = require('lodash')
 var Parse = require('parse/node')
 var Store = require('../data/Store')
+var Helpers = require('./helpers')
+var useMasterKey = {useMasterKey: true}
 
 function loadRoles(options, callback) {
   var Role = Parse.Role
@@ -39,10 +41,11 @@ function createRole(roleToCreate) {
   })
 }
 
-function storeRoles(newRoles) {
-  if (!Array.isArray(newRoles))
-    newRoles = [newRoles]
-  Store.roles = _.unionBy(Store.roles, newRoles, 'id')
+function getRole(name) {
+  query = new Parse.Query(Parse.Role)
+  query.equalTo('name', name)
+  return query.first(useMasterKey).then(function(role){
+      return role
+    })
 }
-
-module.exports = { loadRoles, createRole }
+module.exports = { loadRoles, createRole, getRole }

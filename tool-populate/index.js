@@ -9,7 +9,8 @@ var Forms = require('./api/Forms')
 var Questions = require('./api/Questions')
 var Triggers = require('./api/Triggers')
 var Roles = require('./api/Roles')
-
+var Users = require('./api/Users')
+var helpers = require('./api/helpers')
 var Settings = require('./../js/settings.js')
 
 var program = require('commander')
@@ -31,6 +32,7 @@ if (program.reset) {
   createData()
 } else if (program.init) {
   initRoles()
+  createUsers()
 } else if (program.demo) {
   createDemoData()
 } else if (program.print) {
@@ -88,6 +90,7 @@ function resetServer() {
   Surveys.loadSurveyList()
   Forms.loadForms()
   Triggers.loadTriggers()
+  Users.destroyAll()
   Questions.loadQuestions({}, function () {
     destroyObjects(Store.surveys)
     destroyObjects(Store.forms)
@@ -95,34 +98,30 @@ function resetServer() {
     destroyObjects(Store.triggers)
   })
 }
-
 function destroyObjects(objects) {
   for (var i = objects.length - 1; i >= 0; i--) {
     objects[i].destroy({useMasterKey: true})
   }
 }
 
+function createUsers(){
+  Users.createInitialAdmin()
+    .then(function(){
+      return Users.createUsers()
+    })
+    .then(function(){
+      console.log('Initial users created');
+    })
+}
+
 function initRoles() {
   var rolesToCreate = ["admin", "user"];
-
-  Roles.loadRoles({}, function (error, results) {
-    console.log(results)
-    for (var i = 0, ilen = rolesToCreate.length; i < ilen; i++) {
-      (function(roleToCreate){
-        var queryRole = new Parse.Query(Parse.Role);
-        queryRole.equalTo('name', roleToCreate);
-        queryRole.first({
-          success: function (result) { // Role Object
-            console.log(result)
-            if (result) {
-              console.log('Role "' + roleToCreate + '" already exists');
-            } else {
-              Roles.createRole(roleToCreate);
-            }
-          },
-          error: function(error) {}
-        });
-      })(rolesToCreate[i])
-    }
+  rolesToCreate.forEach(function(roleToCreate){
+    Roles.getRole(roleToCreate)
+      .then(function(role){
+        if (role) console.log('Role "' + roleToCreate + '" already exists')
+        else Roles.createRole(roleToCreate)
+      })
+      .fail(function(error) {console.log(error)})
   });
 }
