@@ -4,6 +4,7 @@ var Parse = require('parse/node')
 var Roles= require('./Roles')
 var useMasterKey = {useMasterKey: true}
 var colors = require('colors')
+var helpers = require('./helpers')
 
 function createInitialAdmin(){
   console.log('\nCreating initial admin user...'.bold);
@@ -100,9 +101,8 @@ function loadUsers() {
 
 function destroyAll() {
   loadUsers().then(function(users){
-    users.forEach(function(user){
-      user.destroy(useMasterKey)
-    })
+    if (users)
+      helpers.destroyObjects(users, 'Users')
   })
 }
 

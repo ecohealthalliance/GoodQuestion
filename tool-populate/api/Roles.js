@@ -1,6 +1,5 @@
 var _ = require('lodash')
 var Parse = require('parse/node')
-var Store = require('../data/Store')
 var Helpers = require('./helpers')
 var useMasterKey = {useMasterKey: true}
 var colors = require('colors')
@@ -12,7 +11,6 @@ function loadRoles(options, callback) {
 
   query.find({
     success: function(results) {
-      storeRoles(results)
       if (callback)
         callback(null, results)
     },

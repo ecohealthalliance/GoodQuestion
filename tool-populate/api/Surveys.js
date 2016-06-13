@@ -1,54 +1,21 @@
 var _ = require('lodash')
 var Parse = require('parse/node')
 var Forms = require('./Forms')
-var Store = require('../data/Store')
 var Survey = new Parse.Object.extend('Survey')
-// import { loadForms } from './Forms'
+var helpers = require('./helpers')
+var useMasterKey = {useMasterKey: true}
 
-function loadCachedSurvey (id) {
-  var result
-  for (var i = Store.surveys.length - 1; i >= 0; i--) {
-    if (Store.surveys[i].id === id) result = Store.surveys[i]
-  }
-  return result
-}
-
-function loadSurveyList (options, callback) {
+function loadSurveys (options, callback) {
   var query = new Parse.Query(Survey)
   query.limit = 1000
 
   query.find({
     success: function(results) {
-      storeSurveys(results)
-      Forms.loadForms()
       callback(null, results)
     },
     error: function(error, results) {
       console.warn("Error: " + error.code + " " + error.message)
       if (callback) callback(error, results)
-    }
-  })
-}
-
-function storeSurveys (newSurveys) {
-  if (!Array.isArray(newSurveys)) newSurveys = [newSurveys]
-  Store.surveys = _.unionBy(Store.surveys, newSurveys, 'id')
-}
-
-function createSurvey (surveyData) {
-  var newSurvey = new Survey()
-
-  newSurvey.set('title', surveyData.title)
-  newSurvey.set('user', surveyData.user)
-  newSurvey.set('createdAt', surveyData.created)
-
-  newSurvey.save(null, {
-    success: function(response) {
-      Forms.createForms(response)
-      storeSurveys(response)
-    },
-    error: function(response, error) {
-      console.warn('Failed to create Survey, with error code: ' + error.message)
     }
   })
 }
@@ -73,7 +40,7 @@ function createDemoSurvey (surveyData, startDate, endDate) {
   var endDateTimestamp = parseDate(endDate)
   var numberOfDays = dayDiff(startDateTimestamp, endDateTimestamp)
   var newSurvey = new Survey()
-  Helpers.setAdminACL(newSurvey).then(function(newSurvey){
+  helpers.setAdminACL(newSurvey).then(function(newSurvey){
     newSurvey.set('title', surveyData.title)
     newSurvey.set('description', surveyData.description)
     newSurvey.set('user', surveyData.user)
@@ -86,7 +53,6 @@ function createDemoSurvey (surveyData, startDate, endDate) {
         for (var i = 0; i < numberOfDays; i++) {
           Forms.createDemoForm(survey, startDateTimestamp + i * 86400000)
         }
-        storeSurveys(survey)
       },
       error: function(response, error) {
         console.warn('Failed to create demo Survey, error code: ' + error.message)
@@ -99,5 +65,12 @@ function createDemoSurvey (surveyData, startDate, endDate) {
   })
 }
 
+function destroyAll() {
+  loadSurveys(null, function(err, surveys){
+    if (surveys)
+      helpers.destroyObjects(surveys, 'Surveys')
+  })
+}
 
-module.exports = { Survey, loadCachedSurvey, loadSurveyList, storeSurveys, createSurvey, createDemoSurvey }
+
+module.exports = { Survey, loadSurveys, createDemoSurvey, destroyAll }

@@ -1,9 +1,9 @@
 var _ = require('lodash')
 var Parse = require('parse/node')
-var Store = require('../data/Store')
-var DummyData = require('../data/DummyData')
 var DemoData = require('../data/DemoData')
 var Question = Parse.Object.extend("Question")
+var helpers = require('./helpers')
+var useMasterKey = {useMasterKey: true}
 
 function loadQuestions(options, callback) {
   var query = new Parse.Query(Question)
@@ -11,7 +11,6 @@ function loadQuestions(options, callback) {
 
   query.find({
     success: function(results) {
-      storeQuestions(results)
       if (callback)
         callback(null, results)
     },
@@ -21,38 +20,6 @@ function loadQuestions(options, callback) {
         callback(error, results)
     }
   })
-}
-
-function storeQuestions(newQuestions) {
-  if (!Array.isArray(newQuestions)) newQuestions = [newQuestions]
-  Store.questions = _.unionBy(Store.questions, newQuestions, 'id')
-}
-
-function createQuestions(parentForm) {
-  var questions = []
-  for (var i = 0; i < DummyData.questions.length; i++) {
-    var newQuestion = new Question()
-
-    newQuestion.set('text', DummyData.questions[i].text)
-    newQuestion.set('type', DummyData.questions[i].type)
-    newQuestion.set('properties', DummyData.questions[i].properties)
-    newQuestion.set('order', DummyData.questions[i].order)
-
-    newQuestion.save(null, {
-      success: function(response) {
-        questions.push(response)
-        if (parentForm && questions.length === DummyData.questions.length) {
-          var relation = parentForm.relation('questions')
-          relation.add(questions)
-          parentForm.save(null, {useMasterKey: true})
-        }
-        storeQuestions(response)
-      },
-      error: function(response, error) {
-        console.warn('Failed to create Question, with error code: ' + error.message)
-      }
-    })
-  }
 }
 
 function createDemoQuestions(parentForm) {
@@ -72,15 +39,20 @@ function createDemoQuestions(parentForm) {
     newQuestion.set('type', DemoData.questions[randomQuestionIndex].type)
     newQuestion.set('properties', DemoData.questions[randomQuestionIndex].properties)
     newQuestion.set('order', i + 1)
-
-    newQuestion.save(null, {
-      useMasterKey: true,
-      success: function(response) {
-        questions.push(response)
-        if (parentForm && questions.length === limit) {
-          var relation = parentForm.relation('questions')
-          relation.add(questions)
-          parentForm.save(null, {useMasterKey: true})
+    helpers.setAdminACL(newQuestion).then(function(newQuestion) {
+      newQuestion.save(null, {
+        useMasterKey: true,
+        success: function(question) {
+          questions.push(question)
+          if (parentForm && questions.length === limit) {
+            var relation = parentForm.relation('questions')
+            relation.add(questions)
+            parentForm.save(null, useMasterKey)
+          }
+          storeQuestions(question)
+        },
+        error: function(response, error) {
+          console.warn('Failed to create Question, with error code: ' + error.message)
         }
         storeQuestions(response)
       },
@@ -91,4 +63,11 @@ function createDemoQuestions(parentForm) {
   }
 }
 
-module.exports = { Question, loadQuestions, createQuestions, storeQuestions, createDemoQuestions }
+function destroyAll() {
+  loadQuestions(null, function(err, questions){
+    if (questions)
+      helpers.destroyObjects(questions, 'Questions')
+  })
+}
+
+module.exports = { Question, loadQuestions, createDemoQuestions, destroyAll }
