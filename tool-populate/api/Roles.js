@@ -1,25 +1,11 @@
 var _ = require('lodash')
 var Parse = require('parse/node')
-var Helpers = require('./helpers')
+var Helpers = require('./Helpers')
 var useMasterKey = {useMasterKey: true}
 var colors = require('colors')
 
-function loadRoles(options, callback) {
-  var Role = Parse.Role
-  var query = new Parse.Query(Role)
-  query.limit = 1000
-
-  query.find({
-    success: function(results) {
-      if (callback)
-        callback(null, results)
-    },
-    error: function(error, results) {
-      console.warn("Error: " + error.code + " " + error.message)
-      if (callback)
-        callback(error, results)
-    }
-  })
+function loadRoles (options, callback) {
+  Helpers.fetchObjects(Parse.Role, callback)
 }
 
 function createRole(roleToCreate) {

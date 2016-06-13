@@ -3,24 +3,12 @@ var Parse = require('parse/node')
 var Questions = require('./Questions')
 var Triggers = require('./Triggers')
 var Form = Parse.Object.extend("Form")
-var helpers = require('./helpers')
+var Helpers = require('./Helpers')
 var useMasterKey = {useMasterKey: true}
+var Users = require('./Users')
 
-
-function loadForms(options, callback) {
-  form = new Form()
-  var query = new Parse.Query(form)
-  query.limit = 1000
-
-  query.find({
-    success: function(results) {
-      if (callback) callback(null, results)
-    },
-    error: function(error, results) {
-      console.warn("Error: " + error.code + " " + error.message)
-      if (callback) callback(error, results)
-    }
-  })
+function loadForms (options, callback) {
+  Helpers.fetchObjects(Form, callback)
 }
 
 /**
@@ -39,33 +27,32 @@ function randomHour(dayTimestamp) {
 function createDemoForm(parentSurvey, dayStartTimestamp) {
   var newForm = new Form()
   var acl = new Parse.ACL()
-  helpers.setAdminACL(newForm).then(function(newForm) {
-    newForm.set('title', 'Form ' + Date.now())
-    newForm.set('order', 1)
-    newForm.set('deleted', false)
-    newForm.save(null, {
-      useMasterKey: true,
-      success: function(form) {
-        parentSurvey.fetch(useMasterKey).then(function(survey){
-          var relation = survey.relation('forms')
-          relation.add(form)
-          survey.save(null, useMasterKey)
-        }).fail(function(e){console.log(e);})
-        Questions.createDemoQuestions(form)
-        Triggers.createDemoTrigger(form, randomHour(dayStartTimestamp))
-        storeForms(form)
-      },
-      error: function(form, error) {
-        console.warn('Failed to create Form, with error code: ' + error.message)
-      }
+  newForm.set('title', 'Form ' + Date.now())
+  newForm.set('order', 1)
+  newForm.set('deleted', false)
+  newForm.save(useMasterKey)
+    .then(function(newForm){
+      return parentSurvey.fetch(useMasterKey)
     })
-  })
+    .then(function(survey){
+      var relation = survey.relation('forms')
+      relation.add(newForm)
+      survey.save(null, useMasterKey)
+    })
+    .then(function(){
+      return Users.setUserRights(newForm)
+    })
+    .then(function(){
+      Questions.createDemoQuestions(newForm)
+      Triggers.createDemoTrigger(newForm, randomHour(dayStartTimestamp))
+    })
+    .fail(function(e){console.log(e);})
 }
 
 function destroyAll() {
   loadForms(null, function(err, forms){
     if (forms)
-      helpers.destroyObjects(forms, 'Forms')
+      Helpers.destroyObjects(forms, 'Forms')
   })
 }
 

@@ -1,10 +1,10 @@
 var Settings = require('../../js/settings')
 var DemoData = require('../data/DemoData')
 var Parse = require('parse/node')
-var Roles= require('./Roles')
+var Roles = require('./Roles')
 var useMasterKey = {useMasterKey: true}
 var colors = require('colors')
-var helpers = require('./helpers')
+var Helpers = require('./Helpers')
 
 function createInitialAdmin(){
   console.log('\nCreating initial admin user...'.bold);
@@ -13,7 +13,8 @@ function createInitialAdmin(){
   adminUser.set("password", Settings.users[0].pass)
   adminUser.set("email", Settings.users[0].user)
   return adminUser.signUp(null)
-    .then(function(newAdminUser){
+    .then(setAdminACL)
+    .then(function(adminUser){
       return Roles.getRole('admin')
     })
     .then(function(adminRole){
@@ -38,58 +39,58 @@ function createUsers (users) {
       newUser.set("email", user.userName)
       newUser.set("role", 'user')
       newUser.signUp(null, useMasterKey)
+        .then(setAdminACL)
         .then(function(){
           if (i === users.length-1) resolve()
         })
         .fail(function(err){
           console.log(colors.yellow(user.userName+' already exists'));
         })
+      })
+  })
+}
+
+function addUsersToACL(obj) {
+  var acl
+  acl = obj.getACL() || new Parse.ACL()
+  return new Promise(function(resolve){
+    loadUsers().then(function(users){
+      users.forEach(function(user, i, users){
+        setUserACL(obj, user).then(function(){
+          if (i === users.length - 1)
+            resolve()
+        }).fail(function(err){console.log(err)})
+      })
     })
   })
 }
 
-function addExistingAdminsToRole(){
-  var adminRole
-  Roles.getRole('admin')
-    .then(function(adminRole){
-      adminRole = adminRole
-      getAdminUsers()
-    })
-    .then(function(users){
-      users.forEach(function(user){
-        adminRole.relation("users").add(adminUser)
-        adminRole.save()
+function setAdminACL(obj) {
+  return Roles.getRole('admin')
+    .then(function(adminRole) {
+      acl = obj.getACL() || new Parse.ACL()
+      acl.setReadAccess(adminRole, true)
+      acl.setWriteAccess(adminRole, true)
+      obj.setACL(acl)
+      return obj.save(null, useMasterKey).then(function(obj){
+        return obj
       })
     })
-    .then(function(){
-      setRoleACLs()
-    })
+    .fail(function(err){console.log(err);})
 }
 
-function getAdminUsers(){
-  var query = new Parse.Query(Parse.User)
-  query.equalTo('role', 'admin')
-  query.find(useMasterKey)
-    .then(function(adminUsers){
-      return adminUsers
-    })
+function setUserACL(obj, user) {
+  var acl
+  acl = obj.getACL() || new Parse.ACL()
+  acl.setReadAccess(user, true)
+  obj.setACL(acl)
+  return obj.save(null, useMasterKey).then(function(obj){
+    return obj
+  })
 }
 
-function setAdminRoleACLs() {
-  Roles.getRole('admin')
-    .then(function(adminRole) {
-      var query = new Parse.Query(Parse.Role)
-      query.find(useMasterKey)
-        .then(function(roles) {
-          roles.forEach(function(role){
-            acl = role.getACL()
-            acl.setReadAccess(adminRole, true)
-            acl.setWriteAccess(adminRole, true)
-            role.setACL(acl)
-                .save(null, useMasterKey)
-          })
-        })
-    })
+function setUserRights(obj) {
+  return setAdminACL(obj).then(addUsersToACL)
 }
 
 function loadUsers() {
@@ -102,8 +103,8 @@ function loadUsers() {
 function destroyAll() {
   loadUsers().then(function(users){
     if (users)
-      helpers.destroyObjects(users, 'Users')
+      Helpers.destroyObjects(users, 'Users')
   })
 }
 
-module.exports = { createInitialAdmin, loadUsers, createUsers, destroyAll }
+module.exports = { createInitialAdmin, loadUsers, createUsers, destroyAll, addUsersToACL, setUserRights, setAdminACL, setUserACL }

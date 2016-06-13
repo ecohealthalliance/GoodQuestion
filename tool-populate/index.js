@@ -8,7 +8,6 @@ var Questions = require('./api/Questions')
 var Triggers = require('./api/Triggers')
 var Roles = require('./api/Roles')
 var Users = require('./api/Users')
-var helpers = require('./api/helpers')
 var Settings = require('./../js/settings.js')
 
 var program = require('commander')
@@ -19,7 +18,6 @@ program
   .option('-c, --create', 'Create data for your local Parse server.')
   .option('-d, --demo', 'Populate local Parse server with demo data.')
   .option('-r, --reset', 'Erase local Parse data.')
-  .option('-p, --print', 'Prints the current data in your local server.')
   .parse(process.argv)
 
 Parse.initialize(Settings.parse.appId, null, Settings.parse.masterKey)
@@ -51,13 +49,6 @@ function exitHandler(options, err) {
     console.log('Parse server populated.'.bold.green)
   } else if (program.demo) {
     console.log('Parse server populated with demo data.'.bold.green)
-  } else if (program.print) {
-    console.log('\nStored Data: ' +
-      Store.surveys.length + ' surveys, ' +
-      Store.forms.length + ' forms, ' +
-      Store.questions.length + ' questions, ' +
-      Store.triggers.length + ' triggers.'
-    )
   }
   process.exit()
 }

@@ -1,25 +1,13 @@
 var _ = require('lodash')
 var Parse = require('parse/node')
 var DemoData = require('../data/DemoData')
+var Users = require('./Users')
+var Helpers = require('./Helpers')
 var Question = Parse.Object.extend("Question")
-var helpers = require('./helpers')
 var useMasterKey = {useMasterKey: true}
 
-function loadQuestions(options, callback) {
-  var query = new Parse.Query(Question)
-  query.limit = 1000
-
-  query.find({
-    success: function(results) {
-      if (callback)
-        callback(null, results)
-    },
-    error: function(error, results) {
-      console.warn("Error: " + error.code + " " + error.message)
-      if (callback)
-        callback(error, results)
-    }
-  })
+function loadQuestions (options, callback) {
+  Helpers.fetchObjects(Question, callback)
 }
 
 function createDemoQuestions(parentForm) {
@@ -39,34 +27,33 @@ function createDemoQuestions(parentForm) {
     newQuestion.set('type', DemoData.questions[randomQuestionIndex].type)
     newQuestion.set('properties', DemoData.questions[randomQuestionIndex].properties)
     newQuestion.set('order', i + 1)
-    helpers.setAdminACL(newQuestion).then(function(newQuestion) {
-      newQuestion.save(null, {
-        useMasterKey: true,
-        success: function(question) {
-          questions.push(question)
+
+    newQuestion.save(null, useMasterKey)
+      .then(function(newQuestion){
+        return new Promise(function(resolve){
+          questions.push(newQuestion)
           if (parentForm && questions.length === limit) {
             var relation = parentForm.relation('questions')
             relation.add(questions)
-            parentForm.save(null, useMasterKey)
-          }
-          storeQuestions(question)
-        },
-        error: function(response, error) {
-          console.warn('Failed to create Question, with error code: ' + error.message)
-        }
-        storeQuestions(response)
-      },
-      error: function(response, error) {
+            parentForm.save(null, useMasterKey).then(function(){
+              resolve(newQuestion)
+            })
+          } else resolve(newQuestion)
+        })
+      })
+      .then(function(question){
+        return Users.setUserRights(question)
+      })
+      .fail(function(response, error) {
         console.warn('Failed to create Question, with error code: ' + error.message)
-      }
-    })
+      })
   }
 }
 
 function destroyAll() {
   loadQuestions(null, function(err, questions){
     if (questions)
-      helpers.destroyObjects(questions, 'Questions')
+      Helpers.destroyObjects(questions, 'Questions')
   })
 }
 
