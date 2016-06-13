@@ -1,6 +1,9 @@
 #! /usr/bin/env node
 
+var _ = require('lodash')
 var Parse = require('parse/node')
+var program = require('commander')
+var colors = require('colors')
 var DemoData = require('./data/DemoData')
 var Surveys = require('./api/Surveys')
 var Forms = require('./api/Forms')
@@ -10,8 +13,7 @@ var Roles = require('./api/Roles')
 var Users = require('./api/Users')
 var Settings = require('./../js/settings.js')
 
-var program = require('commander')
-var colors = require('colors')
+var useMasterKey = {useMasterKey: true}
 
 program
   .option('-i, --init', 'Create inital role and user classes.')
@@ -28,7 +30,7 @@ if (program.reset) {
 } else if (program.init) {
   initDatabase()
 } else if (program.demo) {
-  createDemoData()
+  checkUsers().then(createDemoData)
 } else if (program.print) {
   Surveys.loadSurveys()
 } else {
@@ -79,13 +81,24 @@ function initDatabase(){
 }
 
 function createUsers(){
-  Users.createInitialAdmin()
+  return Users.createInitialAdmin()
     .then(function(){
       return Users.createUsers()
     })
     .then(function(){
       console.log('Initial users created'.green);
     })
+}
+
+function checkUsers(){
+  return new Promise(function(resolve){
+    var query = new Parse.Query(Parse.User)
+    query.first(useMasterKey)
+      .then(function(user){
+        if (_.isUndefined(user)) createUsers().then(resolve)
+        else resolve()
+      })
+  })
 }
 
 function initRoles() {
