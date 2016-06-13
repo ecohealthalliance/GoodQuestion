@@ -3,6 +3,7 @@ var Parse = require('parse/node')
 var Store = require('../data/Store')
 var Helpers = require('./helpers')
 var useMasterKey = {useMasterKey: true}
+var colors = require('colors')
 
 function loadRoles(options, callback) {
   var Role = Parse.Role
@@ -27,16 +28,13 @@ function createRole(roleToCreate) {
   var roleACL = new Parse.ACL();
   roleACL.setPublicReadAccess(true);
 
-  console.log('Creating role "' + roleToCreate + '"')
-
   var role = new Parse.Role(roleToCreate, roleACL);
-  role.save(null, {
+  return role.save(null, {
     success: function(response) {
-      storeRoles(response)
-      console.log('Created role "' + roleToCreate + '"')
+      console.log(colors.green('Created role "' + roleToCreate + '"'))
     },
     error: function(response, error) {
-      console.warn('Failed to create Role, with error code: ' + error.message)
+      console.log(colors.red('Failed to create Role, with error code: ' + error.message))
     }
   })
 }

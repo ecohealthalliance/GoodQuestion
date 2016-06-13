@@ -14,6 +14,7 @@ var helpers = require('./api/helpers')
 var Settings = require('./../js/settings.js')
 
 var program = require('commander')
+var colors = require('colors')
 
 program
   .option('-i, --init', 'Create inital role and user classes.')
@@ -31,8 +32,7 @@ if (program.reset) {
 } else if (program.create) {
   createData()
 } else if (program.init) {
-  initRoles()
-  createUsers()
+  initDB()
 } else if (program.demo) {
   createDemoData()
 } else if (program.print) {
@@ -50,13 +50,13 @@ function exitHandler(options, err) {
     console.error(err.stack)
 
   if (program.reset) {
-    console.log('Server Reset.')
+    console.log('\nServer Reset.'.bold.green)
   } else if (program.create) {
-    console.log('Parse server populated.')
+    console.log('\nParse server populated.'.bold.green)
   } else if (program.demo) {
-    console.log('Parse server populated with demo data.')
+    console.log('\nParse server populated with demo data.'.bold.green)
   } else if (program.print) {
-    console.log('Stored Data: ' +
+    console.log('\nStored Data: ' +
       Store.surveys.length + ' surveys, ' +
       Store.forms.length + ' forms, ' +
       Store.questions.length + ' questions, ' +
@@ -72,7 +72,7 @@ function createData() {
     if (error) {
       console.warn(error)
     }
-    console.log('Creating Parse server demo data...')
+    console.log('Creating Parse server demo data...'.bold)
     for (var i = 0, ilen = DummyData.surveys.length; i < ilen; i++) {
       Surveys.createSurvey(DummyData.surveys[i])
     }
@@ -81,7 +81,7 @@ function createData() {
 
 function createDemoData() {
   // create the demo Survey
-  console.log('Creating Parse server data...')
+  console.log('Creating Parse server data...'.bold)
   for (var i = 0, ilen = DemoData.surveys.length; i < ilen; i++)
     Surveys.createDemoSurvey(DemoData.surveys[i], DemoData.startDate, DemoData.endDate)
 }
@@ -98,10 +98,15 @@ function resetServer() {
     destroyObjects(Store.triggers)
   })
 }
+
 function destroyObjects(objects) {
   for (var i = objects.length - 1; i >= 0; i--) {
     objects[i].destroy({useMasterKey: true})
   }
+}
+
+function initDB(){
+  initRoles().then(createUsers)
 }
 
 function createUsers(){
@@ -110,18 +115,27 @@ function createUsers(){
       return Users.createUsers()
     })
     .then(function(){
-      console.log('Initial users created');
+      console.log('Initial users created'.green);
     })
 }
 
 function initRoles() {
+  console.log('\nCreating admin and user roles...'.bold);
   var rolesToCreate = ["admin", "user"];
-  rolesToCreate.forEach(function(roleToCreate){
-    Roles.getRole(roleToCreate)
-      .then(function(role){
-        if (role) console.log('Role "' + roleToCreate + '" already exists')
-        else Roles.createRole(roleToCreate)
-      })
-      .fail(function(error) {console.log(error)})
-  });
+  return new Promise(function(resolve){
+    rolesToCreate.forEach(function(roleToCreate, i, roles){
+      Roles.getRole(roleToCreate)
+        .then(function(role){
+          if (role) {
+            console.log(colors.yellow('Role "' + roleToCreate + '" already exists'))
+            if (i === roles.length-1) resolve()
+          }
+          else
+            Roles.createRole(roleToCreate).then(function(){
+              if (i === roles.length-1) resolve()
+            })
+        })
+        .fail(function(error) {console.log(error)})
+    })
+  })
 }

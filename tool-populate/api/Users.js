@@ -3,10 +3,10 @@ var DemoData = require('../data/DemoData')
 var Parse = require('parse/node')
 var Roles= require('./Roles')
 var useMasterKey = {useMasterKey: true}
-
+var colors = require('colors')
 
 function createInitialAdmin(){
-  console.log('Creating initial admin user');
+  console.log('\nCreating initial admin user...'.bold);
   adminUser = new Parse.User()
   adminUser.set("username", Settings.users[0].user)
   adminUser.set("password", Settings.users[0].pass)
@@ -20,15 +20,15 @@ function createInitialAdmin(){
       return adminRole.save(null, useMasterKey)
     })
     .then(function(){
-      console.log('Initial admin user created');
+      console.log('Initial admin user created'.green);
     })
     .fail(function(err){
-      console.log(err);
+      console.log('Initial admin user already exists'.yellow);
     })
 }
 
 function createUsers (users) {
-  console.log('Creating initial users ');
+  console.log('\nCreating initial users...'.bold);
   return new Promise(function(resolve){
     DemoData.users.regularUsers.forEach(function(user, i, users){
       newUser = new Parse.User()
@@ -39,6 +39,9 @@ function createUsers (users) {
       newUser.signUp(null, useMasterKey)
         .then(function(){
           if (i === users.length-1) resolve()
+        })
+        .fail(function(err){
+          console.log(colors.yellow(user.userName+' already exists'));
         })
     })
   })
@@ -103,4 +106,4 @@ function destroyAll() {
   })
 }
 
-module.exports = { createInitialAdmin, loadUsers, createUsers, destroyAll  }
+module.exports = { createInitialAdmin, loadUsers, createUsers, destroyAll }
