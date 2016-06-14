@@ -16,7 +16,7 @@ import MapView from 'react-native-maps'
 import { loadAllCachedGeofenceTriggers } from '../api/Triggers'
 import { loadCachedFormDataByGeofence } from '../api/Forms'
 import { BackgroundGeolocation } from '../api/BackgroundProcess'
-import { setActiveMap, clearActiveMap } from '../api/GeoFencing'
+import { setActiveMap, clearActiveMap, getUserLocationData } from '../api/GeoFencing'
 
 
 const TermsOfServicePage = React.createClass ({
@@ -99,7 +99,11 @@ const TermsOfServicePage = React.createClass ({
 
   handleMarkerPress(marker) {
     const data = loadCachedFormDataByGeofence(marker.id)
-    if (marker.active) {
+
+    getUserLocationData()
+
+    // if (marker.active) {
+    if (false) { // for testing
       this.props.navigator.push({
         path: 'form',
         title: data.survey.title,

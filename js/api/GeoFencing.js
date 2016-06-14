@@ -68,6 +68,24 @@ export function setupGeofences() {
   connectMapToGeofence()
 }
 
+export function getUserLocationData(callback) {
+  let coordinates
+  console.log('getUserLocationData')
+  BackgroundGeolocation.getCurrentPosition({timeout: 20}, function success(response) {
+    console.log(response)
+  }, function error(err) {
+    console.log(err)
+  })
+
+
+  // return {
+  //   email: '',
+  //   coordinates: coordinates,
+  //   accuracy: accuracy,
+  //   timestamp: new Date().getTime()
+  // }
+}
+
 
 function connectMapToGeofence() {
   BackgroundGeolocation.on('geofence', (params) => {
