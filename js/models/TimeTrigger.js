@@ -4,8 +4,8 @@ TimeTrigger.schema = {
   primaryKey: 'id',
   properties: {
   	id: 'string',
-  	formId:  {type: 'string', default: 'none'},
-  	surveyId:  {type: 'string', default: 'none'},
+  	formId:  {type: 'string', default: ''},
+  	surveyId:  {type: 'string', default: ''},
     
     title: 'string',
     datetime: 'date',
