@@ -99,14 +99,15 @@ const TermsOfServicePage = React.createClass ({
 
   handleMarkerPress(marker) {
     const data = loadCachedFormDataByGeofence(marker.id)
-    console.log(data.form)
-    this.props.navigator.push({
-      path: 'form',
-      title: data.survey.title,
-      forms: data.form,
-      survey: data.survey,
-      type: 'geofence'
-    })
+    if (marker.active) {
+      this.props.navigator.push({
+        path: 'form',
+        title: data.survey.title,
+        forms: data.form,
+        survey: data.survey,
+        type: 'geofence'
+      })
+    }
   },
 
   /* Render */
