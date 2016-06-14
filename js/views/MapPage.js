@@ -14,6 +14,7 @@ import Styles from '../styles/Styles'
 import MapView from 'react-native-maps'
 
 import { loadAllCachedGeofenceTriggers } from '../api/Triggers'
+import { loadCachedFormDataByGeofence } from '../api/Forms'
 import { BackgroundGeolocation } from '../api/BackgroundProcess'
 import { setActiveMap, clearActiveMap } from '../api/GeoFencing'
 
@@ -47,6 +48,11 @@ const TermsOfServicePage = React.createClass ({
     this.active = true
   },
 
+  componentWillUnmount() {
+    clearActiveMap(this)
+    this.active = false
+  },
+
   /* Methods */
   generateTriggerMarkers() {
     this.wipeMarkers()
@@ -72,11 +78,6 @@ const TermsOfServicePage = React.createClass ({
   },
 
   updateMarkers(geofence) {
-    console.log("- A Geofence transition occurred")
-    console.log("  geofence: ", geofence)
-    console.log("  identifier: ", geofence.identifier)
-    console.log("  action: ", geofence.action)
-
     if (geofence.action == 'ENTER') {
       updatedMarkers = this.state.markers.filter((marker) => {return marker.id == geofence.identifier})
       for (var i = 0; i < updatedMarkers.length; i++) {
@@ -96,9 +97,16 @@ const TermsOfServicePage = React.createClass ({
     this.setState({markers: []})
   },
 
-  componentWillUnmount() {
-    clearActiveMap(this)
-    this.active = false
+  handleMarkerPress(marker) {
+    const data = loadCachedFormDataByGeofence(marker.id)
+    console.log(data.form)
+    this.props.navigator.push({
+      path: 'form',
+      title: data.survey.title,
+      forms: data.form,
+      survey: data.survey,
+      type: 'geofence'
+    })
   },
 
   /* Render */
@@ -139,6 +147,7 @@ const TermsOfServicePage = React.createClass ({
           {
             this.state.markers.map(marker => (
               <MapView.Marker
+                onPress={this.handleMarkerPress.bind(null, marker)}
                 key={'marker-'+marker.id}
                 coordinate={marker.position}
                 title={marker.title}

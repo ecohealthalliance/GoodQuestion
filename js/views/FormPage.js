@@ -48,20 +48,25 @@ const FormPage = React.createClass ({
   _questionIndex: 0,
   propTypes: {
     survey: React.PropTypes.object.isRequired,
+    type: React.PropTypes.string,
+    form: React.PropTypes.object,
     index: React.PropTypes.number,
   },
 
-  getInitialState() {
-    const forms = loadCachedForms(this.props.survey.id);
-    let index = 0
-    if (this.props.index) {
-      index = this.props.index;
+  getDefaultProps() {
+    return {
+      type: 'datetime',
+      index: 0,
     }
+  },
+
+  getInitialState() {
+    const forms = this.props.form ? [this.props.form] : loadCachedForms(this.props.survey.id)
 
     return {
       forms: forms,
       isLoading: true,
-      index: index,
+      index: this.props.index,
       button_text: 'Submit',
       formsInQueue: false
     }
@@ -111,24 +116,35 @@ const FormPage = React.createClass ({
   componentWillMount() {
     let self = this,
         index = this.state.index,
-        forms = this.formsWithTriggers(),
-        allForms = forms,
-        answers = {}
-    forms = self.filterForms(forms)
-    if (forms.length === 0) {
+        answers = {},
+        forms,
+        allForms
+
+    if (this.props.type === 'datetime') {
+      forms = this.formsWithTriggers()
+      allForms = forms
+      forms = this.filterForms(forms)
+      forms = this.sortForms(forms)
+    } else if (this.props.type === 'geofence') {
+      forms = this.state.forms
+    }
+
+    if (!forms || forms.length === 0) {
+      console.log('!forms')
+      console.log(forms)
+      console.log(this.state.forms)
       futureForms = _.filter(allForms, function(form){
         return form.trigger > new Date()
       })
-      self.setState({isLoading: false, futureForms: futureForms, futureFormCount: futureForms.length})
+      this.setState({isLoading: false, futureForms: futureForms, futureFormCount: futureForms.length})
       return
     }
-    forms = self.sortForms(forms)
-
+    
     this.form = forms[index]
     this.nextForm = forms[index + 1]
     let submissions = loadCachedSubmissions(this.form.id),
         questions = loadCachedQuestions(this.form.id)
-    if(submissions.length > 0){
+    if (submissions.length > 0) {
       answers = JSON.parse(submissions.slice(-1)[0].answers)
     } else {
       // Set default values
@@ -149,7 +165,9 @@ const FormPage = React.createClass ({
         })()
       })
     }
-    self.setState({
+
+    console.log('Forms setState')
+    this.setState({
       questions: questions,
       answers: answers,
       forms: forms,

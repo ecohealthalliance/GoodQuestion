@@ -113,7 +113,12 @@ const SharedNavigator = React.createClass ({
         let routeStack = navigator.getCurrentRoutes()
         let currentRoutePath = routeStack[routeStack.length-1].path
         if (path !== currentRoutePath) {
-          navigator.push({path: path, title: title})
+          if (path === 'surveylist' || path === 'map') {
+            // Reset route stack when viewing map to avoid multiple map components from being loaded at the same time.
+            navigator.resetTo({path: path, title: title})
+          } else {
+            navigator.push({path: path, title: title})
+          }
         }
       }
     }
@@ -150,7 +155,7 @@ const SharedNavigator = React.createClass ({
       case 'terms': viewComponent = <TermsOfServicePage {...sharedProps} />; break;
       case 'registration': viewComponent = <RegistrationPages {...sharedProps} index={route.index} />; break;
       case 'profile': viewComponent = <ProfilePage {...sharedProps} />; break;
-      case 'form': viewComponent = <FormPage {...sharedProps} form={route.form} survey={route.survey} index={route.index} />; break;
+      case 'form': viewComponent = <FormPage {...sharedProps} form={route.form} survey={route.survey} index={route.index} type={route.type} />; break;
       case 'survey-details': viewComponent = <SurveyDetailsPage {...sharedProps} survey={route.survey} />; break;
       default: viewComponent = <SurveyListPage {...sharedProps} />; break;
     }

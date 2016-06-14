@@ -11,6 +11,8 @@ GeofenceTrigger.schema = {
     latitude: 'double',
     longitude: 'double',
     radius: 'double',
+
     triggered: {type: 'bool', default: false},
+    inRange: {type: 'bool', default: false},
   }
 }

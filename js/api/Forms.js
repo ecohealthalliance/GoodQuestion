@@ -34,6 +34,15 @@ export function loadCachedFormDataById(formId) {
   return { form: form, survey: survey }
 }
 
+
+// Returns an object containing a form and its parent survey
+export function loadCachedFormDataByGeofence(triggerId) {
+  let trigger = realm.objects('GeofenceTrigger').filtered(`id = "${triggerId}"`)[0]
+  let form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0]
+  let survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0]
+  return { form: form, survey: survey }
+}
+
 // Fetches the cached forms related to a specific survey
 export function loadCachedForms(surveyId) {
   return realm.objects('Form').filtered(`surveyId = "${surveyId}"`)
