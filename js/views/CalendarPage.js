@@ -4,9 +4,10 @@ import React, {
   Platform,
   View,
 } from 'react-native'
+import moment from 'moment'
 
 import Styles from '../styles/Styles'
-import MapView from 'react-native-maps'
+import Calendar from '../components/Calendar/Calendar'
 
 import { loadAllCachedGeofenceTriggers } from '../api/Triggers'
 import { loadCachedFormDataByGeofence } from '../api/Forms'
@@ -50,7 +51,20 @@ const CalendarPage = React.createClass ({
   render() {
     return (
       <View style={[Styles.container.default, { flex: 1, overflow: 'hidden' }]}>
-        
+        <Calendar
+          ref="_calendar"
+          eventDates={['2016-07-03', '2016-07-05', '2016-07-28', '2016-07-30']}
+          showControls
+          titleFormat={'MMMM YYYY'}
+          prevButtonText={'Prev'}
+          nextButtonText={'Next'}
+          onDateSelect={(date) => this.setState({ selectedDate: date })}
+          onTouchPrev={() => console.log('Back TOUCH')}     // eslint-disable-line no-console
+          onTouchNext={() => console.log('Forward TOUCH')}  // eslint-disable-line no-console
+          onSwipePrev={() => console.log('Back SWIPE')}     // eslint-disable-line no-console
+          onSwipeNext={() => console.log('Forward SWIPE')}  // eslint-disable-line no-console
+        />
+        <Text>Selected Date: {moment(this.state.selectedDate).format('MMMM DD YYYY')}</Text>
       </View>
     )
   }
