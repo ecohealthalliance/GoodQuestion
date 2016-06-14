@@ -1,6 +1,7 @@
 import Parse from 'parse/react-native'
 import realm from '../data/Realm'
-import {currentUser} from '../api/Account'
+import {currentUser} from './Account'
+import {getUserLocationData} from './Geofencing'
 import crypto from 'crypto-js'
 import async from 'async'
 
@@ -41,31 +42,38 @@ function createParseSubmission(id, formId, answers, currentUser, done) {
   submission.set('formId', formId);
   submission.set('answers', answers);
   submission.set('userId', currentUser);
-  const query = new Parse.Query(Parse.Role)
-  query.equalTo('name', 'admin')
-  query.find(
-    (roles) => {
-      if (roles.length <= 0) return done('Invalid role.');
-      const role = roles[0];
-      const acl = new Parse.ACL();
-      acl.setReadAccess(currentUser, true);
-      acl.setWriteAccess(currentUser, true);
-      acl.setRoleReadAccess(role, true);
-      acl.setRoleWriteAccess(role, true);
-      submission.setACL(acl);
-      submission.save(null).then(
-        (s) => {
-          done(null, s);
-        },
-        (e) => {
-          done('Error synchronizing to remote server.');
-        }
-      );
-    },
-    (e) => {
-      done('Invalid role.')
-    }
-  );
+  
+  getUserLocationData((geolocation) => {
+    submission.set('geolocation', JSON.stringify(geolocation))
+    const query = new Parse.Query(Parse.Role)
+    query.equalTo('name', 'admin')
+    query.find(
+      (roles) => {
+        if (roles.length <= 0) return done('Invalid role.');
+        const role = roles[0];
+        const acl = new Parse.ACL();
+        acl.setReadAccess(currentUser, true);
+        acl.setWriteAccess(currentUser, true);
+        acl.setRoleReadAccess(role, true);
+        acl.setRoleWriteAccess(role, true);
+        submission.setACL(acl);
+        submission.save(null).then(
+          (s) => {
+            done(null, s);
+          },
+          (e) => {
+            done('Error synchronizing to remote server.');
+          }
+        );
+      },
+      (e) => {
+        done('Invalid role.')
+      }
+    );
+
+
+  })
+  
 };
 
 /**

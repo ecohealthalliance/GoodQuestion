@@ -3,7 +3,7 @@ import Settings from '../settings'
 
 import { addSchedule } from './Schedule'
 import { checkTimeTriggers } from './Triggers'
-import { setupGeofences } from './GeoFencing'
+import { setupGeofences } from './Geofencing'
 
 export const BackgroundGeolocation = Platform.OS === 'ios' ?
                                       require('react-native-background-geolocation') :

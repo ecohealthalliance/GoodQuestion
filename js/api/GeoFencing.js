@@ -48,9 +48,9 @@ export function setupGeofences() {
 
   BackgroundGeolocation.addGeofences(triggerGeofences, function() {
       console.log("Successfully added geofences");
-      BackgroundGeolocation.getGeofences((geofences) => {
-        console.log(geofences)
-      })
+      // BackgroundGeolocation.getGeofences((geofences) => {
+      //   console.log(geofences)
+      // })
   }, function(error) {
       console.warn("Failed to add geofence", error);
   })
@@ -63,21 +63,23 @@ export function setupGeofences() {
 }
 
 export function getUserLocationData(callback) {
-  let coordinates
-  console.log('getUserLocationData')
   BackgroundGeolocation.getCurrentPosition({timeout: 20}, function success(response) {
-    console.log(response)
+    if (callback) callback({
+      latitude: response.coords.latitude,
+      longitude: response.coords.longitude,
+      accuracy: response.coords.accuracy,
+      timestamp: response.timestamp,
+    })
   }, function error(err) {
-    console.log(err)
+    console.warn('Error retrieving geolocation data: ', err)
+    locationData.error = err
+    if (callback) callback({
+      latitude: 0,
+      longitude: 0,
+      accuracy: 0,
+      timestamp: new Date()
+    })
   })
-
-
-  // return {
-  //   email: '',
-  //   coordinates: coordinates,
-  //   accuracy: accuracy,
-  //   timestamp: new Date().getTime()
-  // }
 }
 
 
