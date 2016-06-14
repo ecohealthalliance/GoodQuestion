@@ -1,15 +1,10 @@
-// A placeholder view for integrating native navigation
-
 import React, {
   StyleSheet,
-  TouchableHighlight,
   Text,
   Platform,
   View,
 } from 'react-native'
 
-import Button from '../components/Button'
-import TermsOfService from '../data/TermsOfService'
 import Styles from '../styles/Styles'
 import MapView from 'react-native-maps'
 
@@ -19,7 +14,7 @@ import { BackgroundGeolocation } from '../api/BackgroundProcess'
 import { setActiveMap, clearActiveMap, getUserLocationData } from '../api/Geofencing'
 
 
-const TermsOfServicePage = React.createClass ({
+const MapPage = React.createClass ({
   propTypes: {
     navigator: React.PropTypes.object.isRequired,
     triggers: React.PropTypes.object
@@ -177,4 +172,4 @@ const _styles = StyleSheet.create({
   },
 })
 
-module.exports = TermsOfServicePage
+module.exports = MapPage
