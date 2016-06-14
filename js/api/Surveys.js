@@ -128,6 +128,18 @@ function clearSurveyCache(exclusions) {
     }
 
     realm.write(() => {
+      for (var i = 0; i < expiredSurveys.length; i++) {
+        let forms = realm.objects('Form').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`)
+        let timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`)
+        let geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`)
+        for (var j = 0; j < forms.length; j++) {
+          let questions = realm.objects('Question').filtered(`formId= "${expiredSurveys[i].surveyId}"`)
+          realm.delete(questions)
+        }
+        realm.delete(forms)
+        realm.delete(timeTriggers)
+        realm.delete(geofenceTriggers)
+      }
       realm.delete(expiredSurveys)
     })
   } catch (e) {

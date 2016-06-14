@@ -36,22 +36,22 @@ const DemoGeofenceData = {
     {
       latitude: 28.46918,
       longitude: -81.58483,
-      radius: 25,
+      radius: 100,
     },
     {
-      latitude: 40.767954,
-      longitude: -73.982363,
-      radius: 30,
+      latitude: 37.330235,
+      longitude: -122.027286,
+      radius: 120,
     },
     {
-      latitude: 40.768523,
-      longitude: -73.981048,
-      radius: 25,
+      latitude: 37.330346,
+      longitude: -122.023241,
+      radius: 90,
     },
     {
-      latitude: 40.769090,
-      longitude: -73.979963,
-      radius: 40,
+      latitude: 37.337580,
+      longitude: -122.023220,
+      radius: 150,
     },
   ],
 

@@ -32,6 +32,7 @@ const TermsOfServicePage = React.createClass ({
     }
     this.markers = []
     return {
+      updates: 0,
       latitude: 28.46986,
       longitude: -81.58495,
       zoom: 0.01,
@@ -53,13 +54,15 @@ const TermsOfServicePage = React.createClass ({
 
     markers = this.state.triggers.map((trigger, index) => {
       return {
+        id: trigger.id,
         title: trigger.title,
         description: trigger.description,
         position: {
           latitude: trigger.latitude,
           longitude: trigger.longitude,
         },
-        radius: trigger.radius
+        radius: trigger.radius,
+        active: false,
       }
     })
 
@@ -73,6 +76,20 @@ const TermsOfServicePage = React.createClass ({
     console.log("  geofence: ", geofence)
     console.log("  identifier: ", geofence.identifier)
     console.log("  action: ", geofence.action)
+
+    if (geofence.action == 'ENTER') {
+      updatedMarkers = this.state.markers.filter((marker) => {return marker.id == geofence.identifier})
+      for (var i = 0; i < updatedMarkers.length; i++) {
+        updatedMarkers[i].active = true
+      }
+    } else if (geofence.action == 'EXIT') {
+      updatedMarkers = this.state.markers.filter((marker) => {return marker.id == geofence.identifier})
+      for (var i = 0; i < updatedMarkers.length; i++) {
+        updatedMarkers[i].active = false
+      }
+    }
+
+    this.setState({updated: this.state.updated+1})
   },
 
   wipeMarkers() {
@@ -94,8 +111,9 @@ const TermsOfServicePage = React.createClass ({
       <View style={[Styles.container.default, { flex: 1, overflow: 'hidden' }]}>
         <MapView
           ref={(ref) => this._map = ref}
+          key='gmap'
           style={Platform.OS === 'ios' ? _styles.iosMap : _styles.androidMap}
-          region={{
+          initialRegion={{
             latitude: this.state.latitude,
             longitude: this.state.longitude,
             latitudeDelta: this.state.zoom,
@@ -110,18 +128,18 @@ const TermsOfServicePage = React.createClass ({
           {
             this.state.markers.map(marker => (
               <MapView.Circle
-                key={'circle-'+marker.title}
+                key={'circle-'+marker.id}
                 center={marker.position}
                 radius={marker.radius}
                 strokeColor='#700'
-                fillColor='rgba(100, 30, 30, 0.5)'
+                fillColor={marker.active ? 'rgba(30, 150, 30, 0.5)' : 'rgba(100, 30, 30, 0.5)'}
               />
             ))
           }
           {
             this.state.markers.map(marker => (
               <MapView.Marker
-                key={'marker-'+marker.title}
+                key={'marker-'+marker.id}
                 coordinate={marker.position}
                 title={marker.title}
                 description={marker.description}

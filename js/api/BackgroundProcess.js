@@ -21,16 +21,14 @@ export function configureGeolocationService(callback) {
       license: Settings.licenses.BackgroundGeolocation.key,
 
       // Geolocation config
-      desiredAccuracy: 10,
-      distanceFilter: 50,
-      locationUpdateInterval: 60000,
-      fastestLocationUpdateInterval: 60000,
-
-      // useSignificantChangesOnly: true,
+      desiredAccuracy: 0,
+      distanceFilter: 25,
+      locationUpdateInterval: 5000,
+      fastestLocationUpdateInterval: 5000,
 
       // Activity Recognition config
       minimumActivityRecognitionConfidence: 80,
-      activityRecognitionInterval: 60000,
+      activityRecognitionInterval: 10000,
       stopDetectionDelay: 1,
       stopTimeout: 2,
 
@@ -42,23 +40,8 @@ export function configureGeolocationService(callback) {
       stopOnTerminate: false,              // Android
       startOnBoot: true,
 
-      disableMotionActivityUpdates: true, // iOS
-
-      // We are using the on/off schedule as a temporary event caller for  time triggers before we implement the geolocation triggers
-      // These triggers will have to be approached in other ways after that feature is developed.
-      schedule: [
-        '2-6 9:00-9:05',
-        '2-6 10:00-10:05',
-        '2-6 11:00-11:05',
-        '2-6 12:00-12:05',
-        '2-6 13:00-13:05',
-        '2-6 14:00-14:05',
-        '2-6 15:00-15:05',
-        '2-6 16:00-16:05',
-        '2-6 17:00-17:05',
-
-        // '1-7 9:46-23:59', // for testing and debugging
-      ]
+      useSignificantChangesOnly: false, // iOS
+      disableMotionActivityUpdates: false, // iOS
     }, callback)
   } catch (e) {
     console.error(e)
@@ -87,10 +70,6 @@ export function initializeGeolocationService() {
     BackgroundGeolocation.on('schedule', function(state) {
       console.log('Schedule event triggered, tracking enabled:', state.enabled)
       checkTimeTriggers()
-    })
-
-    BackgroundGeolocation.startSchedule(function() {
-      console.info('- Scheduler started')
     })
 
     // Check the time triggers on start regardless if there is a schedule cycle running.
