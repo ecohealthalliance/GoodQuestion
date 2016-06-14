@@ -55,15 +55,9 @@ export function setupGeofences() {
       console.warn("Failed to add geofence", error);
   })
 
-  if (Platform.OS === 'ios') {
-    BackgroundGeolocation.start(() => {
-      console.info('Geolocation tracking started.')
-    })
-  } else {
-    BackgroundGeolocation.startGeofences(function() {
-      console.info('Geofence tracking started.')
-    })
-  }
+  BackgroundGeolocation.start(() => {
+    console.info('Geolocation tracking started.')
+  })
 
   connectMapToGeofence()
 }

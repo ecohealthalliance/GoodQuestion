@@ -98,6 +98,7 @@ const TermsOfServicePage = React.createClass ({
   },
 
   handleMarkerPress(marker) {
+    console.log('press marker')
     const data = loadCachedFormDataByGeofence(marker.id)
 
     getUserLocationData()
@@ -152,7 +153,8 @@ const TermsOfServicePage = React.createClass ({
           {
             this.state.markers.map(marker => (
               <MapView.Marker
-                onPress={this.handleMarkerPress.bind(null, marker)}
+                onPress={this.handleMarkerPress.bind(null, marker)} // Android
+                onSelect={this.handleMarkerPress.bind(null, marker)} // iOS
                 key={'marker-'+marker.id}
                 coordinate={marker.position}
                 title={marker.title}
