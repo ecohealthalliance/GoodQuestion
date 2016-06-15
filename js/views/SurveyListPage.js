@@ -136,7 +136,7 @@ const SurveyListPage = React.createClass ({
     } else {
       filteredList = this._surveys.slice();
     }
-    
+
     this.setState({
       isLoading   : false,
       filterType  : query !== 'all' ? query+' ' : '',
@@ -238,7 +238,7 @@ const SurveyListPage = React.createClass ({
   },
   reloadEmpty(){
     this.setState({isLoading: true});
-    loadSurveyList({}, this.loadList);
+    loadSurveyList(this.loadList);
   },
   _onRefresh() {
     this.setState({isRefreshing: true});
