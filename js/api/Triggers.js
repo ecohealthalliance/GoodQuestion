@@ -2,8 +2,7 @@ import { InteractionManager, Platform } from 'react-native'
 import _ from 'lodash'
 import Parse from 'parse/react-native'
 import realm from '../data/Realm'
-
-import PushNotification from 'react-native-push-notification';
+import { loadAcceptedInvitations } from '../api/Invitations'
 
 // Queries the connected Parse server for a list of Triggers.
 export function loadTriggers(form, survey, callback) {
@@ -108,18 +107,19 @@ function cacheGeofenceTrigger(trigger, form, survey) {
  * @param  {bool} omitNotifications   Set to true to prevent Notifications from being generated when the triggers become active
  */
 export function checkTimeTriggers(omitNotifications) {
-  let now = new Date()
-
-  // Make the expiration date 90 days
-  let past = new Date()
-  past = past.setDate(past.getDate() - 90)
-
-  // The JavaScript version of Realm does not seem to support Date queries yet, the filtering has to be done manually.
-  let surveys = realm.objects('Survey').filtered(`status == "accepted"`)
-
-  for (var i = 0; i < surveys.length; i++) {
-    checkSurveyTimeTriggers(surveys[i], omitNotifications)
-  }
+  loadAcceptedInvitations((err, invitations) => {
+    if (err) {
+      console.warn(err);
+      return;
+    }
+    if (invitations && invitations.length > 0 ) {
+      const surveyIds = invitations.map((invitation) => invitation.surveyId);
+      const surveys = realm.objects('Survey').filtered(surveyIds.map((id) => `id == "${id}"`).join(' OR '));
+      for (var i = 0; i < surveys.length; i++) {
+        checkSurveyTimeTriggers(surveys[i], omitNotifications)
+      }
+    }
+  });
 }
 
 
@@ -136,9 +136,8 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
   let past = new Date()
   past = past.setDate(past.getDate() - 90)
 
-  // Record the new trigger 
+  // Record the new trigger
   realm.write(() => {
-    console.log(triggers)
     for (var i = 0; i < triggers.length; i++) {
       if (triggers[i].datetime < now && triggers[i].datetime > past) {
         let activeTrigger = realm.create('TimeTrigger', {
@@ -155,9 +154,6 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
             datetime: activeTrigger.datetime,
           }, true);
 
-          PushNotification.localNotification({
-              message: notification.description,
-          });
         }
       }
     }

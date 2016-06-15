@@ -17,7 +17,9 @@ import Styles from '../styles/Styles'
 import Color from '../styles/Color'
 import Button from '../components/Button'
 
-import {authenticate} from '../api/Account'
+import { authenticate } from '../api/Account'
+import { addUserToInstallation } from '../api/Installations'
+
 
 import Joi from '../lib/joi-browser.min'
 import JoiMixins from '../mixins/joi-mixins'
@@ -83,6 +85,14 @@ const LoginPage = React.createClass ({
         Alert.alert(err, 'The email and password combination is invalid.')
         return;
       }
+
+      addUserToInstallation(user, (err) => {
+        if (err) {
+          console.warn(err);
+          return;
+        }
+      });
+
       self.props.setAuthenticated(true);
     });
   },
@@ -143,7 +153,7 @@ const LoginPage = React.createClass ({
                 />
               </View>
             </View>
-            <Button 
+            <Button
               action={this.handleVerifyLogin}
               color='success'
               style={{marginVertical: 30, marginHorizontal: 35}}>

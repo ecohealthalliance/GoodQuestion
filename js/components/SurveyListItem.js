@@ -11,16 +11,18 @@ import ViewText from './ViewText'
 import CheckBox from 'react-native-checkbox'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
+import { getFormAvailability } from '../api/Surveys'
+
 const SurveyListItem = React.createClass ({
   propTypes: {
     title: React.PropTypes.string.isRequired,
+    surveyId: React.PropTypes.string.isRequired,
     status: React.PropTypes.string.isRequired,
-    getFormAvailability: React.PropTypes.func.isRequired,
   },
 
   getInitialState() {
     return {
-      status: this.props.status,
+      state: null,
       availability: {
         availableTimeTriggers: 0,
         nextTimeTrigger: false,
@@ -30,7 +32,7 @@ const SurveyListItem = React.createClass ({
   },
 
   componentWillReceiveProps(nextProps) {
-    if (this.state.status != nextProps.status) {
+    if (this.state.status !== nextProps.status) {
       this.update(nextProps.status)
     }
   },
@@ -40,29 +42,39 @@ const SurveyListItem = React.createClass ({
   },
 
   shouldComponentUpdate(nextProps, nextState) {
-    return  this.state.status !== nextState.status ||
+    return  this.state.status !== nextProps.status ||
             this.state.availability !== nextState.availability
   },
 
   /* Methods */
   update(status) {
-    availability = this.props.getFormAvailability()
-    if (
-      availability.availableTimeTriggers !== this.state.availability.availableTimeTriggers ||
-      availability.nextTimeTrigger !== this.state.availability.nextTimeTrigger ||
-      availability.geofenceTriggersInRange !== this.state.availability.geofenceTriggersInRange
-    ) {
-      this.setState({
-        status: status,
-        availability: availability,
-      })
-    }
+    getFormAvailability(this.props.surveyId, (err, availability) => {
+      if (err) {
+        console.warn(err);
+        return;
+      }
+      if (
+        availability.availableTimeTriggers !== this.state.availability.availableTimeTriggers ||
+        availability.nextTimeTrigger !== this.state.availability.nextTimeTrigger ||
+        availability.geofenceTriggersInRange !== this.state.availability.geofenceTriggersInRange
+      ) {
+        this.setState({
+          status: status,
+          availability: availability,
+        });
+      } else {
+        this.setState({
+          status: status
+        });
+      }
+    });
+
   },
 
   /* Render */
   renderIcon() {
     let icon
-    switch(this.props.status) {
+    switch(this.state.status) {
       case 'accepted': icon = <Icon name='check-circle' size={28} color={Color.fadedGreen} />; break;
       case 'declined': icon = <Icon name='times-circle' size={28} color={Color.fadedRed} />; break;
       default: icon = <Icon name='circle-o' size={28} color={Color.fadedRed} />; break;
