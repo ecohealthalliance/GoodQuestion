@@ -6,9 +6,11 @@ import React, {
   TouchableOpacity,
   Text,
   InteractionManager,
+  Alert,
 } from 'react-native'
 
 import Drawer from 'react-native-drawer'
+import PushNotification from 'react-native-push-notification';
 
 import Settings from '../settings'
 
@@ -38,12 +40,22 @@ import FormPage from '../views/FormPage'
 import ControlPanel from '../views/ControlPanel'
 import ProfilePage from '../views/ProfilePage'
 
+import { upsertInstallation } from '../api/Installations'
+import { checkTimeTriggers } from '../api/Triggers'
+import { loadCachedFormDataById } from '../api/Forms'
+import { addTimeTriggerNotification } from '../api/Notifications'
+
 // Background
 import { initializeGeolocationService } from '../api/BackgroundProcess'
 
+
 initializeGeolocationService()
+connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
+
 
 let navigator;
+let initialRoute = { path:'surveylist', title: 'Surveys' };
+
 // Binds the hardware "back button" from Android devices
 if ( Platform.OS === 'android' ) {
   BackAndroid.addEventListener('hardwareBackPress', () => {
@@ -65,15 +77,60 @@ const SharedNavigator = React.createClass ({
   },
 
   componentWillMount() {
-    connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
+    if (Platform.OS === 'android') {
+      PushNotification.configure({
+        senderID: Settings.senderID,
+        onRegister: this._onRegister,
+        onNotification: this._onNotification,
+      });
+    } else {
+      PushNotification.configure({
+        onRegister: this._onRegister,
+        onNotification: this._onNotification,
+      });
+    }
+    checkTimeTriggers();
   },
 
   componentDidMount() {
+    if (Platform.OS === 'ios') {
+      PushNotification.requestPermissions();
+    }
     isAuthenticated((authenticated) => {
       this.setState({
         isAuthenticated: authenticated,
         isLoading: false,
       });
+    });
+  },
+
+  _onNotification(notification) {
+    const data = loadCachedFormDataById(notification.data.formId);
+    if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
+      return;
+    }
+    const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form}
+    // TODO determine the type of notification
+    // TODO sync remote and cached notifications
+    // addTimeTriggerNotification(data.survey.id, data.form.id, data.form.title, notification.message, new Date());
+    // We will only route the user if notification was remote
+    if (!notification.foreground) {
+      if (typeof navigator === 'undefined') {
+        initialRoute = path;
+      } else {
+        navigator.resetTo(path)
+      }
+    }
+  },
+
+  _onRegister(registration) {
+    const token = registration.token;
+    const platform = registration.os;
+    upsertInstallation(token, platform, (err, res) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
     });
   },
 
@@ -149,7 +206,7 @@ const SharedNavigator = React.createClass ({
       case 'registration': viewComponent = <RegistrationPages {...sharedProps} index={route.index} />; break;
       case 'profile': viewComponent = <ProfilePage {...sharedProps} />; break;
       case 'form': viewComponent = <FormPage {...sharedProps} form={route.form} survey={route.survey} index={route.index} />; break;
-      case 'survey-details': viewComponent = <SurveyDetailsPage {...sharedProps} survey={route.survey} />; break;
+      case 'survey-details': viewComponent = <SurveyDetailsPage {...sharedProps} survey={route.survey} formCount={route.formCount} questionCount={route.questionCount} />; break;
       default: viewComponent = <SurveyListPage {...sharedProps} />; break;
     }
 
@@ -172,7 +229,6 @@ const SharedNavigator = React.createClass ({
 
   /* Render */
   render() {
-    const initialRoute = { path:'surveylist', title: 'Surveys' }
 
     // show loading component without the navigationBar
     if (this.state.isLoading) {
