@@ -41,18 +41,24 @@ export function loadCachedTrigger(formId) {
  * Fetches all cached geofence triggers
  * @return {object}  Realm object containing an array of 'GeofenceTrigger' objects,
  */
-export function loadAllCachedGeofenceTriggers() {
-  const activeSurveys = realm.objects('Survey').filtered('status == "accepted"')
-  let triggers = []
-  for (var i = 0; i < activeSurveys.length; i++) {
-    let surveyTriggers = (realm.objects('GeofenceTrigger').filtered(`surveyId = "${activeSurveys[i].id}"`))
-    triggers = _.unionBy(triggers, surveyTriggers, 'id')
-  }
+export function loadAllCachedGeofenceTriggers(callback) {
+  loadAcceptedInvitations((err, invitations) => {
+    if (err) {
+      console.warn(err)
+      callback(err, [])
+      return
+    }
+    
+    const activeSurveys = realm.objects('Survey') // TODO: filter by invitations
+    let triggers = []
+    for (var i = 0; i < activeSurveys.length; i++) {
+      let surveyTriggers = Array.from(realm.objects('GeofenceTrigger').filtered(`surveyId = "${activeSurveys[i].id}"`))
+      triggers = _.unionBy(triggers, surveyTriggers, 'id')
+    }
 
-  console.log('triggers')
-  console.log(triggers)
-
-  return triggers
+    callback(null, triggers)
+  })
+  
 }
 
 

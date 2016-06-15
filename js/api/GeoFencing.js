@@ -21,45 +21,48 @@ export function clearActiveMap(component) {
 
 export function setupGeofences() {
   BackgroundGeolocation.stop()
-  const triggers = Array.from(loadAllCachedGeofenceTriggers())
 
-  BackgroundGeolocation.removeGeofences(
-    function success() {
-      console.log('Cleared current geofencing settings.')
-    },
-    function error(e) {
-      console.log('Error resetting geofencing settings.')
-      console.log(e)
-    }
-  )
+  loadAllCachedGeofenceTriggers((err, response) => {
+    console.log(err)
+    console.log(response)
+    BackgroundGeolocation.removeGeofences(
+      function success() {
+        console.log('Cleared current geofencing settings.')
+      },
+      function error(e) {
+        console.log('Error resetting geofencing settings.')
+        console.log(e)
+      }
+    )
 
-  const triggerGeofences = triggers.map((trigger) => {
-    return {
-      identifier: trigger.id,
-      radius: trigger.radius,
-      latitude: trigger.latitude,
-      longitude: trigger.longitude,
-      notifyOnEntry: true,
-      notifyOnExit: true,
-      notifyOnDwell: true,
-      loiteringDelay: 5000
-    }
+    const triggerGeofences = response.map((trigger) => {
+      return {
+        identifier: trigger.id,
+        radius: trigger.radius,
+        latitude: trigger.latitude,
+        longitude: trigger.longitude,
+        notifyOnEntry: true,
+        notifyOnExit: true,
+        notifyOnDwell: true,
+        loiteringDelay: 5000
+      }
+    })
+
+    BackgroundGeolocation.addGeofences(triggerGeofences, function() {
+        console.log("Successfully added geofences");
+        // BackgroundGeolocation.getGeofences((geofences) => {
+        //   console.log(geofences)
+        // })
+    }, function(error) {
+        console.warn("Failed to add geofence", error);
+    })
+
+    BackgroundGeolocation.start(() => {
+      console.info('Geolocation tracking started.')
+    })
+
+    connectMapToGeofence()
   })
-
-  BackgroundGeolocation.addGeofences(triggerGeofences, function() {
-      console.log("Successfully added geofences");
-      // BackgroundGeolocation.getGeofences((geofences) => {
-      //   console.log(geofences)
-      // })
-  }, function(error) {
-      console.warn("Failed to add geofence", error);
-  })
-
-  BackgroundGeolocation.start(() => {
-    console.info('Geolocation tracking started.')
-  })
-
-  connectMapToGeofence()
 }
 
 export function getUserLocationData(callback) {
