@@ -84,8 +84,8 @@ android {
         applicationId "io.eha.goodquestion"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 5
-        versionName "0.2.5"
+        versionCode 6
+        versionName "0.2.6"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
