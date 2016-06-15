@@ -77,17 +77,20 @@ function destroyObjects(objects) {
 }
 
 function initDatabase(){
-  initRoles().then(createUsers)
+  initRoles().then(createUsers).then(Roles.setRoleACLs)
 }
 
 function createUsers(){
-  return Users.createInitialAdmin()
-    .then(function(){
-      return Users.createUsers()
-    })
-    .then(function(){
-      console.log('Initial users created'.green);
-    })
+  return new Promise(function(resolve){
+    Users.createInitialAdmin()
+      .then(function(){
+        return Users.createUsers()
+      })
+      .then(function(){
+        console.log('Initial users created'.green);
+        resolve()
+      })
+  })
 }
 
 function checkUsers(){
