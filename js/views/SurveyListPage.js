@@ -1,6 +1,7 @@
 import React, {
   StyleSheet,
   TouchableHighlight,
+  TouchableOpacity,
   Text,
   TextInput,
   View,
@@ -20,6 +21,7 @@ import SurveyListItem from '../components/SurveyListItem'
 import SurveyListFilter from '../components/SurveyListFilter'
 import Loading from '../components/Loading'
 import Color from '../styles/Color'
+import Icon from 'react-native-vector-icons/FontAwesome'
 
 
 const SurveyListPage = React.createClass ({
@@ -134,7 +136,7 @@ const SurveyListPage = React.createClass ({
     } else {
       filteredList = this._surveys.slice();
     }
-
+    
     this.setState({
       isLoading   : false,
       filterType  : query !== 'all' ? query+' ' : '',
@@ -199,6 +201,9 @@ const SurveyListPage = React.createClass ({
           <Text style={[Styles.container.attentionText]}>
             No {this.state.filterType}surveys
           </Text>
+          <TouchableOpacity onPress={() => this.reloadEmpty()}>
+              <Icon name="refresh" size={24} color={Color.primary} />
+          </TouchableOpacity>
         </View>
       )
     }
@@ -230,6 +235,10 @@ const SurveyListPage = React.createClass ({
         </View>
       </TouchableHighlight>
     );
+  },
+  reloadEmpty(){
+    this.setState({isLoading: true});
+    loadSurveyList({}, this.loadList);
   },
   _onRefresh() {
     this.setState({isRefreshing: true});
