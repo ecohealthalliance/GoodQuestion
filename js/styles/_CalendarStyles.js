@@ -1,15 +1,18 @@
-// Original styles for Caldendar componen
-
 import { StyleSheet, Dimensions } from 'react-native'
+import Color from './Color'
+import Variables from './Variables'
 
 const DEVICE_WIDTH = Dimensions.get('window').width - 60
 
 const CalendarStyles = StyleSheet.create({
   calendarContainer: {
-    backgroundColor: '#f7f7f7',
+    // flex: 1,
+    paddingTop: 30,
+    paddingHorizontal: 30,
+    backgroundColor: 'transparent',
   },
   monthContainer: {
-    width: DEVICE_WIDTH
+    flex: 1,
   },
   calendarControls: {
     flex: 1,
@@ -28,8 +31,9 @@ const CalendarStyles = StyleSheet.create({
   },
   calendarHeading: {
     flexDirection: 'row',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
+    borderTopWidth: 0,
+    borderBottomWidth: 0,
+    marginBottom: 15,
   },
   dayHeading: {
     flex: 1,
@@ -48,19 +52,19 @@ const CalendarStyles = StyleSheet.create({
     flexDirection: 'row',
   },
   dayButton: {
+    flex: 0.15,
     alignItems: 'center',
     padding: 5,
-    width: DEVICE_WIDTH / 7,
-    borderTopWidth: 1,
-    borderTopColor: '#e9e9e9',
+    borderTopWidth: 0,
   },
   dayButtonFiller: {
+    flex: 0.15,
     padding: 5,
-    width: DEVICE_WIDTH / 7
   },
   day: {
     fontSize: 16,
     alignSelf: 'center',
+    // backgroundColor: Color.background,
   },
   eventIndicatorFiller: {
     marginTop: 3,
@@ -74,19 +78,21 @@ const CalendarStyles = StyleSheet.create({
   },
   dayCircleFiller: {
     justifyContent: 'center',
-    backgroundColor: 'transparent',
+    backgroundColor: Color.background3,
     width: 28,
     height: 28,
-    borderRadius: 14,
+    borderRadius: 2,
   },
   currentDayCircle: {
-    backgroundColor: 'red',
+    backgroundColor: Color.positive,
+    borderColor: Color.primary,
+    borderWidth: 2,
   },
   currentDayText: {
     color: 'red',
   },
   eventDayCircle: {
-    backgroundColor: 'red',
+    backgroundColor: Color.warning,
   },
   eventDayText: {
     color: 'white',

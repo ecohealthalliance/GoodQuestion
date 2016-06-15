@@ -50,7 +50,7 @@ const CalendarPage = React.createClass ({
   /* Render */
   render() {
     return (
-      <View style={[Styles.container.default, { flex: 1, overflow: 'hidden' }]}>
+      <View style={[Styles.container.defaultWhite, { flex: 1, overflow: 'hidden' }]}>
         <Calendar
           ref="_calendar"
           eventDates={['2016-07-03', '2016-07-05', '2016-07-28', '2016-07-30']}
@@ -63,6 +63,8 @@ const CalendarPage = React.createClass ({
           onTouchNext={() => console.log('Forward TOUCH')}  // eslint-disable-line no-console
           onSwipePrev={() => console.log('Back SWIPE')}     // eslint-disable-line no-console
           onSwipeNext={() => console.log('Forward SWIPE')}  // eslint-disable-line no-console
+          eventDates={['2016-06-01', '2016-06-04', '2016-06-09', '2016-06-12', '2016-06-15']}
+          customStyle={Styles.calendar}
         />
         <Text>Selected Date: {moment(this.state.selectedDate).format('MMMM DD YYYY')}</Text>
       </View>

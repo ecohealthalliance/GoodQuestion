@@ -14,6 +14,7 @@ import HeaderStyles from './_HeaderStyles'
 import DrawerStyles from './_DrawerStyles'
 import ControlPanelStyles from './_ControlPanelStyles'
 import ProfileStyles from './_ProfileStyles'
+import CalendarStyles from './_CalendarStyles'
 
 const Styles = {
   container: ContainerStyles,
@@ -26,6 +27,7 @@ const Styles = {
   controlPanel: ControlPanelStyles,
   question: QuestionStyles,
   profile: ProfileStyles,
+  calendar: CalendarStyles,
 }
 
 module.exports = Styles

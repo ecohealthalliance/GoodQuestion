@@ -34,8 +34,12 @@ const CalendarDay = React.createClass({
     return this.props.isSelected !== nextProps.isSelected || this.props.hasEvent !== nextProps.hasEvent
   },
 
-  _dayCircleStyle(newDay, isSelected, isToday) {
+  _dayCircleStyle(newDay, isSelected, isToday, hasEvent) {
     var dayCircleStyle = [CalendarStyles.dayCircleFiller, this.props.customStyle.dayCircleFiller]
+    if (hasEvent) {
+      dayCircleStyle.push(CalendarStyles.eventDayCircle)
+      dayCircleStyle.push(this.props.customStyle.eventDayCircle)
+    }
     if (isSelected && !isToday) {
       dayCircleStyle.push(CalendarStyles.selectedDayCircle)
       dayCircleStyle.push(this.props.customStyle.selectedDayCircle)
@@ -46,8 +50,12 @@ const CalendarDay = React.createClass({
     return dayCircleStyle
   },
 
-  _dayTextStyle(newDay, isSelected, isToday) {
+  _dayTextStyle(newDay, isSelected, isToday, hasEvent) {
     var dayTextStyle = [CalendarStyles.day, this.props.customStyle.day]
+    if (hasEvent) {
+      dayTextStyle.push(CalendarStyles.eventDayText)
+      dayTextStyle.push(this.props.customStyle.eventDayText)
+    }
     if (isToday && !isSelected) {
       dayTextStyle.push(CalendarStyles.currentDayText)
       dayTextStyle.push(this.props.customStyle.currentDayText)
@@ -71,6 +79,12 @@ const CalendarDay = React.createClass({
       usingEvents,
       filler,
     } = this.props
+    
+    {usingEvents ?
+      <View style={[CalendarStyles.eventIndicatorFiller, this.props.customStyle.eventIndicatorFiller, hasEvent && CalendarStyles.eventIndicator, hasEvent && this.props.customStyle.eventIndicator]}></View>
+      : null
+    }
+
 
     if (filler) {
       return (
@@ -84,13 +98,9 @@ const CalendarDay = React.createClass({
       return (
         <TouchableOpacity onPress={() => this.props.onPress(newDay)}>
           <View style={[CalendarStyles.dayButton, this.props.customStyle.dayButton]}>
-            <View style={this._dayCircleStyle(newDay, isSelected, isToday)}>
-              <Text style={this._dayTextStyle(newDay, isSelected, isToday)}>{currentDay + 1}</Text>
+            <View style={this._dayCircleStyle(newDay, isSelected, isToday, hasEvent)}>
+              <Text style={this._dayTextStyle(newDay, isSelected, isToday, hasEvent)}>{currentDay + 1}</Text>
             </View>
-            {usingEvents ?
-              <View style={[CalendarStyles.eventIndicatorFiller, this.props.customStyle.eventIndicatorFiller, hasEvent && CalendarStyles.eventIndicator, hasEvent && this.props.customStyle.eventIndicator]}></View>
-              : null
-            }
           </View>
         </TouchableOpacity>
       )
