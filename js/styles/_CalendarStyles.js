@@ -113,7 +113,39 @@ const CalendarStyles = StyleSheet.create({
   },
   weekendDayText: {
     color: '#cccccc',
-  }
+  },
+
+
+  // Event Info
+  eventBlock: {
+    marginTop: 20,
+    marginHorizontal: 10,
+    marginBottom: 45,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
+    backgroundColor: Color.background2,
+    borderColor: Color.background1,
+    borderWidth: 1,
+    borderRadius: 5,
+  },
+  eventHeader: {
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    marginHorizontal: -10,
+    marginBottom: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    backgroundColor: Color.background1,
+  },
+  eventHeaderText: {
+    color: Color.primary,
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  eventText: {
+    marginTop: 5,
+    marginBottom: 15,
+  },
 })
 
 module.exports = CalendarStyles

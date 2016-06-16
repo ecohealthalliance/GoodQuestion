@@ -8,6 +8,7 @@ import moment from 'moment'
 
 import Styles from '../styles/Styles'
 import Calendar from '../components/Calendar/Calendar'
+import CalendarEvent from '../components/Calendar/CalendarEvent'
 
 import { loadAllCachedGeofenceTriggers } from '../api/Triggers'
 import { loadCachedFormDataByGeofence } from '../api/Forms'
@@ -37,12 +38,23 @@ const CalendarPage = React.createClass ({
   
 
   /* Render */
+  renderSelectedEvents() {
+    return (
+      <CalendarEvent
+        id='1'    
+        type='datetime'
+        title='A Form'
+        questionCount={10}
+        properties={{}}
+      />
+    )
+  },
+
   render() {
     return (
       <View style={[Styles.container.defaultWhite, { flex: 1, overflow: 'hidden' }]}>
         <Calendar
           ref="_calendar"
-          eventDates={['2016-07-03', '2016-07-05', '2016-07-28', '2016-07-30']}
           showControls
           titleFormat={'MMMM YYYY'}
           prevButtonText={'Prev'}
@@ -55,7 +67,7 @@ const CalendarPage = React.createClass ({
           eventDates={this.state.events}
           customStyle={Styles.calendar}
         />
-        <Text>Selected Date: {moment(this.state.selectedDate).format('MMMM DD YYYY')}</Text>
+        {this.renderSelectedEvents()}
       </View>
     )
   }

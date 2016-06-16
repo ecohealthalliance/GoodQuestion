@@ -90,12 +90,6 @@ const CalendarDay = React.createClass({
       filler,
     } = this.props
     
-    {usingEvents ?
-      <View style={[CalendarStyles.eventIndicatorFiller, this.props.customStyle.eventIndicatorFiller, hasEvent && CalendarStyles.eventIndicator, hasEvent && this.props.customStyle.eventIndicator]}></View>
-      : null
-    }
-
-
     if (filler) {
       return (
         <TouchableWithoutFeedback>
