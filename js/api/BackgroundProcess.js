@@ -67,15 +67,6 @@ export function initializeGeolocationService() {
       // console.log(location)
     })
 
-    BackgroundGeolocation.on('schedule', function(state) {
-      console.log('Schedule event triggered, tracking enabled:', state.enabled)
-      checkTimeTriggers()
-    })
-
-    // Check the time triggers on start regardless if there is a schedule cycle running.
-    // Ommit notifications to prevent spam on login.
-    checkTimeTriggers(true)
-    
     // Create initial geofence hooks.
     setupGeofences()
   })

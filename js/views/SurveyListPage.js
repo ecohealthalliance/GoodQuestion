@@ -1,6 +1,7 @@
 import React, {
   StyleSheet,
   TouchableHighlight,
+  TouchableOpacity,
   Text,
   TextInput,
   View,
@@ -14,33 +15,47 @@ import Store from '../data/Store'
 import Styles from '../styles/Styles'
 import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys'
 import { loadForms } from '../api/Forms'
+import { loadCachedQuestionsFromForms } from '../api/Questions'
+import { InvitationStatus, loadCachedInvitations } from '../api/Invitations'
 import SurveyListItem from '../components/SurveyListItem'
 import SurveyListFilter from '../components/SurveyListFilter'
 import Loading from '../components/Loading'
 import Color from '../styles/Color'
+import Icon from 'react-native-vector-icons/FontAwesome'
+
 
 const SurveyListPage = React.createClass ({
   title: 'Surveys',
-  _preventUpdate: false,
-
+  _invitations: [],
+  _surveys: [],
   getInitialState() {
     return {
       isLoading: true,
       isRefreshing: false,
-      list: loadCachedSurveyList(),
-      filteredList: [],
+      hasInvitationChanged: false,
       dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
       })
     }
   },
 
+  componentWillMount() {
+    this._surveys = loadCachedSurveyList().slice();
+    loadCachedInvitations(this._surveys, (err, invitations) => {
+      if (err) {
+        console.warn(err);
+        this._invitations = []
+      }
+      this._invitations = invitations.slice();
+    });
+  },
+
   componentDidMount() {
     this.mountTimeStamp = Date.now()
 
     // Update Survey List from Parse only once every 3 minutes
-    if ( this.state.list.length === 0 || Store.lastParseUpdate + 180000 < Date.now() ) {
-      loadSurveyList({}, this.loadList);
+    if ( this._surveys.length === 0 || Store.lastParseUpdate + 180000 < Date.now() ) {
+      loadSurveyList(this.loadList);
     } else {
       this.loadList()
     }
@@ -66,19 +81,17 @@ const SurveyListPage = React.createClass ({
   },
 
   shouldComponentUpdate(nextProps, nextState) {
+    let shouldUpdate = true;
     if (nextProps.navigator) {
-      let routeStack = nextProps.navigator.state.routeStack
-      let newPath = routeStack[routeStack.length-1].path
-
-      return  newPath === 'surveylist' ||
+      const routeStack = nextProps.navigator.state.routeStack
+      const newPath = routeStack[routeStack.length-1].path
+      shouldUpdate = newPath === 'surveylist' ||
               this.state.isLoading != nextState.isLoading ||
               this.state.dataSource != nextState.dataSource ||
-              this.state.filterType != nextState.filterType ||
-              this.state.filteredList != nextState.filteredList
+              this.state.filterType != nextState.filterType
 
-    } else {
-      return true
     }
+    return shouldUpdate;
   },
 
   /* Methods */
@@ -86,81 +99,89 @@ const SurveyListPage = React.createClass ({
     // Prevent this callback from working if the component has unmounted.
     if (this.cancelCallbacks) return
 
+    const self = this;
+
     if (error) {
       console.warn(error)
-      this.filterList('all', [])
+      this.filterList('all')
     } else {
-      let self = this
-      // Use the Realm cached versions to determine accept/decline status
-      let cachedSurveys = loadCachedSurveyList()
-      let delay = 0
-
-      if (this.mountTimeStamp + 750 > Date.now()) delay = 750
-
-      setTimeout(() => {
-        if (!self.cancelCallbacks) {
-          this.setState({isRefreshing: false});
-          self.filterList('all', cachedSurveys)
+      this._surveys = loadCachedSurveyList().slice();
+      loadCachedInvitations(this._surveys, (err, invitations) => {
+        if (err) {
+          console.warn(err);
+          this._invitations = []
         }
-      }, delay)
+        this._invitations = invitations.slice();
+        let delay = 0;
+        if (this.mountTimeStamp + 750 > Date.now()) delay = 750
+        setTimeout(() => {
+          if (!self.cancelCallbacks) {
+            self.setState({isRefreshing: false});
+            self.filterList('all');
+          }
+        }, delay)
+      });
+
     }
   },
 
-  filterList(query, list) {
+  filterList(query) {
     let filteredList = []
 
     // Filter the survey by category
     if (query !== 'all') {
-      for (var i = 0; i < list.length; i++) {
-        if (list[i].status == query) {
-          filteredList.push(list[i])
-        }
-      }
+      const invitations = _.filter(this._invitations, (invitation) => { return invitation.status === query });
+      const surveyIds = _.map(invitations, (invitation) => { return invitation.surveyId });
+      filteredList = _.filter(this._surveys, (survey) => { return surveyIds.indexOf(survey.id) >= 0 });
     } else {
-      filteredList = list
+      filteredList = this._surveys.slice();
     }
 
     this.setState({
       isLoading   : false,
-      list        : list,
-      filteredList: filteredList,
       filterType  : query !== 'all' ? query+' ' : '',
       dataSource  : this.state.dataSource.cloneWithRows(filteredList)
     })
   },
 
   updateListFilter(query) {
-    this.filterList(query, this.state.list)
-  },
-
-  onChecked(rowId) {
-    // TODO the checked state should be set when a row is swipped
-    return;
+    this.filterList(query)
   },
 
   selectSurvey(survey) {
     if (this.cancelCallbacks) return
+
+    const forms = survey.getForms();
     if (survey.getForms().length === 0) {
       return Alert.alert('Survey has no active forms.')
     }
-    // TODO Support multiple forms
-    let path = 'survey-details'
-    if (survey.status == 'accepted') {
-        path = 'form'
+
+    const invitation = _.find(this._invitations, (invitation) => { return invitation.surveyId === survey.id; });
+    if (invitation && invitation.status === 'accepted') {
+      this.props.navigator.push({
+        path: 'form',
+        title: survey.title,
+        survey: survey
+      });
+    } else {
+      const questions = loadCachedQuestionsFromForms(forms);
+      this.props.navigator.push({
+        path: 'survey-details',
+        title: survey.title,
+        survey: survey,
+        formCount: forms.length,
+        questionCount: questions.length,
+      })
     }
-    this.props.navigator.push({
-      path: path,
-      title: survey.title,
-      survey: survey
-    })
   },
+
   showList(){
     if (this.state.dataSource.getRowCount() > 0) {
       return (
         <ListView dataSource = { this.state.dataSource }
           renderRow = { this.renderItem }
           contentContainerStyle = { [Styles.survey.list] }
-          enableEmptySections 
+          enableEmptySections
           refreshControl={
                 <RefreshControl
                   refreshing={this.state.isRefreshing}
@@ -180,28 +201,48 @@ const SurveyListPage = React.createClass ({
           <Text style={[Styles.container.attentionText]}>
             No {this.state.filterType}surveys
           </Text>
+          <TouchableOpacity onPress={() => this.reloadEmpty()}>
+              <Icon name="refresh" size={24} color={Color.primary} />
+          </TouchableOpacity>
         </View>
       )
     }
   },
+
+  getInvitationStatus(surveyId) {
+    const self = this;
+    let status = InvitationStatus.PENDING;
+    const invitation = _.find(this._invitations, (invitation) => {
+      return invitation.surveyId === surveyId;
+    });
+    if (invitation && invitation.hasOwnProperty('status')) {
+      status = invitation.status;
+    }
+    return status
+  },
+
   /* Render */
-  renderItem(item, sectionId, rowId) {
-    if(!item){
+  renderItem(survey, sectionId, rowId) {
+    if(!survey){
       return (<View></View>)
     }
     return (
       <TouchableHighlight
-        onPress={() => this.selectSurvey(item)}
+        onPress={() => this.selectSurvey(survey)}
         underlayColor={Color.background3}>
         <View>
-          <SurveyListItem {...item} getFormAvailability={item.getFormAvailability} />
+          <SurveyListItem title={survey.title} surveyId={survey.id} status={this.getInvitationStatus(survey.id)} />
         </View>
       </TouchableHighlight>
     );
   },
+  reloadEmpty(){
+    this.setState({isLoading: true});
+    loadSurveyList(this.loadList);
+  },
   _onRefresh() {
     this.setState({isRefreshing: true});
-    loadSurveyList({}, this.loadList);
+    loadSurveyList(this.loadList);
   },
   render() {
     if (this.state.isLoading) {

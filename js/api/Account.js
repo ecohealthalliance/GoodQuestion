@@ -5,6 +5,8 @@ import async from 'async'
 
 import Settings from '../settings'
 
+let _currentUser = null;
+
 /**
  * authenticates against openam then parse
  *
@@ -14,12 +16,8 @@ import Settings from '../settings'
  */
 export function authenticate(username, password, done) {
   async.auto({
-    /**
-     * authenticates against openam
-     *
-     * @param {function} the callback when done with this async operation
-     */
-    openam: function(cb) {
+    //authenticates against openam
+    openam: (cb) => {
       if (Settings.dev) return cb(null, true);
       let authConfig = {
         method: 'POST',
@@ -41,12 +39,8 @@ export function authenticate(username, password, done) {
         cb('Unauthorized');
       });
     },
-    /**
-     * authenticates against parse
-     *
-     * @param {function} the callback when done with this async operation
-     */
-    parse: ['openam', function(cb) {
+    //authenticates against parse
+    parse: ['openam', (cb, results) => {
       Parse.User.logIn(username, password).then(
         function(user) {
           cb(null, user);
@@ -89,6 +83,7 @@ export function isAuthenticated(done) {
  *  err, res
  */
 export function currentUser(done) {
+  if (_currentUser !== null) return done(null, _currentUser);
   Parse.User.currentAsync().then(
     function(user) {
       if (user && typeof user.getSessionToken() !== 'undefined') {
@@ -211,6 +206,8 @@ function parseRegister(email, password, props, done) {
  * logs the user out of parse
  */
 export function logout() {
+  _currentUser = null;
+  updateInstallation({id: ''})
   Parse.User.logOut();
 };
 

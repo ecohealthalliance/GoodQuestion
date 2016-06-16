@@ -2,6 +2,7 @@ import Realm from 'realm';
 
 // Models
 import Submission from '../models/Submission'
+import Invitation from '../models/Invitation'
 import Survey from '../models/Survey'
 import Form from '../models/Form'
 import Question from '../models/Question'
@@ -11,7 +12,7 @@ import GeofenceTrigger from '../models/GeofenceTrigger'
 import Test from '../models/Test'
 
 const realmInstance = new Realm({
-  schemaVersion: 43,
+  schemaVersion: 44,
   schema: [
     Survey,
     Form,
@@ -20,6 +21,7 @@ const realmInstance = new Realm({
     TimeTrigger,
     GeofenceTrigger,
     Submission,
+    Invitation,
     Test,
   ],
 })

@@ -3,6 +3,7 @@ import async from 'async'
 import moment from 'moment'
 import Settings from '../settings'
 import { version, name } from '../../package'
+import { currentUser} from './Account'
 
 /**
  * find a single installation object using REST API and masterKey
@@ -55,13 +56,14 @@ function findInstallation(installationId, done) {
  *
  * @param {Object} installation, the JavaScript object for the record
  */
-function updateInstallation(installation, done) {
+function updateInstallation(installation, user, done) {
   const errorMsg = `Could not update installation object: ${installation.objectId}`;
   const parseVersion = Parse.CoreManager.get('VERSION');
   const update = {
     appName: name,
     appVersion: version,
     parseVersion: parseVersion,
+    userId: user.id,
   };
   let runCount = installation.runCount;
   if (typeof runCount === 'undefined') {
@@ -117,7 +119,7 @@ function updateInstallation(installation, done) {
  *
  * @param {Object} installation, the JavaScript object for the record
  */
-function createInstallation(installationId, tokenId, platform, done) {
+function createInstallation(installationId, user, tokenId, platform, done) {
   const errorMsg = `Could not create installation object with installationId: ${installationId}`;
   const parseVersion = Parse.CoreManager.get('VERSION');
   const installation = {
@@ -129,6 +131,7 @@ function createInstallation(installationId, tokenId, platform, done) {
     installationId: installationId,
     parseVersion: parseVersion,
     runCount: 1,
+    userId: user.id,
   }
   if (platform === 'android') {
     installation.pushType = 'gcm';
@@ -193,6 +196,63 @@ export function upsertInstallation(tokenId, platform, done) {
           cb(e);
         });
     },
+    // get the current user
+    user: ['id', function(cb, results) {
+      currentUser((err, user) => {
+        if (err) {
+          if (err === 'Invalid User') {
+            // create an installation object even with an unauthenticated user
+            // by sending an object with an empty id
+            cb(null, {id:''});
+          } else {
+            cb(err);
+          }
+          return
+        }
+        cb(null, user);
+      })
+    }],
+    // find existing installation object
+    find: ['user', function(cb, results) {
+      const installationId = results.id;
+      findInstallation(installationId, cb);
+    }],
+    // save or update the installation object
+    save: ['find', function(cb, results) {
+      if (results.find === null) {
+        createInstallation(results.id, results.user, tokenId, platform, cb);
+      } else {
+        updateInstallation(results.find, results.user, cb);
+      }
+    }]
+  }, function(err, results) {
+    if (err) {
+      done(err);
+      return;
+    }
+    done(null, results.save);
+  });
+};
+
+
+/**
+ * adds the authenticated user to the installation object using parse-server rest API
+ *
+ * @param {object} currentUser, the current user
+ * @param {function} the function to execute when done
+ */
+export function addUserToInstallation(currentUser, done) {
+  async.auto({
+    // get the installationId from Parse
+    id: (cb) => {
+      Parse._getInstallationId()
+        .then(function(id) {
+          cb(null, id);
+        })
+        .catch(function(e){
+          cb(e);
+        });
+    },
     // find existing installation object
     find: ['id', function(cb, results) {
       const installationId = results.id;
@@ -201,9 +261,9 @@ export function upsertInstallation(tokenId, platform, done) {
     // save or update the installation object
     save: ['find', function(cb, results) {
       if (results.find === null) {
-        createInstallation(results.id, tokenId, platform, cb);
+        cb('No installation exists')
       } else {
-        updateInstallation(results.find, cb);
+        updateInstallation(results.find, currentUser, cb);
       }
     }]
   }, function(err, results) {

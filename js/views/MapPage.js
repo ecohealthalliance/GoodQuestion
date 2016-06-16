@@ -22,25 +22,25 @@ const MapPage = React.createClass ({
 
   getInitialState() {
     let triggers = this.props.triggers
-    // Load all triggers if none were provided via props
-    if (!triggers) {
-      triggers = loadAllCachedGeofenceTriggers()
-    }
-    this.markers = []
+
     return {
       updates: 0,
       latitude: 28.46986,
       longitude: -81.58495,
       zoom: 0.01,
       markers: [],
-      triggers: triggers,
+      triggers: triggers || [],
     }
   },
 
   componentDidMount() {
-    this.generateTriggerMarkers()
-    setActiveMap(this)
-    this.active = true
+    const self = this
+
+    loadAllCachedGeofenceTriggers((err, response) => {
+      setActiveMap(self)
+      self.active = true
+      self.generateTriggerMarkers(response)
+    })
   },
 
   componentWillUnmount() {
@@ -49,11 +49,13 @@ const MapPage = React.createClass ({
   },
 
   /* Methods */
-  generateTriggerMarkers() {
+  generateTriggerMarkers(triggers) {
     this.wipeMarkers()
-    let markers = []
 
-    markers = this.state.triggers.map((trigger, index) => {
+    if (!triggers) triggers = this.state.triggers
+
+    let markers = []
+    markers = triggers.map((trigger, index) => {
       return {
         id: trigger.id,
         title: trigger.title,
@@ -68,7 +70,8 @@ const MapPage = React.createClass ({
     })
 
     this.setState({
-      markers: markers
+      triggers: triggers,
+      markers: markers,
     })
   },
 
