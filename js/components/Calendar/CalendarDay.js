@@ -40,13 +40,17 @@ const CalendarDay = React.createClass({
       dayCircleStyle.push(CalendarStyles.eventDayCircle)
       dayCircleStyle.push(this.props.customStyle.eventDayCircle)
     }
-    if (isSelected && !isToday) {
-      dayCircleStyle.push(CalendarStyles.selectedDayCircle)
-      dayCircleStyle.push(this.props.customStyle.selectedDayCircle)
-    } else if (isSelected && isToday) {
+
+    if (isToday) {
       dayCircleStyle.push(CalendarStyles.currentDayCircle)
       dayCircleStyle.push(this.props.customStyle.currentDayCircle)
     }
+
+    if (isSelected) {
+      dayCircleStyle.push(CalendarStyles.selectedDayCircle)
+      dayCircleStyle.push(this.props.customStyle.selectedDayCircle)
+    } 
+
     return dayCircleStyle
   },
 
@@ -55,17 +59,23 @@ const CalendarDay = React.createClass({
     if (hasEvent) {
       dayTextStyle.push(CalendarStyles.eventDayText)
       dayTextStyle.push(this.props.customStyle.eventDayText)
-    }
-    if (isToday && !isSelected) {
+    } 
+
+    if (isToday) {
       dayTextStyle.push(CalendarStyles.currentDayText)
       dayTextStyle.push(this.props.customStyle.currentDayText)
-    } else if (isToday || isSelected) {
+    } 
+
+    if (isSelected) {
       dayTextStyle.push(CalendarStyles.selectedDayText)
       dayTextStyle.push(this.props.customStyle.selectedDayText)
-    } else if (moment(newDay).day() === 6 || moment(newDay).day() === 0) {
-      dayTextStyle.push(CalendarStyles.weekendDayText)
-      dayTextStyle.push(this.props.customStyle.weekendDayText)
-    }
+    } 
+    
+    // TODO: Optional - Fade weekends
+    // if (moment(newDay).day() === 6 || moment(newDay).day() === 0) {
+    //   dayTextStyle.push(CalendarStyles.weekendDayText)
+    //   dayTextStyle.push(this.props.customStyle.weekendDayText)
+    // }
     return dayTextStyle
   },
 

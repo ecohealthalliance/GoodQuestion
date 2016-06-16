@@ -80,10 +80,10 @@ const CalendarStyles = StyleSheet.create({
     borderRadius: 14,
   },
   currentDayCircle: {
-    backgroundColor: 'red',
+    // backgroundColor: 'red',
   },
   currentDayText: {
-    color: 'red',
+    // color: 'red',
   },
   eventDayCircle: {
     backgroundColor: 'red',

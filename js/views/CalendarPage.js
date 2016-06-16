@@ -22,19 +22,8 @@ const CalendarPage = React.createClass ({
   },
 
   getInitialState() {
-    let triggers = this.props.triggers
-    // Load all triggers if none were provided via props
-    if (!triggers) {
-      triggers = loadAllCachedGeofenceTriggers()
-    }
-    this.markers = []
     return {
-      updates: 0,
-      latitude: 28.46986,
-      longitude: -81.58495,
-      zoom: 0.01,
-      markers: [],
-      triggers: triggers,
+      events: ['2016-06-01', '2016-06-04', '2016-06-09', '2016-06-12', '2016-06-15', '2016-06-21'],
     }
   },
 
@@ -63,7 +52,7 @@ const CalendarPage = React.createClass ({
           onTouchNext={() => console.log('Forward TOUCH')}  // eslint-disable-line no-console
           onSwipePrev={() => console.log('Back SWIPE')}     // eslint-disable-line no-console
           onSwipeNext={() => console.log('Forward SWIPE')}  // eslint-disable-line no-console
-          eventDates={['2016-06-01', '2016-06-04', '2016-06-09', '2016-06-12', '2016-06-15']}
+          eventDates={this.state.events}
           customStyle={Styles.calendar}
         />
         <Text>Selected Date: {moment(this.state.selectedDate).format('MMMM DD YYYY')}</Text>

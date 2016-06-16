@@ -76,6 +76,10 @@ const CalendarStyles = StyleSheet.create({
   eventIndicator: {
     backgroundColor: '#cccccc'
   },
+  
+  
+
+  // Day Circles
   dayCircleFiller: {
     justifyContent: 'center',
     backgroundColor: Color.background3,
@@ -83,22 +87,25 @@ const CalendarStyles = StyleSheet.create({
     height: 28,
     borderRadius: 2,
   },
-  currentDayCircle: {
-    backgroundColor: Color.positive,
-    borderColor: Color.primary,
-    borderWidth: 2,
-  },
-  currentDayText: {
-    color: 'red',
-  },
   eventDayCircle: {
     backgroundColor: Color.warning,
   },
+  currentDayCircle: {
+    // backgroundColor: Color.positive,
+    borderColor: Color.primary,
+    borderWidth: 2,
+  },
+  selectedDayCircle: {
+    backgroundColor: Color.positive,
+  },
+
+
+  // Day Texts
   eventDayText: {
     color: 'white',
   },
-  selectedDayCircle: {
-    backgroundColor: 'black',
+  currentDayText: {
+    // color: 'white',
   },
   selectedDayText: {
     color: 'white',

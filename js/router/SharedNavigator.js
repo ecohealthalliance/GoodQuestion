@@ -244,8 +244,8 @@ const SharedNavigator = React.createClass ({
 
   /* Render */
   render() {
-    const initialRoute = { path:'surveylist', title: 'Surveys' }
-    // const initialRoute = { path:'calendar', title: 'Test Calendar' }
+    // const initialRoute = { path:'surveylist', title: 'Surveys' }
+    const initialRoute = { path:'calendar', title: 'Test Calendar' }
 
     // show loading component without the navigationBar
     if (this.state.isLoading) {
