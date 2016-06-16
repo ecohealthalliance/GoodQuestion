@@ -15,6 +15,7 @@ let activeMap // Cache a MapPage component to update when geofencing triggers ha
  */
 export function setActiveMap(component) {
   activeMap = component
+  connectMapToGeofence()
 }
 
 /**
@@ -107,7 +108,6 @@ function connectMapToGeofence() {
   BackgroundGeolocation.on('geofence', (params) => {
     try {
       console.log('A geofence has been crossed!')
-      updateMapMarkers(params)
       if (activeMap && activeMap.active) {
         // Send a new set of geofence trigger parameters to the cached MapPage element.
         activeMap.updateMarkers(params)
