@@ -182,7 +182,6 @@ const SharedNavigator = React.createClass ({
                 navigator.popToRoute(navigator.getCurrentRoutes()[1])
               })
             }
-            
           }
         }
       }

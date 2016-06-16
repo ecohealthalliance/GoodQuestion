@@ -108,18 +108,12 @@ function connectMapToGeofence() {
     try {
       console.log('A geofence has been crossed!')
       updateMapMarkers(params)
+      if (activeMap && activeMap.active) {
+        // Send a new set of geofence trigger parameters to the cached MapPage element.
+        activeMap.updateMarkers(params)
+      }
     } catch(e) {
       console.error('Geofencing error.', e);
     }
   })
-}
-
-/**
- * Sends a new set of geofence trigger parameters to the cached MapPage element
- * @param  {object} params    New parameters to base the displayed markers on.
- */
-function updateMapMarkers(params) {
-  if (activeMap && activeMap.active) {
-    activeMap.updateMarkers(params)
-  }
 }
