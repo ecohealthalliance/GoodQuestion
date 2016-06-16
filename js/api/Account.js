@@ -4,6 +4,8 @@ import Store from '../data/Store'
 import async from 'async'
 
 import Settings from '../settings'
+import { addUserToInstallation } from '../api/Installations'
+
 
 let _currentUser = null;
 
@@ -207,7 +209,7 @@ function parseRegister(email, password, props, done) {
  */
 export function logout() {
   _currentUser = null;
-  updateInstallation({id: ''})
+  addUserToInstallation({id: ''}, () => {});
   Parse.User.logOut();
 };
 
