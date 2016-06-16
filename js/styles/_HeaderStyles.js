@@ -16,7 +16,7 @@ const HeaderStyles = StyleSheet.create({
     right: 0,
     height: Variables.HEADER_SIZE,
     paddingTop: Variables.HEADER_PADDING,
-    paddingHorizontal: Platform.OS === 'android' ? 0 : 0,
+    paddingHorizontal: 0,
     backgroundColor: Color.background1,
   },
   navBarClear: {
