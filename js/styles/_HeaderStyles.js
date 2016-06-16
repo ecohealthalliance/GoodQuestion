@@ -16,7 +16,7 @@ const HeaderStyles = StyleSheet.create({
     right: 0,
     height: Variables.HEADER_SIZE,
     paddingTop: Variables.HEADER_PADDING,
-    paddingHorizontal: Platform.OS === 'android' ? 15 : 0,
+    paddingHorizontal: Platform.OS === 'android' ? 0 : 0,
     backgroundColor: Color.background1,
   },
   navBarClear: {
@@ -56,11 +56,14 @@ const HeaderStyles = StyleSheet.create({
 
   navBarLeftButton: {
     flex: .1,
-    marginLeft: Variables.HEADER_PADDING,
+    padding: 20,
+    paddingRight: 16,
+    marginRight: 2,
   },
   navBarRightButton: {
     flex: .1,
-    marginRight: Variables.HEADER_PADDING - 10,
+    padding: 20,
+    paddingRight: 14,
   },
 })
 
