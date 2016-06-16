@@ -23,15 +23,13 @@ export function setupGeofences() {
   BackgroundGeolocation.stop()
 
   loadAllCachedGeofenceTriggers((err, response) => {
-    console.log(err)
-    console.log(response)
     BackgroundGeolocation.removeGeofences(
       function success() {
         console.log('Cleared current geofencing settings.')
       },
       function error(e) {
-        console.log('Error resetting geofencing settings.')
-        console.log(e)
+        console.warn('Error resetting geofencing settings.')
+        console.warn(e)
       }
     )
 
@@ -67,7 +65,7 @@ export function setupGeofences() {
 
 export function getUserLocationData(callback) {
   BackgroundGeolocation.getCurrentPosition({timeout: 20}, function success(response) {
-    if (callback) callback({
+    callback({
       latitude: response.coords.latitude,
       longitude: response.coords.longitude,
       accuracy: response.coords.accuracy,
@@ -76,7 +74,7 @@ export function getUserLocationData(callback) {
   }, function error(err) {
     console.warn('Error retrieving geolocation data: ', err)
     locationData.error = err
-    if (callback) callback({
+    callback({
       latitude: 0,
       longitude: 0,
       accuracy: 0,

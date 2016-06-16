@@ -6,7 +6,7 @@ import Store from '../data/Store'
 import realm from '../data/Realm'
 
 import { loadForms } from './Forms'
-import { InvitationStatus, loadInvitations, loadCachedInvitation } from '../api/Invitations'
+import { InvitationStatus, loadInvitations, loadCachedInvitation, loadAcceptedInvitations } from '../api/Invitations'
 
 // Attempts to find a survey with a specified id cached in the Store
 export function loadCachedSurvey(id) {
@@ -16,6 +16,25 @@ export function loadCachedSurvey(id) {
 // Finds and returns the list of all surveys cached in Realm.io
 export function loadCachedSurveyList() {
   return realm.objects('Survey')
+}
+
+// Finds and returns the list of all surveys cached in Realm.io
+export function loadAllAcceptedSurveys(callback) {
+  loadAcceptedInvitations((err, invitations) => {
+    if (err) {
+      callback(err, [])
+      return
+    }
+
+    let surveys = []
+    for (var i = 0; i < invitations.length; i++) {
+      let acceptedSurvey = realm.objects('Survey').filtered(`id = "${invitations[i].surveyId}"`)[0]
+      if (acceptedSurvey) {
+        surveys.push(acceptedSurvey)
+      }
+    }
+    callback(null, surveys)
+  })
 }
 
 export function getSurveyForms(surveyId, callback){

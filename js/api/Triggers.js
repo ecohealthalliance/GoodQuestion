@@ -2,6 +2,7 @@ import { InteractionManager, Platform } from 'react-native'
 import _ from 'lodash'
 import Parse from 'parse/react-native'
 import realm from '../data/Realm'
+import { loadAllAcceptedSurveys } from './Surveys'
 import { loadAcceptedInvitations } from '../api/Invitations'
 
 // Queries the connected Parse server for a list of Triggers.
@@ -42,17 +43,16 @@ export function loadCachedTrigger(formId) {
  * @return {object}  Realm object containing an array of 'GeofenceTrigger' objects,
  */
 export function loadAllCachedGeofenceTriggers(callback) {
-  loadAcceptedInvitations((err, invitations) => {
+  loadAllAcceptedSurveys((err, response) => {
     if (err) {
       console.warn(err)
       callback(err, [])
       return
     }
     
-    const activeSurveys = realm.objects('Survey') // TODO: filter by invitations
     let triggers = []
-    for (var i = 0; i < activeSurveys.length; i++) {
-      let surveyTriggers = Array.from(realm.objects('GeofenceTrigger').filtered(`surveyId = "${activeSurveys[i].id}"`))
+    for (var i = 0; i < response.length; i++) {
+      let surveyTriggers = Array.from(realm.objects('GeofenceTrigger').filtered(`surveyId = "${response[i].id}"`))
       triggers = _.unionBy(triggers, surveyTriggers, 'id')
     }
 
