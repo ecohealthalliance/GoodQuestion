@@ -171,11 +171,18 @@ const SharedNavigator = React.createClass ({
         let routeStack = navigator.getCurrentRoutes()
         let currentRoutePath = routeStack[routeStack.length-1].path
         if (path !== currentRoutePath) {
-          if (path === 'surveylist' || path === 'map') {
+          if (path === 'surveylist') {
             // Reset route stack when viewing map to avoid multiple map components from being loaded at the same time.
             navigator.resetTo({path: path, title: title})
           } else {
-            navigator.push({path: path, title: title})
+            if (navigator.getCurrentRoutes().length == 1) {
+              navigator.push({path: path, title: title})
+            } else {
+              navigator.replaceAtIndex({path: path, title: title}, 1, () => {
+                navigator.popToRoute(navigator.getCurrentRoutes()[1])
+              })
+            }
+            
           }
         }
       }

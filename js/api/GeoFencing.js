@@ -9,16 +9,29 @@ import realm from '../data/Realm'
 
 let activeMap // Cache a MapPage component to update when geofencing triggers happen
 
+/**
+ * Caches a MapPage component inside a variable for easy access
+ * @param {element} component     React class element to be cached
+ */
 export function setActiveMap(component) {
   activeMap = component
 }
 
+/**
+ * Clears and deactivates the currently cached map element
+ * @param  {element} component    React class element to be cleared
+ */
 export function clearActiveMap(component) {
   if (activeMap == component) {
+    component.active = false
     activeMap = null
   }
 }
 
+/**
+ * Creates native geofence objects using the 3rd-party geolocation library.
+ * Based on currently active GeofenceTriggers. 
+ */
 export function setupGeofences() {
   BackgroundGeolocation.stop()
 
@@ -47,12 +60,12 @@ export function setupGeofences() {
     })
 
     BackgroundGeolocation.addGeofences(triggerGeofences, function() {
-        console.log("Successfully added geofences");
+        console.log("Successfully added geofences.");
         // BackgroundGeolocation.getGeofences((geofences) => {
         //   console.log(geofences)
         // })
     }, function(error) {
-        console.warn("Failed to add geofence", error);
+        console.warn("Failed to add geofences.", error);
     })
 
     BackgroundGeolocation.start(() => {
@@ -63,6 +76,10 @@ export function setupGeofences() {
   })
 }
 
+/**
+ * Returns an object containing current geolocation data via an async callback
+ * @param  {Function} callback   Returns object containing the current latitude, longitude, accuracy, and timestamp.
+ */
 export function getUserLocationData(callback) {
   BackgroundGeolocation.getCurrentPosition({timeout: 20}, function success(response) {
     callback({
@@ -83,7 +100,9 @@ export function getUserLocationData(callback) {
   })
 }
 
-
+/**
+ * Links the currently cached MapPage element to the geofence events, allowing for updates on the component.
+ */
 function connectMapToGeofence() {
   BackgroundGeolocation.on('geofence', (params) => {
     try {
@@ -95,6 +114,10 @@ function connectMapToGeofence() {
   })
 }
 
+/**
+ * Sends a new set of geofence trigger parameters to the cached MapPage element
+ * @param  {object} params    New parameters to base the displayed markers on.
+ */
 function updateMapMarkers(params) {
   if (activeMap && activeMap.active) {
     activeMap.updateMarkers(params)
