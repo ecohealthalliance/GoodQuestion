@@ -1,4 +1,5 @@
 import React, {
+  Platform,
   Alert,
   Text,
   TextInput,
@@ -233,10 +234,8 @@ const RegistrationPages = React.createClass ({
           index={this.state.index}
           containerStyle={{flex: 1, overflow:'visible'}}
           loop={false}
-          showsPagination={true}
-          showsHorizontalScrollIndicator={true}
+          pager={Platform.OS === 'ios'}
           beforePageChange={this.beforePageChange}
-
           dotContainerStyle={{top: -16, bottom: null}}
           dotStyle={this.styles.dotStyle}
           activeDotStyle={[this.styles.dotStyle, {backgroundColor: Color.primary, borderColor: Color.primary}]}
