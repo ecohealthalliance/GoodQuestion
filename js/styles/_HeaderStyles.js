@@ -47,7 +47,8 @@ const HeaderStyles = StyleSheet.create({
     alignItems:'center',
     justifyContent:'center',
     backgroundColor: Color.background1,
-    paddingVertical: 25,
+    paddingTop: 25,
+    paddingBottom: 25,
   },
   logo: {
     width: 240,
