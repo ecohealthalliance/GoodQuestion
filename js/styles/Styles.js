@@ -11,6 +11,7 @@ import FormStyles from './_FormStyles'
 import SurveyStyles from './_SurveyStyles'
 import QuestionStyles from './_QuestionStyles'
 import HeaderStyles from './_HeaderStyles'
+import ToastStyles from './_ToastStyles'
 import DrawerStyles from './_DrawerStyles'
 import ControlPanelStyles from './_ControlPanelStyles'
 import ProfileStyles from './_ProfileStyles'
@@ -21,6 +22,7 @@ const Styles = {
   form: FormStyles,
 
   header: HeaderStyles,
+  toast: ToastStyles,
   drawer: DrawerStyles,
   survey: SurveyStyles,
   controlPanel: ControlPanelStyles,

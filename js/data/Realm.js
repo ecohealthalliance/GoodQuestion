@@ -12,7 +12,7 @@ import GeofenceTrigger from '../models/GeofenceTrigger'
 import Test from '../models/Test'
 
 const realmInstance = new Realm({
-  schemaVersion: 44,
+  schemaVersion: 46,
   schema: [
     Survey,
     Form,

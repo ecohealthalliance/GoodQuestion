@@ -1,10 +1,12 @@
 import { InteractionManager, Platform } from 'react-native'
-import { BackgroundGeolocation } from './BackgroundProcess'
-import { loadAllCachedGeofenceTriggers } from './Triggers'
 import _ from 'lodash'
 import Parse from 'parse/react-native'
 import Store from '../data/Store'
 import realm from '../data/Realm'
+import PushNotification from 'react-native-push-notification';
+
+import { BackgroundGeolocation } from './BackgroundProcess'
+import { loadAllCachedGeofenceTriggers } from './Triggers'
 
 
 let activeMap // Cache a MapPage component to update when geofencing triggers happen
@@ -116,4 +118,8 @@ function connectMapToGeofence() {
       console.error('Geofencing error.', e);
     }
   })
+}
+
+function notifyGeofenceLocalCrossing() {
+  
 }

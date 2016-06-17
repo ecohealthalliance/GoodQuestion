@@ -16,6 +16,7 @@ import Settings from '../settings'
 
 // Components
 import Header from '../components/Header'
+import Toaster from '../components/Toaster'
 import Loading from '../components/Loading'
 
 // Styles
@@ -68,6 +69,8 @@ if ( Platform.OS === 'android' ) {
     return false;
   });
 }
+
+const toaster = <Toaster key='toaster' />
 
 const SharedNavigator = React.createClass ({
   getInitialState() {
@@ -237,6 +240,7 @@ const SharedNavigator = React.createClass ({
     return (
       <View style={wrapperStyles}>
         {viewComponent}
+        {toaster}
       </View>
     )
   },

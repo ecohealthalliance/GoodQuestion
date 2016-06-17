@@ -6,6 +6,10 @@ import realm from '../data/Realm'
 import { loadForms } from './Forms'
 
 
+// Cached variables
+let toaster
+
+
 // Finds and returns a list of pending Notifications from Realm
 export function loadNotifications() {
   return realm.objects('Notification')
@@ -28,4 +32,18 @@ export function addTimeTriggerNotification( surveyId, formId, title, description
   } catch(e) {
     console.error(e)
   }
+}
+
+export function connectToaster(toaster) {
+
+}
+
+/**
+ * Shows a toast at the bottom of the screen.
+ * @param  {string} message  Text to be displayed on the toast
+ * @param  {number} duration Time to keep the toast up
+ * @param  {function} action Callback function to be exectued when tapping the toast
+ */
+export function showToast(message, duration, action) {
+  
 }
