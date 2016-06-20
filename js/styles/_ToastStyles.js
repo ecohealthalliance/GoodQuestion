@@ -11,20 +11,20 @@ const ToastStyles = StyleSheet.create({
     left: 30,
     right: 30,
     bottom: 60,
-    padding: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
   },
   container: {
-    flex: .75,
+    flex: .8,
     flexDirection: 'column',
     justifyContent: 'center',
-    // alignItems: 'stretch',
-    // position: 'absolute',
-    // height: 60
+    paddingVertical: 20,
+    paddingRight: 20,
   },
   icon: {
-    flex: .25,
+    flex: .20,
     flexDirection: 'column',
+    paddingTop: 23,
+    paddingLeft: 20,
   },
   title: {
     fontSize: 18,

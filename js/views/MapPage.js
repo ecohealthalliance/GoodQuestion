@@ -66,6 +66,7 @@ const MapPage = React.createClass ({
         },
         radius: trigger.radius,
         active: false,
+        notified: false,
       }
     })
 
@@ -76,15 +77,24 @@ const MapPage = React.createClass ({
   },
 
   updateMarkers(geofence) {
+    const self = this;
     if (geofence.action == 'ENTER') {
       updatedMarkers = this.state.markers.filter((marker) => {return marker.id == geofence.identifier})
       for (var i = 0; i < updatedMarkers.length; i++) {
-        updatedMarkers[i].active = true
+        updatedMarkers[i].active = true;
+
+        if (updatedMarkers[i].notified === false) {
+          const marker = updatedMarkers[i];
+          showToast(updatedMarkers[i].title, updatedMarkers[i].description, 6, () => {
+            self.handleMarkerPress(marker)
+          });
+        }
       }
     } else if (geofence.action == 'EXIT') {
       updatedMarkers = this.state.markers.filter((marker) => {return marker.id == geofence.identifier})
       for (var i = 0; i < updatedMarkers.length; i++) {
         updatedMarkers[i].active = false
+        updatedMarkers[i].notified = false
       }
     }
 

@@ -44,6 +44,8 @@ export function connectToaster(toaster) {
  * @param  {number} duration Time to keep the toast up
  * @param  {function} action Callback function to be exectued when tapping the toast
  */
-export function showToast(message, duration, action) {
-  
+export function showToast(title, message, duration, action) {
+  if (toaster) {
+    toaster.showToast(title, message, duration, action);
+  }
 }
