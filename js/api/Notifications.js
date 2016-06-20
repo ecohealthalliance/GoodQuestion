@@ -40,11 +40,13 @@ export function connectToaster(newToaster) {
 
 /**
  * Shows a toast at the bottom of the screen.
- * @param  {string} message  Text to be displayed on the toast
+ * @param  {string} title    Title text to be displayed on the toast
+ * @param  {string} message  Description text to be displayed on the toast
+ * @param  {string} iocn     FA icon to be shown on the toast
  * @param  {number} duration Time to keep the toast up
  * @param  {function} action Callback function to be exectued when tapping the toast
  */
-export function showToast(title, message, duration, action) {
+export function showToast(title, message, icon, duration, action) {
   if (toaster) {
     toaster.showToast(title, message, duration, action);
   }

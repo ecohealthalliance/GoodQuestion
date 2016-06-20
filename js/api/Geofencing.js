@@ -7,6 +7,7 @@ import PushNotification from 'react-native-push-notification';
 
 import { BackgroundGeolocation } from './BackgroundProcess'
 import { loadAllCachedGeofenceTriggers } from './Triggers'
+import { showToast } from './Notifications'
 
 
 let activeMap // Cache a MapPage component to update when geofencing triggers happen
@@ -36,19 +37,20 @@ export function clearActiveMap(component) {
  * Based on currently active GeofenceTriggers. 
  */
 export function setupGeofences() {
-  BackgroundGeolocation.stop()
+  // BackgroundGeolocation.stop()
 
   loadAllCachedGeofenceTriggers((err, response) => {
-    BackgroundGeolocation.removeGeofences(
-      function success() {
-        console.log('Cleared current geofencing settings.')
-      },
-      function error(e) {
-        console.warn('Error resetting geofencing settings.')
-        console.warn(e)
-      }
-    )
+    // BackgroundGeolocation.removeGeofences(
+    //   function success() {
+    //     console.log('Cleared current geofencing settings.')
+    //   },
+    //   function error(e) {
+    //     console.warn('Error resetting geofencing settings.')
+    //     console.warn(e)
+    //   }
+    // )
 
+    
     const triggerGeofences = response.map((trigger) => {
       return {
         identifier: trigger.id,
@@ -58,15 +60,20 @@ export function setupGeofences() {
         notifyOnEntry: true,
         notifyOnExit: true,
         notifyOnDwell: true,
-        loiteringDelay: 5000
+        loiteringDelay: 30000
       }
     })
 
+    console.log('triggerGeofences')
+    console.log(triggerGeofences)
+    
+    console.log('Attempting to add geofences... ' + triggerGeofences.length)
     BackgroundGeolocation.addGeofences(triggerGeofences, function() {
-        console.log("Successfully added geofences.");
-        // BackgroundGeolocation.getGeofences((geofences) => {
-        //   console.log(geofences)
-        // })
+      console.log("Successfully added geofences.");
+      BackgroundGeolocation.getGeofences((geofences) => {
+        console.log('geofences added')
+        console.log(geofences)
+      })
     }, function(error) {
         console.warn("Failed to add geofences.", error);
     })
@@ -74,6 +81,11 @@ export function setupGeofences() {
     BackgroundGeolocation.start(() => {
       console.info('Geolocation tracking started.')
     })
+
+    BackgroundGeolocation.getGeofences(function(geofences) {
+      console.log('active geofences: ')
+      console.log(geofences)
+    });
 
     connectMapToGeofence()
   })
@@ -107,12 +119,14 @@ export function getUserLocationData(callback) {
  * Links the currently cached MapPage element to the geofence events, allowing for updates on the component.
  */
 function connectMapToGeofence() {
+
   BackgroundGeolocation.on('geofence', (params) => {
     try {
       console.log('A geofence has been crossed!')
       if (activeMap && activeMap.active) {
         // Send a new set of geofence trigger parameters to the cached MapPage element.
         activeMap.updateMarkers(params)
+        notifyGeofenceLocalCrossing(params)
       }
     } catch(e) {
       console.error('Geofencing error.', e);
@@ -120,6 +134,12 @@ function connectMapToGeofence() {
   })
 }
 
-function notifyGeofenceLocalCrossing() {
-  
+function notifyGeofenceLocalCrossing(params) {
+  console.log('notifyGeofenceLocalCrossing');
+  console.log(params);
+  // showToast(updatedMarkers[i].title, updatedMarkers[i].description, 'globe', 6, () => {
+  //   self.handleMarkerPress(marker);
+  // });
+
+
 }

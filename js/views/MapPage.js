@@ -11,7 +11,6 @@ import MapView from 'react-native-maps'
 import { loadAllCachedGeofenceTriggers } from '../api/Triggers'
 import { loadCachedFormDataByGeofence } from '../api/Forms'
 import { BackgroundGeolocation } from '../api/BackgroundProcess'
-import { showToast } from '../api/Notifications'
 import { setActiveMap, clearActiveMap, getUserLocationData } from '../api/Geofencing'
 
 
@@ -67,7 +66,6 @@ const MapPage = React.createClass ({
         },
         radius: trigger.radius,
         active: false,
-        notified: false,
       }
     })
 
@@ -83,19 +81,11 @@ const MapPage = React.createClass ({
       updatedMarkers = this.state.markers.filter((marker) => {return marker.id == geofence.identifier})
       for (var i = 0; i < updatedMarkers.length; i++) {
         updatedMarkers[i].active = true;
-
-        if (!updatedMarkers[i].notified) {
-          const marker = updatedMarkers[i];
-          showToast(updatedMarkers[i].title, updatedMarkers[i].description, 6, () => {
-            self.handleMarkerPress(marker);
-          });
-        }
       }
     } else if (geofence.action == 'EXIT') {
       updatedMarkers = this.state.markers.filter((marker) => {return marker.id == geofence.identifier})
       for (var i = 0; i < updatedMarkers.length; i++) {
         updatedMarkers[i].active = false;
-        updatedMarkers[i].notified = false;
       }
     }
 

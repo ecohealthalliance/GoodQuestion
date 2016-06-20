@@ -36,7 +36,7 @@ const DemoGeofenceData = {
     {
       latitude: 28.46918,
       longitude: -81.58483,
-      radius: 100,
+      radius: 300,
     },
     {
       latitude: 37.330235,

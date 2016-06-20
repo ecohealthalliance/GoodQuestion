@@ -18,16 +18,11 @@ const Toaster = React.createClass ({
     navigator: React.PropTypes.object,
   },
 
-  getDefaultProps() {
-    return {
-      icon: 'circle-o',
-    }
-  },
-
   getInitialState() {
     return {
       title: 'Title',
       text: 'Yea toast!',
+      icon: 'circle-o',
       duration: 10,
       action: () => {},
       fadeAnim: new Animated.Value(0),
@@ -46,7 +41,7 @@ const Toaster = React.createClass ({
     this.state.action();
   },
 
-  showToast(title, message, duration, action) {
+  showToast(title, message, icon, duration, action) {
     console.log('showToast')
     const self = this;
 
@@ -65,6 +60,7 @@ const Toaster = React.createClass ({
     this.setState({
       title: title,
       text: message,
+      icon: icon,
       duration: 6,
       action: action,
     });
@@ -88,7 +84,6 @@ const Toaster = React.createClass ({
   /* Render */
 
   render() {
-    console.log(this.state.translateAnim)
     return (
       <Animated.View
         style={[Styles.toast.wrapper, {
@@ -101,7 +96,7 @@ const Toaster = React.createClass ({
         <TouchableOpacity onPress={this.handlePress}>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={Styles.toast.icon}>
-              <Icon name='circle-o' size={38} color={Color.faded} />
+              <Icon name={this.state.icon} size={38} color={Color.faded} />
             </View>
             <View style={Styles.toast.container}>
               <Text style={Styles.toast.title}>{this.state.title}</Text>
