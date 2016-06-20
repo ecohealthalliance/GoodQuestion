@@ -1,7 +1,7 @@
 import React, {
   View,
   Text,
-  TouchableWithoutFeedback,
+  TouchableOpacity,
 } from 'react-native'
 
 import Styles from '../styles/Styles'
@@ -16,14 +16,14 @@ const Notification = React.createClass ({
   /* Render */
   render() {
     return (
-      <View style={Styles.survey.listitem}>
-        <TouchableWithoutFeedback onPress={this.props.onPressed}>
+      <TouchableOpacity onPress={this.props.onPressed}>
+        <View style={Styles.survey.listitem}>
           <View>
             <Text style={Styles.survey.title}>{this.props.item.title}</Text>
             <Text style={Styles.survey.subtitle}>{this.props.item.description}</Text>
           </View>
-        </TouchableWithoutFeedback>
-      </View>
+        </View>
+      </TouchableOpacity>
     )
   }
 });

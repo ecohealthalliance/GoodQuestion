@@ -4,15 +4,19 @@ import Variables from './Variables'
 
 export default StyleSheet.create({
   container: {
-    marginLeft: 20,
+    marginHorizontal: 20,
     marginTop: 30,
     flex: 1
   },
-  item: {
+  itemContainer: {
     flex: 1,
     flexDirection: 'row',
-  	padding: 20,
-    paddingLeft: 0,
+    
+  },
+  item: {
+    flex: 1,
+  	paddingVertical: 20,
+    paddingHorizontal: 0,
     borderBottomWidth: 1,
     borderColor: Color.background1Edge,
   },

@@ -1,4 +1,5 @@
 import React, {
+  Platform,
   Alert,
   Text,
   TextInput,
@@ -34,6 +35,13 @@ const RegistrationPages = React.createClass ({
   alerts: 0,
 
   styles: {
+    swiperContainer: {
+      flex: 1,
+      overflow:'visible',
+      borderColor: Color.background1,
+      borderWidth: 1,
+      borderTopWidth: Platform.OS === 'android' ? 20 : 1,
+    },
     registrationHeader: {
       height: Variables.REGISTRATION_HEIGHT,
       alignItems:'center',
@@ -226,17 +234,16 @@ const RegistrationPages = React.createClass ({
   render() {
     return (
       <View style={{flex: 1, backgroundColor: '#fff'}}>
-        <View style={Styles.header.banner}>
+        <View style={[Styles.header.banner, {paddingBottom: Platform.OS === 'android' ? 5 : 25}]}>
           <Image source={require('../images/logo_stacked.png')} style={Styles.header.logo}></Image>
         </View>
         <Swiper
           index={this.state.index}
-          containerStyle={{flex: 1, overflow:'visible'}}
+          containerStyle={this.styles.swiperContainer}
           loop={false}
-          showsPagination={true}
-          showsHorizontalScrollIndicator={true}
+          pager={true}
+          // pager={Platform.OS === 'ios'}
           beforePageChange={this.beforePageChange}
-
           dotContainerStyle={{top: -16, bottom: null}}
           dotStyle={this.styles.dotStyle}
           activeDotStyle={[this.styles.dotStyle, {backgroundColor: Color.primary, borderColor: Color.primary}]}
