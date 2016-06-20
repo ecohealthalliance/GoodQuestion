@@ -136,8 +136,7 @@ const RegistrationPagePart1 = React.createClass ({
         <ScrollView
           ref='scrollView'
           horizontal={false}
-          style={[Styles.form.registrationView,
-            {height: this.props.calculateScrollViewHeight(), overflow: 'hidden'}]}>
+          style={Styles.form.registrationView}>
           <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
             Create an Account
           </Text>
@@ -147,12 +146,15 @@ const RegistrationPagePart1 = React.createClass ({
             </Text>
             <View ref='emailView'>
               <TextInput
+                ref='email'
                 style={Styles.form.input}
                 onChangeText={this.textFieldChangeHandler.bind(this, 'email')}
-                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'emailView', this.props.calculateOffset())}
+                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'emailView', Variables.REGISTRATION_HEIGHT)}
+                onBlur={this.trimText.bind(this, 'email')}
                 value={this.state.email}
                 autoCapitalize='none'
                 autoCorrect={false}
+                returnKeyType='done'
                 placeholder='Email'
               />
             </View>
@@ -161,13 +163,16 @@ const RegistrationPagePart1 = React.createClass ({
             </Text>
             <View ref='passwordView'>
               <TextInput
+                ref='password'
                 secureTextEntry={true}
                 style={Styles.form.input}
                 onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
-                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'passwordView', this.props.calculateOffset())}
+                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'passwordView', Variables.REGISTRATION_HEIGHT)}
+                onBlur={this.trimText.bind(this, 'password')}
                 value={this.state.password}
                 autoCapitalize='none'
                 autoCorrect={false}
+                returnKeyType='done'
                 placeholder='Password'
               />
             </View>
@@ -176,13 +181,16 @@ const RegistrationPagePart1 = React.createClass ({
             </Text>
             <View ref='confirmPasswordView'>
               <TextInput
+                ref='confirmPassword'
                 secureTextEntry={true}
                 style={Styles.form.input}
                 onChangeText={this.confirmPasswordChangeHandler.bind(this, 'confirmPassword')}
-                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'confirmPasswordView', this.props.calculateOffset())}
+                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'confirmPasswordView', Variables.REGISTRATION_HEIGHT)}
+                onBlur={this.trimText.bind(this, 'confirmPassword')}
                 value={this.state.confirmPassword}
                 autoCapitalize='none'
                 autoCorrect={false}
+                returnKeyType='done'
                 placeholder='Confirm Password'
               />
             </View>

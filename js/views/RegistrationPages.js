@@ -23,7 +23,6 @@ import RegistrationPagePart3 from '../views/RegistrationPagePart3'
 
 import {register} from '../api/Account'
 
-const {height, width} = Dimensions.get('window')
 const totalPages = 3;
 
 const RegistrationPages = React.createClass ({
@@ -49,7 +48,6 @@ const RegistrationPages = React.createClass ({
       backgroundColor: Color.background1,
       paddingBottom: 25,
       marginBottom: 30,
-      height: 130,
     },
     dotStyle: {
       // flex: 1,
@@ -83,18 +81,6 @@ const RegistrationPages = React.createClass ({
       state.index = nextProps.index;
       this.setState(state);
     }
-  },
-
-  /**
-   * dynamically calculate scroll view height
-   *
-   * @return {number} ideal height of the ScrollView
-   */
-  calculateScrollViewHeight() {
-    return height - this.calculateOffset(); // site of the pagination footer
-  },
-  calculateOffset() {
-    return height - (Variables.HEADER_SIZE + Variables.REGISTRATION_HEIGHT);
   },
 
   /**
@@ -182,7 +168,7 @@ const RegistrationPages = React.createClass ({
         // go to the default route
         self.props.navigator.resetTo({});
       }
-      
+
     });
   },
 
@@ -210,8 +196,6 @@ const RegistrationPages = React.createClass ({
 
   getChildren() {
     const sharedProps = Object.assign({
-      calculateOffset: this.calculateOffset,
-      calculateScrollViewHeight: this.calculateScrollViewHeight,
       validatePage: this.validatePage,
       setIndex: this.setIndex,
       buttonStyles: this.buttonStyles
