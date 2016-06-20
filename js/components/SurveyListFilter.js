@@ -73,8 +73,8 @@ const SurveyListFilterButton = React.createClass ({
     onPress: React.PropTypes.func.isRequired,
   },
   render() {
-    let buttonViewStyle = {flex: 1, justifyContent: 'center', alignItems: 'center'}
-    let buttonContainerStyle = {marginHorizontal: 20, opacity: 0.5}
+    let buttonContainerStyle = {opacity: 0.5}
+    let buttonViewStyle = {flex: 1, paddingHorizontal: 20, paddingVertical: 16, justifyContent: 'center', alignItems: 'center'}
     if (this.props.active) buttonContainerStyle.opacity = 1
     return (
       <View style={[buttonContainerStyle]}>
