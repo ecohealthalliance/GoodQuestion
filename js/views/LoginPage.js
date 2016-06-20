@@ -1,5 +1,6 @@
 
-import React, {
+import React from 'react';
+import {
   Alert,
   StyleSheet,
   TouchableHighlight,
