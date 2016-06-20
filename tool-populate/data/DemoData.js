@@ -1,9 +1,31 @@
+Settings = require('../../js/settings')
+
 const DemoData = {
 
   startDate: timestampToFormattedDate( Date.now() ),
 
   endDate: timestampToFormattedDate( Date.now() + 604800*1000 ), // + one week from now
-
+  users:{
+    admins: {
+      user: Settings.users[0].user,
+      pass: Settings.users[0].pass
+    },
+    regularUsers: [
+      {
+        userName: 'a@a.com',
+        pass: 'password'
+      }, {
+        userName: 'b@b.com',
+        pass: 'password'
+      }, {
+        userName: 'c@c.com',
+        pass: 'password'
+      }, {
+        userName: 'd@d.com',
+        pass: 'password'
+      }
+    ]
+  },
   surveys: [
     {
       title: 'Demo Survey #1',
