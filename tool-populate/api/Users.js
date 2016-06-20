@@ -37,7 +37,6 @@ function createUsers (users) {
       newUser.set("username", user.userName)
       newUser.set("password", user.pass)
       newUser.set("email", user.userName)
-      newUser.set("role", 'user')
       newUser.signUp(null, useMasterKey)
         .then(setAdminACL)
         .then(function(){
