@@ -10,10 +10,11 @@ import {
 } from 'react-native'
 
 import Button from '../components/Button'
+import CheckBox from '../components/Checkbox'
+
 import Styles from '../styles/Styles'
 import Color from '../styles/Color'
 
-import Checkbox from 'react-native-checkbox'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 let uncheckedComponent = (<Icon name='square-o' size={30} />);

@@ -16,8 +16,8 @@ import Variables from '../styles/Variables'
 import Styles from '../styles/Styles'
 import Color from '../styles/Color'
 import Button from '../components/Button'
+import CheckBox from '../components/Checkbox'
 
-import Checkbox from 'react-native-checkbox'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 const uncheckedComponent = (<Icon name='square-o' size={30} />);

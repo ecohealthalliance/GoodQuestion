@@ -2,7 +2,8 @@
  * Good Question
  */
 
-import React, { AppRegistry } from 'react-native'
+import React from 'react'
+import { AppRegistry } from 'react-native'
 import Parse from 'parse/react-native'
 
 // Model

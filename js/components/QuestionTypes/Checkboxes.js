@@ -5,7 +5,7 @@ import {
   TextInput,
   View,
 } from 'react-native'
-import Checkbox from 'react-native-checkbox'
+import CheckBox from '../Checkbox'
 import Styles from '../../styles/Styles'
 import Color from '../../styles/Color'
 import ViewText from '../ViewText'
