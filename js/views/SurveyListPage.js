@@ -210,11 +210,16 @@ const SurveyListPage = React.createClass ({
   },
 
   getInvitationStatus(surveyId) {
-    const self = this;
+    if (this.state.isLoading || this.state.isRefreshing) return;
     let status = InvitationStatus.PENDING;
-    const invitation = _.find(this._invitations, (invitation) => {
-      return invitation.surveyId === surveyId;
-    });
+    let invitation;
+    try {
+      invitation = _.find(this._invitations, (invitation) => {
+        return invitation.surveyId === surveyId;
+      });
+    } catch(e) {
+      console.warn(e);
+    }
     if (invitation && invitation.hasOwnProperty('status')) {
       status = invitation.status;
     }
