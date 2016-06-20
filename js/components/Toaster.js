@@ -47,6 +47,7 @@ const Toaster = React.createClass ({
   },
 
   showToast(title, message, duration, action) {
+    console.log('showToast')
     const self = this;
 
     this.state.fadeAnim.setValue(0);

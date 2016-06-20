@@ -34,8 +34,8 @@ export function addTimeTriggerNotification( surveyId, formId, title, description
   }
 }
 
-export function connectToaster(toaster) {
-
+export function connectToaster(newToaster) {
+  toaster = newToaster;
 }
 
 /**
