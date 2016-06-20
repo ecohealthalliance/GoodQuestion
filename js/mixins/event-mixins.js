@@ -29,8 +29,6 @@ export default {
   },
 
   textFieldChangeHandler(name, text) {
-    console.log('name: ', name)
-    console.log('text: ', text)
     if (typeof text !== 'string') {
       console.error('Invalid text field value');
       return;
