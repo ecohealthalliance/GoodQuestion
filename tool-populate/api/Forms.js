@@ -31,7 +31,7 @@ function createDemoForm(parentSurvey, dayStartTimestamp) {
   newForm.set('title', 'Form ' + Date.now())
   newForm.set('order', 1)
   newForm.set('deleted', false)
-  newForm.save(useMasterKey)
+  newForm.save(null, useMasterKey)
     .then(function(newForm){
       return parentSurvey.fetch(useMasterKey)
     })

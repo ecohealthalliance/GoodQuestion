@@ -18,10 +18,10 @@ var useMasterKey = {useMasterKey: true}
 
 program
   .option('-i, --init', 'Create inital role and user classes.')
-  .option('-c, --create', 'Create data for your local Parse server.')
   .option('-d, --demo', 'Populate local Parse server with demo data.')
   .option('-g, --demoGeofence', 'Populate local Parse server with geofence demo data.')
   .option('-r, --reset', 'Erase local Parse data.')
+  .option('-p, --publicRead', 'Sets all surveys, forms, questions as public readable')
   .parse(process.argv)
 
 Parse.initialize(Settings.parse.appId, null, Settings.parse.masterKey)
@@ -37,6 +37,8 @@ if (program.reset) {
   checkUsers().then(createDemoGeofenceData)
 } else if (program.print) {
   Surveys.loadSurveys()
+} else if (program.publicRead) {
+  publicRead()
 } else {
   program.outputHelp()
 }
@@ -137,4 +139,56 @@ function initRoles() {
         .fail(function(error) {console.log(error)})
     })
   })
+}
+
+/**
+ * update all surveys, forms, triggers, questions in the database to
+ * public read
+ */
+function publicRead() {
+  console.log('NOTE: This only works up to 1000 objects'.bold);
+  Surveys.loadSurveys(null, function(err, results) {
+    console.log('setting publicReadAccess(true) to ' + results.length + ' surveys'.green);
+    if (results) {
+      results.forEach(function(obj) {
+        var acl = obj.getACL();
+        acl.setPublicReadAccess(true);
+        obj.setACL(acl);
+        obj.save(null, useMasterKey);
+      });
+    }
+  });
+  Forms.loadForms(null, function(err, results) {
+    console.log('setting publicReadAccess(true) to ' + results.length + ' forms'.green);
+    if (results) {
+      results.forEach(function(obj) {
+        var acl = obj.getACL();
+        acl.setPublicReadAccess(true);
+        obj.setACL(acl);
+        obj.save(null, useMasterKey);
+      });
+    }
+  });
+  Triggers.loadTriggers(null, function(err, results) {
+    console.log('setting publicReadAccess(true) to ' + results.length + ' triggers'.green);
+    if (results) {
+      results.forEach(function(obj) {
+        var acl = obj.getACL();
+        acl.setPublicReadAccess(true);
+        obj.setACL(acl);
+        obj.save(null, useMasterKey);
+      });
+    }
+  });
+  Questions.loadQuestions(null, function(err, results) {
+    console.log('setting publicReadAccess(true) to ' + results.length + ' questions'.green);
+    if (results) {
+      results.forEach(function(obj) {
+        var acl = obj.getACL();
+        acl.setPublicReadAccess(true);
+        obj.setACL(acl);
+        obj.save(null, useMasterKey);
+      });
+    }
+  });
 }

@@ -11,7 +11,7 @@ function destroyObjects(objs, objString){
 
 function fetchObjects(subClass, callback) {
   var query = new Parse.Query(subClass)
-  query.limit = 1000
+  query.limit(1000)
   query.find(useMasterKey)
     .then(function(objs){
       callback(null, objs)
