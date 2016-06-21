@@ -23,8 +23,6 @@ import Joi from '../lib/joi-browser.min'
 import JoiMixins from '../mixins/joi-mixins'
 import EventMixins from '../mixins/event-mixins'
 
-const {height, width} = Dimensions.get('window')
-
 const ProfilePage = React.createClass ({
   propTypes: {
     navigator: React.PropTypes.object.isRequired,
@@ -65,20 +63,6 @@ const ProfilePage = React.createClass ({
     });
   },
 
-  /* Methods */
-  /**
-   * dynamically calculate scroll view height
-   *
-   * @return {number} ideal height of the ScrollView
-   */
-  calculateScrollViewHeight() {
-    return height - this.calculateOffset();
-  },
-  calculateOffset() {
-    return Variables.HEADER_SIZE + Variables.PROFILE_HEIGHT + 80;
-  },
-
-
   submit() {
     const self = this;
     this.setState({button_text: 'Updating...'});
@@ -96,7 +80,7 @@ const ProfilePage = React.createClass ({
   render() {
     return (
       <View style={{flex: 1, backgroundColor: '#fff'}}>
-        <ScrollView ref='scrollView' horizontal={false} style={{height: this.calculateScrollViewHeight(), overflow: 'hidden'}}>
+        <ScrollView ref='scrollView' horizontal={false}>
           <View style={Styles.profile.header}>
             <Image source={require('../images/profile_logo.png')} style={Styles.profile.picture}></Image>
             <Text style={Styles.profile.name}> {this.state.name} </Text>
@@ -112,9 +96,11 @@ const ProfilePage = React.createClass ({
               </Text>
               <View ref='nameView'>
                 <TextInput
+                  ref='name'
                   style={Styles.form.input}
                   onChangeText={this.textFieldChangeHandler.bind(this, 'name')}
-                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'nameView', this.calculateOffset())}
+                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'nameView')}
+                  onBlur={this.trimText.bind(this, 'name')}
                   value={this.state.name}
                   autoCapitalize='none'
                   autoCorrect={false}
@@ -127,9 +113,11 @@ const ProfilePage = React.createClass ({
               </Text>
               <View ref='phoneView'>
                 <TextInput
+                  ref='phone'
                   style={Styles.form.input}
                   onChangeText={this.textFieldChangeHandler.bind(this, 'phone')}
-                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'phoneView', this.calculateOffset())}
+                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'phoneView')}
+                  onBlur={this.trimText.bind(this, 'phone')}
                   value={this.state.phone}
                   autoCapitalize='none'
                   autoCorrect={false}

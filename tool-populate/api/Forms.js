@@ -1,52 +1,15 @@
 var _ = require('lodash')
 var Parse = require('parse/node')
-var Store = require('../data/Store')
 var Questions = require('./Questions')
 var Triggers = require('./Triggers')
 var DemoGeofenceData = require('../data/DemoGeofenceData')
 var Form = Parse.Object.extend("Form")
+var Helpers = require('./Helpers')
+var useMasterKey = {useMasterKey: true}
+var Users = require('./Users')
 
-
-function loadForms(options, callback) {
-  form = new Form()
-  var query = new Parse.Query(form)
-  query.limit = 1000
-
-  query.find({
-    success: function(results) {
-      storeForms(results)
-      Triggers.loadTriggers()
-      Questions.loadQuestions()
-      if (callback) callback(null, results)
-    },
-    error: function(error, results) {
-      console.warn("Error: " + error.code + " " + error.message)
-      if (callback) callback(error, results)
-    }
-  })
-}
-
-function storeForms(newForms) {
-  if (!Array.isArray(newForms))
-    newForms = [newForms]
-  Store.forms = _.unionBy(Store.forms, newForms, 'id')
-}
-
-function createForms(parentSurvey) {
-  var newForm = new Form()
-  var relation = parentSurvey.relation('forms')
-  relation.add(newForm)
-  newForm.save(null, {
-    success: function(response) {
-      parentSurvey.save(null, {useMasterKey: true})
-      Questions.createQuestions(response)
-      Triggers.createTriggers(response)
-      storeForms(response)
-    },
-    error: function(response, error) {
-      console.warn('Failed to create Form, with error code: ' + error.message)
-    }
-  })
+function loadForms (options, callback) {
+  Helpers.fetchObjects(Form, callback)
 }
 
 /**
@@ -64,24 +27,33 @@ function randomHour(dayTimestamp) {
 
 function createDemoForm(parentSurvey, dayStartTimestamp) {
   var newForm = new Form()
+  var acl = new Parse.ACL()
   newForm.set('title', 'Form ' + Date.now())
   newForm.set('order', 1)
   newForm.set('deleted', false)
-  newForm.save(null, {
-    useMasterKey: true,
-    success: function(form) {
-      parentSurvey.fetch().then(function(survey){
-        var relation = survey.relation('forms')
-        relation.add(form)
-        survey.save(null, {useMasterKey: true})
-      })
-      Questions.createDemoQuestions(form)
-      Triggers.createDemoTrigger(form, randomHour(dayStartTimestamp))
-      storeForms(form)
-    },
-    error: function(form, error) {
-      console.warn('Failed to create Form, with error code: ' + error.message)
-    }
+  newForm.save(useMasterKey)
+    .then(function(newForm){
+      return parentSurvey.fetch(useMasterKey)
+    })
+    .then(function(survey){
+      var relation = survey.relation('forms')
+      relation.add(newForm)
+      survey.save(null, useMasterKey)
+    })
+    .then(function(){
+      return Users.setUserRights(newForm)
+    })
+    .then(function(){
+      Questions.createDemoQuestions(newForm)
+      Triggers.createDemoTrigger(newForm, randomHour(dayStartTimestamp))
+    })
+    .fail(function(e){console.log(e);})
+}
+
+function destroyAll() {
+  loadForms(null, function(err, forms){
+    if (forms)
+      Helpers.destroyObjects(forms, 'Forms')
   })
 }
 
@@ -103,7 +75,6 @@ function createDemoGeofenceForms(parentSurvey) {
         })
         Questions.createDemoGeofenceQuestions(form)
         Triggers.createDemoGeofenceTrigger(form)
-        storeForms(form)
       },
       error: function(form, error) {
         console.warn('Failed to create Form, with error code: ' + error.message)
@@ -113,4 +84,4 @@ function createDemoGeofenceForms(parentSurvey) {
   
 }
 
-module.exports = { Form, loadForms, createForms, storeForms, createDemoForm, createDemoGeofenceForms }
+module.exports = { Form, loadForms, createDemoForm, destroyAll, createDemoGeofenceForms }

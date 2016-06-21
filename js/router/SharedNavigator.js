@@ -111,20 +111,23 @@ const SharedNavigator = React.createClass ({
   },
 
   _onNotification(notification) {
-    const data = loadCachedFormDataById(notification.data.formId);
-    if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
-      return;
-    }
-    const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form}
+    if (typeof notification === 'undefined') return;
     // TODO determine the type of notification
-    // TODO sync remote and cached notifications
-    // addTimeTriggerNotification(data.survey.id, data.form.id, data.form.title, notification.message, new Date());
-    // We will only route the user if notification was remote
-    if (!notification.foreground) {
-      if (typeof navigator === 'undefined') {
-        initialRoute = path;
-      } else {
-        navigator.resetTo(path)
+    if (notification.hasOwnProperty('data')  && notification.data.hasOwnProperty('formId')) {
+      const data = loadCachedFormDataById(notification.data.formId);
+      if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
+        return;
+      }
+      const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form}
+      // TODO sync remote and cached notifications
+      // addTimeTriggerNotification(data.survey.id, data.form.id, data.form.title, notification.message, new Date());
+      // We will only route the user if notification was remote
+      if (!notification.foreground) {
+        if (typeof navigator === 'undefined') {
+          initialRoute = path;
+        } else {
+          navigator.resetTo(path)
+        }
       }
     }
   },

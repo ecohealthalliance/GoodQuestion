@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from 'react-native'
 
+import Variables from '../styles/Variables'
 import Button from '../components/Button'
 import Styles from '../styles/Styles'
 import Color from '../styles/Color'
@@ -80,7 +81,9 @@ const RegistrationPagePart3 = React.createClass ({
     this.props.buttonStyles(this, this.formInputs)
     return (
       <View style={[Styles.container.defaultWhite]}>
-        <ScrollView style={[Styles.form.registrationView, {height: this.props.calculateScrollViewHeight()}]}>
+        <ScrollView
+          ref='scrollView'
+          style={Styles.form.registrationView}>
           <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
             User Information
           </Text>
@@ -88,25 +91,37 @@ const RegistrationPagePart3 = React.createClass ({
             <Text style={Styles.form.errorText}>
               {this.decodeText(this.state.errors.name)}
             </Text>
-            <TextInput
-              style={Styles.form.input}
-              onChangeText={this.textFieldChangeHandler.bind(this, 'name')}
-              value={this.state.name}
-              autoCapitalize='none'
-              autoCorrect={false}
-              placeholder="Full Name"
-            />
+            <View ref='nameView'>
+              <TextInput
+                ref='name'
+                style={Styles.form.input}
+                onChangeText={this.textFieldChangeHandler.bind(this, 'name')}
+                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'nameView', Variables.REGISTRATION_HEIGHT)}
+                onBlur={this.trimText.bind(this, 'name')}
+                value={this.state.name}
+                autoCapitalize='none'
+                autoCorrect={false}
+                returnKeyType='done'
+                placeholder="Full Name"
+              />
+            </View>
             <Text style={Styles.form.errorText}>
               {this.decodeText(this.state.errors.phone)}
             </Text>
-            <TextInput
-              style={Styles.form.input}
-              onChangeText={this.textFieldChangeHandler.bind(this, 'phone')}
-              value={this.state.phone}
-              autoCapitalize='none'
-              autoCorrect={false}
-              placeholder="Phone Number"
-            />
+            <View ref='phoneView'>
+              <TextInput
+                ref='phone'
+                style={Styles.form.input}
+                onChangeText={this.textFieldChangeHandler.bind(this, 'phone')}
+                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'phoneView', Variables.REGISTRATION_HEIGHT)}
+                onBlur={this.trimText.bind(this, 'phone')}
+                value={this.state.phone}
+                autoCapitalize='none'
+                autoCorrect={false}
+                returnKeyType='done'
+                placeholder="Phone Number"
+              />
+            </View>
           </View>
         </ScrollView>
         <Button action={this.finish}  style={this.buttonStyles} textStyle={this.buttonTextStyles}>

@@ -1,56 +1,13 @@
 var _ = require('lodash')
 var Parse = require('parse/node')
 var Forms = require('./Forms')
-var Store = require('../data/Store')
 var Survey = new Parse.Object.extend('Survey')
-// import { loadForms } from './Forms'
+var Users = require('./Users')
+var Helpers= require('./helpers')
+var useMasterKey = {useMasterKey: true}
 
-function loadCachedSurvey (id) {
-  var result
-  for (var i = Store.surveys.length - 1; i >= 0; i--) {
-    if (Store.surveys[i].id === id) result = Store.surveys[i]
-  }
-  return result
-}
-
-function loadSurveyList (options, callback) {
-  var query = new Parse.Query(Survey)
-  query.limit = 1000
-
-  query.find({
-    success: function(results) {
-      storeSurveys(results)
-      Forms.loadForms()
-      callback(null, results)
-    },
-    error: function(error, results) {
-      console.warn("Error: " + error.code + " " + error.message)
-      if (callback) callback(error, results)
-    }
-  })
-}
-
-function storeSurveys (newSurveys) {
-  if (!Array.isArray(newSurveys)) newSurveys = [newSurveys]
-  Store.surveys = _.unionBy(Store.surveys, newSurveys, 'id')
-}
-
-function createSurvey (surveyData) {
-  var newSurvey = new Survey()
-
-  newSurvey.set('title', surveyData.title)
-  newSurvey.set('user', surveyData.user)
-  newSurvey.set('createdAt', surveyData.created)
-
-  newSurvey.save(null, {
-    success: function(response) {
-      Forms.createForms(response)
-      storeSurveys(response)
-    },
-    error: function(response, error) {
-      console.warn('Failed to create Survey, with error code: ' + error.message)
-    }
-  })
+function loadSurveys (options, callback) {
+  Helpers.fetchObjects(Survey, callback)
 }
 
 /**
@@ -77,20 +34,26 @@ function createDemoSurvey (surveyData, startDate, endDate) {
   newSurvey.set('description', surveyData.description)
   newSurvey.set('user', surveyData.user)
   newSurvey.set('createdAt', surveyData.created)
-  newSurvey.set('active', false)
+  newSurvey.set('active', true)
   newSurvey.set('deleted', false)
-
-  newSurvey.save(null, {
-    useMasterKey: true,
-    success: function(survey) {
+  newSurvey.save(null, useMasterKey)
+    .then(function(newSurvey){
       for (var i = 0; i < numberOfDays; i++) {
-        Forms.createDemoForm(survey, startDateTimestamp + i * 86400000)
+        Forms.createDemoForm(newSurvey, startDateTimestamp + i * 86400000)
       }
-      storeSurveys(survey)
-    },
-    error: function(response, error) {
+    })
+    .then(function(){
+      return Users.setUserRights(newSurvey)
+    })
+    .fail(function(error){
       console.warn('Failed to create demo Survey, error code: ' + error.message)
-    }
+    })
+}
+
+function destroyAll() {
+  loadSurveys(null, function(err, surveys){
+    if (surveys)
+      Helpers.destroyObjects(surveys, 'Surveys')
   })
 }
 
@@ -107,7 +70,6 @@ function createDemoGeofenceSurvey (surveyData) {
     useMasterKey: true,
     success: function(survey) {
       Forms.createDemoGeofenceForms(survey)
-      storeSurveys(survey)
     },
     error: function(response, error) {
       console.warn('Failed to create demo Survey, error code: ' + error.message)
@@ -115,5 +77,4 @@ function createDemoGeofenceSurvey (surveyData) {
   })
 }
 
-
-module.exports = { Survey, loadCachedSurvey, loadSurveyList, storeSurveys, createSurvey, createDemoSurvey, createDemoGeofenceSurvey }
+module.exports = { Survey, loadSurveys, createDemoSurvey, destroyAll, createDemoGeofenceSurvey }

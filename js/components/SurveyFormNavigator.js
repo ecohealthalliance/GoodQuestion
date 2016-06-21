@@ -47,10 +47,10 @@ const SurveyFormNavigator = React.createClass ({
 
   render() {
     return (
-      <View style={Styles.survey.navMenu}>
+      <View style={[Styles.survey.navMenu, {paddingHorizontal: 0}]}>
         <TouchableWithoutFeedback
           onPress={() => this.handlePress('prev')}>
-          <View style={{opacity: this.state.index > 0 ? 1 : 0.5}}>
+          <View style={{paddingHorizontal: 25, paddingVertical: 15, opacity: this.state.index > 0 ? 1 : 0.5}}>
             <Text style={{color: Color.primary}}>Prev</Text>
           </View>
         </TouchableWithoutFeedback>
@@ -63,7 +63,7 @@ const SurveyFormNavigator = React.createClass ({
 
         <TouchableWithoutFeedback
           onPress={() => {this.handlePress('next')}}>
-          <View style={{opacity: this.state.index < this.state.total ? 1 : 0.5}}>
+          <View style={{paddingHorizontal: 25, paddingVertical: 15, opacity: this.state.index < this.state.total ? 1 : 0.5}}>
             <Text style={{color: Color.primary}}>Next</Text>
           </View>
         </TouchableWithoutFeedback>
