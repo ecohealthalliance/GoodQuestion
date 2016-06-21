@@ -74,7 +74,7 @@ function createDemoGeofenceSurvey (surveyData) {
       return Users.setUserRights(newSurvey)
     })
     .fail(function(error){
-      console.warn('Failed to create demo Survey, error code: ' + error.message)
+      console.warn('Failed to create demo geofence Survey, error code: ' + error.message)
     })
 }
 

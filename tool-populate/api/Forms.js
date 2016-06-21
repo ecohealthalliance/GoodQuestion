@@ -60,28 +60,34 @@ function destroyAll() {
 function createDemoGeofenceForms(parentSurvey) {
   var data = DemoGeofenceData.forms
   for (var i = 0; i < data.length; i++) {
-    
-    var newForm = new Form()
-    newForm.set('title', data[i].title)
-    newForm.set('order', data[i].order)
-    newForm.set('deleted', false)
-    newForm.save(null, {
-      useMasterKey: true,
-      success: function(form) {
-        parentSurvey.fetch().then(function(survey){
-          var relation = survey.relation('forms')
-          relation.add(form)
-          survey.save(null, {useMasterKey: true})
-        })
-        Questions.createDemoGeofenceQuestions(form)
-        Triggers.createDemoGeofenceTrigger(form)
-      },
-      error: function(form, error) {
-        console.warn('Failed to create Form, with error code: ' + error.message)
-      }
-    })
+    createDemoGeofenceForm(parentSurvey, data[i])
   }
-  
+}
+
+function createDemoGeofenceForm(parentSurvey, formData) {
+  var newForm = new Form()
+  var acl = new Parse.ACL()
+  newForm.set('title', formData.title)
+  newForm.set('order', formData.order)
+  newForm.set('deleted', false)
+
+  newForm.save(null, useMasterKey)
+    .then(function(newForm){
+      return parentSurvey.fetch(useMasterKey)
+    })
+    .then(function(survey){
+      var relation = survey.relation('forms')
+      relation.add(newForm)
+      survey.save(null, useMasterKey)
+    })
+    .then(function(){
+      return Users.setUserRights(newForm)
+    })
+    .then(function(){
+      Questions.createDemoGeofenceQuestions(newForm)
+      Triggers.createDemoGeofenceTrigger(newForm)
+    })
+    .fail(function(e){console.log(e);})
 }
 
 module.exports = { Form, loadForms, createDemoForm, destroyAll, createDemoGeofenceForms }

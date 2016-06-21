@@ -64,20 +64,25 @@ function createDemoGeofenceQuestions(parentForm) {
     newQuestion.set('properties', data[i].properties)
     newQuestion.set('order', i + 1)
 
-    newQuestion.save(null, {
-      useMasterKey: true,
-      success: function(response) {
-        questions.push(response)
-        if (parentForm && questions.length === limit) {
-          var relation = parentForm.relation('questions')
-          relation.add(questions)
-          parentForm.save(null, {useMasterKey: true})
-        }
-      },
-      error: function(response, error) {
+    newQuestion.save(null, useMasterKey)
+      .then(function(newQuestion){
+        return new Promise(function(resolve){
+          questions.push(newQuestion)
+          if (parentForm && questions.length === limit) {
+            var relation = parentForm.relation('questions')
+            relation.add(questions)
+            parentForm.save(null, useMasterKey).then(function(){
+              resolve(newQuestion)
+            })
+          } else resolve(newQuestion)
+        })
+      })
+      .then(function(question){
+        return Users.setUserRights(question)
+      })
+      .fail(function(response, error) {
         console.warn('Failed to create Question, with error code: ' + error.message)
-      }
-    })
+      })
   }
 }
 

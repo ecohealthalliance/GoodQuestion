@@ -9,6 +9,7 @@ const DemoGeofenceData = {
       title: 'Demo Geofence Survey',
       description: 'Demo survey for testing maps and location stuff.',
       created: Date.now() - 10000,
+      user: 'yXEBdt4rRn',
     }
   ],
 
