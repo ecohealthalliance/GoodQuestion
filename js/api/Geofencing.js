@@ -39,56 +39,69 @@ export function clearActiveMap(component) {
 export function setupGeofences() {
   // BackgroundGeolocation.stop()
 
+  getUserLocationData((response) => {console.log(response)})
+
   loadAllCachedGeofenceTriggers((err, response) => {
-    // BackgroundGeolocation.removeGeofences(
-    //   function success() {
-    //     console.log('Cleared current geofencing settings.')
-    //   },
-    //   function error(e) {
-    //     console.warn('Error resetting geofencing settings.')
-    //     console.warn(e)
-    //   }
-    // )
-
-    
-    const triggerGeofences = response.map((trigger) => {
-      return {
-        identifier: trigger.id,
-        radius: trigger.radius,
-        latitude: trigger.latitude,
-        longitude: trigger.longitude,
-        notifyOnEntry: true,
-        notifyOnExit: true,
-        notifyOnDwell: true,
-        loiteringDelay: 30000
+    resetGeofences((err) => {
+      if (err) {
+        console.warn(err)
       }
-    })
 
-    console.log('triggerGeofences')
-    console.log(triggerGeofences)
-    
-    console.log('Attempting to add geofences... ' + triggerGeofences.length)
-    BackgroundGeolocation.addGeofences(triggerGeofences, function() {
-      console.log("Successfully added geofences.");
-      BackgroundGeolocation.getGeofences((geofences) => {
-        console.log('geofences added')
-        console.log(geofences)
+      const triggerGeofences = response.map((trigger) => {
+        return {
+          identifier: trigger.id,
+          radius: trigger.radius,
+          latitude: trigger.latitude,
+          longitude: trigger.longitude,
+          notifyOnEntry: true,
+          notifyOnExit: true,
+          notifyOnDwell: true,
+          loiteringDelay: 30000
+        }
       })
-    }, function(error) {
-        console.warn("Failed to add geofences.", error);
-    })
 
-    BackgroundGeolocation.start(() => {
-      console.info('Geolocation tracking started.')
-    })
+      BackgroundGeolocation.addGeofences(triggerGeofences, function() {
+        try {
+          console.log("Successfully added geofences.");
+          BackgroundGeolocation.getGeofences((geofences) => {
+            console.log('geofences added')
+            console.log(geofences)
+          })
+        } catch (e) {
+          console.warn(e)
+        }
+        
+      }, function(error) {
+          console.warn("Failed to add geofences.", error);
+      })
 
-    BackgroundGeolocation.getGeofences(function(geofences) {
-      console.log('active geofences: ')
-      console.log(geofences)
-    });
+      BackgroundGeolocation.start(() => {
+        console.info('Geolocation tracking started.')
+      })
+
+      BackgroundGeolocation.getGeofences(function(geofences) {
+        console.log('active geofences: ')
+        console.log(geofences)
+      });
+
+    })
 
     connectMapToGeofence()
   })
+}
+
+export function resetGeofences(callback) {
+  BackgroundGeolocation.removeGeofences(
+    function success() {
+      console.log('Cleared current geofencing settings.')
+      callback(null)
+    },
+    function error(e) {
+      console.warn('Error resetting geofencing settings.')
+      console.warn(e)
+      callback(e)
+    }
+  )
 }
 
 /**
@@ -105,7 +118,6 @@ export function getUserLocationData(callback) {
     })
   }, function error(err) {
     console.warn('Error retrieving geolocation data: ', err)
-    locationData.error = err
     callback({
       latitude: 0,
       longitude: 0,
@@ -119,24 +131,24 @@ export function getUserLocationData(callback) {
  * Links the currently cached MapPage element to the geofence events, allowing for updates on the component.
  */
 function connectMapToGeofence() {
-
   BackgroundGeolocation.on('geofence', (params) => {
     try {
-      console.log('A geofence has been crossed!')
+      console.log('A geofence has been crossed!');
       if (activeMap && activeMap.active) {
         // Send a new set of geofence trigger parameters to the cached MapPage element.
-        activeMap.updateMarkers(params)
-        notifyGeofenceLocalCrossing(params)
+        activeMap.updateMarkers(params);
       }
+      notifyGeofenceCrossing(params);
     } catch(e) {
       console.error('Geofencing error.', e);
     }
   })
 }
 
-function notifyGeofenceLocalCrossing(params) {
-  console.log('notifyGeofenceLocalCrossing');
+function notifyGeofenceCrossing(params) {
+  console.log('notifyGeofenceCrossing');
   console.log(params);
+  alert(JSON.stringify(params));
   // showToast(updatedMarkers[i].title, updatedMarkers[i].description, 'globe', 6, () => {
   //   self.handleMarkerPress(marker);
   // });
