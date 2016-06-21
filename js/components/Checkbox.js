@@ -14,7 +14,7 @@ var {
 var flattenStyle = ReactNative.StyleSheet.flatten;
 var PropTypes = React.PropTypes;
 
-var CheckBox = React.createClass({
+var Checkbox = React.createClass({
   propTypes: {
     label: PropTypes.string,
     checked: PropTypes.bool.isRequired,
@@ -46,10 +46,10 @@ var CheckBox = React.createClass({
 
   render() {
     if (!this.props.uncheckedComponent) {
-      throw new Error('CheckBox requires a property for checkedComponent')
+      throw new Error('Checkbox requires a property for checkedComponent')
     }
     if (!this.props.checkedComponent) {
-      throw new Error('CheckBox requires a property for uncheckedComponent')
+      throw new Error('Checkbox requires a property for uncheckedComponent')
     }
 
     var checkbox;
@@ -130,4 +130,4 @@ var styles = StyleSheet.create({
   },
 });
 
-module.exports = CheckBox;
+module.exports = Checkbox;

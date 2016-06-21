@@ -41,8 +41,8 @@ const Swiper = React.createClass ({
 
   getInitialState() {
     return {
-      index: props.index,
-      scrollValue: new Animated.Value(props.index),
+      index: this.props.index,
+      scrollValue: new Animated.Value(this.props.index),
       viewWidth: Dimensions.get('window').width,
     }
   },

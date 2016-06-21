@@ -10,7 +10,7 @@ import {
 } from 'react-native'
 
 import Button from '../components/Button'
-import CheckBox from '../components/Checkbox'
+import Checkbox from '../components/Checkbox'
 
 import Styles from '../styles/Styles'
 import Color from '../styles/Color'

@@ -9,7 +9,7 @@ import Styles from '../styles/Styles'
 import Color from '../styles/Color'
 
 import ViewText from './ViewText'
-import CheckBox from './Checkbox'
+import Checkbox from './Checkbox'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 import { getFormAvailability } from '../api/Surveys'
