@@ -26,8 +26,8 @@ const Toaster = React.createClass ({
       icon: 'circle-o',
       duration: 10,
       action: () => {},
-      fadeAnim: new Animated.Value(0.5),
-      translateAnim: new Animated.Value(150),
+      fadeAnim: new Animated.Value(0.0),
+      translateAnim: new Animated.Value(300),
     }
   },
 

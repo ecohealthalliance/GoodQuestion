@@ -70,7 +70,7 @@ const NotificationsPage = React.createClass({
   /* Render */
   renderItem(item, sectionId, rowId) {
     return (
-      <Notification item={item} onPressed={this.selectNotification.bind(this, item)} />
+      <Notification item={item} onPressed={this.selectNotification.bind(null, item)} />
     )
   },
 

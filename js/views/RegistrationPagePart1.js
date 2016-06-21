@@ -121,9 +121,7 @@ const RegistrationPagePart1 = React.createClass ({
     return (
       <Text style={[Styles.type.h3, {textAlign: 'center', paddingBottom: 2, position: 'relative'}]}>
         <Text>I accept the </Text>
-        <TouchableWithoutFeedback onPress={this.goToTermsPage}>
-          <Text style={Styles.type.link}>Terms of Service.</Text>
-        </TouchableWithoutFeedback>
+        <Text style={Styles.type.link} onPress={this.goToTermsPage}>Terms of Service.</Text>
       </Text>
     );
     this.props.navigator.push({path: 'terms', title: 'Terms of Service'})
@@ -150,9 +148,9 @@ const RegistrationPagePart1 = React.createClass ({
                 <TextInput
                   ref='email'
                   style={Styles.form.input}
-                  onChangeText={this.textFieldChangeHandler.bind(this, 'email')}
-                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'emailView', Variables.REGISTRATION_HEIGHT)}
-                  onBlur={this.trimText.bind(this, 'email')}
+                  onChangeText={this.textFieldChangeHandler.bind(null, 'email')}
+                  onFocus={this.scrollToViewWrapper.bind(null, 'scrollView', 'emailView', Variables.REGISTRATION_HEIGHT)}
+                  onBlur={this.trimText.bind(null, 'email')}
                   value={this.state.email}
                   autoCapitalize='none'
                   autoCorrect={false}
@@ -168,9 +166,9 @@ const RegistrationPagePart1 = React.createClass ({
                   ref='password'
                   secureTextEntry={true}
                   style={Styles.form.input}
-                  onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
-                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'passwordView', Variables.REGISTRATION_HEIGHT)}
-                  onBlur={this.trimText.bind(this, 'password')}
+                  onChangeText={this.textFieldChangeHandler.bind(null, 'password')}
+                  onFocus={this.scrollToViewWrapper.bind(null, 'scrollView', 'passwordView', Variables.REGISTRATION_HEIGHT)}
+                  onBlur={this.trimText.bind(null, 'password')}
                   value={this.state.password}
                   autoCapitalize='none'
                   autoCorrect={false}
@@ -186,9 +184,9 @@ const RegistrationPagePart1 = React.createClass ({
                   ref='confirmPassword'
                   secureTextEntry={true}
                   style={Styles.form.input}
-                  onChangeText={this.confirmPasswordChangeHandler.bind(this, 'confirmPassword')}
-                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'confirmPasswordView', Variables.REGISTRATION_HEIGHT)}
-                  onBlur={this.trimText.bind(this, 'confirmPassword')}
+                  onChangeText={this.confirmPasswordChangeHandler.bind(null, 'confirmPassword')}
+                  onFocus={this.scrollToViewWrapper.bind(null, 'scrollView', 'confirmPasswordView', Variables.REGISTRATION_HEIGHT)}
+                  onBlur={this.trimText.bind(null, 'confirmPassword')}
                   value={this.state.confirmPassword}
                   autoCapitalize='none'
                   autoCorrect={false}
@@ -205,7 +203,7 @@ const RegistrationPagePart1 = React.createClass ({
                   checked={this.state.acceptedTerms}
                   uncheckedComponent={uncheckedComponent}
                   checkedComponent={checkedComponent}
-                  onChange={this.checkboxChangeHandler.bind(this, 'acceptedTerms')}
+                  onChange={this.checkboxChangeHandler.bind(null, 'acceptedTerms')}
                 />
               </View>
             </View>

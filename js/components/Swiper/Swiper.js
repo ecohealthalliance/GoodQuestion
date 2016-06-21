@@ -167,7 +167,7 @@ const Swiper = React.createClass ({
     }
 
     return (
-      <View style={[{flex: 1, overflow: 'hidden'}, this.props.containerStyle]} onLayout={this.handleLayout.bind(this)}>
+      <View style={[{flex: 1, overflow: 'hidden'}, this.props.containerStyle]} onLayout={this.handleLayout}>
         <Animated.View
           {...this._panResponder.panHandlers}
           style={[sceneContainerStyle, {transform: [{translateX}]}]}

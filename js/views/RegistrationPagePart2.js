@@ -115,7 +115,7 @@ const RegistrationPagePart4 = React.createClass ({
                 checked={this.state.allowLocationServices}
                 uncheckedComponent={uncheckedComponent}
                 checkedComponent={checkedComponent}
-                onChange={this.checkboxChangeHandler.bind(this, 'allowLocationServices')}
+                onChange={this.checkboxChangeHandler.bind(null, 'allowLocationServices')}
               />
             </View>
           </View>
