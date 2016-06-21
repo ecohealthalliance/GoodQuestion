@@ -66,15 +66,16 @@ function createDemoGeofenceSurvey (surveyData) {
   newSurvey.set('active', true)
   newSurvey.set('deleted', false)
 
-  newSurvey.save(null, {
-    useMasterKey: true,
-    success: function(survey) {
-      Forms.createDemoGeofenceForms(survey)
-    },
-    error: function(response, error) {
+  newSurvey.save(null, useMasterKey)
+    .then(function(newSurvey){
+      Forms.createDemoGeofenceForms(newSurvey)
+    })
+    .then(function(){
+      return Users.setUserRights(newSurvey)
+    })
+    .fail(function(error){
       console.warn('Failed to create demo Survey, error code: ' + error.message)
-    }
-  })
+    })
 }
 
 module.exports = { Survey, loadSurveys, createDemoSurvey, destroyAll, createDemoGeofenceSurvey }

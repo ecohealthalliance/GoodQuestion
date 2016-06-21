@@ -66,7 +66,7 @@ const MapPage = React.createClass ({
           longitude: trigger.longitude,
         },
         radius: trigger.radius,
-        active: false,
+        active: trigger.inRange,
       }
     })
 

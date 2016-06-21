@@ -138,17 +138,28 @@ function connectMapToGeofence() {
         // Send a new set of geofence trigger parameters to the cached MapPage element.
         activeMap.updateMarkers(params);
       }
-      notifyGeofenceCrossing(params);
+      crossGeofence(params);
     } catch(e) {
       console.error('Geofencing error.', e);
     }
   })
 }
 
-function notifyGeofenceCrossing(params) {
-  console.log('notifyGeofenceCrossing');
+function crossGeofence(params) {
+  console.log('crossGeofence');
   console.log(params);
-  alert(JSON.stringify(params));
+  // Update Geofence Trigger
+  const trigger = realm.objects('GeofenceTrigger').filtered(`id = "${params.identifier}"`)[0];
+  if (trigger) {
+    realm.write(() => {
+      trigger.inRange = true;
+      trigger.triggered = action == 'exit' ? false : true;
+    })
+  }
+
+  // Notify
+  alert(params.action);
+  // alert(JSON.stringify(params));
   // showToast(updatedMarkers[i].title, updatedMarkers[i].description, 'globe', 6, () => {
   //   self.handleMarkerPress(marker);
   // });

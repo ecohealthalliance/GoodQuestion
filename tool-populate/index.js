@@ -34,7 +34,7 @@ if (program.reset) {
 } else if (program.demo) {
   checkUsers().then(createDemoData)
 } else if (program.demoGeofence) {
-  createDemoGeofenceData()
+  checkUsers().then(createDemoGeofenceData)
 } else if (program.print) {
   Surveys.loadSurveys()
 } else {
