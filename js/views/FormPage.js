@@ -1,6 +1,7 @@
 import React, {
   StyleSheet,
   TouchableHighlight,
+  TouchableWithoutFeedback,
   Text,
   View,
   ScrollView,
@@ -9,7 +10,9 @@ import React, {
   Platform,
   Alert,
 } from 'react-native'
+
 import _ from 'lodash'
+import dismissKeyboard from 'dismissKeyboard'
 
 import Store from '../data/Store'
 import Styles from '../styles/Styles';
@@ -267,6 +270,10 @@ const FormPage = React.createClass ({
     }
   },
 
+  dismiss() {
+    dismissKeyboard();
+  },
+
   /* Render */
 
   renderQuestions() {
@@ -302,11 +309,15 @@ const FormPage = React.createClass ({
         default: questionComponent = <Text key={'unknown-question-'+idx}>Unknown Type: {question.type}</Text>; break;
       }
       return (
-        <View style={{flex: 1}}>
-          {questionComponent}
-        </View>
+        <TouchableWithoutFeedback
+          onPress={this.dismiss}>
+          <View style={{flex: 1}}>
+            {questionComponent}
+          </View>
+        </TouchableWithoutFeedback>
       )
     })
+    
     completeFormView = <View><CompleteForm submit={this.submit} nextForm={this.nextForm}/></View>
     renderedQuestions.push(completeFormView)
     return renderedQuestions
