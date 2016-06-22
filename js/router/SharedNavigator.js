@@ -129,6 +129,7 @@ const SharedNavigator = React.createClass ({
   _onRegister(registration) {
     const token = registration.token;
     const platform = registration.os;
+    if (platform === 'ios') PushNotification.setApplicationIconBadgeNumber(0);
     upsertInstallation(token, platform, (err, res) => {
       if (err) {
         console.error(err);
