@@ -167,7 +167,6 @@ function crossGeofence(params) {
       // alert(JSON.stringify(trigger));
 
       // Notify on entry
-
       if (_.lowerCase(params.action) == 'enter') {
         const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0];
         const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0];
@@ -187,5 +186,5 @@ function crossGeofence(params) {
   } catch (e) {
     console.warn(e)
   }
-  
+
 }

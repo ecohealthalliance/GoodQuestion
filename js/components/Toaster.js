@@ -26,7 +26,7 @@ const Toaster = React.createClass ({
       icon: 'circle-o',
       duration: 10,
       action: () => {},
-      fadeAnim: new Animated.Value(0.0),
+      fadeAnim: new Animated.Value(0.1),
       translateAnim: new Animated.Value(300),
     }
   },
@@ -46,7 +46,7 @@ const Toaster = React.createClass ({
     console.log('showToast')
     const self = this;
 
-    this.state.fadeAnim.setValue(0);
+    this.state.fadeAnim.setValue(0.1);
     this.state.translateAnim.setValue(150);
 
     Animated.timing(
@@ -74,11 +74,11 @@ const Toaster = React.createClass ({
   closeToast() {
     Animated.timing(
       this.state.fadeAnim,
-      {toValue: 0, duration: 400, easing: Easing.out(Easing.quad),}
+      {toValue: 0.1, duration: 400, easing: Easing.out(Easing.quad),}
     ).start();
     Animated.timing(
       this.state.translateAnim,
-      {toValue: 50, duration: 1200, easing: Easing.out(Easing.quad),}
+      {toValue: 150, duration: 1200, easing: Easing.out(Easing.quad),}
     ).start();
   },
   
