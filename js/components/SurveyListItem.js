@@ -69,7 +69,6 @@ const SurveyListItem = React.createClass ({
         });
       }
     });
-
   },
 
   /* Render */
@@ -90,7 +89,11 @@ const SurveyListItem = React.createClass ({
   renderAvailabilityText() {
     availability = this.state.availability
     if (availability.geofenceTriggersInRange > 0) {
-      // TODO: notify about geofence triggers
+      return (
+        <ViewText textStyle={Styles.survey.itemDescription}>
+          {availability.geofenceTriggersInRange} geofence {availability.geofenceTriggersInRange > 1 ? 'forms' : 'form'} available.
+        </ViewText>
+      )
     } else if (availability.availableTimeTriggers > 0) {
       return (
         <ViewText textStyle={Styles.survey.itemDescription}>

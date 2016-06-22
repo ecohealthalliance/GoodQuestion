@@ -34,7 +34,6 @@ export function loadCachedFormDataById(formId) {
   return { form: form, survey: survey }
 }
 
-
 // Returns an object containing a form and its parent survey
 export function loadCachedFormDataByGeofence(triggerId) {
   let trigger = realm.objects('GeofenceTrigger').filtered(`id = "${triggerId}"`)[0]
@@ -46,6 +45,25 @@ export function loadCachedFormDataByGeofence(triggerId) {
 // Fetches the cached forms related to a specific survey
 export function loadCachedForms(surveyId) {
   return realm.objects('Form').filtered(`surveyId = "${surveyId}"`)
+}
+
+export function loadActiveGeofenceFormsInRange(surveyId) {
+  try {
+    const triggers = realm.objects('GeofenceTrigger')
+      .filtered(`surveyId = "${surveyId}" AND triggered == true AND completed == false AND inRange == true OR sticky == true`);
+
+    let forms = [];
+    const triggersLength = triggers.length;
+    for (var i = 0; i < triggersLength; i++) {
+      let triggerForms = Array.from(realm.objects('Form').filtered(`id = "${triggers[i].formId}"`));
+      forms = _.unionBy(forms, triggerForms, 'id');
+    }
+
+    return forms;
+  } catch (e) {
+    alert(e)
+    return [];
+  }
 }
 
 export function clearCachedForms(surveyId) {

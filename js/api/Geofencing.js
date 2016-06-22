@@ -95,6 +95,10 @@ export function setupGeofences() {
   })
 }
 
+/**
+ * Erases all active geofences in the native geofencing api.
+ * @param  {Function} callback Callback function to execute afterwards.
+ */
 export function resetGeofences(callback) {
   BackgroundGeolocation.removeGeofences(
     function success() {
@@ -196,5 +200,4 @@ function crossGeofence(params) {
   } catch (e) {
     console.warn(e)
   }
-
 }

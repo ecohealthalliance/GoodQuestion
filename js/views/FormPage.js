@@ -37,7 +37,7 @@ import moment from 'moment'
 
 import { loadTriggers, loadCachedTrigger } from '../api/Triggers'
 import { validateUser } from '../api/Account'
-import { loadCachedForms } from '../api/Forms'
+import { loadCachedForms, loadActiveGeofenceFormsInRange } from '../api/Forms'
 import { loadCachedSubmissions, saveSubmission} from '../api/Submissions'
 import { loadCachedQuestions } from '../api/Questions'
 
@@ -117,17 +117,34 @@ const FormPage = React.createClass ({
   componentWillMount() {
     let self = this,
         index = this.state.index,
+        type = this.props.type,
         answers = {},
         forms,
         allForms
+    
+    // Find most relevant form if no form type was provided.
+    // if (!type) {
+    //   if (!forms || forms.length === 0) {
+    //     forms = loadActiveGeofenceFormsInRange();
 
-    if (this.props.type === 'datetime') {
+    //     if (forms.length > 0) {
+    //       type = 'geofence';
+    //     } else {
+    //       type = 'datetime';
+    //     }
+    //   } 
+    // }
+
+    if (type === 'geofence') {
+      forms = this.state.forms
+      if (!forms || forms.length === 0) {
+        forms = loadActiveGeofenceFormsInRange(this.props.survey.id);
+      }
+    } else if (type === 'datetime') {
       forms = this.formsWithTriggers()
       allForms = forms
       forms = this.filterForms(forms)
       forms = this.sortForms(forms)
-    } else if (this.props.type === 'geofence') {
-      forms = this.state.forms
     }
 
     if (!forms || forms.length === 0) {

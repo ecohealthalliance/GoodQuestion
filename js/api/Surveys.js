@@ -222,8 +222,13 @@ export function getFormAvailability(surveyId, done) {
         if (nextTimeTriggers && nextTimeTriggers.length > 0) {
           result.nextTimeTrigger = nextTimeTriggers[0].datetime
         }
-        // TODO: Geofence trigger availability.
-        // Blocked by geofencing not being implemented yet.
+
+        // Check for active geofence triggers.
+        let geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`)
+        if (geofenceTriggers && geofenceTriggers.length > 0) {
+          let geofenceTriggersInRange = geofenceTriggers.filtered(`triggered == true AND completed == false AND inRange == true OR sticky == true`)
+          result.geofenceTriggersInRange = geofenceTriggersInRange.length
+        }
       } catch (e) {
         console.warn(e)
       }
