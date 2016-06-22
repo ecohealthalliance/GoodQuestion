@@ -59,7 +59,8 @@ export function setupGeofences() {
           loiteringDelay: 30000
         }
       })
-
+      
+      console.log('Adding ' + triggerGeofences.length + ' geofences...')
       BackgroundGeolocation.addGeofences(triggerGeofences, function() {
         try {
           console.log("Successfully added geofences.");
@@ -79,10 +80,14 @@ export function setupGeofences() {
         console.info('Geolocation tracking started.')
       })
 
-      BackgroundGeolocation.getGeofences(function(geofences) {
-        console.log('active geofences: ')
-        console.log(geofences)
-      });
+      setTimeout(() => {
+        BackgroundGeolocation.getGeofences(function(geofences) {
+          console.log('active geofences: ')
+          console.log(geofences)
+        });
+      } , 2000);
+
+      
 
     })
 
@@ -134,11 +139,11 @@ function connectMapToGeofence() {
   BackgroundGeolocation.on('geofence', (params) => {
     try {
       console.log('A geofence has been crossed!');
+      crossGeofence(params);
       if (activeMap && activeMap.active) {
         // Send a new set of geofence trigger parameters to the cached MapPage element.
         activeMap.updateMarkers(params);
       }
-      crossGeofence(params);
     } catch(e) {
       console.error('Geofencing error.', e);
     }
@@ -148,6 +153,10 @@ function connectMapToGeofence() {
 function crossGeofence(params) {
   console.log('crossGeofence');
   console.log(params);
+
+  // Notify
+  // alert(params.action);
+
   // Update Geofence Trigger
   const trigger = realm.objects('GeofenceTrigger').filtered(`id = "${params.identifier}"`)[0];
   if (trigger) {
@@ -157,8 +166,12 @@ function crossGeofence(params) {
     })
   }
 
-  // Notify
-  alert(params.action);
+  setTimeout(() => {
+    const trigger2 = realm.objects('GeofenceTrigger').filtered(`id = "${params.identifier}"`)[0];
+    alert(JSON.stringify(trigger2));
+  } , 2000);
+
+
   // alert(JSON.stringify(params));
   // showToast(updatedMarkers[i].title, updatedMarkers[i].description, 'globe', 6, () => {
   //   self.handleMarkerPress(marker);

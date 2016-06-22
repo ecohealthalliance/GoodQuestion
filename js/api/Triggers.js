@@ -51,14 +51,14 @@ export function loadAllCachedGeofenceTriggers(callback) {
     }
     
     let triggers = []
-    for (var i = 0; i < response.length; i++) {
+    const responseLength = response.length;
+    for (var i = 0; i < responseLength; i++) {
       let surveyTriggers = Array.from(realm.objects('GeofenceTrigger').filtered(`surveyId = "${response[i].id}"`))
       triggers = _.unionBy(triggers, surveyTriggers, 'id')
     }
 
     callback(null, triggers)
   })
-  
 }
 
 
@@ -143,8 +143,9 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
   past = past.setDate(past.getDate() - 90)
 
   // Record the new trigger
+  const triggerLength = triggers.length
   realm.write(() => {
-    for (var i = 0; i < triggers.length; i++) {
+    for (var i = 0; i < triggerLength; i++) {
       if (triggers[i].datetime < now && triggers[i].datetime > past) {
         let activeTrigger = realm.create('TimeTrigger', {
           id: triggers[i].id,

@@ -9,8 +9,9 @@ import realm from '../data/Realm'
 export function cacheParseQuestions(questions, formId) {
   try {
     // InteractionManager.runAfterInteractions(() => {
+      const questionsLength = questions.length;
       realm.write(() => {
-        for (var i = 0; i < questions.length; i++) {
+        for (var i = 0; i < questionsLength; i++) {
           realm.create('Question', {
             id: questions[i].id,
             formId: formId,

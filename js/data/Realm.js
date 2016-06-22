@@ -42,7 +42,8 @@ export function clearRealmCache(objectName, idExclusions) {
 
     // Standard JS array.filter doesn't work with these Realm objects, so we have to take care of this filtering manually.
     // Current version of Realm.io does not support exclusion queries for strings.
-    for (var i = objects.length - 1; i >= 0; i--) {
+    const objectLength = objects.length;
+    for (var i = objectLength - 1; i >= 0; i--) {
       let expired = true
       for (var j = excludedIds.length - 1; j >= 0; j--) {
         if (objects[i].id === excludedIds[j]) expired = false

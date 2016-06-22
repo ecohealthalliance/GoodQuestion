@@ -4,7 +4,8 @@ import {
   Text,
   Platform,
   View,
-} from 'react-native'
+} from 'react-native';
+import _ from 'lodash';
 
 import Styles from '../styles/Styles'
 import MapView from 'react-native-maps'
@@ -78,12 +79,12 @@ const MapPage = React.createClass ({
 
   updateMarkers(geofence) {
     const self = this;
-    if (geofence.action == 'ENTER') {
+    if (_.lowerCase(geofence.action) == 'enter' || _.lowerCase(geofence.action) == 'dwell') {
       updatedMarkers = this.state.markers.filter((marker) => {return marker.id == geofence.identifier})
       for (var i = 0; i < updatedMarkers.length; i++) {
         updatedMarkers[i].active = true;
       }
-    } else if (geofence.action == 'EXIT') {
+    } else if (_.lowerCase(geofence.action) == 'exit') {
       updatedMarkers = this.state.markers.filter((marker) => {return marker.id == geofence.identifier})
       for (var i = 0; i < updatedMarkers.length; i++) {
         updatedMarkers[i].active = false;

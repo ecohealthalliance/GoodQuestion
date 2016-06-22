@@ -27,7 +27,8 @@ export function loadAllAcceptedSurveys(callback) {
     }
 
     let surveys = []
-    for (var i = 0; i < invitations.length; i++) {
+    const invitationsLength = invitations.length;
+    for (var i = 0; i < invitationsLength; i++) {
       let acceptedSurvey = realm.objects('Survey').filtered(`id = "${invitations[i].surveyId}"`)[0]
       if (acceptedSurvey) {
         surveys.push(acceptedSurvey)
@@ -158,7 +159,8 @@ function clearSurveyCache(exclusions) {
 
     // Standard JS array.filter doesn't work with these Realm objects, so we have to take care of this filtering manually.
     // Current version of Realm.io does not support exclusion queries for strings.
-    for (var i = surveys.length - 1; i >= 0; i--) {
+    const surveysLength = surveys.length;
+    for (var i = surveysLength - 1; i >= 0; i--) {
       let expired = true
       for (var j = excludedIds.length - 1; j >= 0; j--) {
         if (surveys[i].id === excludedIds[j]) expired = false
@@ -167,11 +169,14 @@ function clearSurveyCache(exclusions) {
     }
 
     realm.write(() => {
-      for (var i = 0; i < expiredSurveys.length; i++) {
+      const expiredSurveysLength = expiredSurveys.length;
+      for (var i = 0; i < expiredSurveysLength; i++) {
         let forms = realm.objects('Form').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`)
         let timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`)
         let geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`)
-        for (var j = 0; j < forms.length; j++) {
+
+        let formsLength = forms.length;
+        for (var j = 0; j < formsLength; j++) {
           let questions = realm.objects('Question').filtered(`formId= "${expiredSurveys[i].surveyId}"`)
           realm.delete(questions)
         }
