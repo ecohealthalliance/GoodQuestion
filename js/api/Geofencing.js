@@ -154,28 +154,38 @@ function crossGeofence(params) {
   console.log('crossGeofence');
   console.log(params);
 
-  // Notify
-  // alert(params.action);
+  alert(params.action)
 
   // Update Geofence Trigger
-  const trigger = realm.objects('GeofenceTrigger').filtered(`id = "${params.identifier}"`)[0];
-  if (trigger) {
-    realm.write(() => {
-      trigger.inRange = true;
-      trigger.triggered = action == 'exit' ? false : true;
-    })
+  try {
+    const trigger = realm.objects('GeofenceTrigger').filtered(`id = "${params.identifier}"`)[0];
+    if (trigger) {
+      realm.write(() => {
+        trigger.inRange = true;
+        trigger.triggered = _.lowerCase(params.action) == 'exit' ? false : true;
+      })
+      // alert(JSON.stringify(trigger));
+
+      // Notify on entry
+
+      if (_.lowerCase(params.action) == 'enter') {
+        const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0];
+        const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0];
+        showToast(form.title, 'New geofence form available.', 'globe', 8, () => {
+          Store.navigator.push({
+            path: 'form',
+            title: survey.title,
+            forms: form,
+            survey: survey,
+            type: 'geofence'
+          });
+        });
+      }
+    } else {
+      alert('Trigger not found.');
+    }
+  } catch (e) {
+    console.warn(e)
   }
-
-  setTimeout(() => {
-    const trigger2 = realm.objects('GeofenceTrigger').filtered(`id = "${params.identifier}"`)[0];
-    alert(JSON.stringify(trigger2));
-  } , 2000);
-
-
-  // alert(JSON.stringify(params));
-  // showToast(updatedMarkers[i].title, updatedMarkers[i].description, 'globe', 6, () => {
-  //   self.handleMarkerPress(marker);
-  // });
-
-
+  
 }

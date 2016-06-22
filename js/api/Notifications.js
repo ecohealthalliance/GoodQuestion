@@ -48,6 +48,6 @@ export function connectToaster(newToaster) {
  */
 export function showToast(title, message, icon, duration, action) {
   if (toaster) {
-    toaster.showToast(title, message, duration, action);
+    toaster.showToast(title, message, icon, duration, action);
   }
 }
