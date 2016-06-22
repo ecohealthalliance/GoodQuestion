@@ -151,10 +151,8 @@ function connectMapToGeofence() {
 }
 
 function crossGeofence(params) {
-  console.log('crossGeofence');
+  console.log('Geofence crossed: ' + params.action);
   console.log(params);
-
-  alert(params.action)
 
   // Update Geofence Trigger
   try {
@@ -170,15 +168,27 @@ function crossGeofence(params) {
       if (_.lowerCase(params.action) == 'enter') {
         const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0];
         const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0];
-        showToast(form.title, 'New geofence form available.', 'globe', 8, () => {
-          Store.navigator.push({
-            path: 'form',
-            title: survey.title,
-            forms: form,
-            survey: survey,
-            type: 'geofence'
+
+        if (form && survey) {
+          if (Platform.OS === 'android') {
+            BackgroundGeolocation.playSound(25);
+          } else {
+            // TODO: find a proper tone on iOS
+            // http://iphonedevwiki.net/index.php/AudioServices
+            // BackgroundGeolocation.playSound(1000);
+          }
+
+          showToast(form.title, 'New geofence form available.', 'globe', 8, () => {
+            Store.navigator.push({
+              path: 'form',
+              title: survey.title,
+              forms: form,
+              survey: survey,
+              type: 'geofence'
+            });
           });
-        });
+        }
+
       }
     } else {
       alert('Trigger not found.');

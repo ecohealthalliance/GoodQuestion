@@ -33,7 +33,7 @@ export function configureGeolocationService(callback) {
       stopTimeout: 2,
 
       // Application config
-      debug: true,
+      debug: false,
       forceReloadOnLocationChange: false,  // Android
       forceReloadOnMotionChange: false,    // Android
       forceReloadOnGeofence: false,        // Android

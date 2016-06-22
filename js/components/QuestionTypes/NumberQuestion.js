@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native'
 import Styles from '../../styles/Styles'
+import {BackgroundGeolocation} from '../../api/BackgroundProcess'
 import Button from '../Button'
 import ViewText from '../ViewText'
 import _ from 'lodash'
@@ -75,10 +76,12 @@ const NumberQuestion = React.createClass ({
 
   increaseCount() {
     this.handleChange(_.add(this.state.value, 1))
+    BackgroundGeolocation.playSound(this.state.value);
   },
 
   decreaseCount() {
     this.handleChange(_.subtract(this.state.value, 1))
+    BackgroundGeolocation.playSound(this.state.value);
   },
 
   getDecimalPlaces(num) {
