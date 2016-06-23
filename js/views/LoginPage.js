@@ -78,7 +78,7 @@ const LoginPage = React.createClass ({
         state.button_text = 'Login';
         self.setState(state);
         // show a message
-        Alert.alert(err, 'The email and password combination is invalid.')
+        Alert.alert('Error', err)
         return;
       }
 

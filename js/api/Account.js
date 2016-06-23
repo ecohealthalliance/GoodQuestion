@@ -17,6 +17,11 @@ let _currentUser = null;
  * @param {function} the function to execute when done
  */
 export function authenticate(username, password, done) {
+  let timeout = false;
+  const timer = setTimeout(() => {
+    timeout = true;
+    done('Please try again later.')
+  }, 30000);
   async.auto({
     //authenticates against openam
     openam: (cb) => {
@@ -53,11 +58,14 @@ export function authenticate(username, password, done) {
       );
     }]
   }, function(err, results) {
-    if (err) {
-      done(err);
-      return;
+    if (!timeout) {
+      clearTimeout(timer);
+      if (err) {
+        done(err);
+        return;
+      }
+      done(null, results.parse);
     }
-    done(null, results.parse);
   });
 };
 
