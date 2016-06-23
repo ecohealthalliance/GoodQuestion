@@ -39,6 +39,7 @@ export class ToastMessage extends ValidObject {
       duration = 6;
     }
     this.duration = duration;
+    this.action = action ? action : ()=>{};
     this._schema = schema;
   }
 
