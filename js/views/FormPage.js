@@ -1,3 +1,6 @@
+import pubsub from 'pubsub-js';
+import {ToastAddresses, ToastMessage} from '../models/ToastMessage'
+
 import React, {
   StyleSheet,
   TouchableHighlight,
@@ -234,9 +237,14 @@ const FormPage = React.createClass ({
         Alert.alert('Error', err);
         return;
       }
+
       this.setState({
         button_text: 'Submit'
       });
+
+      // Publish a ToastMessage to our Toaster via pubsub
+      const toastMessage = ToastMessage.createFromObject({title: 'Success', message: 'The form has been submitted.', icon: 'check', iconColor: Color.fadedGreen});
+      pubsub.publish(ToastAddresses.SHOW, toastMessage);
 
       //If there is another form continue onto that
       if(this.nextForm){

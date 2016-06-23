@@ -17,6 +17,7 @@ import Settings from '../settings'
 // Components
 import Header from '../components/Header'
 import Loading from '../components/Loading'
+import Toaster from '../components/Toaster'
 
 // Styles
 import Styles from '../styles/Styles'
@@ -48,13 +49,12 @@ import { addTimeTriggerNotification } from '../api/Notifications'
 // Background
 import { initializeGeolocationService } from '../api/BackgroundProcess'
 
-
 initializeGeolocationService()
 connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 
-
 let navigator;
 let initialRoute = { path:'surveylist', title: 'Surveys' };
+const toaster = <Toaster key='toaster' />
 
 // Binds the hardware "back button" from Android devices
 if ( Platform.OS === 'android' ) {
@@ -226,6 +226,7 @@ const SharedNavigator = React.createClass ({
     return (
       <View style={wrapperStyles}>
         {viewComponent}
+        {toaster}
       </View>
     )
   },
