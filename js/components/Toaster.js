@@ -1,3 +1,6 @@
+import pubsub from 'pubsub-js';
+import {ToastAddresses, ToastMessage} from '../models/ToastMessage'
+
 import React from 'react';
 import {
   View,
@@ -20,20 +23,22 @@ const Toaster = React.createClass ({
   },
 
   getInitialState() {
+    // subscribe to the pubsub channel SHOW and handle valid requests
+    pubsub.subscribe(ToastAddresses.SHOW, (address, request) => {
+      if (request instanceof ToastMessage) {
+        this.showToast(request);
+      }
+    });
+
     return {
-      title: 'Title',
-      text: 'Yea toast!',
-      icon: 'circle-o',
-      duration: 10,
-      action: () => {},
-      fadeAnim: new Animated.Value(0.1),
+      title: '',
+      text: '',
+      icon: 'check',
+      duration: 0,
+      iconColor: Color.fadedGreen,
+      fadeAnim: new Animated.Value(0.0),
       translateAnim: new Animated.Value(300),
     }
-  },
-
-  componentDidMount() {
-    connectToaster(this);
-    const self = this;
   },
 
   /* Methods */
@@ -42,10 +47,15 @@ const Toaster = React.createClass ({
     this.state.action();
   },
 
-  showToast(title, message, icon, duration, action) {
+  /**
+   * shows a toast message
+   *
+   * @param {object} toastMessage, an instanceof ToastMessage from pubsub
+   */
+  showToast(toastMessage) {
     const self = this;
 
-    this.state.fadeAnim.setValue(0.1);
+    this.state.fadeAnim.setValue(0);
     this.state.translateAnim.setValue(150);
 
     Animated.timing(
@@ -58,16 +68,16 @@ const Toaster = React.createClass ({
     ).start();
 
     this.setState({
-      title: title,
-      text: message,
-      icon: icon,
-      duration: 6,
-      action: action,
+      title: toastMessage.title,
+      text: toastMessage.message,
+      icon: toastMessage.icon,
+      iconColor: toastMessage.iconColor,
+      duration: toastMessage.duration,
     });
 
     this.closeTimeout = setTimeout(() => {
-      self.closeToast();
-    }, duration * 1000);
+      self.closeToast()
+    }, toastMessage.duration * 1000);
   },
 
   closeToast() {
@@ -80,7 +90,7 @@ const Toaster = React.createClass ({
       {toValue: 150, duration: 1200, easing: Easing.out(Easing.quad),}
     ).start();
   },
-  
+
   /* Render */
 
   render() {
@@ -96,7 +106,7 @@ const Toaster = React.createClass ({
         <TouchableOpacity onPress={this.handlePress}>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={Styles.toast.icon}>
-              <Icon name={this.state.icon} size={38} color={Color.faded} />
+              <Icon name={this.state.icon} size={38} color={this.state.iconColor} />
             </View>
             <View style={Styles.toast.container}>
               <Text style={Styles.toast.title}>{this.state.title}</Text>
