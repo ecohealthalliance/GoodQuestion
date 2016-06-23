@@ -44,7 +44,9 @@ export function setupGeofences() {
   loadAllCachedGeofenceTriggers({excludeCompleted: true}, (err, response) => {
     resetGeofences((err) => {
       if (err) {
-        console.warn(err)
+        console.warn('Unable to load geofence triggers');
+        console.warn(err);
+        return;
       }
 
       const triggerGeofences = response.map((trigger) => {
