@@ -58,20 +58,15 @@ const DateQuestionIOS = React.createClass ({
 
   /* Render */
   render() {
-    // Due to a bug in react-native's source, DatePickerIOS is currently unstable and may cause problems with rendering. 
-    // Issue: https://github.com/facebook/react-native/issues/6264
-    // PR fix: https://github.com/facebook/react-native/pull/7472
-
     return (
       <View style={Styles.question.block}>
-        <ViewText 
+        <ViewText
           style={Styles.question.header}
           textStyle={Styles.question.headerText}>
             Question #{this.props.index}
         </ViewText>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
-        <Text>Notice: Date Picker for iOS is currently unstable.</Text>
-        <DatePickerIOS 
+        <DatePickerIOS
           mode={this.props.mode}
           timeZoneOffsetInMinutes={this.props.timeZoneOffset}
           onDateChange={this.handleChange}
@@ -84,4 +79,3 @@ const DateQuestionIOS = React.createClass ({
 })
 
 module.exports = DateQuestionIOS
-

@@ -1,6 +1,10 @@
+import pubsub from 'pubsub-js';
+import {ToastAddresses, ToastMessage} from '../models/ToastMessage'
+
 import React, {
   StyleSheet,
   TouchableHighlight,
+  TouchableWithoutFeedback,
   Text,
   View,
   ScrollView,
@@ -9,7 +13,9 @@ import React, {
   Platform,
   Alert,
 } from 'react-native'
+
 import _ from 'lodash'
+import dismissKeyboard from 'dismissKeyboard'
 
 import Store from '../data/Store'
 import Styles from '../styles/Styles';
@@ -234,9 +240,14 @@ const FormPage = React.createClass ({
         Alert.alert('Error', err);
         return;
       }
+
       this.setState({
         button_text: 'Submit'
       });
+
+      // Publish a ToastMessage to our Toaster via pubsub
+      const toastMessage = ToastMessage.createFromObject({title: 'Success', message: 'The form has been submitted.', icon: 'check', iconColor: Color.fadedGreen});
+      pubsub.publish(ToastAddresses.SHOW, toastMessage);
 
       //If there is another form continue onto that
       if(this.nextForm){
@@ -265,6 +276,10 @@ const FormPage = React.createClass ({
     if (this._nav) {
       this._nav.update(this._questionIndex, this.state.questions.length)
     }
+  },
+
+  dismiss() {
+    dismissKeyboard();
   },
 
   /* Render */
@@ -302,11 +317,15 @@ const FormPage = React.createClass ({
         default: questionComponent = <Text key={'unknown-question-'+idx}>Unknown Type: {question.type}</Text>; break;
       }
       return (
-        <View style={{flex: 1}}>
-          {questionComponent}
-        </View>
+        <TouchableWithoutFeedback
+          onPress={this.dismiss}>
+          <View style={{flex: 1}}>
+            {questionComponent}
+          </View>
+        </TouchableWithoutFeedback>
       )
     })
+    
     completeFormView = <View><CompleteForm submit={this.submit} nextForm={this.nextForm}/></View>
     renderedQuestions.push(completeFormView)
     return renderedQuestions

@@ -17,6 +17,7 @@ import Settings from '../settings'
 // Components
 import Header from '../components/Header'
 import Loading from '../components/Loading'
+import Toaster from '../components/Toaster'
 
 // Styles
 import Styles from '../styles/Styles'
@@ -48,13 +49,12 @@ import { addTimeTriggerNotification } from '../api/Notifications'
 // Background
 import { initializeGeolocationService } from '../api/BackgroundProcess'
 
-
 initializeGeolocationService()
 connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 
-
 let navigator;
 let initialRoute = { path:'surveylist', title: 'Surveys' };
+const toaster = <Toaster key='toaster' />
 
 // Binds the hardware "back button" from Android devices
 if ( Platform.OS === 'android' ) {
@@ -63,7 +63,11 @@ if ( Platform.OS === 'android' ) {
       navigator.pop();
       return true;
     }
-    return false;
+    Alert.alert('Confirm', 'Are you sure that you want to exit?', [
+      {text: 'Cancel', onPress: () => { }, style: 'cancel' },
+      {text: 'OK', onPress: () => { BackAndroid.exitApp(); }}
+    ]);
+    return true;
   });
 }
 
@@ -129,6 +133,7 @@ const SharedNavigator = React.createClass ({
   _onRegister(registration) {
     const token = registration.token;
     const platform = registration.os;
+    if (platform === 'ios') PushNotification.setApplicationIconBadgeNumber(0);
     upsertInstallation(token, platform, (err, res) => {
       if (err) {
         console.error(err);
@@ -226,6 +231,7 @@ const SharedNavigator = React.createClass ({
     return (
       <View style={wrapperStyles}>
         {viewComponent}
+        {toaster}
       </View>
     )
   },
