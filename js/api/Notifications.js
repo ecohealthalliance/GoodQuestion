@@ -34,6 +34,10 @@ export function addTimeTriggerNotification( surveyId, formId, title, description
   }
 }
 
+/**
+ * Caches the Toaster component
+ * @param  {element} newToaster Toaster component to be stored in a local variable
+ */
 export function connectToaster(newToaster) {
   toaster = newToaster;
 }
@@ -42,9 +46,9 @@ export function connectToaster(newToaster) {
  * Shows a toast at the bottom of the screen.
  * @param  {string} title    Title text to be displayed on the toast
  * @param  {string} message  Description text to be displayed on the toast
- * @param  {string} iocn     FA icon to be shown on the toast
+ * @param  {string} icon     FA icon to be shown on the toast
  * @param  {number} duration Time to keep the toast up
- * @param  {function} action Callback function to be exectued when tapping the toast
+ * @param  {function} action Callback function to be executed when tapping the toast
  */
 export function showToast(title, message, icon, duration, action) {
   if (toaster) {

@@ -148,9 +148,6 @@ const FormPage = React.createClass ({
     }
 
     if (!forms || forms.length === 0) {
-      console.log('!forms')
-      console.log(forms)
-      console.log(this.state.forms)
       futureForms = _.filter(allForms, function(form){
         return form.trigger > new Date()
       })

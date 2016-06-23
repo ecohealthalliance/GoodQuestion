@@ -38,7 +38,7 @@ const MapPage = React.createClass ({
   componentDidMount() {
     const self = this
 
-    loadAllCachedGeofenceTriggers((err, response) => {
+    loadAllCachedGeofenceTriggers({excludeCompleted: true}, (err, response) => {
       setActiveMap(self)
       self.active = true
       self.generateTriggerMarkers(response)

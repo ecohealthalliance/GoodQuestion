@@ -10,7 +10,7 @@ import { loadAllCachedGeofenceTriggers } from './Triggers'
 import { showToast } from './Notifications'
 
 
-let activeMap // Cache a MapPage component to update when geofencing triggers happen
+let activeMap; // Cache a MapPage component for to update when geofencing triggers are crossed.
 
 /**
  * Caches a MapPage component inside a variable for easy access
@@ -34,14 +34,14 @@ export function clearActiveMap(component) {
 
 /**
  * Creates native geofence objects using the 3rd-party geolocation library.
- * Based on currently active GeofenceTriggers. 
+ * Erases previous set of native geofences and adds new ones based on geofence triggers.
  */
 export function setupGeofences() {
   // BackgroundGeolocation.stop()
 
   getUserLocationData((response) => {console.log(response)})
 
-  loadAllCachedGeofenceTriggers((err, response) => {
+  loadAllCachedGeofenceTriggers({excludeCompleted: true}, (err, response) => {
     resetGeofences((err) => {
       if (err) {
         console.warn(err)
@@ -64,10 +64,6 @@ export function setupGeofences() {
       BackgroundGeolocation.addGeofences(triggerGeofences, function() {
         try {
           console.log("Successfully added geofences.");
-          BackgroundGeolocation.getGeofences((geofences) => {
-            console.log('geofences added')
-            console.log(geofences)
-          })
         } catch (e) {
           console.warn(e)
         }
@@ -79,18 +75,7 @@ export function setupGeofences() {
       BackgroundGeolocation.start(() => {
         console.info('Geolocation tracking started.')
       })
-
-      setTimeout(() => {
-        BackgroundGeolocation.getGeofences(function(geofences) {
-          console.log('active geofences: ')
-          console.log(geofences)
-        });
-      } , 2000);
-
-      
-
     })
-
     connectMapToGeofence()
   })
 }
@@ -157,8 +142,7 @@ function connectMapToGeofence() {
 }
 
 function crossGeofence(params) {
-  console.log('Geofence crossed: ' + params.action);
-  console.log(params);
+  console.log('Geofence crossed: ' + params.action + ' - ' + params.identifier);
 
   // Update Geofence Trigger
   try {
@@ -168,7 +152,6 @@ function crossGeofence(params) {
         trigger.inRange = true;
         trigger.triggered = _.lowerCase(params.action) == 'exit' ? false : true;
       })
-      // alert(JSON.stringify(trigger));
 
       // Notify on entry
       if (_.lowerCase(params.action) == 'enter') {
@@ -202,4 +185,14 @@ function crossGeofence(params) {
   } catch (e) {
     console.warn(e)
   }
+}
+
+/**
+ * Dev: logs a list of the currently active geofences in the native API.
+ */
+export function logActiveGeofences() {
+  BackgroundGeolocation.getGeofences(function(geofences) {
+    console.log('active geofences: ')
+    console.log(geofences)
+  });
 }

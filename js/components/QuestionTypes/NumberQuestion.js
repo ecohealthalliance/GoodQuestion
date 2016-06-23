@@ -76,12 +76,12 @@ const NumberQuestion = React.createClass ({
 
   increaseCount() {
     this.handleChange(_.add(this.state.value, 1))
-    BackgroundGeolocation.playSound(this.state.value);
+    // BackgroundGeolocation.playSound(this.state.value);
   },
 
   decreaseCount() {
     this.handleChange(_.subtract(this.state.value, 1))
-    BackgroundGeolocation.playSound(this.state.value);
+    // BackgroundGeolocation.playSound(this.state.value);
   },
 
   getDecimalPlaces(num) {

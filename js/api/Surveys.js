@@ -227,9 +227,6 @@ export function getFormAvailability(surveyId, done) {
         let geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`)
         if (geofenceTriggers && geofenceTriggers.length > 0) {
           let geofenceTriggersInRange = geofenceTriggers.filtered(`triggered == true AND completed == false AND inRange == true OR sticky == true`)
-          console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-          console.log(geofenceTriggersInRange)
-          console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
           result.geofenceTriggersInRange = geofenceTriggersInRange.length
         }
       } catch (e) {

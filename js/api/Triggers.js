@@ -37,33 +37,35 @@ export function loadCachedTrigger(formId) {
   return realm.objects('TimeTrigger').filtered(`formId= "${formId}"`)
 }
 
-
 /**
  * Fetches all cached geofence triggers
  * @return {object}  Realm object containing an array of 'GeofenceTrigger' objects,
  */
-export function loadAllCachedGeofenceTriggers(callback) {
+export function loadAllCachedGeofenceTriggers(options = {}, callback) {
   loadAllAcceptedSurveys((err, response) => {
     if (err) {
-      console.warn(err)
-      callback(err, [])
+      console.warn(err);
+      callback(err, []);
       return
     }
     
-    let triggers = []
+    let triggers = [];
     const responseLength = response.length;
     for (var i = 0; i < responseLength; i++) {
-      let surveyTriggers = Array.from(realm.objects('GeofenceTrigger').filtered(`surveyId = "${response[i].id}"`))
-      triggers = _.unionBy(triggers, surveyTriggers, 'id')
+      let filter = `surveyId = "${response[i].id}"`;
+
+      if (options.excludeCompleted) filter += ' AND completed == false';
+
+      let surveyTriggers = Array.from(realm.objects('GeofenceTrigger').filtered(filter));
+      triggers = _.unionBy(triggers, surveyTriggers, 'id');
     }
 
-    callback(null, triggers)
+    callback(null, triggers);
   })
 }
 
-
 // Saves a Form object from Parse into our Realm.io local database
-function cacheTimeTrigger(trigger, form, survey) {
+export function cacheTimeTrigger(trigger, form, survey) {
   try {
     // InteractionManager.runAfterInteractions(() => {
       let datetime = new Date(trigger.get('properties').datetime)
@@ -82,14 +84,13 @@ function cacheTimeTrigger(trigger, form, survey) {
   }
 }
 
-
 /**
  * Saves a geofence 'Trigger' object from Parse into our Realm.io local database
  * @param  {object} trigger Parse 'Trigger' object.
  * @param  {object} form    Parse 'Form' object.
  * @param  {object} survey  Parse 'Survey' object.
  */
-function cacheGeofenceTrigger(trigger, form, survey) {
+export function cacheGeofenceTrigger(trigger, form, survey) {
   try {
     realm.write(() => {
       realm.create('GeofenceTrigger', {
@@ -127,7 +128,6 @@ export function checkTimeTriggers(omitNotifications) {
     }
   });
 }
-
 
 /**
  * Checks the time triggers of a single survey.

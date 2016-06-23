@@ -43,7 +43,6 @@ const Toaster = React.createClass ({
   },
 
   showToast(title, message, icon, duration, action) {
-    console.log('showToast')
     const self = this;
 
     this.state.fadeAnim.setValue(0.1);
@@ -67,7 +66,7 @@ const Toaster = React.createClass ({
     });
 
     this.closeTimeout = setTimeout(() => {
-      self.closeToast()
+      self.closeToast();
     }, duration * 1000);
   },
 
@@ -106,8 +105,8 @@ const Toaster = React.createClass ({
           </View>
         </TouchableOpacity>
       </Animated.View>
-    )
+    );
   }
 })
 
-module.exports = Toaster
+module.exports = Toaster;
