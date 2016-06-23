@@ -59,7 +59,7 @@ function upsertRealmInvitation(id, surveyId, userId, status, dirty, done) {
         surveyId: surveyId,
         dirty: true,
         status: status,
-      });
+      }, true);
       done(null, invitation);
     } catch(e) {
       done('Error saving realm invitation ' + id);

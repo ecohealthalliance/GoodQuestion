@@ -114,26 +114,28 @@ export function resetGeofences(callback) {
 }
 
 /**
- * Returns an object containing current geolocation data via an async callback
+ * Returns an object containing last recorded geolocation data via an async callback
  * @param  {Function} callback   Returns object containing the current latitude, longitude, accuracy, and timestamp.
  */
 export function getUserLocationData(callback) {
-  BackgroundGeolocation.getCurrentPosition({timeout: 20}, function success(response) {
-    callback({
-      latitude: response.coords.latitude,
-      longitude: response.coords.longitude,
-      accuracy: response.coords.accuracy,
-      timestamp: response.timestamp,
-    })
-  }, function error(err) {
-    console.warn('Error retrieving geolocation data: ', err)
-    callback({
-      latitude: 0,
-      longitude: 0,
-      accuracy: 0,
-      timestamp: new Date()
-    })
-  })
+  BackgroundGeolocation.getLocations((locations) => {
+    let current = locations[0];
+    if (current && current.coords) {
+      callback({
+        latitude: current.coords.latitude,
+        longitude: current.coords.longitude,
+        accuracy: current.coords.accuracy,
+        timestamp: current.timestamp,
+      })
+    } else {
+      callback({
+        latitude: 0,
+        longitude: 0,
+        accuracy: 0,
+        timestamp: new Date()
+      })
+    }
+  });
 }
 
 /**

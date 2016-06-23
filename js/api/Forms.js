@@ -102,3 +102,22 @@ export function loadForms(survey, callback) {
     console.warn("Error: Unable to find relation \"forms\" for Survey object." )
   }
 }
+
+export function completeForm(formId) {
+  console.log('COMPLETING FORM: ' + formId);
+
+  let notification = realm.objects('Notification').filtered(`formId = "${formId}"`)[0]
+  let timeTrigger = realm.objects('TimeTrigger').filtered(`formId = "${formId}"`)[0]
+  let geofenceTrigger = realm.objects('GeofenceTrigger').filtered(`formId = "${formId}"`)[0]
+
+  realm.write(() => {
+    if (notification) notification.completed = true;
+    if (timeTrigger) timeTrigger.completed = true;
+    if (geofenceTrigger) geofenceTrigger.completed = true;
+  })
+  
+  // Refresh active geofence triggers.
+  if (geofenceTrigger) {
+
+  }
+}

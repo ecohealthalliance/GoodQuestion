@@ -21,8 +21,8 @@ export function configureGeolocationService(callback) {
       license: Settings.licenses.BackgroundGeolocation.key,
 
       // Geolocation config
-      desiredAccuracy: 0,
-      distanceFilter: 25,
+      desiredAccuracy: 10,
+      distanceFilter: 50,
       locationUpdateInterval: 5000,
       fastestLocationUpdateInterval: 5000,
 

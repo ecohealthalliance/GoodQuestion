@@ -13,7 +13,7 @@ let toaster
 // Finds and returns a list of pending Notifications from Realm
 export function loadNotifications() {
   return realm.objects('Notification')
-    .filtered(`complete == false`)
+    .filtered(`completed == false`)
     .sorted('datetime', true)
 }
 
