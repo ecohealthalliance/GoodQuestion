@@ -15,7 +15,6 @@ import ToastStyles from './_ToastStyles'
 import DrawerStyles from './_DrawerStyles'
 import ControlPanelStyles from './_ControlPanelStyles'
 import ProfileStyles from './_ProfileStyles'
-import ToastStyles from './_ToastStyles'
 
 const Styles = {
   container: ContainerStyles,
@@ -28,7 +27,6 @@ const Styles = {
   controlPanel: ControlPanelStyles,
   question: QuestionStyles,
   profile: ProfileStyles,
-  toast: ToastStyles,
 }
 
 module.exports = Styles

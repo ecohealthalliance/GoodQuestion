@@ -29,7 +29,7 @@ export class ToastMessage extends ValidObject {
    * @param {string} iconColor, the FontAwesome icon color
    * @param {integer} duration, the duration of the toast in minutes @default 6
    */
-  constructor(title, message, icon, iconColor, duration) {
+  constructor(title, message, icon, iconColor, duration, action) {
     super();
     this.title = title;
     this.message = message;
@@ -55,7 +55,7 @@ export class ToastMessage extends ValidObject {
 
     const errors = []
     try {
-      toastMessage = new ToastMessage(object.title, object.message, object.icon, object.iconColor, object.duration);
+      toastMessage = new ToastMessage(object.title, object.message, object.icon, object.iconColor, object.duration, object.action);
     } catch(e) {
       console.warn('Could not construct ToastMessage object from ', object);
       return toastMessage;

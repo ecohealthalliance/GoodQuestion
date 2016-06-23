@@ -73,6 +73,7 @@ const Toaster = React.createClass ({
       icon: toastMessage.icon,
       iconColor: toastMessage.iconColor,
       duration: toastMessage.duration,
+      action: toastMessage.action,
     });
 
     this.closeTimeout = setTimeout(() => {

@@ -19,7 +19,6 @@ import Settings from '../settings'
 import Header from '../components/Header'
 import Toaster from '../components/Toaster'
 import Loading from '../components/Loading'
-import Toaster from '../components/Toaster'
 
 // Styles
 import Styles from '../styles/Styles'
@@ -74,8 +73,6 @@ if ( Platform.OS === 'android' ) {
     return true;
   });
 }
-
-const toaster = <Toaster key='toaster' />
 
 const SharedNavigator = React.createClass ({
   getInitialState() {
@@ -257,7 +254,6 @@ const SharedNavigator = React.createClass ({
   /* Render */
   render() {
     const initialRoute = { path:'surveylist', title: 'Surveys' }
-    // const initialRoute = { path:'map', title: 'Test Maps' }
 
     // show loading component without the navigationBar
     if (this.state.isLoading) {
