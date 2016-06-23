@@ -63,7 +63,11 @@ if ( Platform.OS === 'android' ) {
       navigator.pop();
       return true;
     }
-    return false;
+    Alert.alert('Confirm', 'Are you sure that you want to exit?', [
+      {text: 'Cancel', onPress: () => { }, style: 'cancel' },
+      {text: 'OK', onPress: () => { BackAndroid.exitApp(); }}
+    ]);
+    return true;
   });
 }
 
