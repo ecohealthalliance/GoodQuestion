@@ -21,7 +21,6 @@ const CalendarPage = React.createClass ({
   getInitialState() {
     return {
       events: [],
-      eventIndex: {},
       selectedEvent: null,
     }
   },
@@ -33,9 +32,7 @@ const CalendarPage = React.createClass ({
       const eventDates = [];
       const eventIndex = {};
       for (let i = 0; i < responseLength; i++) {
-        console.log(response[i])
         const date = moment(response[i].datetime).format('YYYY-MM-DD');
-        console.log(date)
         eventDates.push(date);
 
         if (!eventIndex[date]) eventIndex[date] = [];
@@ -45,9 +42,11 @@ const CalendarPage = React.createClass ({
         });
       }
 
+      self.eventIndex = eventIndex;
+
       self.setState({
         events: eventDates,
-        eventIndex: eventIndex,
+        selectedEvent: self.getSelectedEvent(moment().format('YYYY-MM-DD')),
       });
     });
   },
@@ -60,21 +59,24 @@ const CalendarPage = React.createClass ({
     let nextEvent = null;
     eventDate = moment(date).format('YYYY-MM-DD');
 
-    if (this.state.eventIndex[eventDate]) {
-      const event = this.state.eventIndex[eventDate][0];
-      nextEvent = {
+    this.setState({ 
+      selectedDate: date,
+      selectedEvent: this.getSelectedEvent(eventDate),
+    });
+  },
+
+  getSelectedEvent(eventDate) {
+    if (this.eventIndex[eventDate]) {
+      const event = this.eventIndex[eventDate][0];
+      return {
         type: 'datetime',
-        title: moment(date).format('MMMM Do YYYY'),
+        title: moment(eventDate).format('MMMM Do YYYY'),
         description: event.title,
         availability: 'Available: ' + moment(event.datetime).format('LT'),
       };
+    } else {
+      return null;
     }
-
-
-    this.setState({ 
-      selectedDate: date,
-      selectedEvent: nextEvent,
-    });
   },
 
   /* Render */
@@ -93,7 +95,7 @@ const CalendarPage = React.createClass ({
         />
       )
     } else {
-      return <Text>No remaining events present on this date.</Text>
+      return <Text style={Styles.calendar.eventWarningText}>No remaining events present on this selected date.</Text>
     }
   },
 

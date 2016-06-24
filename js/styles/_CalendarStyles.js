@@ -10,6 +10,7 @@ const CalendarStyles = StyleSheet.create({
     paddingTop: 30,
     paddingHorizontal: 30,
     backgroundColor: 'transparent',
+
   },
   monthContainer: {
     flex: 1,
@@ -18,6 +19,7 @@ const CalendarStyles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     margin: 10,
+    marginBottom: 30,
   },
   controlButton: {
   },
@@ -33,13 +35,13 @@ const CalendarStyles = StyleSheet.create({
     flexDirection: 'row',
     borderTopWidth: 0,
     borderBottomWidth: 0,
-    marginBottom: 15,
+    marginBottom: 5,
   },
   dayHeading: {
     flex: 1,
     fontSize: 15,
     textAlign: 'center',
-    paddingVertical: 5
+    paddingVertical: 0,
   },
   weekendHeading: {
     flex: 1,
@@ -156,6 +158,14 @@ const CalendarStyles = StyleSheet.create({
   },
   eventDescription: {
     padding: 10,
+  },
+  eventWarningText: {
+    marginTop: 15,
+    marginHorizontal: 30,
+    lineHeight: 30,
+    fontSize: 20,
+    color: Color.faded,
+    textAlign: 'center',
   },
 })
 
