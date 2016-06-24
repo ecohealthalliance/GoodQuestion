@@ -26,7 +26,7 @@ export function loadAllAcceptedSurveys(callback) {
       return
     }
 
-    let surveys = []
+    const surveys = []
     const invitationsLength = invitations.length;
     for (var i = 0; i < invitationsLength; i++) {
       let acceptedSurvey = realm.objects('Survey').filtered(`id = "${invitations[i].surveyId}"`)[0]

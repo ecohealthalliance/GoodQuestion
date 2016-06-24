@@ -64,12 +64,7 @@ export function setupGeofences() {
       
       console.log('Adding ' + triggerGeofences.length + ' geofences...')
       BackgroundGeolocation.addGeofences(triggerGeofences, function() {
-        try {
-          console.log("Successfully added geofences.");
-        } catch (e) {
-          console.warn(e)
-        }
-        
+        console.log("Successfully added geofences.");
       }, function(error) {
           console.warn("Failed to add geofences.", error);
       })
