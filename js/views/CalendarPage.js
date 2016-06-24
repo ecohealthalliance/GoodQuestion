@@ -11,11 +11,12 @@ import Styles from '../styles/Styles'
 import Calendar from '../components/Calendar/Calendar'
 import CalendarEvent from '../components/Calendar/CalendarEvent'
 
-import { loadAllCachedTimeTriggers } from '../api/Triggers'
+import { loadCachedTimeTriggers } from '../api/Triggers'
 
 const CalendarPage = React.createClass ({
   propTypes: {
     navigator: React.PropTypes.object.isRequired,
+    survey: React.PropTypes.object,
   },
 
   getInitialState() {
@@ -27,7 +28,11 @@ const CalendarPage = React.createClass ({
 
   componentDidMount() {
     const self = this;
-    loadAllCachedTimeTriggers({excludeCompleted: true, excludeExpired: true}, (err, response) => {
+    loadCachedTimeTriggers({
+      surveyId: this.props.survey ? this.props.survey.id : false, 
+      excludeCompleted: true, 
+      excludeExpired: true
+    }, (err, response) => {
       const responseLength = response.length;
       const eventDates = [];
       const eventIndex = {};

@@ -41,7 +41,7 @@ export function loadCachedTriggers(formId) {
  * Fetches all cached datetime triggers for the accepted surveys
  * @return {object}  Realm object containing an array of 'TimeTrigger' objects,
  */
-export function loadAllCachedTimeTriggers(options = {}, callback) {
+export function loadCachedTimeTriggers(options = {}, callback) {
   loadAllAcceptedSurveys((err, response) => {
     if (err) {
       console.warn(err);
@@ -49,21 +49,32 @@ export function loadAllCachedTimeTriggers(options = {}, callback) {
       return
     }
     
-    let triggers = [];
-    const responseLength = response.length;
+    try {
+      let triggers = [];
+      const responseLength = response.length;
 
-    let filterOptions = '';
-    if (options.excludeCompleted) filterOptions += ' AND completed == false';
-    if (options.excludeExpired) filterOptions += ' AND expired == false';
-    if (options.includeOnlyTriggered) filterOptions += ' AND triggered == true';
-
-    for (var i = 0; i < responseLength; i++) {
-      const filter = `surveyId = "${response[i].id}"${filterOptions}`;
-      let surveyTriggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
-      triggers = _.unionBy(triggers, surveyTriggers, 'id');
+      let filter = '';
+      let filterOptions = '';
+      if (options.excludeCompleted) filterOptions += ' AND completed == false';
+      if (options.excludeCompleted) filterOptions += ' AND completed == false';
+      if (options.excludeExpired) filterOptions += ' AND expired == false';
+      if (options.includeOnlyTriggered) filterOptions += ' AND triggered == true';
+      
+      if (options.surveyId) {
+        filter = `surveyId = "${options.surveyId.id}"${filterOptions}`;
+        triggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
+      } else {
+        for (var i = 0; i < responseLength; i++) {
+          filter = `surveyId = "${response[i].id}"${filterOptions}`;
+          let surveyTriggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
+          triggers = _.unionBy(triggers, surveyTriggers, 'id');
+        }
+      }
+      callback(null, triggers);
+    } catch (err) {
+      callback(err, []);
     }
-
-    callback(null, triggers);
+    
   })
 }
 
