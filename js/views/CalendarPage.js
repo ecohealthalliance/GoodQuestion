@@ -20,14 +20,31 @@ const CalendarPage = React.createClass ({
 
   getInitialState() {
     return {
-      events: ['2016-06-01', '2016-06-04', '2016-06-09', '2016-06-12', '2016-06-15', '2016-06-21'],
+      events: [],
     }
   },
 
   componentDidMount() {
     const self = this;
     loadAllCachedTimeTriggers({}, (err, response) => {
-      console.log(response);
+      const responseLength = response.length;
+      const eventDates = [];
+      const eventIndex = {};
+      for (var i = 0; i < responseLength; i++) {
+        console.log(response[i])
+        const date = moment(response[i].datetime).format('YYYY-MM-DD');
+        console.log(date)
+        eventDates.push(date);
+
+        if (!eventIndex[date]) eventIndex[date] = [];
+        eventIndex[date].push({
+          time: '',
+        });
+      }
+
+      self.setState({
+        events: eventDates,
+      });
     });
   },
 

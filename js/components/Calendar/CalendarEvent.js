@@ -36,6 +36,9 @@ const CalendarEvent = React.createClass ({
   },
 
   /* Methods */
+  update() {
+
+  },
 
   /* Render */
   render() {
