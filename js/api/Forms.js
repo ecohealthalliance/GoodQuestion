@@ -36,7 +36,7 @@ export function loadCachedFormDataById(formId) {
 
 // Returns an object containing a form and its parent survey
 export function loadCachedFormDataByGeofence(triggerId) {
-  const triggerconstrealm.objects('GeofenceTrigger').filtered(`id = "${triggerId}"`)[0]
+  const trigger = realm.objects('GeofenceTrigger').filtered(`id = "${triggerId}"`)[0]
   const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0]
   const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0]
   return { form: form, survey: survey }
@@ -114,10 +114,5 @@ export function completeForm(formId) {
     if (notification) notification.completed = true;
     if (timeTrigger) timeTrigger.completed = true;
     if (geofenceTrigger) geofenceTrigger.completed = true;
-  })
-  
-  // Refresh active geofence triggers.
-  if (geofenceTrigger) {
-
-  }
+  });
 }
