@@ -66,13 +66,17 @@ const DateQuestionIOS = React.createClass ({
             Question #{this.props.index}
         </ViewText>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
-        <DatePickerIOS
-          mode={this.props.mode}
-          timeZoneOffsetInMinutes={this.props.timeZoneOffset}
-          onDateChange={this.handleChange}
-          date={this.checkDate(this.state.value)}
-          style={{marginLeft: -9}}
-          />
+        <View style={{flex:1,alignItems:'center',overflow:'hidden'}} >
+          <DatePickerIOS
+            mode={this.props.mode}
+            timeZoneOffsetInMinutes={this.props.timeZoneOffset}
+            onDateChange={this.handleChange}
+            date={this.checkDate(this.state.value)}
+            style={[
+              {transform: [{scale: 0.80}]}
+            ]}
+            />
+        </View>
       </View>
     )
   }
