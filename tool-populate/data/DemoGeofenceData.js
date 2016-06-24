@@ -9,6 +9,7 @@ const DemoGeofenceData = {
       title: 'Demo Geofence Survey',
       description: 'Demo survey for testing maps and location stuff.',
       created: Date.now() - 10000,
+      user: 'yXEBdt4rRn',
     }
   ],
 
@@ -36,7 +37,7 @@ const DemoGeofenceData = {
     {
       latitude: 28.46918,
       longitude: -81.58483,
-      radius: 100,
+      radius: 200,
     },
     {
       latitude: 37.330235,

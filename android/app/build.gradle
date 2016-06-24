@@ -84,8 +84,8 @@ android {
         applicationId "io.eha.goodquestion"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 6
-        versionName "0.2.6"
+        versionCode 9
+        versionName "0.2.8"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -98,10 +98,21 @@ android {
             include "armeabi-v7a", "x86"
         }
     }
+
+    signingConfigs {
+        release {
+            storeFile file(GOODQUESTION_RELEASE_STORE_FILE)
+            storePassword GOODQUESTION_RELEASE_STORE_PASSWORD
+            keyAlias GOODQUESTION_RELEASE_KEY_ALIAS
+            keyPassword GOODQUESTION_RELEASE_KEY_PASSWORD
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
     // applicationVariants are e.g. debug, release

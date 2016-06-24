@@ -1,6 +1,7 @@
 // A placeholder view for integrating native navigation
 
-import React, {
+import React from 'react';
+import {
   StyleSheet,
   TouchableHighlight,
   Text,

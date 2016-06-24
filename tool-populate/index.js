@@ -1,8 +1,9 @@
 #! /usr/bin/env node
 
+var _ = require('lodash')
 var Parse = require('parse/node')
-var DummyData = require('./data/DummyData')
-var Store = require('./data/Store')
+var program = require('commander')
+var colors = require('colors')
 var DemoData = require('./data/DemoData')
 var DemoGeofenceData = require('./data/DemoGeofenceData')
 var Surveys = require('./api/Surveys')
@@ -10,35 +11,34 @@ var Forms = require('./api/Forms')
 var Questions = require('./api/Questions')
 var Triggers = require('./api/Triggers')
 var Roles = require('./api/Roles')
-
+var Users = require('./api/Users')
 var Settings = require('./../js/settings.js')
 
-var program = require('commander')
+var useMasterKey = {useMasterKey: true}
 
 program
   .option('-i, --init', 'Create inital role and user classes.')
-  .option('-c, --create', 'Create data for your local Parse server.')
   .option('-d, --demo', 'Populate local Parse server with demo data.')
   .option('-g, --demoGeofence', 'Populate local Parse server with geofence demo data.')
   .option('-r, --reset', 'Erase local Parse data.')
-  .option('-p, --print', 'Prints the current data in your local server.')
+  .option('-p, --publicRead', 'Sets all surveys, forms, questions as public readable')
   .parse(process.argv)
 
 Parse.initialize(Settings.parse.appId, null, Settings.parse.masterKey)
-Parse.serverURL = Settings.parse.feedServerUrl
+Parse.serverURL = Settings.parse.serverUrl
 
 if (program.reset) {
   resetServer()
-} else if (program.create) {
-  createData()
 } else if (program.init) {
-  initRoles()
+  initDatabase()
 } else if (program.demo) {
-  createDemoData()
-}  else if (program.demoGeofence) {
-  createDemoGeofenceData()
+  checkUsers().then(createDemoData)
+} else if (program.demoGeofence) {
+  checkUsers().then(createDemoGeofenceData)
 } else if (program.print) {
-  Surveys.loadSurveyList()
+  Surveys.loadSurveys()
+} else if (program.publicRead) {
+  publicRead()
 } else {
   program.outputHelp()
 }
@@ -52,40 +52,19 @@ function exitHandler(options, err) {
     console.error(err.stack)
 
   if (program.reset) {
-    console.log('Server Reset.')
+    console.log('\nServer Reset.'.bold.green)
   } else if (program.create) {
-    console.log('Parse server populated.')
+    console.log('Parse server populated.'.bold.green)
   } else if (program.demo) {
-    console.log('Parse server populated with demo data.')
+    console.log('Parse server populated with demo data.'.bold.green)
   } else if (program.demoGeofence) {
-    console.log('Parse server populated with demo data.')
-  } else if (program.print) {
-    console.log('Stored Data: ' +
-      Store.surveys.length + ' surveys, ' +
-      Store.forms.length + ' forms, ' +
-      Store.questions.length + ' questions, ' +
-      Store.triggers.length + ' triggers.'
-    )
+    console.log('Parse server populated with demo geofence data.'.bold.green)
   }
-
   process.exit()
 }
 
-function createData() {
-  Surveys.loadSurveyList({}, function (error, results) {
-    if (error) {
-      console.warn(error)
-    }
-    console.log('Creating Parse server demo data...')
-    for (var i = 0, ilen = DummyData.surveys.length; i < ilen; i++) {
-      Surveys.createSurvey(DummyData.surveys[i])
-    }
-  })
-}
-
 function createDemoData() {
-  // create the demo Survey
-  console.log('Creating Parse server data...')
+  console.log('\nCreating Parse server data...'.bold)
   for (var i = 0, ilen = DemoData.surveys.length; i < ilen; i++)
     Surveys.createDemoSurvey(DemoData.surveys[i], DemoData.startDate, DemoData.endDate)
 }
@@ -99,15 +78,12 @@ function createDemoGeofenceData() {
 }
 
 function resetServer() {
-  Surveys.loadSurveyList()
-  Forms.loadForms()
-  Triggers.loadTriggers()
-  Questions.loadQuestions({}, function () {
-    destroyObjects(Store.surveys)
-    destroyObjects(Store.forms)
-    destroyObjects(Store.questions)
-    destroyObjects(Store.triggers)
-  })
+  console.log('\nReseting server...'.bold);
+  Users.destroyAll()
+  Surveys.destroyAll()
+  Forms.destroyAll()
+  Triggers.destroyAll()
+  Questions.destroyAll()
 }
 
 function destroyObjects(objects) {
@@ -116,27 +92,103 @@ function destroyObjects(objects) {
   }
 }
 
-function initRoles() {
-  var rolesToCreate = ["admin", "user"];
+function initDatabase(){
+  initRoles().then(createUsers).then(Roles.setRoleACLs)
+}
 
-  Roles.loadRoles({}, function (error, results) {
-    console.log(results)
-    for (var i = 0, ilen = rolesToCreate.length; i < ilen; i++) {
-      (function(roleToCreate){
-        var queryRole = new Parse.Query(Parse.Role);
-        queryRole.equalTo('name', roleToCreate);
-        queryRole.first({
-          success: function (result) { // Role Object
-            console.log(result)
-            if (result) {
-              console.log('Role "' + roleToCreate + '" already exists');
-            } else {
-              Roles.createRole(roleToCreate);
-            }
-          },
-          error: function(error) {}
-        });
-      })(rolesToCreate[i])
+function createUsers(){
+  return new Promise(function(resolve){
+    Users.createInitialAdmin()
+      .then(function(){
+        return Users.createUsers()
+      })
+      .then(function(){
+        console.log('Initial users created'.green);
+        resolve()
+      })
+  })
+}
+
+function checkUsers(){
+  return new Promise(function(resolve){
+    var query = new Parse.Query(Parse.User)
+    query.first(useMasterKey)
+      .then(function(user){
+        if (_.isUndefined(user)) createUsers().then(resolve)
+        else resolve()
+      })
+  })
+}
+
+function initRoles() {
+  console.log('\nCreating admin and user roles...'.bold);
+  var rolesToCreate = ["admin", "user"];
+  return new Promise(function(resolve){
+    rolesToCreate.forEach(function(roleToCreate, i, roles){
+      Roles.getRole(roleToCreate)
+        .then(function(role){
+          if (role) {
+            console.log(colors.yellow('Role "' + roleToCreate + '" already exists'))
+            if (i === roles.length-1) resolve()
+          }
+          else
+            Roles.createRole(roleToCreate).then(function(){
+              if (i === roles.length-1) resolve()
+            })
+        })
+        .fail(function(error) {console.log(error)})
+    })
+  })
+}
+
+/**
+ * update all surveys, forms, triggers, questions in the database to
+ * public read
+ */
+function publicRead() {
+  console.log('NOTE: This only works up to 1000 objects'.bold);
+  Surveys.loadSurveys(null, function(err, results) {
+    console.log('setting publicReadAccess(true) to ' + results.length + ' surveys'.green);
+    if (results) {
+      results.forEach(function(obj) {
+        var acl = obj.getACL();
+        acl.setPublicReadAccess(true);
+        obj.setACL(acl);
+        obj.save(null, useMasterKey);
+      });
+    }
+  });
+  Forms.loadForms(null, function(err, results) {
+    console.log('setting publicReadAccess(true) to ' + results.length + ' forms'.green);
+    if (results) {
+      results.forEach(function(obj) {
+        var acl = obj.getACL();
+        acl.setPublicReadAccess(true);
+        obj.setACL(acl);
+        obj.save(null, useMasterKey);
+      });
+    }
+  });
+  Triggers.loadTriggers(null, function(err, results) {
+    console.log('setting publicReadAccess(true) to ' + results.length + ' triggers'.green);
+    if (results) {
+      results.forEach(function(obj) {
+        var acl = obj.getACL();
+        acl.setPublicReadAccess(true);
+        obj.setACL(acl);
+        obj.save(null, useMasterKey);
+      });
+    }
+  });
+  Questions.loadQuestions(null, function(err, results) {
+    console.log('setting publicReadAccess(true) to ' + results.length + ' questions'.green);
+    if (results) {
+      results.forEach(function(obj) {
+        var acl = obj.getACL();
+        acl.setPublicReadAccess(true);
+        obj.setACL(acl);
+        obj.save(null, useMasterKey);
+      });
     }
   });
 }

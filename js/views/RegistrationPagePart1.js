@@ -1,5 +1,6 @@
 
-import React, {
+import React from 'react';
+import {
   Text,
   TextInput,
   View,
@@ -15,8 +16,8 @@ import Variables from '../styles/Variables'
 import Styles from '../styles/Styles'
 import Color from '../styles/Color'
 import Button from '../components/Button'
+import Checkbox from '../components/Checkbox'
 
-import Checkbox from 'react-native-checkbox'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 const uncheckedComponent = (<Icon name='square-o' size={30} />);
@@ -120,9 +121,7 @@ const RegistrationPagePart1 = React.createClass ({
     return (
       <Text style={[Styles.type.h3, {textAlign: 'center', paddingBottom: 2, position: 'relative'}]}>
         <Text>I accept the </Text>
-        <TouchableWithoutFeedback onPress={this.goToTermsPage}>
-          <Text style={Styles.type.link}>Terms of Service.</Text>
-        </TouchableWithoutFeedback>
+        <Text style={Styles.type.link} onPress={this.goToTermsPage}>Terms of Service.</Text>
       </Text>
     );
     this.props.navigator.push({path: 'terms', title: 'Terms of Service'})
@@ -136,67 +135,77 @@ const RegistrationPagePart1 = React.createClass ({
         <ScrollView
           ref='scrollView'
           horizontal={false}
-          style={[Styles.form.registrationView,
-            {height: this.props.calculateScrollViewHeight(), overflow: 'hidden'}]}>
-          <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
-            Create an Account
-          </Text>
-          <View style={Styles.form.inputGroup}>
-            <Text style={Styles.form.errorText}>
-              {this.decodeText(this.state.errors.email)}
+          style={Styles.form.registrationView}>
+          <View style={{paddingBottom: 50}}>
+            <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
+              Create an Account
             </Text>
-            <View ref='emailView'>
-              <TextInput
-                style={Styles.form.input}
-                onChangeText={this.textFieldChangeHandler.bind(this, 'email')}
-                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'emailView', this.props.calculateOffset())}
-                value={this.state.email}
-                autoCapitalize='none'
-                autoCorrect={false}
-                placeholder='Email'
-              />
-            </View>
-            <Text style={Styles.form.errorText}>
-              {this.decodeText(this.state.errors.password)}
-            </Text>
-            <View ref='passwordView'>
-              <TextInput
-                secureTextEntry={true}
-                style={Styles.form.input}
-                onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
-                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'passwordView', this.props.calculateOffset())}
-                value={this.state.password}
-                autoCapitalize='none'
-                autoCorrect={false}
-                placeholder='Password'
-              />
-            </View>
-            <Text style={Styles.form.errorText}>
-              {this.decodeText(this.state.errors.confirmPassword)}
-            </Text>
-            <View ref='confirmPasswordView'>
-              <TextInput
-                secureTextEntry={true}
-                style={Styles.form.input}
-                onChangeText={this.confirmPasswordChangeHandler.bind(this, 'confirmPassword')}
-                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'confirmPasswordView', this.props.calculateOffset())}
-                value={this.state.confirmPassword}
-                autoCapitalize='none'
-                autoCorrect={false}
-                placeholder='Confirm Password'
-              />
-            </View>
-            <Text style={Styles.form.errorText}>
-              {this.decodeText(this.state.errors.acceptedTerms)}
-            </Text>
-            <View style={this.styles.checkboxWrapper}>
-              <Checkbox
-                children={this.renderTerms()}
-                checked={this.state.acceptedTerms}
-                uncheckedComponent={uncheckedComponent}
-                checkedComponent={checkedComponent}
-                onChange={this.checkboxChangeHandler.bind(this, 'acceptedTerms')}
-              />
+            <View style={Styles.form.inputGroup}>
+              <Text style={Styles.form.errorText}>
+                {this.decodeText(this.state.errors.email)}
+              </Text>
+              <View ref='emailView'>
+                <TextInput
+                  ref='email'
+                  style={Styles.form.input}
+                  onChangeText={this.textFieldChangeHandler.bind(null, 'email')}
+                  onFocus={this.scrollToViewWrapper.bind(null, 'scrollView', 'emailView', Variables.REGISTRATION_HEIGHT)}
+                  onBlur={this.trimText.bind(null, 'email')}
+                  value={this.state.email}
+                  autoCapitalize='none'
+                  autoCorrect={false}
+                  returnKeyType='done'
+                  placeholder='Email'
+                />
+              </View>
+              <Text style={Styles.form.errorText}>
+                {this.decodeText(this.state.errors.password)}
+              </Text>
+              <View ref='passwordView'>
+                <TextInput
+                  ref='password'
+                  secureTextEntry={true}
+                  style={Styles.form.input}
+                  onChangeText={this.textFieldChangeHandler.bind(null, 'password')}
+                  onFocus={this.scrollToViewWrapper.bind(null, 'scrollView', 'passwordView', Variables.REGISTRATION_HEIGHT)}
+                  onBlur={this.trimText.bind(null, 'password')}
+                  value={this.state.password}
+                  autoCapitalize='none'
+                  autoCorrect={false}
+                  returnKeyType='done'
+                  placeholder='Password'
+                />
+              </View>
+              <Text style={Styles.form.errorText}>
+                {this.decodeText(this.state.errors.confirmPassword)}
+              </Text>
+              <View ref='confirmPasswordView'>
+                <TextInput
+                  ref='confirmPassword'
+                  secureTextEntry={true}
+                  style={Styles.form.input}
+                  onChangeText={this.confirmPasswordChangeHandler.bind(null, 'confirmPassword')}
+                  onFocus={this.scrollToViewWrapper.bind(null, 'scrollView', 'confirmPasswordView', Variables.REGISTRATION_HEIGHT)}
+                  onBlur={this.trimText.bind(null, 'confirmPassword')}
+                  value={this.state.confirmPassword}
+                  autoCapitalize='none'
+                  autoCorrect={false}
+                  returnKeyType='done'
+                  placeholder='Confirm Password'
+                />
+              </View>
+              <Text style={Styles.form.errorText}>
+                {this.decodeText(this.state.errors.acceptedTerms)}
+              </Text>
+              <View style={this.styles.checkboxWrapper}>
+                <Checkbox
+                  children={this.renderTerms()}
+                  checked={this.state.acceptedTerms}
+                  uncheckedComponent={uncheckedComponent}
+                  checkedComponent={checkedComponent}
+                  onChange={this.checkboxChangeHandler.bind(null, 'acceptedTerms')}
+                />
+              </View>
             </View>
           </View>
         </ScrollView>

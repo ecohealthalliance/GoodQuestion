@@ -1,4 +1,5 @@
-import React, {
+import React from 'react';
+import {
   StyleSheet,
   TouchableHighlight,
   TouchableOpacity,
@@ -14,7 +15,7 @@ import _ from 'lodash'
 import Store from '../data/Store'
 import Styles from '../styles/Styles'
 import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys'
-import { loadForms } from '../api/Forms'
+import { loadForms, loadActiveGeofenceFormsInRange } from '../api/Forms'
 import { loadCachedQuestionsFromForms } from '../api/Questions'
 import { InvitationStatus, loadCachedInvitations } from '../api/Invitations'
 import SurveyListItem from '../components/SurveyListItem'
@@ -151,9 +152,17 @@ const SurveyListPage = React.createClass ({
   selectSurvey(survey) {
     if (this.cancelCallbacks) return
 
-    const forms = survey.getForms();
+    let forms = survey.getForms();
     if (survey.getForms().length === 0) {
       return Alert.alert('Survey has no active forms.')
+    }
+
+    let geofenceForms = loadActiveGeofenceFormsInRange(survey.id);
+    if (geofenceForms.length > 0) {
+      forms = geofenceForms;
+      type = 'geofence';
+    } else {
+      type = 'datetime';
     }
 
     const invitation = _.find(this._invitations, (invitation) => { return invitation.surveyId === survey.id; });
@@ -161,7 +170,8 @@ const SurveyListPage = React.createClass ({
       this.props.navigator.push({
         path: 'form',
         title: survey.title,
-        survey: survey
+        survey: survey,
+        type: type,
       });
     } else {
       const questions = loadCachedQuestionsFromForms(forms);
@@ -186,11 +196,8 @@ const SurveyListPage = React.createClass ({
                 <RefreshControl
                   refreshing={this.state.isRefreshing}
                   onRefresh={this._onRefresh}
-                  tintColor="#ff0000"
-                  title="Loading..."
-                  titleColor="#00ff00"
-                  colors={['#ff0000', '#00ff00', '#0000ff']}
-                  progressBackgroundColor="#ffff00"
+                  tintColor='grey'
+                  colors={['grey']}
                 />
               }
         />
@@ -210,11 +217,16 @@ const SurveyListPage = React.createClass ({
   },
 
   getInvitationStatus(surveyId) {
-    const self = this;
+    if (this.state.isLoading || this.state.isRefreshing) return;
     let status = InvitationStatus.PENDING;
-    const invitation = _.find(this._invitations, (invitation) => {
-      return invitation.surveyId === surveyId;
-    });
+    let invitation;
+    try {
+      invitation = _.find(this._invitations, (invitation) => {
+        return invitation.surveyId === surveyId;
+      });
+    } catch(e) {
+      console.warn(e);
+    }
     if (invitation && invitation.hasOwnProperty('status')) {
       status = invitation.status;
     }

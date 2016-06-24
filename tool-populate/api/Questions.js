@@ -1,59 +1,14 @@
 var _ = require('lodash')
 var Parse = require('parse/node')
-var Store = require('../data/Store')
-var DummyData = require('../data/DummyData')
 var DemoData = require('../data/DemoData')
 var DemoGeofenceData = require('../data/DemoGeofenceData')
+var Users = require('./Users')
+var Helpers = require('./Helpers')
 var Question = Parse.Object.extend("Question")
+var useMasterKey = {useMasterKey: true}
 
-function loadQuestions(options, callback) {
-  var query = new Parse.Query(Question)
-  query.limit = 1000
-
-  query.find({
-    success: function(results) {
-      storeQuestions(results)
-      if (callback)
-        callback(null, results)
-    },
-    error: function(error, results) {
-      console.warn("Error: " + error.code + " " + error.message)
-      if (callback)
-        callback(error, results)
-    }
-  })
-}
-
-function storeQuestions(newQuestions) {
-  if (!Array.isArray(newQuestions)) newQuestions = [newQuestions]
-  Store.questions = _.unionBy(Store.questions, newQuestions, 'id')
-}
-
-function createQuestions(parentForm) {
-  var questions = []
-  for (var i = 0; i < DummyData.questions.length; i++) {
-    var newQuestion = new Question()
-
-    newQuestion.set('text', DummyData.questions[i].text)
-    newQuestion.set('type', DummyData.questions[i].type)
-    newQuestion.set('properties', DummyData.questions[i].properties)
-    newQuestion.set('order', DummyData.questions[i].order)
-
-    newQuestion.save(null, {
-      success: function(response) {
-        questions.push(response)
-        if (parentForm && questions.length === DummyData.questions.length) {
-          var relation = parentForm.relation('questions')
-          relation.add(questions)
-          parentForm.save(null, {useMasterKey: true})
-        }
-        storeQuestions(response)
-      },
-      error: function(response, error) {
-        console.warn('Failed to create Question, with error code: ' + error.message)
-      }
-    })
-  }
+function loadQuestions (options, callback) {
+  Helpers.fetchObjects(Question, callback)
 }
 
 function createDemoQuestions(parentForm) {
@@ -74,21 +29,25 @@ function createDemoQuestions(parentForm) {
     newQuestion.set('properties', DemoData.questions[randomQuestionIndex].properties)
     newQuestion.set('order', i + 1)
 
-    newQuestion.save(null, {
-      useMasterKey: true,
-      success: function(response) {
-        questions.push(response)
-        if (parentForm && questions.length === limit) {
-          var relation = parentForm.relation('questions')
-          relation.add(questions)
-          parentForm.save(null, {useMasterKey: true})
-        }
-        storeQuestions(response)
-      },
-      error: function(response, error) {
+    newQuestion.save(null, useMasterKey)
+      .then(function(newQuestion){
+        return new Promise(function(resolve){
+          questions.push(newQuestion)
+          if (parentForm && questions.length === limit) {
+            var relation = parentForm.relation('questions')
+            relation.add(questions)
+            parentForm.save(null, useMasterKey).then(function(){
+              resolve(newQuestion)
+            })
+          } else resolve(newQuestion)
+        })
+      })
+      .then(function(question){
+        return Users.setUserRights(question)
+      })
+      .fail(function(response, error) {
         console.warn('Failed to create Question, with error code: ' + error.message)
-      }
-    })
+      })
   }
 }
 
@@ -105,22 +64,33 @@ function createDemoGeofenceQuestions(parentForm) {
     newQuestion.set('properties', data[i].properties)
     newQuestion.set('order', i + 1)
 
-    newQuestion.save(null, {
-      useMasterKey: true,
-      success: function(response) {
-        questions.push(response)
-        if (parentForm && questions.length === limit) {
-          var relation = parentForm.relation('questions')
-          relation.add(questions)
-          parentForm.save(null, {useMasterKey: true})
-        }
-        storeQuestions(response)
-      },
-      error: function(response, error) {
+    newQuestion.save(null, useMasterKey)
+      .then(function(newQuestion){
+        return new Promise(function(resolve){
+          questions.push(newQuestion)
+          if (parentForm && questions.length === limit) {
+            var relation = parentForm.relation('questions')
+            relation.add(questions)
+            parentForm.save(null, useMasterKey).then(function(){
+              resolve(newQuestion)
+            })
+          } else resolve(newQuestion)
+        })
+      })
+      .then(function(question){
+        return Users.setUserRights(question)
+      })
+      .fail(function(response, error) {
         console.warn('Failed to create Question, with error code: ' + error.message)
-      }
-    })
+      })
   }
 }
 
-module.exports = { Question, loadQuestions, createQuestions, storeQuestions, createDemoQuestions, createDemoGeofenceQuestions }
+function destroyAll() {
+  loadQuestions(null, function(err, questions){
+    if (questions)
+      Helpers.destroyObjects(questions, 'Questions')
+  })
+}
+
+module.exports = { Question, loadQuestions, createDemoQuestions, destroyAll, createDemoGeofenceQuestions }

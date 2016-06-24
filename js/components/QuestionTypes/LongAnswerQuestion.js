@@ -1,10 +1,12 @@
 
-import React, {
+import React from 'react';
+import {
   StyleSheet,
   Text,
   TextInput,
   View
 } from 'react-native'
+
 import Styles from '../../styles/Styles'
 import Color from '../../styles/Color'
 import ViewText from '../ViewText'
@@ -42,7 +44,7 @@ const LongAnswerQuestion = React.createClass ({
   render() {
     return (
       <View style={Styles.question.block}>
-        <ViewText 
+        <ViewText
           style={Styles.question.header}
           textStyle={Styles.question.headerText}>
             Question #{this.props.index}
@@ -74,7 +76,7 @@ const wrapperStyle = {
 
 const inputStyle = {
   height: 180,
-  borderWidth: 0, 
+  borderWidth: 0,
   paddingHorizontal: 15,
   paddingVertical: 10,
   fontSize: 14,

@@ -1,6 +1,8 @@
-import React, {
+import React from 'react';
+import {
   StyleSheet,
   TouchableHighlight,
+  TouchableWithoutFeedback,
   Text,
   View,
   ScrollView,
@@ -9,7 +11,12 @@ import React, {
   Platform,
   Alert,
 } from 'react-native'
+
+import pubsub from 'pubsub-js';
+import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
+
 import _ from 'lodash'
+import dismissKeyboard from 'dismissKeyboard'
 
 import Store from '../data/Store'
 import Styles from '../styles/Styles';
@@ -36,7 +43,7 @@ import moment from 'moment'
 
 import { loadTriggers, loadCachedTrigger } from '../api/Triggers'
 import { validateUser } from '../api/Account'
-import { loadCachedForms } from '../api/Forms'
+import { loadCachedForms, loadActiveGeofenceFormsInRange } from '../api/Forms'
 import { loadCachedSubmissions, saveSubmission} from '../api/Submissions'
 import { loadCachedQuestions } from '../api/Questions'
 
@@ -116,23 +123,37 @@ const FormPage = React.createClass ({
   componentWillMount() {
     let self = this,
         index = this.state.index,
+        type = this.props.type,
         answers = {},
         forms,
         allForms
+    
+    // Find most relevant form if no form type was provided.
+    // if (!type) {
+    //   if (!forms || forms.length === 0) {
+    //     forms = loadActiveGeofenceFormsInRange();
 
-    if (this.props.type === 'datetime') {
+    //     if (forms.length > 0) {
+    //       type = 'geofence';
+    //     } else {
+    //       type = 'datetime';
+    //     }
+    //   } 
+    // }
+
+    if (type === 'geofence') {
+      forms = this.state.forms
+      if (!forms || forms.length === 0) {
+        forms = loadActiveGeofenceFormsInRange(this.props.survey.id);
+      }
+    } else if (type === 'datetime') {
       forms = this.formsWithTriggers()
       allForms = forms
       forms = this.filterForms(forms)
       forms = this.sortForms(forms)
-    } else if (this.props.type === 'geofence') {
-      forms = this.state.forms
     }
 
     if (!forms || forms.length === 0) {
-      console.log('!forms')
-      console.log(forms)
-      console.log(this.state.forms)
       futureForms = _.filter(allForms, function(form){
         return form.trigger > new Date()
       })
@@ -252,9 +273,14 @@ const FormPage = React.createClass ({
         Alert.alert('Error', err);
         return;
       }
+
       this.setState({
         button_text: 'Submit'
       });
+
+      // Publish a ToastMessage to our Toaster via pubsub
+      const toastMessage = ToastMessage.createFromObject({title: 'Success', message: 'The form has been submitted.', icon: 'check', iconColor: Color.fadedGreen});
+      pubsub.publish(ToastAddresses.SHOW, toastMessage);
 
       //If there is another form continue onto that
       if(this.nextForm){
@@ -283,6 +309,10 @@ const FormPage = React.createClass ({
     if (this._nav) {
       this._nav.update(this._questionIndex, this.state.questions.length)
     }
+  },
+
+  dismiss() {
+    dismissKeyboard();
   },
 
   /* Render */
@@ -320,11 +350,15 @@ const FormPage = React.createClass ({
         default: questionComponent = <Text key={'unknown-question-'+idx}>Unknown Type: {question.type}</Text>; break;
       }
       return (
-        <View style={{flex: 1}}>
-          {questionComponent}
-        </View>
+        <TouchableWithoutFeedback
+          onPress={this.dismiss}>
+          <View style={{flex: 1}}>
+            {questionComponent}
+          </View>
+        </TouchableWithoutFeedback>
       )
     })
+    
     completeFormView = <View><CompleteForm submit={this.submit} nextForm={this.nextForm}/></View>
     renderedQuestions.push(completeFormView)
     return renderedQuestions

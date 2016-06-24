@@ -1,4 +1,5 @@
-import React, {
+import React from 'react';
+import {
   View,
   Text,
   TouchableWithoutFeedback,
@@ -9,6 +10,7 @@ import React, {
 } from 'react-native'
 
 import Styles from '../styles/Styles'
+import Color from '../styles/Color'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 const Header = React.createClass ({
@@ -108,11 +110,13 @@ const Header = React.createClass ({
       return <View style={Styles.header.navBarRightButton}></View>
     } else {
       return (
-        <View style={Styles.header.navBarRightButton}>
-          <TouchableWithoutFeedback onPress={this.props.openDrawer}>
+        
+        <TouchableWithoutFeedback onPress={this.props.openDrawer}>
+          <View style={Styles.header.navBarRightButton}>
             <Icon name="bars" size={25} color="#FFFFFF" />
-          </TouchableWithoutFeedback>
-        </View>
+          </View>
+        </TouchableWithoutFeedback>
+        
       )
     }
   },
@@ -138,15 +142,17 @@ const Header = React.createClass ({
     return (
       <View style={navbarStyles}>
         {this.renderIOSPadding()}
-        <View style={Styles.header.navBarLeftButton}>
-          {
-          this.state.index > 0 ?
+        
+          
           <TouchableWithoutFeedback onPress={this.navigateBack}>
-            <Icon name="chevron-left" size={20} color="#FFFFFF" />
+            {
+            this.state.index > 0 ?
+            <View style={Styles.header.navBarLeftButton}><Icon name="chevron-left" size={25} color="#FFFFFF" /></View>
+            : <View style={Styles.header.navBarLeftButton}><Icon name="chevron-left" size={25} color={Color.background1} /></View>
+            }
           </TouchableWithoutFeedback>
-          : null
-          }
-        </View>
+          
+        
         <View style={Styles.header.navBarTitle}>
           <Animated.Text                         // Base: Image, Text, View
             source={{uri: 'http://i.imgur.com/XMKOH81.jpg'}}

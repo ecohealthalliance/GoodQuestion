@@ -1,4 +1,5 @@
-import React, {
+import React from 'react';
+import {
   View,
   Platform,
   Navigator,
@@ -16,6 +17,7 @@ import Settings from '../settings'
 
 // Components
 import Header from '../components/Header'
+import Toaster from '../components/Toaster'
 import Loading from '../components/Loading'
 
 // Styles
@@ -50,13 +52,12 @@ import { addTimeTriggerNotification } from '../api/Notifications'
 // Background
 import { initializeGeolocationService } from '../api/BackgroundProcess'
 
-
 initializeGeolocationService()
 connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 
-
 let navigator;
 let initialRoute = { path:'surveylist', title: 'Surveys' };
+const toaster = <Toaster key='toaster' />
 
 // Binds the hardware "back button" from Android devices
 if ( Platform.OS === 'android' ) {
@@ -65,7 +66,11 @@ if ( Platform.OS === 'android' ) {
       navigator.pop();
       return true;
     }
-    return false;
+    Alert.alert('Confirm', 'Are you sure that you want to exit?', [
+      {text: 'Cancel', onPress: () => { }, style: 'cancel' },
+      {text: 'OK', onPress: () => { BackAndroid.exitApp(); }}
+    ]);
+    return true;
   });
 }
 
@@ -107,20 +112,23 @@ const SharedNavigator = React.createClass ({
   },
 
   _onNotification(notification) {
-    const data = loadCachedFormDataById(notification.data.formId);
-    if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
-      return;
-    }
-    const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form}
+    if (typeof notification === 'undefined') return;
     // TODO determine the type of notification
-    // TODO sync remote and cached notifications
-    // addTimeTriggerNotification(data.survey.id, data.form.id, data.form.title, notification.message, new Date());
-    // We will only route the user if notification was remote
-    if (!notification.foreground) {
-      if (typeof navigator === 'undefined') {
-        initialRoute = path;
-      } else {
-        navigator.resetTo(path)
+    if (notification.hasOwnProperty('data')  && notification.data.hasOwnProperty('formId')) {
+      const data = loadCachedFormDataById(notification.data.formId);
+      if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
+        return;
+      }
+      const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form}
+      // TODO sync remote and cached notifications
+      // addTimeTriggerNotification(data.survey.id, data.form.id, data.form.title, notification.message, new Date());
+      // We will only route the user if notification was remote
+      if (!notification.foreground) {
+        if (typeof navigator === 'undefined') {
+          initialRoute = path;
+        } else {
+          navigator.resetTo(path)
+        }
       }
     }
   },
@@ -128,6 +136,7 @@ const SharedNavigator = React.createClass ({
   _onRegister(registration) {
     const token = registration.token;
     const platform = registration.os;
+    if (platform === 'ios') PushNotification.setApplicationIconBadgeNumber(0);
     upsertInstallation(token, platform, (err, res) => {
       if (err) {
         console.error(err);
@@ -238,6 +247,7 @@ const SharedNavigator = React.createClass ({
     return (
       <View style={wrapperStyles}>
         {viewComponent}
+        {toaster}
       </View>
     )
   },

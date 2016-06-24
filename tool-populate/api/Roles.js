@@ -1,48 +1,51 @@
 var _ = require('lodash')
 var Parse = require('parse/node')
-var Store = require('../data/Store')
+var Helpers = require('./Helpers')
+var Users = require('./Users')
+var useMasterKey = {useMasterKey: true}
+var colors = require('colors')
 
-function loadRoles(options, callback) {
-  var Role = Parse.Role
-  var query = new Parse.Query(Role)
-  query.limit = 1000
-
-  query.find({
-    success: function(results) {
-      storeRoles(results)
-      if (callback)
-        callback(null, results)
-    },
-    error: function(error, results) {
-      console.warn("Error: " + error.code + " " + error.message)
-      if (callback)
-        callback(error, results)
-    }
-  })
+function loadRoles (options, callback) {
+  Helpers.fetchObjects(Parse.Role, callback)
 }
 
 function createRole(roleToCreate) {
-  var roleACL = new Parse.ACL();
-  roleACL.setPublicReadAccess(true);
-
-  console.log('Creating role "' + roleToCreate + '"')
-
-  var role = new Parse.Role(roleToCreate, roleACL);
-  role.save(null, {
-    success: function(response) {
-      storeRoles(response)
-      console.log('Created role "' + roleToCreate + '"')
-    },
-    error: function(response, error) {
-      console.warn('Failed to create Role, with error code: ' + error.message)
-    }
-  })
+  var acl= new Parse.ACL()
+  var role = new Parse.Role(roleToCreate, acl)
+  return role.save(useMasterKey)
+    .then(function(role){
+      console.log(colors.green('Created role "' + roleToCreate + '"'))
+    })
+    .fail(function(error) {
+      console.log(colors.red('Failed to create Role, with error code: ' + error.message))
+    })
 }
 
-function storeRoles(newRoles) {
-  if (!Array.isArray(newRoles))
-    newRoles = [newRoles]
-  Store.roles = _.unionBy(Store.roles, newRoles, 'id')
+function getRole(name) {
+  query = new Parse.Query(Parse.Role)
+  query.equalTo('name', name)
+  return query.first(useMasterKey)
+    .then(function(role){
+      return role
+    })
 }
 
-module.exports = { loadRoles, createRole }
+function setRoleACLs() {
+  var query = new Parse.Query(Parse.Role)
+  query.find(useMasterKey)
+    .then(function(roles){
+      adminRole = _.find(roles, function(role){
+        return role.get('name') === 'admin'
+      })
+      _.each(roles, function(role){
+        var acl = new Parse.ACL()
+        acl.setPublicReadAccess(true)
+        acl.setReadAccess(adminRole, true)
+        acl.setWriteAccess(adminRole, true)
+        role.setACL(acl)
+        role.save(null, useMasterKey)
+      })
+    })
+}
+
+module.exports = { loadRoles, createRole, getRole, setRoleACLs }

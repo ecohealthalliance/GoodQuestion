@@ -1,4 +1,5 @@
-import React, {
+import React from 'react';
+import {
   StyleSheet,
   Text,
   Platform,
@@ -15,11 +16,9 @@ import { loadCachedFormDataByGeofence } from '../api/Forms'
 import { BackgroundGeolocation } from '../api/BackgroundProcess'
 import { setActiveMap, clearActiveMap, getUserLocationData } from '../api/Geofencing'
 
-
 const CalendarPage = React.createClass ({
   propTypes: {
     navigator: React.PropTypes.object.isRequired,
-    triggers: React.PropTypes.object
   },
 
   getInitialState() {
@@ -71,19 +70,6 @@ const CalendarPage = React.createClass ({
       </View>
     )
   }
-})
-
-const _styles = StyleSheet.create({
-  iosMap: {
-    flex: 1,
-  },
-  androidMap: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
 })
 
 module.exports = CalendarPage

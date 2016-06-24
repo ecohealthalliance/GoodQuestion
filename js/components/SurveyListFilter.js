@@ -1,4 +1,5 @@
-import React, {
+import React from 'react';
+import {
   View,
   Text,
   TouchableWithoutFeedback,
@@ -35,28 +36,28 @@ const SurveyListFilter = React.createClass ({
       <View style={Styles.survey.listfilter}>
         <SurveyListFilterButton
           active={this.state.activeButton === 'all'}
-          onPress={this.handlePress.bind(this, 'all')}
+          onPress={this.handlePress.bind(null, 'all')}
           icon='list-ul'
           >
           All
         </SurveyListFilterButton>
         <SurveyListFilterButton
           active={this.state.activeButton === 'pending'}
-          onPress={this.handlePress.bind(this, 'pending')}
+          onPress={this.handlePress.bind(null, 'pending')}
           icon='circle-o'
           >
           Pending
         </SurveyListFilterButton>
         <SurveyListFilterButton
           active={this.state.activeButton === 'accepted'}
-          onPress={this.handlePress.bind(this, 'accepted')}
+          onPress={this.handlePress.bind(null, 'accepted')}
           icon='check-circle'
           >
           Accepted
         </SurveyListFilterButton>
         <SurveyListFilterButton
           active={this.state.activeButton === 'declined'}
-          onPress={this.handlePress.bind(this, 'declined')}
+          onPress={this.handlePress.bind(null, 'declined')}
           icon='times-circle'
           >
           Declined
@@ -73,8 +74,8 @@ const SurveyListFilterButton = React.createClass ({
     onPress: React.PropTypes.func.isRequired,
   },
   render() {
-    let buttonViewStyle = {flex: 1, justifyContent: 'center', alignItems: 'center'}
-    let buttonContainerStyle = {marginHorizontal: 20, opacity: 0.5}
+    let buttonContainerStyle = {opacity: 0.5}
+    let buttonViewStyle = {flex: 1, paddingHorizontal: 20, paddingVertical: 16, justifyContent: 'center', alignItems: 'center'}
     if (this.props.active) buttonContainerStyle.opacity = 1
     return (
       <View style={[buttonContainerStyle]}>

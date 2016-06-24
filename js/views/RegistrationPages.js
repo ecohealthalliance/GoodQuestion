@@ -1,4 +1,6 @@
-import React, {
+import React from 'react';
+import {
+  Platform,
   Alert,
   Text,
   TextInput,
@@ -22,7 +24,6 @@ import RegistrationPagePart3 from '../views/RegistrationPagePart3'
 
 import {register} from '../api/Account'
 
-const {height, width} = Dimensions.get('window')
 const totalPages = 3;
 
 const RegistrationPages = React.createClass ({
@@ -34,6 +35,13 @@ const RegistrationPages = React.createClass ({
   alerts: 0,
 
   styles: {
+    swiperContainer: {
+      flex: 1,
+      overflow:'visible',
+      borderColor: Color.background1,
+      borderWidth: 1,
+      borderTopWidth: Platform.OS === 'android' ? 20 : 1,
+    },
     registrationHeader: {
       height: Variables.REGISTRATION_HEIGHT,
       alignItems:'center',
@@ -41,7 +49,6 @@ const RegistrationPages = React.createClass ({
       backgroundColor: Color.background1,
       paddingBottom: 25,
       marginBottom: 30,
-      height: 130,
     },
     dotStyle: {
       // flex: 1,
@@ -75,18 +82,6 @@ const RegistrationPages = React.createClass ({
       state.index = nextProps.index;
       this.setState(state);
     }
-  },
-
-  /**
-   * dynamically calculate scroll view height
-   *
-   * @return {number} ideal height of the ScrollView
-   */
-  calculateScrollViewHeight() {
-    return height - this.calculateOffset(); // site of the pagination footer
-  },
-  calculateOffset() {
-    return height - (Variables.HEADER_SIZE + Variables.REGISTRATION_HEIGHT);
   },
 
   /**
@@ -174,7 +169,7 @@ const RegistrationPages = React.createClass ({
         // go to the default route
         self.props.navigator.resetTo({});
       }
-      
+
     });
   },
 
@@ -202,8 +197,6 @@ const RegistrationPages = React.createClass ({
 
   getChildren() {
     const sharedProps = Object.assign({
-      calculateOffset: this.calculateOffset,
-      calculateScrollViewHeight: this.calculateScrollViewHeight,
       validatePage: this.validatePage,
       setIndex: this.setIndex,
       buttonStyles: this.buttonStyles
@@ -226,17 +219,16 @@ const RegistrationPages = React.createClass ({
   render() {
     return (
       <View style={{flex: 1, backgroundColor: '#fff'}}>
-        <View style={Styles.header.banner}>
+        <View style={[Styles.header.banner, {paddingBottom: Platform.OS === 'android' ? 5 : 25}]}>
           <Image source={require('../images/logo_stacked.png')} style={Styles.header.logo}></Image>
         </View>
         <Swiper
           index={this.state.index}
-          containerStyle={{flex: 1, overflow:'visible'}}
+          containerStyle={this.styles.swiperContainer}
           loop={false}
-          showsPagination={true}
-          showsHorizontalScrollIndicator={true}
+          pager={true}
+          // pager={Platform.OS === 'ios'}
           beforePageChange={this.beforePageChange}
-
           dotContainerStyle={{top: -16, bottom: null}}
           dotStyle={this.styles.dotStyle}
           activeDotStyle={[this.styles.dotStyle, {backgroundColor: Color.primary, borderColor: Color.primary}]}

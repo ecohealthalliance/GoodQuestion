@@ -1,9 +1,11 @@
-import React, {
+import React from 'react';
+import {
   StyleSheet,
   Text,
   Platform,
   View,
-} from 'react-native'
+} from 'react-native';
+import _ from 'lodash';
 
 import Styles from '../styles/Styles'
 import MapView from 'react-native-maps'
@@ -36,7 +38,7 @@ const MapPage = React.createClass ({
   componentDidMount() {
     const self = this
 
-    loadAllCachedGeofenceTriggers((err, response) => {
+    loadAllCachedGeofenceTriggers({excludeCompleted: true}, (err, response) => {
       setActiveMap(self)
       self.active = true
       self.generateTriggerMarkers(response)
@@ -65,7 +67,7 @@ const MapPage = React.createClass ({
           longitude: trigger.longitude,
         },
         radius: trigger.radius,
-        active: false,
+        active: trigger.inRange,
       }
     })
 
@@ -76,15 +78,16 @@ const MapPage = React.createClass ({
   },
 
   updateMarkers(geofence) {
-    if (geofence.action == 'ENTER') {
+    const self = this;
+    if (_.lowerCase(geofence.action) == 'enter' || _.lowerCase(geofence.action) == 'dwell') {
       updatedMarkers = this.state.markers.filter((marker) => {return marker.id == geofence.identifier})
       for (var i = 0; i < updatedMarkers.length; i++) {
-        updatedMarkers[i].active = true
+        updatedMarkers[i].active = true;
       }
-    } else if (geofence.action == 'EXIT') {
+    } else if (_.lowerCase(geofence.action) == 'exit') {
       updatedMarkers = this.state.markers.filter((marker) => {return marker.id == geofence.identifier})
       for (var i = 0; i < updatedMarkers.length; i++) {
-        updatedMarkers[i].active = false
+        updatedMarkers[i].active = false;
       }
     }
 

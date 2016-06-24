@@ -1,10 +1,11 @@
-import React, {
+import React from 'react';
+import {
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native'
-import Checkbox from 'react-native-checkbox'
+import Checkbox from '../Checkbox'
 import Styles from '../../styles/Styles'
 import Color from '../../styles/Color'
 import ViewText from '../ViewText'

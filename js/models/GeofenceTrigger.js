@@ -8,11 +8,14 @@ GeofenceTrigger.schema = {
   	surveyId: 'string',
     
     title: 'string',
-    latitude: 'double',
-    longitude: 'double',
-    radius: 'double',
+    latitude: {type: 'double', default: 0},
+    longitude: {type: 'double', default: 0},
+    radius: {type: 'int', default: 0},
 
+    sticky: {type: 'bool', default: false},
     triggered: {type: 'bool', default: false},
     inRange: {type: 'bool', default: false},
+
+    completed: {type: 'bool', default: false},
   }
 }

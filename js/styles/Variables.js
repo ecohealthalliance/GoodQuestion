@@ -7,6 +7,7 @@ const Variables = {
   REGISTRATION_HEIGHT: 125,
   PROFILE_HEIGHT: 250,
   LOGIN_HEIGHT: 125,
+  FOOTER_HEIGHT: 80,
 }
 
 if ( Platform.OS === 'android' ) {

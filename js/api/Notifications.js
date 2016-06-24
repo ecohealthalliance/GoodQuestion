@@ -1,15 +1,20 @@
-import _ from 'lodash'
-import Parse from 'parse/react-native'
-import Store from '../data/Store'
-import realm from '../data/Realm'
+import _ from 'lodash';
+import Parse from 'parse/react-native';
+import Store from '../data/Store';
+import realm from '../data/Realm';
+import pubsub from 'pubsub-js';
 
-import { loadForms } from './Forms'
+import Color from '../styles/Color'
+import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
+import { loadForms } from './Forms';
+
+
 
 
 // Finds and returns a list of pending Notifications from Realm
 export function loadNotifications() {
   return realm.objects('Notification')
-    .filtered(`complete == false`)
+    .filtered(`completed == false`)
     .sorted('datetime', true)
 }
 
@@ -28,4 +33,24 @@ export function addTimeTriggerNotification( surveyId, formId, title, description
   } catch(e) {
     console.error(e)
   }
+}
+
+/**
+ * Shows a toast at the bottom of the screen.
+ * @param  {string} title    Title text to be displayed on the toast
+ * @param  {string} message  Description text to be displayed on the toast
+ * @param  {string} icon     FA icon to be shown on the toast
+ * @param  {number} duration Time to keep the toast up
+ * @param  {function} action Callback function to be executed when tapping the toast
+ */
+export function showToast(title, message, icon, duration, action) {
+  const toastMessage = ToastMessage.createFromObject({
+    title: title,
+    message: message,
+    icon: icon,
+    iconColor: Color.faded,
+    duration: duration,
+    action: action,
+  });
+  pubsub.publish(ToastAddresses.SHOW, toastMessage);
 }
