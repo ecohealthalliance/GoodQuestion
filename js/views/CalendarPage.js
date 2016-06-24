@@ -11,10 +11,7 @@ import Styles from '../styles/Styles'
 import Calendar from '../components/Calendar/Calendar'
 import CalendarEvent from '../components/Calendar/CalendarEvent'
 
-import { loadAllCachedGeofenceTriggers } from '../api/Triggers'
-import { loadCachedFormDataByGeofence } from '../api/Forms'
-import { BackgroundGeolocation } from '../api/BackgroundProcess'
-import { setActiveMap, clearActiveMap, getUserLocationData } from '../api/Geofencing'
+import { loadAllCachedTimeTriggers } from '../api/Triggers'
 
 const CalendarPage = React.createClass ({
   propTypes: {
@@ -28,6 +25,10 @@ const CalendarPage = React.createClass ({
   },
 
   componentDidMount() {
+    const self = this;
+    loadAllCachedTimeTriggers({}, (err, response) => {
+      console.log(response);
+    });
   },
 
   componentWillUnmount() {
