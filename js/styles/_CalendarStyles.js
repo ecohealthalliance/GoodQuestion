@@ -92,11 +92,12 @@ const CalendarStyles = StyleSheet.create({
   },
   currentDayCircle: {
     // backgroundColor: Color.positive,
-    borderColor: Color.primary,
-    borderWidth: 2,
+    borderRadius: 50,
   },
   selectedDayCircle: {
-    backgroundColor: Color.positive,
+    borderColor: Color.primary,
+    borderWidth: 2,
+    // backgroundColor: Color.positive,
   },
 
 
@@ -108,7 +109,7 @@ const CalendarStyles = StyleSheet.create({
     // color: 'white',
   },
   selectedDayText: {
-    color: 'white',
+    // color: 'white',
     fontWeight: 'bold',
   },
   weekendDayText: {
@@ -119,20 +120,18 @@ const CalendarStyles = StyleSheet.create({
   // Event Info
   eventBlock: {
     marginTop: 20,
-    marginHorizontal: 10,
+    marginHorizontal: 30,
     marginBottom: 45,
-    paddingHorizontal: 10,
-    paddingBottom: 10,
     backgroundColor: Color.background2,
     borderColor: Color.background1,
     borderWidth: 1,
     borderRadius: 5,
   },
   eventHeader: {
+    justifyContent: 'center',
     alignSelf: 'stretch',
     flexDirection: 'row',
     marginHorizontal: -10,
-    marginBottom: 10,
     paddingHorizontal: 15,
     paddingVertical: 8,
     backgroundColor: Color.background1,
@@ -143,8 +142,20 @@ const CalendarStyles = StyleSheet.create({
     fontWeight: 'bold',
   },
   eventText: {
-    marginTop: 5,
-    marginBottom: 15,
+    marginVertical: 5,
+  },
+  eventCategoryRow: {
+    borderBottomWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderColor: Color.background1,
+  },
+  eventCategoryRowText: {
+    fontSize: 20,
+    color: Color.warning,
+  },
+  eventDescription: {
+    padding: 10,
   },
 })
 

@@ -21,16 +21,18 @@ const CalendarPage = React.createClass ({
   getInitialState() {
     return {
       events: [],
+      eventIndex: {},
+      selectedEvent: null,
     }
   },
 
   componentDidMount() {
     const self = this;
-    loadAllCachedTimeTriggers({}, (err, response) => {
+    loadAllCachedTimeTriggers({excludeCompleted: true, excludeExpired: true}, (err, response) => {
       const responseLength = response.length;
       const eventDates = [];
       const eventIndex = {};
-      for (var i = 0; i < responseLength; i++) {
+      for (let i = 0; i < responseLength; i++) {
         console.log(response[i])
         const date = moment(response[i].datetime).format('YYYY-MM-DD');
         console.log(date)
@@ -38,12 +40,14 @@ const CalendarPage = React.createClass ({
 
         if (!eventIndex[date]) eventIndex[date] = [];
         eventIndex[date].push({
-          time: '',
+          datetime: response[i].datetime,
+          title: response[i].title,
         });
       }
 
       self.setState({
         events: eventDates,
+        eventIndex: eventIndex,
       });
     });
   },
@@ -52,19 +56,45 @@ const CalendarPage = React.createClass ({
   },
 
   /* Methods */
-  
+  selectDate(date) {
+    let nextEvent = null;
+    eventDate = moment(date).format('YYYY-MM-DD');
+
+    if (this.state.eventIndex[eventDate]) {
+      const event = this.state.eventIndex[eventDate][0];
+      nextEvent = {
+        type: 'datetime',
+        title: moment(date).format('MMMM Do YYYY'),
+        description: event.title,
+        availability: 'Available: ' + moment(event.datetime).format('LT'),
+      };
+    }
+
+
+    this.setState({ 
+      selectedDate: date,
+      selectedEvent: nextEvent,
+    });
+  },
 
   /* Render */
   renderSelectedEvents() {
-    return (
-      <CalendarEvent
-        id='1'    
-        type='datetime'
-        title='A Form'
-        questionCount={10}
-        properties={{}}
-      />
-    )
+    if (this.state.selectedEvent) {
+      const event = this.state.selectedEvent;
+      return (
+        <CalendarEvent
+          id='1'
+          type='datetime'
+          title={event.title}
+          description={event.description}
+          availability={event.availability}
+          questionCount={10}
+          properties={{}}
+        />
+      )
+    } else {
+      return <Text>No remaining events present on this date.</Text>
+    }
   },
 
   render() {
@@ -76,7 +106,7 @@ const CalendarPage = React.createClass ({
           titleFormat={'MMMM YYYY'}
           prevButtonText={'Prev'}
           nextButtonText={'Next'}
-          onDateSelect={(date) => this.setState({ selectedDate: date })}
+          onDateSelect={this.selectDate}
           onTouchPrev={() => console.log('Back TOUCH')}     // eslint-disable-line no-console
           onTouchNext={() => console.log('Forward TOUCH')}  // eslint-disable-line no-console
           onSwipePrev={() => console.log('Back SWIPE')}     // eslint-disable-line no-console

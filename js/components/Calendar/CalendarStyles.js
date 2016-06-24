@@ -92,10 +92,10 @@ const CalendarStyles = StyleSheet.create({
     color: 'white',
   },
   selectedDayCircle: {
-    backgroundColor: 'black',
+    // backgroundColor: 'black',
   },
   selectedDayText: {
-    color: 'white',
+    // color: 'white',
     fontWeight: 'bold',
   },
   weekendDayText: {
