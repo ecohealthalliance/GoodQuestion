@@ -7,7 +7,7 @@ const DEVICE_WIDTH = Dimensions.get('window').width - 60
 const CalendarStyles = StyleSheet.create({
   calendarContainer: {
     // flex: 1,
-    paddingTop: 5,
+    paddingTop: 10,
     paddingHorizontal: 30,
     backgroundColor: 'transparent',
 
@@ -19,7 +19,7 @@ const CalendarStyles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     margin: 10,
-    marginBottom: 15,
+    marginBottom: 20,
   },
   controlButton: {
   },
