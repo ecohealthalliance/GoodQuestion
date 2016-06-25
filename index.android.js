@@ -12,7 +12,7 @@ import Store from './js/data/Store'
 // Router
 import SharedNavigator from './js/router/SharedNavigator'
 
-// console.disableYellowBox = true;
+console.disableYellowBox = true;
 
 /* Android App */
 const GoodQuestion = React.createClass ({

@@ -151,38 +151,12 @@ const SurveyListPage = React.createClass ({
 
   selectSurvey(survey) {
     if (this.cancelCallbacks) return
-
-    let forms = survey.getForms();
-    if (survey.getForms().length === 0) {
-      return Alert.alert('Survey has no active forms.')
-    }
-
-    let geofenceForms = loadActiveGeofenceFormsInRange(survey.id);
-    if (geofenceForms.length > 0) {
-      forms = geofenceForms;
-      type = 'geofence';
-    } else {
-      type = 'datetime';
-    }
-
-    const invitation = _.find(this._invitations, (invitation) => { return invitation.surveyId === survey.id; });
-    // if (invitation && invitation.status === 'accepted') {
-    //   this.props.navigator.push({
-    //     path: 'form',
-    //     title: survey.title,
-    //     survey: survey,
-    //     type: type,
-    //   });
-    // } else {
-      const questions = loadCachedQuestionsFromForms(forms);
-      this.props.navigator.push({
-        path: 'survey-details',
-        title: survey.title,
-        survey: survey,
-        formCount: forms.length,
-        questionCount: questions.length,
-      })
-    // }
+    
+    this.props.navigator.push({
+      path: 'survey-details',
+      title: survey.title,
+      survey: survey,
+    });
   },
 
   showList(){
