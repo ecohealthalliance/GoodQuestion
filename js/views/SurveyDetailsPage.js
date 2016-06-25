@@ -17,9 +17,11 @@ import { loadCachedQuestions, loadQuestions } from '../api/Questions'
 import { checkSurveyTimeTriggers } from '../api/Triggers'
 import { setupGeofences } from '../api/Geofencing'
 import realm from '../data/Realm'
-import SurveyListItem from '../components/SurveyListItem'
+import SurveyDetailsMenu from '../components/SurveyDetailsMenu'
 import Loading from '../components/Loading'
 import Button from '../components/Button'
+import MapPage from './MapPage'
+import CalendarPage from './CalendarPage'
 
 import { InvitationStatus, markInvitationStatus } from '../api/Invitations'
 
@@ -28,6 +30,7 @@ const SurveyDetailsPage = React.createClass ({
     survey: React.PropTypes.object.isRequired, // Realm.io Object
     formCount: React.PropTypes.number.isRequired,
     questionCount: React.PropTypes.number.isRequired,
+    activeTab: 'survey',
   },
 
   getInitialState() {
@@ -36,7 +39,6 @@ const SurveyDetailsPage = React.createClass ({
     }
   },
   /* Methods */
-
   acceptSurvey() {
     const status = InvitationStatus.ACCEPTED;
     this.setState({status: status});
@@ -67,8 +69,12 @@ const SurveyDetailsPage = React.createClass ({
     });
   },
 
+  changeTab(tab) {
+    this.setState({activeTab: tab});
+  },
+
   /* Render */
-  render() {
+  renderSurveyInfoPage() {
     let acceptButtonStyle = [Styles.survey.acceptButton]
     let acceptButtonTextStyle = {color: Color.positive}
     let declineButtonStyle = [Styles.survey.declineButton]
@@ -116,7 +122,26 @@ const SurveyDetailsPage = React.createClass ({
         </View>
       </View>
     );
+  },
+
+  render() {
+    let tab;
+    switch(this.state.activeTab) {
+      case 'geofence': tab = <MapPage navigator={this.props.navigator} />; break;
+      case 'scheduled': tab = <CalendarPage navigator={this.props.navigator} />; break;
+      default: tab = this.renderSurveyInfoPage(); break;
+    }
+
+    return (
+      <View style={{flex: 1}}>
+        {tab}
+        <SurveyDetailsMenu changeTab={this.changeTab} />
+      </View>
+    )
   }
+
+
+
 })
 
 module.exports = SurveyDetailsPage

@@ -185,7 +185,7 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
   const triggerLength = triggers.length
   realm.write(() => {
     for (var i = 0; i < triggerLength; i++) {
-      if (triggers[i].datetime < now && triggers[i].datetime > past) {
+      if (triggers[i] && triggers[i].datetime < now && triggers[i].datetime > past) {
         let activeTrigger = realm.create('TimeTrigger', {
           id: triggers[i].id,
           triggered: true,

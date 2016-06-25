@@ -166,14 +166,14 @@ const SurveyListPage = React.createClass ({
     }
 
     const invitation = _.find(this._invitations, (invitation) => { return invitation.surveyId === survey.id; });
-    if (invitation && invitation.status === 'accepted') {
-      this.props.navigator.push({
-        path: 'form',
-        title: survey.title,
-        survey: survey,
-        type: type,
-      });
-    } else {
+    // if (invitation && invitation.status === 'accepted') {
+    //   this.props.navigator.push({
+    //     path: 'form',
+    //     title: survey.title,
+    //     survey: survey,
+    //     type: type,
+    //   });
+    // } else {
       const questions = loadCachedQuestionsFromForms(forms);
       this.props.navigator.push({
         path: 'survey-details',
@@ -182,7 +182,7 @@ const SurveyListPage = React.createClass ({
         formCount: forms.length,
         questionCount: questions.length,
       })
-    }
+    // }
   },
 
   showList(){
