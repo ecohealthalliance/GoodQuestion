@@ -23,7 +23,7 @@ import Button from '../components/Button'
 import MapPage from './MapPage'
 import CalendarPage from './CalendarPage'
 
-import { InvitationStatus, markInvitationStatus } from '../api/Invitations'
+import { InvitationStatus, markInvitationStatus, loadCachedInvitationById } from '../api/Invitations'
 
 const SurveyDetailsPage = React.createClass ({
   propTypes: {
@@ -34,8 +34,11 @@ const SurveyDetailsPage = React.createClass ({
   },
 
   getInitialState() {
+    const invitation = loadCachedInvitationById(this.props.survey.id);
+    let status = invitation && invitation.status ? invitation.status : InvitationStatus.PENDING;
+
     return {
-      status: InvitationStatus.PENDING,
+      status: status,
     }
   },
   /* Methods */
