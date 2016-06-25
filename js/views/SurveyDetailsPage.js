@@ -127,11 +127,12 @@ const SurveyDetailsPage = React.createClass ({
     });
   },
 
-  navigateToForms() {
+  navigateToForms(type) {
     this.props.navigator.push({
       path: 'form',
       title: this.props.survey.title,
       survey: this.props.survey,
+      type: type,
     });
   },
 
@@ -180,7 +181,7 @@ const SurveyDetailsPage = React.createClass ({
       return (
         <View style={Styles.survey.surveyNotes}>
           <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>
-            {availability.geofenceTriggersInRange} geofence {availability.geofenceTriggersInRange > 1 ? 'forms' : 'form'} available.
+            <Icon name='map-marker' size={20} color={Color.faded} /> {availability.geofenceTriggersInRange} geofence {availability.geofenceTriggersInRange > 1 ? 'forms' : 'form'} available.
           </Text>
           <Button style={[Styles.survey.answerButton]} textStyle={{color: Color.primary}} action={this.navigateToForms.bind(null, 'geofence')}>
             Answer Form
@@ -192,7 +193,7 @@ const SurveyDetailsPage = React.createClass ({
       return (
         <View style={Styles.survey.surveyNotes}>
           <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>
-            {availability.availableTimeTriggers} scheduled {availability.availableTimeTriggers > 1 ? 'forms' : 'form'} available.
+            <Icon name='clock-o' size={20} color={Color.faded} /> {availability.availableTimeTriggers} scheduled {availability.availableTimeTriggers > 1 ? 'forms' : 'form'} available.
           </Text>
           <Button style={[Styles.survey.answerButton]} textStyle={{color: Color.primary}} action={this.navigateToForms.bind(null, 'datetime')}>
             Answer Form
@@ -211,7 +212,7 @@ const SurveyDetailsPage = React.createClass ({
       return (
         <View style={Styles.survey.surveyNotes}>
           <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>
-            No forms available right now.
+            No forms currently available.
           </Text>
         </View>
       )
