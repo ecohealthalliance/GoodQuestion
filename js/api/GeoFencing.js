@@ -100,6 +100,12 @@ export function resetGeofences(callback) {
   )
 }
 
+export function removeGeofenceById(id) {
+  BackgroundGeolocation.removeGeofence(id, () => {
+    console.log('Removed geofence: ' + id);
+  });
+}
+
 /**
  * Returns an object containing last recorded geolocation data via an async callback
  * @param  {Function} callback   Returns object containing the current latitude, longitude, accuracy, and timestamp.

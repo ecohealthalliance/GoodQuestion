@@ -24,7 +24,7 @@ import CalendarPage from './CalendarPage'
 
 import { getFormAvailability } from '../api/Surveys'
 import { loadCachedQuestionsFromForms } from '../api/Questions'
-import { checkSurveyTimeTriggers } from '../api/Triggers'
+import { checkSurveyTimeTriggers, removeTriggers } from '../api/Triggers'
 import { setupGeofences } from '../api/Geofencing'
 import { InvitationStatus, markInvitationStatus, loadCachedInvitationById } from '../api/Invitations'
 
@@ -101,6 +101,7 @@ const SurveyDetailsPage = React.createClass ({
         console.warn(err);
         return;
       }
+      removeTriggers(this.props.survey.id);
       this.props.navigator.pop();
     });
   },

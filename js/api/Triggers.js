@@ -4,6 +4,7 @@ import Parse from 'parse/react-native'
 import realm from '../data/Realm'
 import { loadAllAcceptedSurveys } from './Surveys'
 import { loadAcceptedInvitations } from '../api/Invitations'
+import { removeGeofenceById } from '../api/Geofencing'
 
 // Queries the connected Parse server for a list of Triggers.
 export function loadTriggers(form, survey, callback) {
@@ -203,5 +204,22 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
         }
       }
     }
+  });
+}
+
+export function removeTriggers(surveyId) {
+  const timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId="${surveyId}"`);
+  const geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`);
+  const geofenceTriggersLength = geofenceTriggers.length;
+
+  for (var i = geofenceTriggersLength - 1; i >= 0; i--) {
+    if (geofenceTriggers[i]) {
+      removeGeofenceById(geofenceTriggers[i].id);
+    }
+  }
+
+  realm.write(() => {
+    realm.delete(timeTriggers);
+    realm.delete(geofenceTriggers);
   });
 }
