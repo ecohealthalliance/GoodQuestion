@@ -4,12 +4,13 @@ import {
   Text,
   Platform,
   View,
-} from 'react-native'
-import moment from 'moment'
+} from 'react-native';
+import moment from 'moment';
 
-import Styles from '../styles/Styles'
-import Calendar from '../components/Calendar/Calendar'
-import CalendarEvent from '../components/Calendar/CalendarEvent'
+import Styles from '../styles/Styles';
+import Calendar from '../components/Calendar/Calendar';
+import CalendarEvent from '../components/Calendar/CalendarEvent';
+import Loading from '../components/Loading';
 
 import { loadCachedTimeTriggers } from '../api/Triggers'
 
@@ -21,6 +22,7 @@ const CalendarPage = React.createClass ({
 
   getInitialState() {
     return {
+      stage: 'loading',
       events: [],
       selectedEvent: null,
     }
@@ -33,6 +35,12 @@ const CalendarPage = React.createClass ({
       excludeCompleted: true, 
       excludeExpired: true
     }, (err, response) => {
+      if (err) {
+        console.warn(err);
+        self.setState({ stage: 'error'});
+        return;
+      }
+
       const responseLength = response.length;
       const eventDates = [];
       const eventIndex = {};
@@ -53,10 +61,17 @@ const CalendarPage = React.createClass ({
         events: eventDates,
         selectedEvent: self.getSelectedEvent(moment().format('YYYY-MM-DD')),
       });
+
+      setTimeout(()=>{
+        if (!self.cancelCallbacks) {
+          self.setState({stage: 'ready'});
+        }
+      }, 350);
     });
   },
 
   componentWillUnmount() {
+    this.cancelCallbacks = true;
   },
 
   /* Methods */
@@ -105,6 +120,12 @@ const CalendarPage = React.createClass ({
   },
 
   render() {
+    if (this.state.stage === 'loading') {
+      return <Loading/>;
+    } else if (this.state.stage === 'error') {
+      return <Text style={[Styles.type.h2, {color: Color.faded}]}>Error loading scheduled dates...</Text>;
+    }
+
     return (
       <View style={[Styles.container.defaultWhite, { flex: 1, overflow: 'hidden' }]}>
         <Calendar
@@ -123,7 +144,7 @@ const CalendarPage = React.createClass ({
         />
         {this.renderSelectedEvents()}
       </View>
-    )
+    );
   }
 })
 
