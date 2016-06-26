@@ -7,13 +7,15 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 
-import Styles from '../styles/Styles'
-import MapView from 'react-native-maps'
+import Styles from '../styles/Styles';
+import MapView from 'react-native-maps';
 
-import { loadAllCachedGeofenceTriggers } from '../api/Triggers'
-import { loadCachedFormDataByGeofence } from '../api/Forms'
-import { BackgroundGeolocation } from '../api/BackgroundProcess'
-import { setActiveMap, clearActiveMap, getUserLocationData } from '../api/Geofencing'
+import { loadAllCachedGeofenceTriggers } from '../api/Triggers';
+import { loadCachedFormDataByGeofence } from '../api/Forms';
+import { BackgroundGeolocation } from '../api/BackgroundProcess';
+import { setActiveMap, clearActiveMap, getUserLocationData } from '../api/Geofencing';
+
+import Loading from '../components/Loading';
 
 
 const MapPage = React.createClass ({
@@ -26,6 +28,7 @@ const MapPage = React.createClass ({
     let triggers = this.props.triggers
 
     return {
+      stage: 'loading',
       updates: 0,
       latitude: 28.46986,
       longitude: -81.58495,
@@ -36,18 +39,25 @@ const MapPage = React.createClass ({
   },
 
   componentDidMount() {
-    const self = this
+    const self = this;
 
     loadAllCachedGeofenceTriggers({excludeCompleted: true}, (err, response) => {
-      setActiveMap(self)
-      self.active = true
-      self.generateTriggerMarkers(response)
+      setActiveMap(self);
+      self.active = true;
+      self.generateTriggerMarkers(response);
+
+      setTimeout(()=>{
+        if (!self.cancelCallbacks) {
+          self.setState({stage: 'ready'});
+        }
+      }, 350);
     })
   },
 
   componentWillUnmount() {
-    clearActiveMap(this)
-    this.active = false
+    clearActiveMap(this);
+    this.active = false;
+    this.cancelCallbacks = true;
   },
 
   /* Methods */
@@ -115,8 +125,9 @@ const MapPage = React.createClass ({
 
   /* Render */
   render() {
-    const containerStyle = []
-    const mapStyle = []
+    if (this.state.stage === 'loading') {
+      return <Loading/>;
+    }
 
     return (
       <View style={[Styles.container.default, { flex: 1, overflow: 'hidden' }]}>
