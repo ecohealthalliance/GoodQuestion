@@ -45,7 +45,7 @@ const CalendarPage = React.createClass ({
       const responseLength = response.length;
       const eventDates = [];
       const eventIndex = {};
-      console.log(response);
+
       for (let i = 0; i < responseLength; i++) {
         const date = moment(response[i].datetime).format('YYYY-MM-DD');
         eventDates.push(date);
@@ -119,7 +119,6 @@ const CalendarPage = React.createClass ({
           availability={event.availability}
           questionCount={10}
           onPress={() => {
-            console.log(event);
             const data = loadCachedFormDataById(event.formId);
             self.props.navigator.push({
               path: 'form',
