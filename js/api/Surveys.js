@@ -5,8 +5,10 @@ import Parse from 'parse/react-native'
 import Store from '../data/Store'
 import realm from '../data/Realm'
 
-import { loadForms } from './Forms'
+import { loadForms, loadParseFormDataBySurveyId } from './Forms'
+import { checkSurveyTimeTriggers, removeTriggers } from './Triggers'
 import { InvitationStatus, loadInvitations, loadCachedInvitation, loadAcceptedInvitations } from '../api/Invitations'
+import { setupGeofences } from './Geofencing'
 
 // Attempts to find a survey with a specified id cached in the Store
 export function loadCachedSurvey(id) {
@@ -102,7 +104,6 @@ export function loadSurveyList(done) {
   });
 }
 
-
 // Saves a Survey object from Parse into our Realm.io local database
 export function cacheParseSurveys(survey) {
   try {
@@ -123,6 +124,17 @@ export function cacheParseSurveys(survey) {
   } catch(e) {
     console.error(e)
   }
+}
+
+export function acceptSurvey(survey, done) {
+  loadParseFormDataBySurveyId(survey.id, ()=>{
+    checkSurveyTimeTriggers(survey, true);
+    if (done) done(null);
+  })
+}
+
+export function declineSurvey(survey) {
+  removeTriggers(survey.id);
 }
 
 // Gets the name of the owner of a Survey and saves it to Realm database.

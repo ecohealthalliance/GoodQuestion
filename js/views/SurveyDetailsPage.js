@@ -22,7 +22,8 @@ import ViewText from '../components/ViewText'
 import MapPage from './MapPage'
 import CalendarPage from './CalendarPage'
 
-import { getFormAvailability } from '../api/Surveys'
+import { getFormAvailability, acceptSurvey, declineSurvey } from '../api/Surveys'
+import { loadCachedForms } from '../api/Forms'
 import { loadCachedQuestionsFromForms } from '../api/Questions'
 import { checkSurveyTimeTriggers, removeTriggers } from '../api/Triggers'
 import { setupGeofences } from '../api/Geofencing'
@@ -36,7 +37,7 @@ const SurveyDetailsPage = React.createClass ({
 
   getInitialState() {
     const invitation = loadCachedInvitationById(this.props.survey.id);
-    const forms = this.props.survey.getForms();
+    const forms = loadCachedForms(this.props.survey.id);
     const questions = loadCachedQuestionsFromForms(forms);
 
     let status = invitation && invitation.status ? invitation.status : InvitationStatus.PENDING;
@@ -61,8 +62,12 @@ const SurveyDetailsPage = React.createClass ({
     }
   },
 
+  componentWillUnmount() {
+    this.cancelCallbacks = true;
+  },
+
   /* Methods */
-  acceptSurvey() {
+  acceptCurrentSurvey() {
     const self = this;
     const status = InvitationStatus.ACCEPTED;
     this.setState({status: status});
@@ -71,15 +76,18 @@ const SurveyDetailsPage = React.createClass ({
         console.warn(err);
         return;
       }
-      checkSurveyTimeTriggers(this.props.survey, true);
-      setupGeofences();
+      acceptSurvey(self.props.survey, (err, result) => {
+        if (!self.cancelCallbacks) {
+          self.getSurveyData();
+        }
+      });
       self.getSurveyData();
     });
   },
 
-  declineSurvey() {
+  declineCurrentSurvey() {
     if (this.state.status != 'accepted') {
-      this.confirmDeclineSurvey();
+      this.confirmDeclineCurrentSurvey();
     } else {
       Alert.alert(
         'Decline survey',
@@ -87,42 +95,44 @@ const SurveyDetailsPage = React.createClass ({
         [
           {text: 'Cancel', onPress: () => {console.log('Survey decline canceled')}, style: 'cancel'},
           {text: 'OK', onPress: () => {
-            this.confirmDeclineSurvey();
+            this.confirmDeclineCurrentSurvey();
           }},
         ]
       )
     }
   },
 
-  confirmDeclineSurvey() {
+  confirmDeclineCurrentSurvey() {
     const status = InvitationStatus.DECLINED;
     markInvitationStatus(this.props.survey.id, status, (err, res) => {
       if (err) {
         console.warn(err);
         return;
       }
-      removeTriggers(this.props.survey.id);
+      declineSurvey(this.props.survey);
       this.props.navigator.pop();
     });
   },
 
   getSurveyData() {
+    const questions = loadCachedQuestionsFromForms(this.state.forms, true);
     getFormAvailability(this.props.survey.id, (err, availability) => {
       if (err) {
         console.warn(err);
         return;
       }
 
-      console.log(availability);
-
       // Detect changes
       if (
         availability.availableTimeTriggers !== this.state.availability.availableTimeTriggers ||
         availability.nextTimeTrigger !== this.state.availability.nextTimeTrigger ||
-        availability.geofenceTriggersInRange !== this.state.availability.geofenceTriggersInRange
+        availability.geofenceTriggersInRange !== this.state.availability.geofenceTriggersInRange ||
+        questions.length !== this.state.questionCount
       ) {
         this.setState({
           availability: availability,
+          questions: questions,
+          questionCount: questions.length,
         });
       }
     });
@@ -165,10 +175,10 @@ const SurveyDetailsPage = React.createClass ({
 
     return (
       <View style={[Styles.survey.acceptanceButtons, acceptedButtonContainerStyle]}>
-        <Button style={acceptButtonStyle} textStyle={acceptButtonTextStyle} action={this.acceptSurvey}>
+        <Button style={acceptButtonStyle} textStyle={acceptButtonTextStyle} action={this.acceptCurrentSurvey}>
           <Icon name='check-circle' size={18} color={this.state.status === 'accepted' ?  Color.background2 : Color.positive} /> Accept
         </Button>
-        <Button style={declineButtonStyle} textStyle={declineButtonTextStyle} action={this.declineSurvey}>
+        <Button style={declineButtonStyle} textStyle={declineButtonTextStyle} action={this.declineCurrentSurvey}>
           <Icon name='times-circle' size={18} color={this.state.status === 'declined' ?  Color.background2 : Color.warning} /> Decline
         </Button>
       </View>
@@ -228,16 +238,25 @@ const SurveyDetailsPage = React.createClass ({
             <Text style={Styles.type.h3}>{this.props.survey.description}</Text>
           </View>
 
-          <View style={Styles.survey.surveyStats}>
-            <View style={Styles.survey.surveyStatsBlock}>
-              <Text>Number of Forms</Text>
-              <Text style={Styles.survey.surveyStatsNumber}>{this.state.formCount}</Text>
+          {
+            this.state.status == InvitationStatus.ACCEPTED && this.state.questionCount > 0 ?
+            <View style={Styles.survey.surveyStats}>
+              <View style={Styles.survey.surveyStatsBlock}>
+                <Text>Number of Forms</Text>
+                <Text style={Styles.survey.surveyStatsNumber}>{this.state.formCount}</Text>
+              </View>
+              <View style={Styles.survey.surveyStatsBlock}>
+                <Text>Number of Questions</Text>
+                <Text style={Styles.survey.surveyStatsNumber}>{this.state.questionCount}</Text>
+              </View>
             </View>
-            <View style={Styles.survey.surveyStatsBlock}>
-              <Text>Number of Questions</Text>
-              <Text style={Styles.survey.surveyStatsNumber}>{this.state.questionCount}</Text>
+            :
+            <View style={Styles.survey.surveyStats}>
+              <View style={Styles.survey.surveyStatsBlock}>
+                <Text>Contains {this.state.formCount} Forms</Text> 
+              </View>
             </View>
-          </View>
+          }
 
           { this.state.status === 'accepted' ? this.renderFormAvailability() : null }
 

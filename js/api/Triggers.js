@@ -4,7 +4,7 @@ import Parse from 'parse/react-native'
 import realm from '../data/Realm'
 import { loadAllAcceptedSurveys } from './Surveys'
 import { loadAcceptedInvitations } from '../api/Invitations'
-import { removeGeofenceById } from '../api/Geofencing'
+import { removeGeofenceById, setupGeofences, addGeofence } from '../api/Geofencing'
 
 // Queries the connected Parse server for a list of Triggers.
 export function loadTriggers(form, survey, callback) {
@@ -17,11 +17,12 @@ export function loadTriggers(form, survey, callback) {
         success: function(results) {
           for (var i = 0; i < results.length; i++) {
             if (results[i].get('type') === 'datetime') {
-              cacheTimeTrigger(results[i], form, survey)
+              cacheTimeTrigger(results[i], form, survey);
             } else if (results[i].get('type') === 'geofence') {
-              cacheGeofenceTrigger(results[i], form, survey)
+              cacheGeofenceTrigger(results[i], form, survey);
             }
           }
+
           if (callback) callback(null, results)
         },
         error: function(error, results) {
@@ -132,20 +133,24 @@ export function cacheTimeTrigger(trigger, form, survey) {
  */
 export function cacheGeofenceTrigger(trigger, form, survey) {
   try {
-    realm.write(() => {
-      realm.create('GeofenceTrigger', {
-        id: trigger.id,
-        formId: form.id,
-        surveyId: survey.id,
+    let newTrigger = {
+      id: trigger.id,
+      formId: form.id,
+      surveyId: survey.id,
 
-        title: form.get('title'),
-        latitude: trigger.get('properties').latitude,
-        longitude: trigger.get('properties').longitude,
-        radius: trigger.get('properties').radius || 10,
-      }, true)
-    })
+      title: form.get('title'),
+      latitude: trigger.get('properties').latitude,
+      longitude: trigger.get('properties').longitude,
+      radius: trigger.get('properties').radius || 10,
+
+      updateTimestamp: Date.now(),
+    };
+    realm.write(() => {
+      realm.create('GeofenceTrigger', newTrigger, true);
+    });
+    addGeofence(newTrigger);
   } catch(e) {
-    console.warn(e)
+    console.warn(e);
   }
 }
 
