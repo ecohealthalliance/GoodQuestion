@@ -12,6 +12,7 @@ import Calendar from '../components/Calendar/Calendar';
 import CalendarEvent from '../components/Calendar/CalendarEvent';
 import Loading from '../components/Loading';
 
+import { loadCachedFormDataById } from '../api/Forms'
 import { loadCachedTimeTriggers } from '../api/Triggers'
 
 const CalendarPage = React.createClass ({
@@ -44,6 +45,7 @@ const CalendarPage = React.createClass ({
       const responseLength = response.length;
       const eventDates = [];
       const eventIndex = {};
+      console.log(response);
       for (let i = 0; i < responseLength; i++) {
         const date = moment(response[i].datetime).format('YYYY-MM-DD');
         eventDates.push(date);
@@ -52,6 +54,9 @@ const CalendarPage = React.createClass ({
         eventIndex[date].push({
           datetime: response[i].datetime,
           title: response[i].title,
+          triggerId: response[i].id,
+          formId: response[i].formId,
+          surveyId: response[i].surveyId,
         });
       }
 
@@ -93,6 +98,7 @@ const CalendarPage = React.createClass ({
         title: moment(eventDate).format('MMMM Do YYYY'),
         description: event.title,
         availability: 'Available: ' + moment(event.datetime).format('LT'),
+        formId: event.formId,
       };
     } else {
       return null;
@@ -101,6 +107,7 @@ const CalendarPage = React.createClass ({
 
   /* Render */
   renderSelectedEvents() {
+    const self = this;
     if (this.state.selectedEvent) {
       const event = this.state.selectedEvent;
       return (
@@ -111,7 +118,17 @@ const CalendarPage = React.createClass ({
           description={event.description}
           availability={event.availability}
           questionCount={10}
-          properties={{}}
+          onPress={() => {
+            console.log(event);
+            const data = loadCachedFormDataById(event.formId);
+            self.props.navigator.push({
+              path: 'form',
+              title: data.survey.title,
+              survey: data.survey,
+              form: data.form,
+              type: 'datetime',
+            });
+          }}
         />
       )
     } else {
