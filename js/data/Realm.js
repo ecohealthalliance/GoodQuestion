@@ -11,20 +11,54 @@ import TimeTrigger from '../models/TimeTrigger'
 import GeofenceTrigger from '../models/GeofenceTrigger'
 import Test from '../models/Test'
 
-const realmInstance = new Realm({
-  schemaVersion: 53,
-  schema: [
-    Survey,
-    Form,
-    Question,
-    Notification,
-    TimeTrigger,
-    GeofenceTrigger,
-    Submission,
-    Invitation,
-    Test,
-  ],
-})
+const SCHEMA_VERSION = 53;
+const SCHEMA = [
+  Survey,
+  Form,
+  Question,
+  Notification,
+  TimeTrigger,
+  GeofenceTrigger,
+  Submission,
+  Invitation,
+  Test,
+];
+
+// Default Realm.io instance
+let realmInstance = new Realm({
+  schemaVersion: SCHEMA_VERSION,
+  schema: SCHEMA,
+});
+
+export function initializeUserRealm(id) {
+  if (!id || id == 'undefined' || id == 'default') {
+    console.log('No user ID provided ')
+    return;
+  }
+
+  try {
+    const path = id + '.realm';
+
+    let currentPath = _.split(realmInstance.path,'/');
+    currentPath = currentPath[currentPath.length-1];
+
+    if (path != currentPath) {
+      console.log('DIFFERENT PATHS')
+      console.log(path)
+      console.log(currentPath)
+      // if (realmInstance) {
+      //   realmInstance.close();
+      // }
+      realmInstance = new Realm({
+        path: path,
+        schemaVersion: SCHEMA_VERSION,
+        schema: SCHEMA,
+      });
+    }
+  } catch (e) {
+    console.warn(e);
+  }
+}
 
 /**
  * Erases the current cache of a target object

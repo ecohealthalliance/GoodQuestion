@@ -4,7 +4,8 @@ import Store from '../data/Store'
 import async from 'async'
 
 import Settings from '../settings'
-import { addUserToInstallation } from '../api/Installations'
+import { addUserToInstallation } from './Installations'
+import { initializeUserRealm } from '../data/Realm'
 
 
 let _currentUser = null;
@@ -81,6 +82,7 @@ export function isAuthenticated(done) {
     if (err) {
       done(false);
     } else {
+      initializeUserRealm(user.id)
       done(true);
     }
   });
