@@ -51,6 +51,7 @@ export function authenticate(username, password, done) {
     parse: ['openam', (cb, results) => {
       Parse.User.logIn(username, password).then(
         function(user) {
+          initializeUserRealm(user.id);
           cb(null, user);
         },
         function(user) {
@@ -82,7 +83,7 @@ export function isAuthenticated(done) {
     if (err) {
       done(false);
     } else {
-      initializeUserRealm(user.id)
+      initializeUserRealm(user.id);
       done(true);
     }
   });
