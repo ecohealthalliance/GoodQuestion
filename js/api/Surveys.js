@@ -31,7 +31,7 @@ export function loadAllAcceptedSurveys(callback) {
     let surveys = []
     const invitationsLength = invitations.length;
     for (var i = 0; i < invitationsLength; i++) {
-      let acceptedSurvey = realm.objects('Survey').filtered(`id = "${invitations[i].surveyId}"`)[0]
+      let acceptedSurvey = realm.objects('Survey').filtered(`id = "${invitations[i].surveyId}"`)[0];
       if (acceptedSurvey) {
         surveys.push(acceptedSurvey)
       }
@@ -68,14 +68,12 @@ export function loadSurveys(callback) {
       let cachedSurveys = realm.objects('Survey')
       for (var i = 0; i < results.length; i++) {
         let cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0];
-        let cachedSurveyTriggers = realm.objects('TimeTrigger').filtered(`surveyId = "${results[i].id}"`);
-        if( !cachedSurvey ||
-            !cachedSurveyTriggers ||
-            cachedSurveyTriggers.length == 0 ||
-            cachedSurvey.updatedAt.getTime() != results[i].updatedAt.getTime()
-          ) {
+        if (!cachedSurvey) {
           cacheParseSurveys(results[i]);
           loadForms(results[i]);
+        } else if (cachedSurvey.updatedAt.getTime() != results[i].updatedAt.getTime()) {
+          cacheParseSurveys(results[i]);
+          refreshAcceptedSurveyData(results[i].id);
         }
       }
       Store.lastParseUpdate = Date.now();
@@ -109,6 +107,32 @@ export function loadSurveyList(done) {
   });
 }
 
+/**
+ * Refreshes all of the data of accepted surveys, including Questions and Triggers
+ * @return {[type]} [description]
+ */
+export function refreshAcceptedSurveyData(surveyId) {
+  loadAllAcceptedSurveys((err, results) => {
+    if (surveyId) {
+      const surveys = _.filter(results, (survey) => { return survey.id === surveyId });
+      const survey = surveys[0];
+
+      if (survey) {
+        // loadParseFormDataBySurveyId(survey.id);
+      }
+    } else {
+      const resultLength = results.length;
+      try {
+        for (var i = 0; i < resultLength; i++) {
+          loadParseFormDataBySurveyId(results[i].id)
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+  });
+}
+
 // Saves a Survey object from Parse into our Realm.io local database
 export function cacheParseSurveys(survey) {
   try {
@@ -131,6 +155,11 @@ export function cacheParseSurveys(survey) {
   }
 }
 
+/**
+ * Loads the accepted Survey's data and performs a check on its triggers
+ * @param  {object}   survey Realm 'Survey' object
+ * @param  {Function} done   Callback function to execute when Questions and Triggers are loaded from Parse
+ */
 export function acceptSurvey(survey, done) {
   loadParseFormDataBySurveyId(survey.id, ()=>{
     checkSurveyTimeTriggers(survey, true);
@@ -138,6 +167,11 @@ export function acceptSurvey(survey, done) {
   })
 }
 
+/**
+ * Runs after a Survey decline.
+ * Currently only clears geofence and datetime triggers cached in Realm.
+ * @param  {object} survey Realm 'Survey' object.
+ */
 export function declineSurvey(survey) {
   removeTriggers(survey.id);
 }

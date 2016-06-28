@@ -54,7 +54,7 @@ const SurveyListPage = React.createClass ({
   componentDidMount() {
     this.mountTimeStamp = Date.now()
 
-    // Update Survey List from Parse only once every 3 minutes
+    // Automatically update Survey List from Parse only once every 3 minutes
     if ( this._surveys.length === 0 || Store.lastParseUpdate + 180000 < Date.now() ) {
       loadSurveyList(this.loadList);
     } else {
