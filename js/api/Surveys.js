@@ -69,12 +69,11 @@ export function loadSurveys(callback) {
       for (var i = 0; i < results.length; i++) {
         let cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0];
         if (!cachedSurvey) {
-          cacheParseSurveys(results[i]);
           loadForms(results[i]);
         } else if (cachedSurvey.updatedAt.getTime() != results[i].updatedAt.getTime()) {
-          cacheParseSurveys(results[i]);
           refreshAcceptedSurveyData(results[i].id);
         }
+        cacheParseSurveys(results[i]);
       }
       Store.lastParseUpdate = Date.now();
       if (callback) callback(null, results);
