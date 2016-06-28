@@ -110,7 +110,6 @@ export function loadForms(survey, callback) {
  * @param  {Function} callback Callback function to return after Questions for each form have been updated. Can return multiple times to update components.
  */
 export function loadParseFormDataBySurveyId(surveyId, callback) {
-  try {
   const Survey = Parse.Object.extend("Survey");
   const surveyQuery = new Parse.Query(Survey);
   // surveyQuery.equalTo("id", surveyId);
@@ -161,7 +160,6 @@ export function loadParseFormDataBySurveyId(surveyId, callback) {
 
 
   })
-  } catch(e) { console.warn(e)}
 }
 
 /**

@@ -52,26 +52,26 @@ export function loadCachedTimeTriggers(options = {}, callback) {
     }
     
     try {
-      let triggers = [];
-      const responseLength = response.length;
 
+      let triggers = [];
       let filter = '';
       let filterOptions = '';
-      if (options.excludeCompleted) filterOptions += ' AND completed == false';
       if (options.excludeCompleted) filterOptions += ' AND completed == false';
       if (options.excludeExpired) filterOptions += ' AND expired == false';
       if (options.includeOnlyTriggered) filterOptions += ' AND triggered == true';
       
       if (options.surveyId) {
-        filter = `surveyId = "${options.surveyId.id}"${filterOptions}`;
+        filter = `surveyId = "${options.surveyId}"${filterOptions}`;
         triggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
       } else {
+        const responseLength = response.length;
         for (var i = 0; i < responseLength; i++) {
           filter = `surveyId = "${response[i].id}"${filterOptions}`;
           let surveyTriggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
           triggers = _.unionBy(triggers, surveyTriggers, 'id');
         }
       }
+      
       callback(null, triggers);
     } catch (err) {
       callback(err, []);
@@ -84,7 +84,7 @@ export function loadCachedTimeTriggers(options = {}, callback) {
  * Fetches all cached geofence triggers for the accepted surveys
  * @return {object}  Realm object containing an array of 'GeofenceTrigger' objects,
  */
-export function loadAllCachedGeofenceTriggers(options = {}, callback) {
+export function loadCachedGeofenceTriggers(options = {}, callback) {
   loadAllAcceptedSurveys((err, response) => {
     if (err) {
       console.warn(err);
@@ -92,13 +92,22 @@ export function loadAllCachedGeofenceTriggers(options = {}, callback) {
       return
     }
     
+    let filter = '';
+    let filterOptions = '';
     let triggers = [];
-    const responseLength = response.length;
-    for (var i = 0; i < responseLength; i++) {
-      let filter = `surveyId = "${response[i].id}"`;
-      if (options.excludeCompleted) filter += ' AND completed == false';
-      let surveyTriggers = Array.from(realm.objects('GeofenceTrigger').filtered(filter));
-      triggers = _.unionBy(triggers, surveyTriggers, 'id');
+    if (options.excludeCompleted) filterOptions += ' AND completed == false';
+    if (options.includeOnlyTriggered) filterOptions += ' AND triggered == true';
+
+    if (options.surveyId) {
+      filter = `surveyId = "${options.surveyId}"${filterOptions}`;
+      triggers = Array.from(realm.objects('GeofenceTrigger').filtered(filter));
+    } else {
+      const responseLength = response.length;
+      for (var i = 0; i < responseLength; i++) {
+        filter = `surveyId = "${response[i].id}"${filterOptions}`;
+        let surveyTriggers = Array.from(realm.objects('GeofenceTrigger').filtered(filter));
+        triggers = _.unionBy(triggers, surveyTriggers, 'id');
+      }
     }
 
     callback(null, triggers);

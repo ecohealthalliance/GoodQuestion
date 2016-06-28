@@ -6,7 +6,7 @@ import realm from '../data/Realm'
 import PushNotification from 'react-native-push-notification';
 
 import { BackgroundGeolocation } from './BackgroundProcess'
-import { loadAllCachedGeofenceTriggers } from './Triggers'
+import { loadCachedGeofenceTriggers } from './Triggers'
 import { showToast } from './Notifications'
 
 
@@ -40,7 +40,7 @@ export function clearActiveMap(component) {
 export function setupGeofences() {
   // BackgroundGeolocation.stop()
   
-  loadAllCachedGeofenceTriggers({excludeCompleted: true}, (err, response) => {
+  loadCachedGeofenceTriggers({excludeCompleted: true}, (err, response) => {
     resetGeofences((err) => {
       if (err) {
         console.warn('Unable to load geofence triggers');

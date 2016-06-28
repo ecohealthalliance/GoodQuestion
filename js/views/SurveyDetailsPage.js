@@ -276,8 +276,8 @@ const SurveyDetailsPage = React.createClass ({
   render() {
     let tab;
     switch(this.state.activeTab) {
-      case 'geofence': tab = <MapPage navigator={this.props.navigator} />; break;
-      case 'scheduled': tab = <CalendarPage navigator={this.props.navigator} />; break;
+      case 'geofence': tab = <MapPage navigator={this.props.navigator} survey={this.props.survey} />; break;
+      case 'scheduled': tab = <CalendarPage navigator={this.props.navigator} survey={this.props.survey} />; break;
       default: tab = this.renderSurveyInfoPage(); break;
     }
 
