@@ -8,6 +8,7 @@ import {
 } from 'react-native'
 import realm from '../data/Realm'
 import _ from 'lodash'
+import moment from 'moment'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 import Store from '../data/Store'
