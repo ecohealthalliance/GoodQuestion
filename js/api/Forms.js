@@ -103,7 +103,12 @@ export function loadForms(survey, callback) {
 }
 
 
-
+/**
+ * Loads Form data from Parse, then caches it.
+ * Also collects and caches Question/Trigger data related to those forms.
+ * @param  {string}   surveyId ID of the Survey stored in the Parse server.
+ * @param  {Function} callback Callback function to return after Questions for each form have been updated. Can return multiple times to update components.
+ */
 export function loadParseFormDataBySurveyId(surveyId, callback) {
   try {
   const Survey = Parse.Object.extend("Survey");
@@ -159,6 +164,10 @@ export function loadParseFormDataBySurveyId(surveyId, callback) {
   } catch(e) { console.warn(e)}
 }
 
+/**
+ * Tags notifications and triggers as completed after a form has been filled.
+ * @param  {string} formId ID of the completed form
+ */
 export function completeForm(formId) {
   console.log('COMPLETING FORM: ' + formId);
 

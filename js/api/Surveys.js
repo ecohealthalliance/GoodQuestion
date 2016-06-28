@@ -40,6 +40,11 @@ export function loadAllAcceptedSurveys(callback) {
   })
 }
 
+/**
+ * Gets the Forms from a specified Survey from Parse
+ * @param  {string}   surveyId ID of the target survey to fetch from
+ * @param  {Function} callback Callback function which returns an array of Parse 'Form' objects
+ */
 export function getSurveyForms(surveyId, callback){
   const Survey = Parse.Object.extend("Survey")
   const query = new Parse.Query(Survey)

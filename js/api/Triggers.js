@@ -212,6 +212,10 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
   });
 }
 
+/**
+ * Removes triggers from Realm cache of a specified Survey
+ * @param  {string} surveyId The ID of the target survey
+ */
 export function removeTriggers(surveyId) {
   const timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId="${surveyId}"`);
   const geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`);

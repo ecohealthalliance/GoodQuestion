@@ -103,6 +103,7 @@ export function addGeofence(trigger) {
  * @param  {Function} callback Callback function to execute afterwards.
  */
 export function resetGeofences(callback) {
+  supressNotificationsTimestamp = Date.now() + 5000;
   BackgroundGeolocation.removeGeofences(
     function success() {
       console.log('Cleared current geofencing settings.')
@@ -116,7 +117,12 @@ export function resetGeofences(callback) {
   )
 }
 
+/**
+ * Removes a Geofence from the background check
+ * @param  {string} id Geofence indentifier
+ */
 export function removeGeofenceById(id) {
+  supressNotificationsTimestamp = Date.now() + 5000;
   BackgroundGeolocation.removeGeofence(id, () => {
     console.log('Removed geofence: ' + id);
   });
@@ -147,6 +153,10 @@ export function getUserLocationData(callback) {
   });
 }
 
+/**
+ * Event function for when geofences are entered, exited, or dwelled on.
+ * @param  {objects} params Parameters provided by the crossed geofence
+ */
 function crossGeofence(params) {
   console.log('Geofence crossed: ' + params.action + ' - ' + params.identifier);
   
@@ -191,7 +201,7 @@ function crossGeofence(params) {
         trigger.updateTimestamp = Date.now();
       })
     } else {
-      alert('Trigger not found.');
+      console.warn('Trigger not found.');
     }
   } catch (e) {
     console.warn(e)

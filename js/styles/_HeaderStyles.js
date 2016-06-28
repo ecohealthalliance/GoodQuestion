@@ -15,7 +15,7 @@ const HeaderStyles = StyleSheet.create({
     left: 0,
     right: 0,
     height: Variables.HEADER_SIZE,
-    paddingTop: 20,
+    paddingTop: Variables.HEADER_PADDING,
     paddingHorizontal: 0,
     backgroundColor: Color.background1,
   },
@@ -57,13 +57,13 @@ const HeaderStyles = StyleSheet.create({
 
   navBarLeftButton: {
     flex: .1,
-    padding: Platform.OS == 'ios' ? 14 : 20,
+    padding: Platform.OS == 'ios' ? 14 : 18,
     paddingRight: Platform.OS == 'ios' ? 14 : 16,
     marginRight: 2,
   },
   navBarRightButton: {
     flex: .1,
-    padding: Platform.OS == 'ios' ? 14 : 20,
+    padding: Platform.OS == 'ios' ? 14 : 18,
     paddingRight: Platform.OS == 'ios' ? 10 : 14,
 
   },
