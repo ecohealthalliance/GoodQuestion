@@ -1,7 +1,6 @@
-'use strict';
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+import React from 'react';
+import ReactNative from 'react-native';
+import {
     StyleSheetRegistry,
     StyleSheet,
     Image,
@@ -11,10 +10,10 @@ var {
     TouchableWithoutFeedback
 } = ReactNative;
 
-var flattenStyle = ReactNative.StyleSheet.flatten;
-var PropTypes = React.PropTypes;
+const flattenStyle = ReactNative.StyleSheet.flatten;
+const PropTypes = React.PropTypes;
 
-var Checkbox = React.createClass({
+const Checkbox = React.createClass({
   propTypes: {
     label: PropTypes.string,
     checked: PropTypes.bool.isRequired,
@@ -52,14 +51,14 @@ var Checkbox = React.createClass({
       throw new Error('Checkbox requires a property for uncheckedComponent')
     }
 
-    var checkbox;
+    let checkbox;
     if (this.props.checked) {
       checkbox = this.props.checkedComponent;
     } else {
       checkbox = this.props.uncheckedComponent;
     }
 
-    var labelContainer;
+    let labelContainer;
     if (this.props.label) {
       labelContainer = (
         <View style={[styles.labelContainer, this.props.labelContainerStyle]}>
@@ -76,12 +75,12 @@ var Checkbox = React.createClass({
       labelContainer = null;
     }
 
-    var containerStyle = [
+    const containerStyle = [
         styles.container,
         this.props.containerStyle
     ];
 
-    var container = (
+    let container = (
       <View style={containerStyle}>
         {checkbox}
         {labelContainer}
@@ -113,7 +112,7 @@ var Checkbox = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
