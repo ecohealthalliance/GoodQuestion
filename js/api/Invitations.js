@@ -381,7 +381,7 @@ export function loadInvitations(done) {
                 surveyId: invitation.get('surveyId'),
                 status: invitation.get('status'),
                 dirty: false,
-              });
+              }, true);
             });
             savedInvitations++
           } catch(e) {
