@@ -34,14 +34,18 @@ export function configureGeolocationService(callback) {
 
       // Application config
       debug: false,
-      forceReloadOnLocationChange: false,  // Android
-      forceReloadOnMotionChange: false,    // Android
-      forceReloadOnGeofence: false,        // Android
-      stopOnTerminate: false,              // Android
+
+      // Android config
+      forceReloadOnLocationChange: false,
+      forceReloadOnMotionChange: false,
+      forceReloadOnGeofence: false,
+      stopOnTerminate: false,
       startOnBoot: true,
 
-      useSignificantChangesOnly: false, // iOS
-      disableMotionActivityUpdates: false, // iOS
+      // iOS config
+      stationaryRadius: 100, // restart tracking after the user has moved 100m
+      useSignificantChangesOnly: false,
+      disableMotionActivityUpdates: false,
     }, callback)
   } catch (e) {
     console.error(e)

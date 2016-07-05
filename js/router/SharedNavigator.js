@@ -47,7 +47,7 @@ import ProfilePage from '../views/ProfilePage'
 import { upsertInstallation } from '../api/Installations'
 import { checkTimeTriggers } from '../api/Triggers'
 import { loadCachedFormDataById } from '../api/Forms'
-import { addTimeTriggerNotification } from '../api/Notifications'
+import { addTimeTriggerNotification, notificateOnBackground } from '../api/Notifications'
 
 // Background
 import { initializeGeolocationService } from '../api/BackgroundProcess'
@@ -168,6 +168,9 @@ const SharedNavigator = React.createClass ({
   },
 
   openControlPanel() {
+
+    notificateOnBackground('Test test', true)
+
     this._controlPanel.navigating = false
     this._drawer.open()
   },
