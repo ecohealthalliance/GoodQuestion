@@ -1,3 +1,10 @@
+import { 
+  Platform,
+  Vibration,
+  AppState,
+  ToastAndroid,
+} from 'react-native';
+
 import _ from 'lodash';
 import Parse from 'parse/react-native';
 import Store from '../data/Store';
@@ -7,8 +14,6 @@ import pubsub from 'pubsub-js';
 import Color from '../styles/Color'
 import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
 import { loadForms } from './Forms';
-
-
 
 
 // Finds and returns a list of pending Notifications from Realm
@@ -53,4 +58,16 @@ export function showToast(title, message, icon, duration, action) {
     action: action,
   });
   pubsub.publish(ToastAddresses.SHOW, toastMessage);
+}
+
+
+
+export function notificateOnBackground(message, vibrate) {
+  if (Platform.OS === 'android') {
+    ToastAndroid.show(message, ToastAndroid.SHORT);
+  }
+
+  if (vibrate && Store.userSettings.vibrate) {
+    Vibration.vibrate([0, 500, 200, 500]);
+  }
 }

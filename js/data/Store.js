@@ -1,7 +1,11 @@
 // Used for caching global variables that may not fit in a Realm database
 const Store = {
   platform: null,
-  server: 'local',
+  
+  userSettings: {
+    vibrate: true,
+    notifiationSound: '',
+  },
 
   logged_in: false,
   email_verified: false,
