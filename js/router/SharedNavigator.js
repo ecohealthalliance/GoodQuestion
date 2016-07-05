@@ -47,7 +47,7 @@ import ProfilePage from '../views/ProfilePage'
 import { upsertInstallation } from '../api/Installations'
 import { checkTimeTriggers } from '../api/Triggers'
 import { loadCachedFormDataById } from '../api/Forms'
-import { addTimeTriggerNotification } from '../api/Notifications'
+import { addTimeTriggerNotification, notificateOnBackground } from '../api/Notifications'
 
 // Background
 import { initializeGeolocationService } from '../api/BackgroundProcess'

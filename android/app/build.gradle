@@ -151,6 +151,7 @@ dependencies {
         force = true;
     }
     compile project(':react-native-push-notification')
+    compile project(':RNSound')
 }
 
 // Run this once to be able to run the application with BUCK

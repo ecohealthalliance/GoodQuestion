@@ -10,8 +10,9 @@ import Parse from 'parse/react-native';
 import Store from '../data/Store';
 import realm from '../data/Realm';
 import pubsub from 'pubsub-js';
+import Sound from 'react-native-sound';
 
-import Color from '../styles/Color'
+import Color from '../styles/Color';
 import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
 import { loadForms } from './Forms';
 
@@ -63,10 +64,21 @@ export function showToast(title, message, icon, duration, action) {
 
 
 export function notificateOnBackground(message, vibrate) {
-  if (Platform.OS === 'android') {
-    ToastAndroid.show(message, ToastAndroid.SHORT);
-  }
+  // Notify with sound
+  playNotificationSound(vibrate);
 
+  // Send a native toast on Android devices.
+  // if (message && Platform.OS === 'android') {
+  //   ToastAndroid.show(message, ToastAndroid.SHORT);
+  // }
+}
+
+/**
+ * Plays the default notification sound.
+ * @param  {bool} vibrate   Makes the user's phone vibrate if they haven't disabled vibration.
+ */
+export function playNotificationSound(vibrate) {
+  console.log(Sound)
   if (vibrate && Store.userSettings.vibrate) {
     Vibration.vibrate([0, 500, 200, 500]);
   }

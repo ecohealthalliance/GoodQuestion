@@ -10,6 +10,7 @@ import com.facebook.react.shell.MainReactPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.transistorsoft.rnbackgroundgeolocation.RNBackgroundGeolocation;
 import com.AirMaps.AirPackage;
+import com.zmxv.RNSound.RNSoundPackage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,7 @@ public class MainActivity extends ReactActivity {
                 new MainReactPackage(),
                 new VectorIconsPackage(),
                 new AirPackage(),
+                new RNSoundPackage(),
                 new RealmReactPackage(),
                 mReactNativePushNotificationPackage
         );
