@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   StyleSheet,
+  TouchableOpacity,
   Text,
   TextInput,
   View
@@ -16,9 +17,9 @@ const CalendarEvent = React.createClass ({
     id: React.PropTypes.string.isRequired,
     type: React.PropTypes.string.isRequired,
     title: React.PropTypes.string.isRequired,
-    description: React.PropTypes.number.isRequired,
-    availability: React.PropTypes.number.isRequired,
-    properties: React.PropTypes.object.isRequired,
+    description: React.PropTypes.string.isRequired,
+    availability: React.PropTypes.string.isRequired,
+    onPress: React.PropTypes.func,
   },
 
   getDefaultProps: function () {
@@ -34,8 +35,8 @@ const CalendarEvent = React.createClass ({
       title: this.props.title,
       description: this.props.description,
       availability: this.props.availability,
-      properties: this.props.properties,
       triggered: false,
+      onPress: this.props.onPress,
     }
   },
 
@@ -46,14 +47,16 @@ const CalendarEvent = React.createClass ({
       title: nextProps.title,
       description: nextProps.description,
       availability: nextProps.availability,
-      properties: nextProps.properties,
       triggered: false,
+      onPress: nextProps.onPress,
     })
   },
 
   /* Methods */
-  update() {
-
+  handlePress() {
+    if (this.state.onPress) {
+      this.state.onPress();
+    }
   },
 
   getCategory() {
@@ -78,10 +81,13 @@ const CalendarEvent = React.createClass ({
         <View style={Styles.calendar.eventCategoryRow}>
           {this.getCategory()}
         </View>
-        <View style={Styles.calendar.eventDescription}>
-          <Text style={[Styles.type.h3, Styles.calendar.eventText]}>{this.state.description}</Text>
-          <Text style={[Styles.type.h3, Styles.calendar.eventText]}>{this.state.availability}</Text>
-        </View>
+        <TouchableOpacity onPress={this.handlePress}>
+          <View style={Styles.calendar.eventDescription}>
+            <Text style={[Styles.type.h3, Styles.calendar.eventText]}>{this.state.description}</Text>
+            <Text style={[Styles.type.h3, Styles.calendar.eventText]}>{this.state.availability}</Text>
+          </View>
+        </TouchableOpacity>
+        
       </View>
     )
   }

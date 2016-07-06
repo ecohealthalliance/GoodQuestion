@@ -33,7 +33,7 @@ import { InvitationStatus, markInvitationStatus, loadCachedInvitationById } from
 const SurveyDetailsPage = React.createClass ({
   propTypes: {
     survey: React.PropTypes.object.isRequired, // Realm.io Object
-    activeTab: 'survey',
+    activeTab: React.PropTypes.string,
   },
 
   getInitialState() {
@@ -49,6 +49,7 @@ const SurveyDetailsPage = React.createClass ({
       questions: questions,
       questionCount: questions.length,
       status: status,
+      activeTab: 'surveys',
       availability: {
         availableTimeTriggers: 0,
         nextTimeTrigger: false,
