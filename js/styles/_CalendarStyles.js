@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native'
+import { StyleSheet, Dimensions, Platform } from 'react-native'
 import Color from './Color'
 import Variables from './Variables'
 
@@ -133,7 +133,7 @@ const CalendarStyles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'stretch',
     flexDirection: 'row',
-    marginHorizontal: -10,
+    marginHorizontal: Platform.OS === 'android' ? -10 : 0,
     paddingHorizontal: 15,
     paddingVertical: 8,
     backgroundColor: Color.background1,
