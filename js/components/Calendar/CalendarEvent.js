@@ -17,8 +17,8 @@ const CalendarEvent = React.createClass ({
     id: React.PropTypes.string.isRequired,
     type: React.PropTypes.string.isRequired,
     title: React.PropTypes.string.isRequired,
-    description: React.PropTypes.number.isRequired,
-    availability: React.PropTypes.number.isRequired,
+    description: React.PropTypes.string.isRequired,
+    availability: React.PropTypes.string.isRequired,
     onPress: React.PropTypes.func,
   },
 
