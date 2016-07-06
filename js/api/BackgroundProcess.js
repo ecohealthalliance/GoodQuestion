@@ -21,14 +21,14 @@ export function configureGeolocationService(callback) {
       license: Settings.licenses.BackgroundGeolocation.key,
 
       // Geolocation config
-      desiredAccuracy: 100,
+      desiredAccuracy: 10,
       distanceFilter: 50,
-      locationUpdateInterval: 30000,
-      fastestLocationUpdateInterval: 30000,
+      locationUpdateInterval: 10000,
+      fastestLocationUpdateInterval: 10000,
 
       // Activity Recognition config
       minimumActivityRecognitionConfidence: 80,
-      activityRecognitionInterval: 300000,
+      activityRecognitionInterval: 100000,
       stopDetectionDelay: 1,
       stopTimeout: 2,
 
@@ -39,7 +39,7 @@ export function configureGeolocationService(callback) {
       forceReloadOnLocationChange: false,
       forceReloadOnMotionChange: false,
       forceReloadOnGeofence: false,
-      stopOnTerminate: false,
+      stopOnTerminate: true,
       startOnBoot: true,
 
       // iOS config
@@ -50,6 +50,42 @@ export function configureGeolocationService(callback) {
   } catch (e) {
     console.error(e)
   }
+}
+
+export function configureEnergySavingGeolocationService(isInitial) {
+  const options = {
+    // License validations
+    orderId: Settings.licenses.BackgroundGeolocation.bundleId,
+    license: Settings.licenses.BackgroundGeolocation.key,
+
+    // Geolocation config
+    desiredAccuracy: 100,
+    distanceFilter: 80,
+    locationUpdateInterval: 30000,
+    fastestLocationUpdateInterval: 30000,
+
+    // Activity Recognition config
+    minimumActivityRecognitionConfidence: 80,
+    activityRecognitionInterval: 300000,
+    stopDetectionDelay: 1,
+    stopTimeout: 5,
+
+    // Application config
+    debug: false,
+
+    // Android config
+    forceReloadOnLocationChange: false,
+    forceReloadOnMotionChange: false,
+    forceReloadOnGeofence: false,
+    stopOnTerminate: true,
+    startOnBoot: true,
+
+    // iOS config
+    stationaryRadius: 200, // restart tracking after the user has moved 200m
+    useSignificantChangesOnly: true,
+    disableMotionActivityUpdates: true,
+  }
+  BackgroundGeolocation.setConfig();
 }
 
 export function initializeGeolocationService() {

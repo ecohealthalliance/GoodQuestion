@@ -173,13 +173,8 @@ function crossGeofence(params) {
         const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0];
         const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0];
 
-        console.log('GEOFENCE CROSS - IN')
-
         if (form && survey) {
-          console.log('GEOFENCE CROSS - IN 2')
           notificateOnBackground(form.title + ' - New geofence form available.', true);
-
-          console.log('GEOFENCE CROSS - IN 3')
 
           showToast(form.title, 'New geofence form available.', 'globe', 8, () => {
             Store.navigator.push({
