@@ -100,15 +100,38 @@ const SharedNavigator = React.createClass ({
   },
 
   componentDidMount() {
-    if (Platform.OS === 'ios') {
-      PushNotification.requestPermissions();
-    }
+    const self = this;
     isAuthenticated((authenticated) => {
+      if (authenticated) {
+        self.checkNotificationPermissions();
+      }
       this.setState({
         isAuthenticated: authenticated,
         isLoading: false,
       });
     });
+  },
+
+  checkNotificationPermissions() {
+    if (Platform.OS === 'ios') {
+      PushNotification.checkPermissions((result) => {
+        if (
+          PushNotification.isLoaded && 
+          !result.alert || 
+          !result.badge || 
+          !result.sound
+        ) {
+          console.log('Requesting new PushNotification permissions.');
+          PushNotification.requestPermissions().then((permissions)=>{
+            if (!result.alert || !result.badge || !result.sound) {
+              // TODO: Notify of missing permissions and how to fix them.
+              // Settings -> GoodQuestion -> Notifications
+              // Notify only once.
+            }
+          });
+        }
+      })
+    }
   },
 
   _onNotification(notification) {
@@ -136,6 +159,8 @@ const SharedNavigator = React.createClass ({
   _onRegister(registration) {
     const token = registration.token;
     const platform = registration.os;
+
+    this.checkNotificationPermissions();
     if (platform === 'ios') PushNotification.setApplicationIconBadgeNumber(0);
     upsertInstallation(token, platform, (err, res) => {
       if (err) {
