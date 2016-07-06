@@ -64,7 +64,7 @@ export function setupGeofences(callback) {
       console.log('Adding ' + triggerGeofences.length + ' geofences...')
       supressNotificationsTimestamp = Date.now() + 5000;
       BackgroundGeolocation.addGeofences(triggerGeofences, function() {
-          console.log("Successfully added geofences.");
+        console.log("Successfully added geofences.");
       }, function(error) {
           console.warn("Failed to add geofences.", error);
       });
