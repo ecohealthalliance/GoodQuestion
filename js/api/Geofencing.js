@@ -37,7 +37,7 @@ export function clearActiveMap(component) {
  * Creates native geofence objects using the 3rd-party geolocation library.
  * Erases previous set of native geofences and adds new ones based on geofence triggers.
  */
-export function setupGeofences() {
+export function setupGeofences(callback) {
   // BackgroundGeolocation.stop()
   
   loadCachedGeofenceTriggers({excludeCompleted: true}, (err, response) => {
@@ -69,9 +69,7 @@ export function setupGeofences() {
           console.warn("Failed to add geofences.", error);
       });
 
-      BackgroundGeolocation.start(() => {
-        console.info('Geolocation tracking started.');
-      })
+      if (callback) callback();
     })
     BackgroundGeolocation.on('geofence', crossGeofence);
   })
@@ -85,8 +83,8 @@ export function addGeofence(trigger) {
     longitude: trigger.longitude,
     notifyOnEntry: true,
     notifyOnExit: true,
-    notifyOnDwell: true,
-    loiteringDelay: 30000
+    notifyOnDwell: false,
+    loiteringDelay: 60000
   };
   
   supressNotificationsTimestamp = Date.now() + 5000;
