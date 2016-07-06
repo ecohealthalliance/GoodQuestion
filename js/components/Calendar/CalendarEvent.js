@@ -16,9 +16,8 @@ const CalendarEvent = React.createClass ({
     id: React.PropTypes.string.isRequired,
     type: React.PropTypes.string.isRequired,
     title: React.PropTypes.string.isRequired,
-    description: React.PropTypes.number.isRequired,
-    availability: React.PropTypes.number.isRequired,
-    properties: React.PropTypes.object.isRequired,
+    description: React.PropTypes.string.isRequired,
+    availability: React.PropTypes.string.isRequired,
   },
 
   getDefaultProps: function () {
@@ -34,7 +33,6 @@ const CalendarEvent = React.createClass ({
       title: this.props.title,
       description: this.props.description,
       availability: this.props.availability,
-      properties: this.props.properties,
       triggered: false,
     }
   },
@@ -46,16 +44,11 @@ const CalendarEvent = React.createClass ({
       title: nextProps.title,
       description: nextProps.description,
       availability: nextProps.availability,
-      properties: nextProps.properties,
       triggered: false,
     })
   },
 
   /* Methods */
-  update() {
-
-  },
-
   getCategory() {
     if (this.state.type === 'datetime') {
       return (
