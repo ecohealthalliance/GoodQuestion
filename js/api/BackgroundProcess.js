@@ -21,14 +21,14 @@ export function configureGeolocationService(callback) {
       license: Settings.licenses.BackgroundGeolocation.key,
 
       // Geolocation config
-      desiredAccuracy: 10,
+      desiredAccuracy: 100,
       distanceFilter: 50,
-      locationUpdateInterval: 5000,
-      fastestLocationUpdateInterval: 5000,
+      locationUpdateInterval: 30000,
+      fastestLocationUpdateInterval: 30000,
 
       // Activity Recognition config
       minimumActivityRecognitionConfidence: 80,
-      activityRecognitionInterval: 10000,
+      activityRecognitionInterval: 300000,
       stopDetectionDelay: 1,
       stopTimeout: 2,
 
