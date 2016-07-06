@@ -1,14 +1,13 @@
 import React from 'react';
-import ReactNative from 'react-native';
-import {
-    StyleSheetRegistry,
-    StyleSheet,
-    Image,
-    Text,
-    View,
-    TouchableHighlight,
-    TouchableWithoutFeedback
-} = ReactNative;
+import ReactNative, {
+  StyleSheetRegistry,
+  StyleSheet,
+  Image,
+  Text,
+  View,
+  TouchableHighlight,
+  TouchableWithoutFeedback
+} from 'react-native';
 
 const flattenStyle = ReactNative.StyleSheet.flatten;
 const PropTypes = React.PropTypes;
