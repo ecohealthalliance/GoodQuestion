@@ -62,7 +62,11 @@ export function showToast(title, message, icon, duration, action) {
 }
 
 
-
+/**
+ * Sends a local notification to the user. Triggers only when the phone is in a background state.
+ * @param  {string} message Message to appear in the local push notificaiton.
+ * @param  {bool}   vibrate If set to true, the notification will also vibrate the user's device.
+ */
 export function notifyOnBackground(message, vibrate) {
   if (AppState.currentState != 'active') {
     if (Store.userSettings.notifyOnGeofence) {
@@ -72,7 +76,11 @@ export function notifyOnBackground(message, vibrate) {
     }
     
     if (vibrate && Store.userSettings.vibrateOnGeofence) {
-      Vibration.vibrate([0, 500, 200, 500]);
+      if (Platform.OS === 'android') {
+        Vibration.vibrate([0, 500, 200, 500]);
+      } else {
+        Vibration.vibrate();
+      }
     }
   }
 }
