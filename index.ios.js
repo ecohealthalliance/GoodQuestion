@@ -1,36 +1,15 @@
-/**
- * Good Question
- * @flow
- */
+AppRegistry.registerComponent('GoodQuestion', () => GoodQuestion)
 
 import React from 'react'
 import { AppRegistry } from 'react-native'
+import App from './App'
 
-// Model
-import Store from './js/data/Store'
-
-// Router
-import SharedNavigator from './js/router/SharedNavigator'
-
-const PushNotification = require('react-native-push-notification');
-
-
-console.disableYellowBox = true;
-
-/* iOS App */
+/* Android App */
 const GoodQuestion = React.createClass ({
-  /* Life Cycle */
-  getInitialState() {
-    return {
-      store: Store
-    }
-  },
-
   /* Render */
   render() {
-    return ( <SharedNavigator /> )
+    return ( <App /> )
   }
 })
-
 
 AppRegistry.registerComponent('GoodQuestion', () => GoodQuestion)
