@@ -257,6 +257,14 @@ export function loadCachedInvitation(surveyId, done) {
 };
 
 /**
+ * Loads a single cached invitation synchronously
+ * @return {object} Realm object of the type 'Invitation'
+ */
+export function loadCachedInvitationById(surveyId) {
+  return realm.objects('Invitation').filtered(`surveyId="${surveyId}"`)[0];
+}
+
+/**
  * load all cached invitations for the current user
  *
  * @param {string} surveyId, the unique id for the survey

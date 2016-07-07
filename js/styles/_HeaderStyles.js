@@ -57,14 +57,15 @@ const HeaderStyles = StyleSheet.create({
 
   navBarLeftButton: {
     flex: .1,
-    padding: 20,
-    paddingRight: 16,
+    padding: Platform.OS == 'ios' ? 14 : 18,
+    paddingRight: Platform.OS == 'ios' ? 14 : 16,
     marginRight: 2,
   },
   navBarRightButton: {
     flex: .1,
-    padding: 20,
-    paddingRight: 14,
+    padding: Platform.OS == 'ios' ? 14 : 18,
+    paddingRight: Platform.OS == 'ios' ? 10 : 14,
+
   },
 })
 

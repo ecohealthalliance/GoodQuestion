@@ -1,14 +1,20 @@
+import { 
+  Platform,
+  Vibration,
+  AppState,
+} from 'react-native';
+
 import _ from 'lodash';
 import Parse from 'parse/react-native';
 import Store from '../data/Store';
 import realm from '../data/Realm';
 import pubsub from 'pubsub-js';
 
-import Color from '../styles/Color'
+import Color from '../styles/Color';
 import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
 import { loadForms } from './Forms';
 
-
+import PushNotification from 'react-native-push-notification';
 
 
 // Finds and returns a list of pending Notifications from Realm
@@ -53,4 +59,28 @@ export function showToast(title, message, icon, duration, action) {
     action: action,
   });
   pubsub.publish(ToastAddresses.SHOW, toastMessage);
+}
+
+
+/**
+ * Sends a local notification to the user. Triggers only when the phone is in a background state.
+ * @param  {string} message Message to appear in the local push notificaiton.
+ * @param  {bool}   vibrate If set to true, the notification will also vibrate the user's device.
+ */
+export function notifyOnBackground(message, vibrate) {
+  if (AppState.currentState != 'active') {
+    if (Store.userSettings.notifyOnGeofence) {
+      PushNotification.localNotification({
+        message: message,
+      });
+    }
+    
+    if (vibrate && Store.userSettings.vibrateOnGeofence) {
+      if (Platform.OS === 'android') {
+        Vibration.vibrate([0, 500, 200, 500]);
+      } else {
+        Vibration.vibrate();
+      }
+    }
+  }
 }

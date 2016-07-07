@@ -89,6 +89,7 @@ const SurveyStyles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    padding: 0,
   },
   acceptButton: {
     flex: 1,
@@ -113,6 +114,17 @@ const SurveyStyles = StyleSheet.create({
     backgroundColor: Color.background2,
     margin: 0,
     paddingTop: 15,
+  },
+  answerButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: Color.primary,
+    borderRadius: 3,
+    backgroundColor: Color.background2,
+    margin: 0,
+    paddingVertical: 12,
   },
 
   // Survey Form components
