@@ -13,6 +13,13 @@ export const BackgroundGeolocation = Platform.OS === 'ios' ?
 
 let startTimer = Date.now()
 
+/**
+ * Configures the geolocation library with initial configuration or energy-saving properties for background work.
+ * @param     {Object}   options              Option arguments
+ * @property  {bool}     options.isInitial    If true, will set the configuration for the initial load of the background process. (May also re-trigger geofences if standing over one) 
+ * @property  {bool}     options.energySaving If true, will enable an energy-saving mode, at the cost of accuracy.
+ * @param     {Function} callback             Called after the geolocation library updated its settings.
+ */
 export function configureGeolocationService(options = {}, callback) {
   try {
     let config;
@@ -99,6 +106,9 @@ export function configureGeolocationService(options = {}, callback) {
   }
 }
 
+/**
+ * Stops any running background services and initializes a new process.
+ */
 export function initializeGeolocationService() {
   BackgroundGeolocation.stop();
   configureGeolocationService({isInitial: true}, (state) => {
@@ -120,9 +130,8 @@ export function initializeGeolocationService() {
 
 /**
  * Configures the background service to use less energy when the app is not on the foreground.
- * Ignores 'inactive' state. (transitioning, in-call, etc.)
- * @param  {[type]} state [description]
- * @return {[type]}       [description]
+ * Ignores 'inactive' state. (transitioning, using phone, etc.)
+ * @param  {string} state The new state the app is transitioning into: 'active', 'inactive', 'background'
  */
 export function handleAppStateChange(state) {
   if (state === 'active') {
