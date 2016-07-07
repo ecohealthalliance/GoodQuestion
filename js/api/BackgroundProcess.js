@@ -1,6 +1,8 @@
 import { Platform } from 'react-native'
 import Settings from '../settings'
 
+import Store from '../data/Store'
+
 import { addSchedule } from './Schedule'
 import { checkTimeTriggers } from './Triggers'
 import { setupGeofences } from './Geofencing'
@@ -13,11 +15,11 @@ let startTimer = Date.now()
 
 export function configureGeolocationService(options = {}, callback) {
   try {
-    console.log('Configuring Geolocation: ' + options.energySaving ? 'Energy Saving Mode' : 'High Accuracy Mode');
     let config;
 
     if (options.energySaving) {
-      // Energy Saving Mode
+      // Energy-Saving Mode
+      console.log('Configuring Geolocation: Energy-Saving Mode');
       config = {
         // License validations
         orderId: Settings.licenses.BackgroundGeolocation.bundleId,
@@ -32,8 +34,8 @@ export function configureGeolocationService(options = {}, callback) {
         // Activity Recognition config
         minimumActivityRecognitionConfidence: 80,
         activityRecognitionInterval: 45000,
-        stopDetectionDelay: 1,
-        stopTimeout: 5,
+        stopDetectionDelay: 0,
+        stopTimeout: 2,
 
         // Application config
         debug: false,
@@ -52,6 +54,7 @@ export function configureGeolocationService(options = {}, callback) {
       };
     } else {
       // High Accuracy Mode
+      console.log('Configuring Geolocation: High Accuracy Mode');
       config = {
         // License validations
         orderId: Settings.licenses.BackgroundGeolocation.bundleId,
@@ -67,7 +70,7 @@ export function configureGeolocationService(options = {}, callback) {
         minimumActivityRecognitionConfidence: 80,
         activityRecognitionInterval: 15000,
         stopDetectionDelay: 1,
-        stopTimeout: 2,
+        stopTimeout: 5,
 
         // Application config
         debug: false,
@@ -107,15 +110,48 @@ export function initializeGeolocationService() {
 
     // Create initial geofence hooks.
     setupGeofences(()=>{
-      BackgroundGeolocation.start(() => {
+      BackgroundGeolocation.start((state) => {
+        Store.backgroundServiceState = 'started';
         console.info('Geolocation tracking started.');
-      })
+      });
     });
   })
 }
 
+/**
+ * Configures the background service to use less energy when the app is not on the foreground.
+ * Ignores 'inactive' state. (transitioning, in-call, etc.)
+ * @param  {[type]} state [description]
+ * @return {[type]}       [description]
+ */
 export function handleAppStateChange(state) {
-  console.log(state)
+  if (state === 'active') {
+    configureGeolocationService({energySaving: false}, ()=>{
+      // Switch to active tracking on Android devices
+      if (Platform.OS === 'android' && Store.backgroundServiceState != 'started') {
+        BackgroundGeolocation.stop(() => {
+          BackgroundGeolocation.start((state) => {
+            console.log(state);
+            Store.backgroundServiceState = 'started';
+            console.info('Geolocation tracking started.');
+          });
+        });
+      }
+    });
+  } else if (state === 'background') {
+    configureGeolocationService({energySaving: true}, ()=>{
+      // Switch to geofence tracking only on Android devices.
+      if (Platform.OS === 'android' && Store.backgroundServiceState != 'geofence-only') {
+        BackgroundGeolocation.stop(() => {
+          BackgroundGeolocation.startGeofences((state) => {
+            console.log(state);
+            Store.backgroundServiceState = 'geofence-only';
+            console.info('Geolocation tracking started in geofence-only mode.');
+          });
+        });
+      }
+    });
+  }
 }
 
 function printTimelog(msg) {

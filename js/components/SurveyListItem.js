@@ -42,11 +42,6 @@ const SurveyListItem = React.createClass ({
     this.update(this.props.status)
   },
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return  this.state.status !== nextProps.status ||
-            this.state.availability !== nextState.availability
-  },
-
   /* Methods */
   update(status) {
     getFormAvailability(this.props.surveyId, (err, availability) => {

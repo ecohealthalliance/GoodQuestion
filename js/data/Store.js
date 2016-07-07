@@ -1,7 +1,12 @@
 // Used for caching global variables that may not fit in a Realm database
 const Store = {
+  // Settings
   platform: null,
   server: 'local',
+
+  // App State
+  appState: 'active',
+  backgroundServiceState: 'started',
 
   logged_in: false,
   email_verified: false,
@@ -13,7 +18,9 @@ const Store = {
     long: 0,
   },
 
+  // Globally cached objects
   navigator: false,
+
 
   user: {
     objectId: 'SoMeH4sH',
