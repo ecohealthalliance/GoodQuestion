@@ -7,7 +7,7 @@ import PushNotification from 'react-native-push-notification';
 
 import { BackgroundGeolocation } from './BackgroundProcess'
 import { loadCachedGeofenceTriggers } from './Triggers'
-import { showToast, notificateOnBackground } from './Notifications'
+import { showToast, notifyOnBackground } from './Notifications'
 
 
 let activeMap; // Cache a MapPage component for to update when geofencing triggers are crossed.
@@ -172,7 +172,7 @@ function crossGeofence(params) {
         const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0];
 
         if (form && survey) {
-          notificateOnBackground(form.title + ' - New geofence form available.', true);
+          notifyOnBackground(form.title + ' - New geofence form available.', true);
 
           showToast(form.title, 'New geofence form available.', 'globe', 8, () => {
             Store.navigator.push({

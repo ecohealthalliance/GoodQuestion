@@ -63,17 +63,16 @@ export function showToast(title, message, icon, duration, action) {
 
 
 
-export function notificateOnBackground(message, vibrate) {
-  // Notify with sound
-  console.log(AppState.currentState)
-
+export function notifyOnBackground(message, vibrate) {
   if (AppState.currentState != 'active') {
-    PushNotification.localNotification({
-      message: message,
-    });
-  }
-
-  if (vibrate) {
-    Vibration.vibrate([0, 500, 200, 500]);
+    if (Store.userSettings.notifyOnGeofence) {
+      PushNotification.localNotification({
+        message: message,
+      });
+    }
+    
+    if (vibrate && Store.userSettings.vibrateOnGeofence) {
+      Vibration.vibrate([0, 500, 200, 500]);
+    }
   }
 }

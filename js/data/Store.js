@@ -8,6 +8,11 @@ const Store = {
   appState: 'active',
   backgroundServiceState: 'started',
 
+  userSettings: {
+    vibrateOnGeofence: true,
+    notifyOnGeofence: true,
+  },
+
   logged_in: false,
   email_verified: false,
 
