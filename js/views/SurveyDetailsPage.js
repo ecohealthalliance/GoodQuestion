@@ -5,6 +5,7 @@ import {
   Text,
   View,
   ScrollView,
+  Platform,
 } from 'react-native'
 import realm from '../data/Realm'
 import _ from 'lodash'
@@ -37,31 +38,42 @@ const SurveyDetailsPage = React.createClass ({
   },
 
   getInitialState() {
-    const invitation = loadCachedInvitationById(this.props.survey.id);
-    const forms = loadCachedForms(this.props.survey.id);
-    const questions = loadCachedQuestionsFromForms(forms);
-
-    let status = invitation && invitation.status ? invitation.status : InvitationStatus.PENDING;
-
-    return {
-      forms: forms,
-      formCount: forms.length,
-      questions: questions,
-      questionCount: questions.length,
-      status: status,
-      activeTab: 'surveys',
-      availability: {
-        availableTimeTriggers: 0,
-        nextTimeTrigger: false,
-        geofenceTriggersInRange: 0,
-      },
-    }
+    return { loading: true }
   },
 
   componentDidMount() {
-    if (this.state.status === 'accepted') {
-      this.getSurveyData();
-    }
+    const self = this;
+    const renderDelay = Platform.OS === 'android' ? 300 : 50;
+
+    setTimeout(()=>{
+      if (!self.cancelCallbacks) {
+        const invitation = loadCachedInvitationById(this.props.survey.id);
+        const forms = loadCachedForms(this.props.survey.id);
+        const questions = loadCachedQuestionsFromForms(forms);
+
+        let status = invitation && invitation.status ? invitation.status : InvitationStatus.PENDING;
+
+        self.setState({
+          loading: false,
+          forms: forms,
+          formCount: forms.length,
+          questions: questions,
+          questionCount: questions.length,
+          status: status,
+          activeTab: 'surveys',
+          availability: {
+            availableTimeTriggers: 0,
+            nextTimeTrigger: false,
+            geofenceTriggersInRange: 0,
+          },
+        });
+
+
+        if (this.state.status === 'accepted') {
+          this.getSurveyData();
+        }
+      }
+    }, renderDelay);
   },
 
   componentWillUnmount() {
@@ -276,6 +288,10 @@ const SurveyDetailsPage = React.createClass ({
   },
 
   render() {
+    if (this.state.loading) {
+      return ( <Loading/> );
+    }
+
     let tab;
     switch(this.state.activeTab) {
       case 'geofence': tab = <MapPage navigator={this.props.navigator} survey={this.props.survey} />; break;
