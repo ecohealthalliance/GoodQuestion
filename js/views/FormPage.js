@@ -69,7 +69,8 @@ const FormPage = React.createClass ({
 
   getInitialState() {
     const forms = this.props.form ? [this.props.form] : loadCachedForms(this.props.survey.id)
-
+    console.log(this.props.form)
+    console.log(forms)
     return {
       forms: forms,
       isLoading: true,
@@ -127,19 +128,6 @@ const FormPage = React.createClass ({
         answers = {},
         forms,
         allForms
-    
-    // Find most relevant form if no form type was provided.
-    // if (!type) {
-    //   if (!forms || forms.length === 0) {
-    //     forms = loadActiveGeofenceFormsInRange();
-
-    //     if (forms.length > 0) {
-    //       type = 'geofence';
-    //     } else {
-    //       type = 'datetime';
-    //     }
-    //   } 
-    // }
 
     if (type === 'geofence') {
       forms = this.state.forms

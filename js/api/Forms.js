@@ -4,8 +4,10 @@ import Parse from 'parse/react-native'
 import Store from '../data/Store'
 import realm from '../data/Realm'
 
+import { InvitationStatus, loadCachedInvitation } from './Invitations'
 import { loadQuestions } from './Questions'
 import { loadTriggers, loadCachedTriggers } from './Triggers'
+import { loadCachedSubmissions } from './Submissions'
 import Submission from '../models/Submission';
 
 
@@ -35,8 +37,10 @@ export function loadCachedFormDataById(formId) {
 }
 
 // Returns an object containing a form and its parent survey
-export function loadCachedFormDataByGeofence(triggerId) {
-  const trigger = realm.objects('GeofenceTrigger').filtered(`id = "${triggerId}"`)[0]
+export function loadCachedFormDataByTriggerId(triggerId, type) {
+  const triggerObjectType = type === 'geofence' ? 'GeofenceTrigger' : 'TimeTrigger';
+
+  const trigger = realm.objects(triggerObjectType).filtered(`id = "${triggerId}"`)[0]
   const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0]
   const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0]
   return { form: form, survey: survey }
@@ -102,6 +106,58 @@ export function loadForms(survey, callback) {
   }
 }
 
+/**
+ * determines if the surveyId has an accepted invitation for the current user.
+ *
+ * @param {string} surveyId, the survey id from the cache
+ */
+export function getFormAvailability(surveyId, done) {
+  const result = {
+    availableTimeTriggers: 0,
+    nextTimeTrigger: false,
+    geofenceTriggersInRange: 0,
+
+    currentTrigger: null,
+    currentTriggerType: '',
+  };
+  loadCachedInvitation(surveyId, (err, invitation) => {
+    if (err) {
+      console.warn(err);
+      done(null, result);
+      return;
+    }
+    if (invitation && invitation.status === InvitationStatus.ACCEPTED) {
+      try {
+        // Check for availability on pending time triggers.
+        let timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId="${surveyId}"`)
+        let availableTimeTriggers = timeTriggers.filtered(`triggered == true AND completed == false`)
+        if (availableTimeTriggers && availableTimeTriggers.length > 0) {
+          result.availableTimeTriggers = availableTimeTriggers.length;
+          result.currentTrigger = availableTimeTriggers[0];
+          result.currentTriggerType = 'datetime';
+        }
+
+        // Check for the next future time trigger.
+        let nextTimeTriggers = timeTriggers.filtered(`triggered == false`).sorted('datetime')
+        if (nextTimeTriggers && nextTimeTriggers.length > 0) {
+          result.nextTimeTrigger = nextTimeTriggers[0].datetime
+        }
+
+        // Check for active geofence triggers.
+        let geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`)
+        if (geofenceTriggers && geofenceTriggers.length > 0) {
+          let geofenceTriggersInRange = geofenceTriggers.filtered(`triggered == true AND completed == false AND inRange == true OR sticky == true`)
+          result.geofenceTriggersInRange = geofenceTriggersInRange.length;
+          result.currentTrigger = geofenceTriggersInRange[0];
+          result.currentTriggerType = 'geofence';
+        }
+      } catch (e) {
+        console.warn(e)
+      }
+    }
+    return done(null, result)
+  });
+}
 
 /**
  * Loads Form data from Parse, then caches it.
