@@ -3,6 +3,8 @@ import {
   View,
   Animated,
   Easing,
+  ActivityIndicator,
+  Platform,
 } from 'react-native'
 
 import Styles from '../styles/Styles'
@@ -32,6 +34,9 @@ const Loading = React.createClass ({
   },
 
   componentDidMount() {
+    if (Platform.OS === 'ios') {
+
+    }
     this._animate();
   },
 
@@ -41,19 +46,42 @@ const Loading = React.createClass ({
       justifyContent: 'center',
       alignItems: 'center',
     }
-    const animation = {transform: [
-      {rotate: this.state.angle.interpolate({
-        inputRange: [0, 360],
-        outputRange: ['0deg', '360deg']
-      })},
-    ]};
-    return (
-      <View style={container}>
-        <Animated.View style={animation}>
-          <Icon name="spinner" size={120} color="#eee"/>
-        </Animated.View>
-      </View>
-    )
+    
+    
+
+    if (Platform.OS === 'ios') {
+      const animation = {transform: [
+        {rotate: this.state.angle.interpolate({
+          inputRange: [0, 360],
+          outputRange: ['0deg', '360deg']
+        })},
+      ]};
+
+      return (
+        <View style={container}>
+          <Animated.View style={animation}>
+            <Icon name="spinner" size={120} color="#eee"/>
+          </Animated.View>
+        </View>
+      )
+
+    } else {
+      // Use a default loading animation for Android until RN gets custom native animation support.
+      const animation = {
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 8,
+      };
+
+      return (
+        <View style={container}>
+          <ActivityIndicator
+            style={animation}
+            size='large'
+          />
+        </View>
+      )
+    }
   }
 })
 
