@@ -25,6 +25,6 @@ public class MainActivity extends ReactActivity {
     @Override
     public void onNewIntent(Intent intent) {
       super.onNewIntent(intent);
-      ((MainApplication) getApplication()).onNewIntent(intent);
+      ((GoodQuestionApplication) getApplication()).onNewIntent(intent);
     }
 }

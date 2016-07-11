@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import io.realm.react.RealmReactPackage;
 
 
-public class MainApplication extends Application implements ReactApplication {
+public class GoodQuestionApplication extends Application implements ReactApplication {
   private static final Logger logger = LoggerFactory.getLogger(MainActivity.class);
   private ReactNativePushNotificationPackage mReactNativePushNotificationPackage;
 
@@ -50,7 +50,7 @@ public class MainApplication extends Application implements ReactApplication {
       mReactNativePushNotificationPackage = new ReactNativePushNotificationPackage();
 
       return Arrays.<ReactPackage>asList(
-        new RNBackgroundGeolocation(),      // <-- for background-geolocation
+        new RNBackgroundGeolocation(),
         new MainReactPackage(),
         new VectorIconsPackage(),
         new AirPackage(),
