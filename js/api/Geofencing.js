@@ -60,17 +60,21 @@ export function setupGeofences() {
           notifyOnDwell: true,
           loiteringDelay: 30000
         }
-      })
-      
-      console.log('Adding ' + triggerGeofences.length + ' geofences...')
-      BackgroundGeolocation.addGeofences(triggerGeofences, function() {
-        console.log("Successfully added geofences.");
-      }, function(error) {
-          console.warn("Failed to add geofences.", error);
-      })
+      });
 
       BackgroundGeolocation.start(() => {
         console.info('Geolocation tracking started.')
+        console.log('Adding ' + triggerGeofences.length + ' geofences...')
+        BackgroundGeolocation.addGeofences(triggerGeofences, function() {
+          console.log("Successfully added geofences.");
+        }, function(error) {
+            console.warn("Failed to add geofences.", error);
+        });
+        setTimeout(() => {
+          BackgroundGeolocation.getGeofences((geofences)=>{
+            console.log("getGeofences: ", geofences);
+          });
+        }, 5000);
       })
     })
     connectMapToGeofence()
