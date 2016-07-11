@@ -1,4 +1,5 @@
-import React, {
+import React from 'react';
+import {
   Alert,
   View,
   Text,
@@ -52,6 +53,10 @@ export default React.createClass({
           <ControlPanelItem
             onPress={()=> this.navigateToView('notifications', 'Notifications')}
             text="Notifications"
+          />
+          <ControlPanelItem
+            onPress={()=> this.navigateToView('map', 'Map')}
+            text="Map"
           />
           <ControlPanelItem
             onPress={()=> this.navigateToView('profile', 'Profile')}

@@ -2,6 +2,7 @@ import { InteractionManager, Platform } from 'react-native'
 import _ from 'lodash'
 import Parse from 'parse/react-native'
 import realm from '../data/Realm'
+import { loadAllAcceptedSurveys } from './Surveys'
 import { loadAcceptedInvitations } from '../api/Invitations'
 
 // Queries the connected Parse server for a list of Triggers.
@@ -16,8 +17,8 @@ export function loadTriggers(form, survey, callback) {
           for (var i = 0; i < results.length; i++) {
             if (results[i].get('type') === 'datetime') {
               cacheTimeTrigger(results[i], form, survey)
-            } else {
-              // TODO Create/Cache Geofence trigger
+            } else if (results[i].get('type') === 'geofence') {
+              cacheGeofenceTrigger(results[i], form, survey)
             }
           }
           if (callback) callback(null, results)
@@ -36,8 +37,35 @@ export function loadCachedTrigger(formId) {
   return realm.objects('TimeTrigger').filtered(`formId= "${formId}"`)
 }
 
+/**
+ * Fetches all cached geofence triggers
+ * @return {object}  Realm object containing an array of 'GeofenceTrigger' objects,
+ */
+export function loadAllCachedGeofenceTriggers(options = {}, callback) {
+  loadAllAcceptedSurveys((err, response) => {
+    if (err) {
+      console.warn(err);
+      callback(err, []);
+      return
+    }
+    
+    let triggers = [];
+    const responseLength = response.length;
+    for (var i = 0; i < responseLength; i++) {
+      let filter = `surveyId = "${response[i].id}"`;
+
+      if (options.excludeCompleted) filter += ' AND completed == false';
+
+      let surveyTriggers = Array.from(realm.objects('GeofenceTrigger').filtered(filter));
+      triggers = _.unionBy(triggers, surveyTriggers, 'id');
+    }
+
+    callback(null, triggers);
+  })
+}
+
 // Saves a Form object from Parse into our Realm.io local database
-function cacheTimeTrigger(trigger, form, survey) {
+export function cacheTimeTrigger(trigger, form, survey) {
   try {
     // InteractionManager.runAfterInteractions(() => {
       let datetime = new Date(trigger.get('properties').datetime)
@@ -56,6 +84,30 @@ function cacheTimeTrigger(trigger, form, survey) {
   }
 }
 
+/**
+ * Saves a geofence 'Trigger' object from Parse into our Realm.io local database
+ * @param  {object} trigger Parse 'Trigger' object.
+ * @param  {object} form    Parse 'Form' object.
+ * @param  {object} survey  Parse 'Survey' object.
+ */
+export function cacheGeofenceTrigger(trigger, form, survey) {
+  try {
+    realm.write(() => {
+      realm.create('GeofenceTrigger', {
+        id: trigger.id,
+        formId: form.id,
+        surveyId: survey.id,
+
+        title: form.get('title'),
+        latitude: trigger.get('properties').latitude,
+        longitude: trigger.get('properties').longitude,
+        radius: trigger.get('properties').radius || 10,
+      }, true)
+    })
+  } catch(e) {
+    console.warn(e)
+  }
+}
 
 /**
  * Checks the time triggers of all accepted surveys
@@ -77,7 +129,6 @@ export function checkTimeTriggers(omitNotifications) {
   });
 }
 
-
 /**
  * Checks the time triggers of a single survey.
  * @param  {ibject} survey            Realm 'Survey' object to be checked
@@ -92,9 +143,10 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
   past = past.setDate(past.getDate() - 90)
 
   // Record the new trigger
+  const triggerLength = triggers.length
   realm.write(() => {
-    for (var i = 0; i < triggers.length; i++) {
-      if (triggers[i].datetime < now && triggers[i].datetime > past) {
+    for (var i = 0; i < triggerLength; i++) {
+      if (triggers[i] && triggers[i].datetime < now && triggers[i].datetime > past) {
         let activeTrigger = realm.create('TimeTrigger', {
           id: triggers[i].id,
           triggered: true,
@@ -113,5 +165,4 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
       }
     }
   });
-
 }

@@ -1,5 +1,6 @@
 
-import React, {
+import React from 'react';
+import {
   Text,
   TextInput,
   TouchableHighlight,
@@ -9,10 +10,11 @@ import React, {
 } from 'react-native'
 
 import Button from '../components/Button'
+import Checkbox from '../components/Checkbox'
+
 import Styles from '../styles/Styles'
 import Color from '../styles/Color'
 
-import Checkbox from 'react-native-checkbox'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 let uncheckedComponent = (<Icon name='square-o' size={30} />);
@@ -113,7 +115,7 @@ const RegistrationPagePart4 = React.createClass ({
                 checked={this.state.allowLocationServices}
                 uncheckedComponent={uncheckedComponent}
                 checkedComponent={checkedComponent}
-                onChange={this.checkboxChangeHandler.bind(this, 'allowLocationServices')}
+                onChange={this.checkboxChangeHandler.bind(null, 'allowLocationServices')}
               />
             </View>
           </View>

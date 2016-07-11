@@ -1,21 +1,24 @@
 'use strict'
 
-import React, {
+import React from 'react';
+import {
   Component,
   View,
 } from 'react-native'
 
-export default class Dot extends Component {
-  static propTypes = {
+const Dot = React.createClass ({
+  propTypes: {
     color: React.PropTypes.string,
     diameter: React.PropTypes.number,
     style: View.propTypes.style,
-  };
+  },
 
-  static defaultProps = {
-    color: 'rgba(192, 192, 192, 1)',
-    diameter: 10,
-  };
+  getDefaultProps() {
+    return {
+      color: 'rgba(192, 192, 192, 1)',
+      diameter: 10,
+    }
+  },
 
   render() {
     const { color, diameter } = this.props
@@ -33,4 +36,7 @@ export default class Dot extends Component {
       />
     )
   }
-}
+
+})
+
+module.exports = Dot;

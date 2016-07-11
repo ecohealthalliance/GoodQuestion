@@ -1,5 +1,6 @@
 
-import React, {
+import React from 'react';
+import {
   StyleSheet,
   Text,
   TextInput,

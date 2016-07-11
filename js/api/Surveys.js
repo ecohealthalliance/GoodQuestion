@@ -6,7 +6,7 @@ import Store from '../data/Store'
 import realm from '../data/Realm'
 
 import { loadForms } from './Forms'
-import { InvitationStatus, loadInvitations, loadCachedInvitation } from '../api/Invitations'
+import { InvitationStatus, loadInvitations, loadCachedInvitation, loadAcceptedInvitations } from '../api/Invitations'
 
 // Attempts to find a survey with a specified id cached in the Store
 export function loadCachedSurvey(id) {
@@ -16,6 +16,26 @@ export function loadCachedSurvey(id) {
 // Finds and returns the list of all surveys cached in Realm.io
 export function loadCachedSurveyList() {
   return realm.objects('Survey')
+}
+
+// Finds and returns the list of all surveys cached in Realm.io
+export function loadAllAcceptedSurveys(callback) {
+  loadAcceptedInvitations((err, invitations) => {
+    if (err) {
+      callback(err, [])
+      return
+    }
+
+    const surveys = []
+    const invitationsLength = invitations.length;
+    for (let i = 0; i < invitationsLength; i++) {
+      let acceptedSurvey = realm.objects('Survey').filtered(`id = "${invitations[i].surveyId}"`)[0]
+      if (acceptedSurvey) {
+        surveys.push(acceptedSurvey)
+      }
+    }
+    callback(null, surveys)
+  })
 }
 
 export function getSurveyForms(surveyId, callback){
@@ -39,7 +59,7 @@ export function loadSurveys(callback) {
     success: function(results) {
       clearSurveyCache(results)
       let cachedSurveys = realm.objects('Survey')
-      for (var i = 0; i < results.length; i++) {
+      for (let i = 0; i < results.length; i++) {
         let cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0];
         let cachedSurveyTriggers = realm.objects('TimeTrigger').filtered(`surveyId = "${results[i].id}"`);
         if( !cachedSurvey ||
@@ -133,21 +153,37 @@ function clearSurveyCache(exclusions) {
     let surveys = realm.objects('Survey')
     let expiredSurveys = []
     let excludedIds = []
-    for (var i = 0; i < exclusions.length; i++) {
+    for (let i = 0; i < exclusions.length; i++) {
       excludedIds.push(exclusions[i].id)
     }
 
     // Standard JS array.filter doesn't work with these Realm objects, so we have to take care of this filtering manually.
     // Current version of Realm.io does not support exclusion queries for strings.
-    for (var i = surveys.length - 1; i >= 0; i--) {
+    const surveysLength = surveys.length;
+    for (let i = surveysLength - 1; i >= 0; i--) {
       let expired = true
-      for (var j = excludedIds.length - 1; j >= 0; j--) {
+      for (let j = excludedIds.length - 1; j >= 0; j--) {
         if (surveys[i].id === excludedIds[j]) expired = false
       }
       if (expired) expiredSurveys.push(surveys[i])
     }
 
     realm.write(() => {
+      const expiredSurveysLength = expiredSurveys.length;
+      for (let i = 0; i < expiredSurveysLength; i++) {
+        let forms = realm.objects('Form').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`)
+        let timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`)
+        let geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`)
+
+        let formsLength = forms.length;
+        for (let j = 0; j < formsLength; j++) {
+          let questions = realm.objects('Question').filtered(`formId= "${expiredSurveys[i].surveyId}"`)
+          realm.delete(questions)
+        }
+        realm.delete(forms)
+        realm.delete(timeTriggers)
+        realm.delete(geofenceTriggers)
+      }
       realm.delete(expiredSurveys)
     })
   } catch (e) {
@@ -186,8 +222,13 @@ export function getFormAvailability(surveyId, done) {
         if (nextTimeTriggers && nextTimeTriggers.length > 0) {
           result.nextTimeTrigger = nextTimeTriggers[0].datetime
         }
-        // TODO: Geofence trigger availability.
-        // Blocked by geofencing not being implemented yet.
+
+        // Check for active geofence triggers.
+        let geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`)
+        if (geofenceTriggers && geofenceTriggers.length > 0) {
+          let geofenceTriggersInRange = geofenceTriggers.filtered(`triggered == true AND completed == false AND inRange == true OR sticky == true`)
+          result.geofenceTriggersInRange = geofenceTriggersInRange.length
+        }
       } catch (e) {
         console.warn(e)
       }

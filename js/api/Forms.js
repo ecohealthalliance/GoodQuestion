@@ -6,7 +6,6 @@ import realm from '../data/Realm'
 
 import { loadQuestions } from './Questions'
 import { loadTriggers, loadCachedTrigger } from './Triggers'
-import Realm from 'realm';
 import Submission from '../models/Submission';
 
 
@@ -30,14 +29,41 @@ export function cacheParseForm(form, surveyId) {
 
 // Returns an object containing a form and its parent survey
 export function loadCachedFormDataById(formId) {
-  let form = realm.objects('Form').filtered(`id = "${formId}"`)[0]
-  let survey = realm.objects('Survey').filtered(`id = "${form.surveyId}"`)[0]
+  const form = realm.objects('Form').filtered(`id = "${formId}"`)[0]
+  const survey = realm.objects('Survey').filtered(`id = "${form.surveyId}"`)[0]
+  return { form: form, survey: survey }
+}
+
+// Returns an object containing a form and its parent survey
+export function loadCachedFormDataByGeofence(triggerId) {
+  const trigger = realm.objects('GeofenceTrigger').filtered(`id = "${triggerId}"`)[0]
+  const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0]
+  const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0]
   return { form: form, survey: survey }
 }
 
 // Fetches the cached forms related to a specific survey
 export function loadCachedForms(surveyId) {
   return realm.objects('Form').filtered(`surveyId = "${surveyId}"`)
+}
+
+export function loadActiveGeofenceFormsInRange(surveyId) {
+  try {
+    const triggers = realm.objects('GeofenceTrigger')
+      .filtered(`surveyId = "${surveyId}" AND triggered == true AND completed == false AND inRange == true OR sticky == true`);
+
+    let forms = [];
+    const triggersLength = triggers.length;
+    for (var i = 0; i < triggersLength; i++) {
+      const triggerForms = Array.from(realm.objects('Form').filtered(`id = "${triggers[i].formId}"`));
+      forms = _.unionBy(forms, triggerForms, 'id');
+    }
+
+    return forms;
+  } catch (e) {
+    alert(e)
+    return [];
+  }
 }
 
 export function clearCachedForms(surveyId) {
@@ -75,4 +101,18 @@ export function loadForms(survey, callback) {
   } else {
     console.warn("Error: Unable to find relation \"forms\" for Survey object." )
   }
+}
+
+export function completeForm(formId) {
+  console.log('COMPLETING FORM: ' + formId);
+
+  const notification = realm.objects('Notification').filtered(`formId = "${formId}"`)[0]
+  const timeTrigger = realm.objects('TimeTrigger').filtered(`formId = "${formId}"`)[0]
+  const geofenceTrigger = realm.objects('GeofenceTrigger').filtered(`formId = "${formId}"`)[0]
+
+  realm.write(() => {
+    if (notification) notification.completed = true;
+    if (timeTrigger) timeTrigger.completed = true;
+    if (geofenceTrigger) geofenceTrigger.completed = true;
+  });
 }

@@ -1,4 +1,5 @@
-import React, {
+import React from 'react';
+import {
   View,
   Platform,
   Navigator,
@@ -16,8 +17,8 @@ import Settings from '../settings'
 
 // Components
 import Header from '../components/Header'
-import Loading from '../components/Loading'
 import Toaster from '../components/Toaster'
+import Loading from '../components/Loading'
 
 // Styles
 import Styles from '../styles/Styles'
@@ -36,6 +37,8 @@ import SurveyListPage from '../views/SurveyListPage'
 import TermsOfServicePage from '../views/TermsOfServicePage'
 import SurveyDetailsPage from '../views/SurveyDetailsPage'
 import NotificationsPage from '../views/NotificationsPage'
+import MapPage from '../views/MapPage'
+import CalendarPage from '../views/CalendarPage'
 import RegistrationPages from '../views/RegistrationPages'
 import FormPage from '../views/FormPage'
 import ControlPanel from '../views/ControlPanel'
@@ -97,15 +100,38 @@ const SharedNavigator = React.createClass ({
   },
 
   componentDidMount() {
-    if (Platform.OS === 'ios') {
-      PushNotification.requestPermissions();
-    }
+    const self = this;
     isAuthenticated((authenticated) => {
+      if (authenticated) {
+        self.checkNotificationPermissions();
+      }
       this.setState({
         isAuthenticated: authenticated,
         isLoading: false,
       });
     });
+  },
+
+  checkNotificationPermissions() {
+    if (Platform.OS === 'ios') {
+      PushNotification.checkPermissions((result) => {
+        if (
+          PushNotification.isLoaded && 
+          !result.alert || 
+          !result.badge || 
+          !result.sound
+        ) {
+          console.log('Requesting new PushNotification permissions.');
+          PushNotification.requestPermissions().then((permissions)=>{
+            if (!result.alert || !result.badge || !result.sound) {
+              // TODO: Notify of missing permissions and how to fix them.
+              // Settings -> GoodQuestion -> Notifications
+              // Notify only once.
+            }
+          });
+        }
+      })
+    }
   },
 
   _onNotification(notification) {
@@ -133,6 +159,8 @@ const SharedNavigator = React.createClass ({
   _onRegister(registration) {
     const token = registration.token;
     const platform = registration.os;
+
+    this.checkNotificationPermissions();
     if (platform === 'ios') PushNotification.setApplicationIconBadgeNumber(0);
     upsertInstallation(token, platform, (err, res) => {
       if (err) {
@@ -177,7 +205,18 @@ const SharedNavigator = React.createClass ({
         let routeStack = navigator.getCurrentRoutes()
         let currentRoutePath = routeStack[routeStack.length-1].path
         if (path !== currentRoutePath) {
-          navigator.push({path: path, title: title})
+          if (path === 'surveylist') {
+            // Reset route stack when viewing map to avoid multiple map components from being loaded at the same time.
+            navigator.resetTo({path: path, title: title})
+          } else {
+            if (navigator.getCurrentRoutes().length == 1) {
+              navigator.push({path: path, title: title})
+            } else {
+              navigator.replaceAtIndex({path: path, title: title}, 1, () => {
+                navigator.popToRoute(navigator.getCurrentRoutes()[1])
+              })
+            }
+          }
         }
       }
     }
@@ -210,10 +249,11 @@ const SharedNavigator = React.createClass ({
       case 'login': viewComponent = <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />; break;
       case 'surveylist': viewComponent = <SurveyListPage {...sharedProps} />; break;
       case 'notifications': viewComponent = <NotificationsPage {...sharedProps} />; break;
+      case 'map': viewComponent = <MapPage {...sharedProps} />; break;
       case 'terms': viewComponent = <TermsOfServicePage {...sharedProps} />; break;
       case 'registration': viewComponent = <RegistrationPages {...sharedProps} index={route.index} />; break;
       case 'profile': viewComponent = <ProfilePage {...sharedProps} />; break;
-      case 'form': viewComponent = <FormPage {...sharedProps} form={route.form} survey={route.survey} index={route.index} />; break;
+      case 'form': viewComponent = <FormPage {...sharedProps} form={route.form} survey={route.survey} index={route.index} type={route.type} />; break;
       case 'survey-details': viewComponent = <SurveyDetailsPage {...sharedProps} survey={route.survey} formCount={route.formCount} questionCount={route.questionCount} />; break;
       default: viewComponent = <SurveyListPage {...sharedProps} />; break;
     }
@@ -238,6 +278,7 @@ const SharedNavigator = React.createClass ({
 
   /* Render */
   render() {
+    const initialRoute = { path:'surveylist', title: 'Surveys' }
 
     // show loading component without the navigationBar
     if (this.state.isLoading) {

@@ -1,5 +1,6 @@
 // Reusable component to handle bug with Android devices no supporting paddingTop in Text components.
-import React, {
+import React from 'react';
+import {
   TouchableWithoutFeedback,
   View,
   Text,

@@ -1,6 +1,8 @@
 import Parse from 'parse/react-native'
 import realm from '../data/Realm'
-import {currentUser} from '../api/Account'
+import {currentUser} from './Account'
+import {getUserLocationData} from './Geofencing'
+import {completeForm} from './Forms'
 import crypto from 'crypto-js'
 import async from 'async'
 
@@ -41,31 +43,38 @@ function createParseSubmission(id, formId, answers, currentUser, done) {
   submission.set('formId', formId);
   submission.set('answers', answers);
   submission.set('userId', currentUser);
-  const query = new Parse.Query(Parse.Role)
-  query.equalTo('name', 'admin')
-  query.find(
-    (roles) => {
-      if (roles.length <= 0) return done('Invalid role.');
-      const role = roles[0];
-      const acl = new Parse.ACL();
-      acl.setReadAccess(currentUser, true);
-      acl.setWriteAccess(currentUser, true);
-      acl.setRoleReadAccess(role, true);
-      acl.setRoleWriteAccess(role, true);
-      submission.setACL(acl);
-      submission.save(null).then(
-        (s) => {
-          done(null, s);
-        },
-        (e) => {
-          done('Error synchronizing to remote server.');
-        }
-      );
-    },
-    (e) => {
-      done('Invalid role.')
-    }
-  );
+  
+  getUserLocationData((geolocation) => {
+    submission.set('geolocation', JSON.stringify(geolocation))
+    const query = new Parse.Query(Parse.Role)
+    query.equalTo('name', 'admin')
+    query.find(
+      (roles) => {
+        if (roles.length <= 0) return done('Invalid role.');
+        const role = roles[0];
+        const acl = new Parse.ACL();
+        acl.setReadAccess(currentUser, true);
+        acl.setWriteAccess(currentUser, true);
+        acl.setRoleReadAccess(role, true);
+        acl.setRoleWriteAccess(role, true);
+        submission.setACL(acl);
+        submission.save(null).then(
+          (s) => {
+            done(null, s);
+          },
+          (e) => {
+            done('Error synchronizing to remote server.');
+          }
+        );
+      },
+      (e) => {
+        done('Invalid role.')
+      }
+    );
+
+
+  })
+  
 };
 
 /**
@@ -124,9 +133,6 @@ function upsertRealmSubmission(id, formId, answers, dirty, done) {
     .objects('Submission')
     .filtered(`uniqueId = "${id}"`)
     .sorted('created');
-  let notification = realm.objects('Notification').filtered(`formId = "${formId}"`)
-  let timeTrigger = realm.objects('TimeTrigger').filtered(`formId = "${formId}"`)
-  // let geofenceTrigger = realm.objects('GeofenceTrigger').filtered(`formId = "${formId}"`)
   if (submissions.length > 0) {
     const submission = submissions[0];
     try {
@@ -134,11 +140,13 @@ function upsertRealmSubmission(id, formId, answers, dirty, done) {
         submission.dirty = true;
         submission.answers = JSON.stringify(answers);
       });
+      completeForm(formId);
       done(null, submission);
     } catch(e) {
       done('Error updating realm submission ' + id);
     }
   } else {
+    completeForm(formId);
     realm.write(() => {
       try {
         const submission = realm.create('Submission', {
@@ -148,9 +156,6 @@ function upsertRealmSubmission(id, formId, answers, dirty, done) {
           created: new Date(),
           answers: JSON.stringify(answers),
         });
-        if (notification) notification.complete = true
-        if (timeTrigger) timeTrigger.complete = true
-        // if (geofenceTrigger) geofenceTrigger.complete = true
         done(null, submission);
       } catch(e) {
         done('Error saving realm submission ' + id);

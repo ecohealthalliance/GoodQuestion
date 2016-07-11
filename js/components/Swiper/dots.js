@@ -1,6 +1,7 @@
 'use strict'
 
-import React, {
+import React from 'react';
+import {
   Component,
   StyleSheet,
   View,
@@ -8,22 +9,24 @@ import React, {
 
 import Dot from './dot'
 
-export default class Dots extends Component {
-  static propTypes = {
+const Dots = React.createClass ({
+  propTypes: {
     total: React.PropTypes.number,
     active: React.PropTypes.number,
     style: View.propTypes.style,
     dotStyle: View.propTypes.style,
     activeDotStyle: View.propTypes.style,
     activeColor: React.PropTypes.string,
-  };
+  },
 
-  static defaultProps = {
-    total: 0,
-    active: -1,
-    dotStyle: {},
-    activeDotStyle: {},
-  };
+  getDefaultProps() {
+    return {
+      total: 0,
+      active: -1,
+      dotStyle: {},
+      activeDotStyle: {},
+    }
+  },
 
   render() {
     const { total, active } = this.props
@@ -44,7 +47,7 @@ export default class Dots extends Component {
       </View>
     )
   }
-}
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -59,3 +62,5 @@ const styles = StyleSheet.create({
     backgroundColor:'transparent',
   }
 })
+
+module.exports = Dots;

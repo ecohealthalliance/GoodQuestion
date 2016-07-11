@@ -1,4 +1,5 @@
-import React, {
+import React from 'react';
+import {
   View,
   Text,
 } from 'react-native'
@@ -8,7 +9,7 @@ import Styles from '../styles/Styles'
 import Color from '../styles/Color'
 
 import ViewText from './ViewText'
-import CheckBox from 'react-native-checkbox'
+import Checkbox from './Checkbox'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 import { getFormAvailability } from '../api/Surveys'
@@ -68,7 +69,6 @@ const SurveyListItem = React.createClass ({
         });
       }
     });
-
   },
 
   /* Render */
@@ -89,7 +89,11 @@ const SurveyListItem = React.createClass ({
   renderAvailabilityText() {
     availability = this.state.availability
     if (availability.geofenceTriggersInRange > 0) {
-      // TODO: notify about geofence triggers
+      return (
+        <ViewText textStyle={Styles.survey.itemDescription}>
+          {availability.geofenceTriggersInRange} geofence {availability.geofenceTriggersInRange > 1 ? 'forms' : 'form'} available.
+        </ViewText>
+      )
     } else if (availability.availableTimeTriggers > 0) {
       return (
         <ViewText textStyle={Styles.survey.itemDescription}>

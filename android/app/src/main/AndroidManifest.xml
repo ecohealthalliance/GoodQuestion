@@ -76,7 +76,11 @@
             </intent-filter>
         </receiver>
 
-      <!-- /background-location -->
+        <!-- Google Maps API key -->
+        <meta-data
+          android:name="com.google.android.geo.API_KEY"
+          android:value="AIzaSyD3tJy2Eb_gp1KSxGsVKN-BY1XgytmHQTY" />
+
     </application>
 
 </manifest>

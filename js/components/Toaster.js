@@ -15,7 +15,7 @@ import {
 import Styles from '../styles/Styles'
 import Color from '../styles/Color'
 import Icon from 'react-native-vector-icons/FontAwesome'
-
+import { connectToaster } from '../api/Notifications'
 
 const Toaster = React.createClass ({
   propTypes: {
@@ -23,7 +23,6 @@ const Toaster = React.createClass ({
   },
 
   getInitialState() {
-
     // subscribe to the pubsub channel SHOW and handle valid requests
     pubsub.subscribe(ToastAddresses.SHOW, (address, request) => {
       if (request instanceof ToastMessage) {
@@ -35,6 +34,7 @@ const Toaster = React.createClass ({
       title: '',
       text: '',
       icon: 'check',
+      duration: 0,
       iconColor: Color.fadedGreen,
       fadeAnim: new Animated.Value(0.0),
       translateAnim: new Animated.Value(300),
@@ -44,6 +44,7 @@ const Toaster = React.createClass ({
   /* Methods */
   handlePress() {
     this.closeToast();
+    this.state.action();
   },
 
   /**
@@ -72,22 +73,22 @@ const Toaster = React.createClass ({
       icon: toastMessage.icon,
       iconColor: toastMessage.iconColor,
       duration: toastMessage.duration,
+      action: toastMessage.action,
     });
 
     this.closeTimeout = setTimeout(() => {
       self.closeToast()
     }, toastMessage.duration * 1000);
-
   },
 
   closeToast() {
     Animated.timing(
       this.state.fadeAnim,
-      {toValue: 0, duration: 400, easing: Easing.out(Easing.quad),}
+      {toValue: 0.1, duration: 400, easing: Easing.out(Easing.quad),}
     ).start();
     Animated.timing(
       this.state.translateAnim,
-      {toValue: 50, duration: 1200, easing: Easing.out(Easing.quad),}
+      {toValue: 150, duration: 1200, easing: Easing.out(Easing.quad),}
     ).start();
   },
 
@@ -115,8 +116,8 @@ const Toaster = React.createClass ({
           </View>
         </TouchableOpacity>
       </Animated.View>
-    )
+    );
   }
 })
 
-module.exports = Toaster
+module.exports = Toaster;

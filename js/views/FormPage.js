@@ -1,7 +1,5 @@
-import pubsub from 'pubsub-js';
-import {ToastAddresses, ToastMessage} from '../models/ToastMessage'
-
-import React, {
+import React from 'react';
+import {
   StyleSheet,
   TouchableHighlight,
   TouchableWithoutFeedback,
@@ -13,6 +11,9 @@ import React, {
   Platform,
   Alert,
 } from 'react-native'
+
+import pubsub from 'pubsub-js';
+import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
 
 import _ from 'lodash'
 import dismissKeyboard from 'dismissKeyboard'
@@ -42,7 +43,7 @@ import moment from 'moment'
 
 import { loadTriggers, loadCachedTrigger } from '../api/Triggers'
 import { validateUser } from '../api/Account'
-import { loadCachedForms } from '../api/Forms'
+import { loadCachedForms, loadActiveGeofenceFormsInRange } from '../api/Forms'
 import { loadCachedSubmissions, saveSubmission} from '../api/Submissions'
 import { loadCachedQuestions } from '../api/Questions'
 
@@ -54,20 +55,25 @@ const FormPage = React.createClass ({
   _questionIndex: 0,
   propTypes: {
     survey: React.PropTypes.object.isRequired,
+    type: React.PropTypes.string,
+    form: React.PropTypes.object,
     index: React.PropTypes.number,
   },
 
-  getInitialState() {
-    const forms = loadCachedForms(this.props.survey.id);
-    let index = 0
-    if (this.props.index) {
-      index = this.props.index;
+  getDefaultProps() {
+    return {
+      type: 'datetime',
+      index: 0,
     }
+  },
+
+  getInitialState() {
+    const forms = this.props.form ? [this.props.form] : loadCachedForms(this.props.survey.id)
 
     return {
       forms: forms,
       isLoading: true,
-      index: index,
+      index: this.props.index,
       button_text: 'Submit',
       formsInQueue: false
     }
@@ -117,24 +123,49 @@ const FormPage = React.createClass ({
   componentWillMount() {
     let self = this,
         index = this.state.index,
-        forms = this.formsWithTriggers(),
-        allForms = forms,
-        answers = {}
-    forms = self.filterForms(forms)
-    if (forms.length === 0) {
+        type = this.props.type,
+        answers = {},
+        forms,
+        allForms
+    
+    // Find most relevant form if no form type was provided.
+    // if (!type) {
+    //   if (!forms || forms.length === 0) {
+    //     forms = loadActiveGeofenceFormsInRange();
+
+    //     if (forms.length > 0) {
+    //       type = 'geofence';
+    //     } else {
+    //       type = 'datetime';
+    //     }
+    //   } 
+    // }
+
+    if (type === 'geofence') {
+      forms = this.state.forms
+      if (!forms || forms.length === 0) {
+        forms = loadActiveGeofenceFormsInRange(this.props.survey.id);
+      }
+    } else if (type === 'datetime') {
+      forms = this.formsWithTriggers()
+      allForms = forms
+      forms = this.filterForms(forms)
+      forms = this.sortForms(forms)
+    }
+
+    if (!forms || forms.length === 0) {
       futureForms = _.filter(allForms, function(form){
         return form.trigger > new Date()
       })
-      self.setState({isLoading: false, futureForms: futureForms, futureFormCount: futureForms.length})
+      this.setState({isLoading: false, futureForms: futureForms, futureFormCount: futureForms.length})
       return
     }
-    forms = self.sortForms(forms)
-
+    
     this.form = forms[index]
     this.nextForm = forms[index + 1]
     let submissions = loadCachedSubmissions(this.form.id),
         questions = loadCachedQuestions(this.form.id)
-    if(submissions.length > 0){
+    if (submissions.length > 0) {
       answers = JSON.parse(submissions.slice(-1)[0].answers)
     } else {
       // Set default values
@@ -155,7 +186,9 @@ const FormPage = React.createClass ({
         })()
       })
     }
-    self.setState({
+
+    console.log('Forms setState')
+    this.setState({
       questions: questions,
       answers: answers,
       forms: forms,

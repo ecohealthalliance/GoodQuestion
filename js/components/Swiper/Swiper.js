@@ -1,6 +1,7 @@
 'use strict'
 
-import React, {
+import React from 'react';
+import {
   Animated,
   Component,
   Dimensions,
@@ -10,8 +11,8 @@ import React, {
 
 import Dots from './dots'
 
-export default class Swiper extends Component {
-  static propTypes = {
+const Swiper = React.createClass ({
+  propTypes: {
     children: React.PropTypes.node.isRequired,
     index: React.PropTypes.number,
     threshold: React.PropTypes.number,
@@ -21,30 +22,30 @@ export default class Swiper extends Component {
     dotContainerStyle: React.PropTypes.object,
     dotStyle: React.PropTypes.object,
     activeDotStyle: React.PropTypes.object,
-  };
+  },
 
-  static defaultProps = {
-    index: 0,
-    pager: true,
-    threshold: 25,
-    onPageChange: () => {},
-    beforePageChange: () => { return true; },
-    activeDotColor: 'blue',
-    containerStyle: {},
-    dotContainerStyle: {},
-    dotStyle: {},
-    activeDotStyle: {},
-  };
+  getDefaultProps() {
+    return {
+      index: 0,
+      pager: true,
+      threshold: 25,
+      onPageChange: () => {},
+      beforePageChange: () => { return true; },
+      activeDotColor: 'blue',
+      containerStyle: {},
+      dotContainerStyle: {},
+      dotStyle: {},
+      activeDotStyle: {},
+    }
+  },
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      index: props.index,
-      scrollValue: new Animated.Value(props.index),
+  getInitialState() {
+    return {
+      index: this.props.index,
+      scrollValue: new Animated.Value(this.props.index),
       viewWidth: Dimensions.get('window').width,
     }
-  }
+  },
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.hasOwnProperty('index')) {
@@ -54,7 +55,7 @@ export default class Swiper extends Component {
       });
       Animated.spring(this.state.scrollValue, {toValue: pageNumber, friction: this.props.springFriction, tension: this.props.springTension}).start();
     }
-  }
+  },
 
   componentWillMount() {
     const release = (e, gestureState) => {
@@ -108,7 +109,7 @@ export default class Swiper extends Component {
         this.state.scrollValue.setValue(offsetX)
       }
     })
-  }
+  },
 
   shouldContinue(currentPage, nextPage) {
     let shouldContinue = this.props.beforePageChange(currentPage, nextPage);
@@ -116,7 +117,7 @@ export default class Swiper extends Component {
       return false;
     };
     return true;
-  }
+  },
 
   goToPage(pageNumber) {
     // Don't scroll outside the bounds of the screens
@@ -127,7 +128,7 @@ export default class Swiper extends Component {
 
     Animated.spring(this.state.scrollValue, {toValue: pageNumber, friction: this.props.springFriction, tension: this.props.springTension}).start();
     this.props.onPageChange(pageNumber)
-  }
+  },
 
   handleLayout(event) {
     const { width } = event.nativeEvent.layout
@@ -135,7 +136,7 @@ export default class Swiper extends Component {
     if (width) {
       this.setState({ viewWidth: width })
     }
-  }
+  },
 
   renderDots() {
     if (this.props.pager) {
@@ -148,7 +149,7 @@ export default class Swiper extends Component {
         activeColor={ this.props.activeDotColor }
       />
     }
-  }
+  },
 
   render() {
     const scenes = React.Children.map(this.props.children, child => {
@@ -166,7 +167,7 @@ export default class Swiper extends Component {
     }
 
     return (
-      <View style={[{flex: 1, overflow: 'hidden'}, this.props.containerStyle]} onLayout={this.handleLayout.bind(this)}>
+      <View style={[{flex: 1, overflow: 'hidden'}, this.props.containerStyle]} onLayout={this.handleLayout}>
         <Animated.View
           {...this._panResponder.panHandlers}
           style={[sceneContainerStyle, {transform: [{translateX}]}]}
@@ -177,5 +178,7 @@ export default class Swiper extends Component {
         { this.renderDots() }
       </View>
     )
-  }
-}
+  },
+});
+
+module.exports = Swiper;

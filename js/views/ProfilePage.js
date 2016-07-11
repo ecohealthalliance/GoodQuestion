@@ -1,5 +1,6 @@
 
-import React, {
+import React from 'react';
+import {
   StyleSheet,
   TouchableHighlight,
   Text,
@@ -97,9 +98,9 @@ const ProfilePage = React.createClass ({
                 <TextInput
                   ref='name'
                   style={Styles.form.input}
-                  onChangeText={this.textFieldChangeHandler.bind(this, 'name')}
-                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'nameView')}
-                  onBlur={this.trimText.bind(this, 'name')}
+                  onChangeText={this.textFieldChangeHandler.bind(null, 'name')}
+                  onFocus={this.scrollToViewWrapper.bind(null, 'scrollView', 'nameView')}
+                  onBlur={this.trimText.bind(null, 'name')}
                   value={this.state.name}
                   autoCapitalize='none'
                   autoCorrect={false}
@@ -114,9 +115,9 @@ const ProfilePage = React.createClass ({
                 <TextInput
                   ref='phone'
                   style={Styles.form.input}
-                  onChangeText={this.textFieldChangeHandler.bind(this, 'phone')}
-                  onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'phoneView')}
-                  onBlur={this.trimText.bind(this, 'phone')}
+                  onChangeText={this.textFieldChangeHandler.bind(null, 'phone')}
+                  onFocus={this.scrollToViewWrapper.bind(null, 'scrollView', 'phoneView')}
+                  onBlur={this.trimText.bind(null, 'phone')}
                   value={this.state.phone}
                   autoCapitalize='none'
                   autoCorrect={false}
