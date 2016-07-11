@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-import BackgroundGeolocation from 'react-native-background-geolocation';
-// import BackgroundGeolocation from 'react-native-background-geolocation-android';
+//import BackgroundGeolocation from 'react-native-background-geolocation';
+import BackgroundGeolocation from 'react-native-background-geolocation-android';
 
 import Settings from './js/settings';
 
@@ -24,7 +24,7 @@ BackgroundGeolocation.configure({
   stopTimeout: 2,
 
   // Application config
-  debug: false,
+  debug: true,
   forceReloadOnLocationChange: false,  // Android
   forceReloadOnMotionChange: false,    // Android
   forceReloadOnGeofence: false,        // Android
@@ -37,6 +37,7 @@ BackgroundGeolocation.configure({
 
 const App = React.createClass({
   getInitialState() {
+    const self = this;
 
     const myGeofences = [{
       identifier: 'geo1',
@@ -58,32 +59,39 @@ const App = React.createClass({
       loiteringDelay: 15000
     }];
 
-    BackgroundGeolocation.addGeofences(myGeofences, function() {
-      console.log("Successfully added geofences.");
-    }, function(error) {
-      console.warn("Failed to add geofences.", error);
-    });
-
     BackgroundGeolocation.on('geofence', function(params) {
       console.log('geofence crossed!');
       console.log(params);
+      self.setState({text: JSON.stringify(params)});
     });
 
     BackgroundGeolocation.start(function() {
       console.log('- [js] BackgroundGeolocation started successfully');
+
+      BackgroundGeolocation.addGeofences(myGeofences, function() {
+        console.log("Successfully added geofences.");
+      }, function(error) {
+        console.warn("Failed to add geofences.", error);
+      });
+
     });
 
     setTimeout(() => {
       BackgroundGeolocation.getGeofences((geofences)=>{
-        console.log(geofences);
+        console.log("getGeofences: ", geofences);
       });
-    }, 3000);
+    }, 5000);
 
-    return {};
+    return { text: ''};
   },
 
   render() {
-    return <View><Text>Geolocation Test</Text></View>;
+    return (
+      <View>
+        <Text> Geofence Test </Text>
+        <Text> {this.state.text} </Text>
+      </View>
+    );
   }
 });
 
