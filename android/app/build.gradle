@@ -159,10 +159,10 @@ dependencies {
     compile (project(':RNBackgroundGeolocation')) {
         exclude group: 'com.google.android.gms', module: 'play-services-location'
     }
-    compile 'com.google.android.gms:play-services-base:9.2.0'
-    compile 'com.google.android.gms:play-services-maps:9.2.0'
-    compile 'com.google.android.gms:play-services-location:9.2.0'
-    compile 'com.google.android.gms:play-services-gcm:9.2.0'
+    compile 'com.google.android.gms:play-services-base:9.0.1'
+    compile 'com.google.android.gms:play-services-maps:9.0.1'
+    compile 'com.google.android.gms:play-services-location:9.0.1'
+    compile 'com.google.android.gms:play-services-gcm:9.0.1'
 }
 
 // Run this once to be able to run the application with BUCK
