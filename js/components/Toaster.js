@@ -18,6 +18,8 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import { connectToaster } from '../api/Notifications'
 
 const Toaster = React.createClass ({
+  inUse: false,
+
   propTypes: {
     navigator: React.PropTypes.object,
   },
@@ -53,8 +55,13 @@ const Toaster = React.createClass ({
    * @param {object} toastMessage, an instanceof ToastMessage from pubsub
    */
   showToast(toastMessage) {
+    if (this.inUse) {
+      return;
+    }
+
     const self = this;
 
+    this.inUse = true;
     this.state.fadeAnim.setValue(0);
     this.state.translateAnim.setValue(150);
 
@@ -76,12 +83,20 @@ const Toaster = React.createClass ({
       action: toastMessage.action,
     });
 
+    // Prevent toast from being re-used in quick sucession.
+    if (duration >= 2) {
+      setTimeout(()=>{
+        self.inUse = false;
+      }, 2000);
+    }
+
     this.closeTimeout = setTimeout(() => {
-      self.closeToast()
+      self.closeToast();
     }, toastMessage.duration * 1000);
   },
 
   closeToast() {
+    this.inUse = false;
     Animated.timing(
       this.state.fadeAnim,
       {toValue: 0.1, duration: 400, easing: Easing.out(Easing.quad),}
