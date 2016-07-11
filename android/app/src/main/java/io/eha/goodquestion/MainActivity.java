@@ -1,5 +1,8 @@
 package io.eha.goodquestion;
 
+import android.os.Bundle;
+import android.content.Intent;
+
 import com.facebook.react.ReactActivity;
 
 public class MainActivity extends ReactActivity {
@@ -11,5 +14,17 @@ public class MainActivity extends ReactActivity {
     @Override
     protected String getMainComponentName() {
         return "GoodQuestion";
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+    }
+
+    // Add onNewIntent
+    @Override
+    public void onNewIntent(Intent intent) {
+      super.onNewIntent(intent);
+      ((MainApplication) getApplication()).onNewIntent(intent);
     }
 }

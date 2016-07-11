@@ -1,5 +1,8 @@
 package io.eha.goodquestion;
 
+import java.util.Arrays;
+import java.util.List;
+
 import android.app.Application;
 import android.util.Log;
 
@@ -9,16 +12,20 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 
+// Push Notifications
+import android.content.Intent;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
-import com.facebook.react.ReactActivity;
-import com.facebook.react.ReactPackage;
-import com.facebook.react.shell.MainReactPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
+
+// Geolocation
 import com.transistorsoft.rnbackgroundgeolocation.RNBackgroundGeolocation;
 import com.AirMaps.AirPackage;
 
-import java.util.Arrays;
-import java.util.List;
+// Libraries
+import com.oblador.vectoricons.VectorIconsPackage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import io.realm.react.RealmReactPackage;
+
 
 public class MainApplication extends Application implements ReactApplication {
   private static final Logger logger = LoggerFactory.getLogger(MainActivity.class);
@@ -34,20 +41,16 @@ public class MainApplication extends Application implements ReactApplication {
       return BuildConfig.DEBUG;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     /**
      * A list of packages used by the app. If the app uses additional views
      * or modules besides the default ones, add more packages here.
      */
     @Override
     protected List<ReactPackage> getPackages() {
-      mReactNativePushNotificationPackage = new ReactNativePushNotificationPackage(this);
+      mReactNativePushNotificationPackage = new ReactNativePushNotificationPackage();
+
       return Arrays.<ReactPackage>asList(
-        new RNBackgroundGeolocation(this),      // <-- for background-geolocation
+        new RNBackgroundGeolocation(),      // <-- for background-geolocation
         new MainReactPackage(),
         new VectorIconsPackage(),
         new AirPackage(),
@@ -58,10 +61,10 @@ public class MainApplication extends Application implements ReactApplication {
   };
 
   // Add onNewIntent
-  @Override
   public void onNewIntent(Intent intent) {
-    super.onNewIntent(intent);
-    mReactNativePushNotificationPackage.newIntent(intent);
+    if ( mReactNativePushNotificationPackage != null ) {
+      mReactNativePushNotificationPackage.newIntent(intent);
+    }
   }
 
   @Override

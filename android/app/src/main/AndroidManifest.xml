@@ -30,10 +30,11 @@
 
     <application
       android:name=".MainApplication"
-      android:allowBackup="true" android:name="io.eha.goodquestion.GoodQuestionApplication"
+      android:allowBackup="true"
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher"
       android:theme="@style/AppTheme">
+      
       <activity
         android:name="io.eha.goodquestion.MainActivity"
         android:label="@string/app_name"
@@ -45,42 +46,42 @@
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
 
-        <receiver
-            android:name="com.google.android.gms.gcm.GcmReceiver"
-            android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND" >
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="io.eha.goodquestion" />
-            </intent-filter>
-        </receiver>
+      <receiver
+        android:name="com.google.android.gms.gcm.GcmReceiver"
+        android:exported="true"
+        android:permission="com.google.android.c2dm.permission.SEND" >
+        <intent-filter>
+          <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+          <category android:name="io.eha.goodquestion" />
+        </intent-filter>
+      </receiver>
 
-        <service android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationRegistrationService"/>
-        <service
-            android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationListenerService"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            </intent-filter>
-        </service>
+      <service android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationRegistrationService"/>
+      <service
+        android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationListenerService"
+        android:exported="false" >
+        <intent-filter>
+          <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+        </intent-filter>
+      </service>
 
       <!-- background-location services (1 of 2) -->
-        <service android:name="com.transistorsoft.locationmanager.BackgroundGeolocationService" />
-        <service android:name="com.transistorsoft.locationmanager.LocationService" />
-        <service android:name="com.transistorsoft.locationmanager.ActivityRecognitionService" />
-        <service android:name="com.transistorsoft.locationmanager.geofence.GeofenceService" />
-        <service android:name="com.transistorsoft.locationmanager.scheduler.ScheduleService" />
-        <service android:name="com.transistorsoft.locationmanager.scheduler.ScheduleAlarmService" />
-        <receiver android:enabled="true" android:exported="false" android:name="com.transistorsoft.rnbackgroundgeolocation.BootReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
+      <service android:name="com.transistorsoft.locationmanager.BackgroundGeolocationService" />
+      <service android:name="com.transistorsoft.locationmanager.LocationService" />
+      <service android:name="com.transistorsoft.locationmanager.ActivityRecognitionService" />
+      <service android:name="com.transistorsoft.locationmanager.geofence.GeofenceService" />
+      <service android:name="com.transistorsoft.locationmanager.scheduler.ScheduleService" />
+      <service android:name="com.transistorsoft.locationmanager.scheduler.ScheduleAlarmService" />
+      <receiver android:enabled="true" android:exported="false" android:name="com.transistorsoft.rnbackgroundgeolocation.BootReceiver">
+        <intent-filter>
+          <action android:name="android.intent.action.BOOT_COMPLETED" />
+        </intent-filter>
+      </receiver>
 
-        <!-- Google Maps API key -->
-        <meta-data
-          android:name="com.google.android.geo.API_KEY"
-          android:value="AIzaSyD3tJy2Eb_gp1KSxGsVKN-BY1XgytmHQTY" />
+      <!-- Google Maps API key -->
+      <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyD3tJy2Eb_gp1KSxGsVKN-BY1XgytmHQTY" />
 
     </application>
 
