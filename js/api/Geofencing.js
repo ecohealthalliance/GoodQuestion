@@ -66,15 +66,12 @@ export function setupGeofences() {
         console.info('Geolocation tracking started.')
         console.log('Adding ' + triggerGeofences.length + ' geofences...')
         BackgroundGeolocation.addGeofences(triggerGeofences, function() {
+          // https://github.com/transistorsoft/react-native-background-geolocation-android/issues/56
+          // this callback will never fire, see issue above
           console.log("Successfully added geofences.");
         }, function(error) {
-            console.warn("Failed to add geofences.", error);
+          console.warn("Failed to add geofences.", error);
         });
-        setTimeout(() => {
-          BackgroundGeolocation.getGeofences((geofences)=>{
-            console.log("getGeofences: ", geofences);
-          });
-        }, 5000);
       })
     })
     connectMapToGeofence()
