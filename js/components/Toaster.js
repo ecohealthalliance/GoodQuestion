@@ -84,7 +84,7 @@ const Toaster = React.createClass ({
     });
 
     // Prevent toast from being re-used in quick sucession.
-    if (duration >= 2) {
+    if (toastMessage.duration && toastMessage.duration >= 2) {
       setTimeout(()=>{
         self.inUse = false;
       }, 2000);

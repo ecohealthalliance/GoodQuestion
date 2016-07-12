@@ -131,24 +131,40 @@ export function removeGeofenceById(id) {
  * @param  {Function} callback   Returns object containing the current latitude, longitude, accuracy, and timestamp.
  */
 export function getUserLocationData(callback) {
-  BackgroundGeolocation.getLocations((locations) => {
-    let current = locations[0];
-    if (current && current.coords) {
-      callback({
-        latitude: current.coords.latitude,
-        longitude: current.coords.longitude,
-        accuracy: current.coords.accuracy,
-        timestamp: current.timestamp,
-      })
-    } else {
-      callback({
-        latitude: 0,
-        longitude: 0,
-        accuracy: 0,
-        timestamp: new Date()
-      })
-    }
-  });
+  let coords = {
+    latitude: 0,
+    longitude: 0,
+    accuracy: 0,
+    timestamp: new Date()
+  };
+
+  if (Store.backgroundServiceState == 'deactivated') {
+    console.log('deactivated, returning blank data')
+    callback(coords);
+    return;
+  }
+
+  try {
+    BackgroundGeolocation.getLocations( function success (locations) {
+      let current = locations[0];
+      if (current && current.coords) {
+        coords = {
+          latitude: current.coords.latitude,
+          longitude: current.coords.longitude,
+          accuracy: current.coords.accuracy,
+          timestamp: current.timestamp,
+        };
+        callback(coords);
+      } else {
+        callback(coords);
+      }
+    }, function fail () {
+      callback(coords);
+    });
+  } catch (e) {
+    callback(coords);
+  }
+  
 }
 
 /**

@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   View,
+  Text,
   Animated,
   Easing,
   ActivityIndicator,
@@ -8,6 +9,7 @@ import {
 } from 'react-native'
 
 import Styles from '../styles/Styles'
+import Color from '../styles/Color'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 /**
@@ -35,9 +37,8 @@ const Loading = React.createClass ({
 
   componentDidMount() {
     if (Platform.OS === 'ios') {
-
+      this._animate();
     }
-    this._animate();
   },
 
   render() {
@@ -45,9 +46,13 @@ const Loading = React.createClass ({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-    }
-    
-    
+    };
+    const textStyle = {
+      marginTop: 30,
+      fontSize: 20,
+      color: this.props.color || Color.primary,
+      textAlign: 'center',
+    };
 
     if (Platform.OS === 'ios') {
       const animation = {transform: [
@@ -60,8 +65,13 @@ const Loading = React.createClass ({
       return (
         <View style={container}>
           <Animated.View style={animation}>
-            <Icon name="spinner" size={120} color="#eee"/>
+            <Icon name="spinner" size={120} color={this.props.color || Color.faded}/>
           </Animated.View>
+          {this.props.text ?
+            <Text style={textStyle}>
+              {this.props.text}
+            </Text>
+          :null}
         </View>
       )
 
@@ -78,7 +88,13 @@ const Loading = React.createClass ({
           <ActivityIndicator
             style={animation}
             size='large'
+            color={ this.props.color || Color.primary }
           />
+          {this.props.text ?
+            <Text style={textStyle}>
+              {this.props.text}
+            </Text>
+          :null}
         </View>
       )
     }

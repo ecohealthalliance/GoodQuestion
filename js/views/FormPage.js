@@ -34,6 +34,7 @@ import CompleteForm from '../components/QuestionTypes/CompleteForm'
 import Button from 'apsl-react-native-button';
 import Submission from '../models/Submission';
 import Loading from '../components/Loading';
+import Overlay from '../components/Overlay';
 import Color from '../styles/Color';
 import TypeStyles from '../styles/_TypeStyles';
 import Swiper from '../components/Swiper/Swiper';
@@ -73,8 +74,8 @@ const FormPage = React.createClass ({
     return {
       forms: forms,
       isLoading: true,
+      isSubmitting: false,
       index: this.props.index,
-      button_text: 'Submit',
       formsInQueue: false
     }
   },
@@ -127,19 +128,6 @@ const FormPage = React.createClass ({
         answers = {},
         forms,
         allForms
-    
-    // Find most relevant form if no form type was provided.
-    // if (!type) {
-    //   if (!forms || forms.length === 0) {
-    //     forms = loadActiveGeofenceFormsInRange();
-
-    //     if (forms.length > 0) {
-    //       type = 'geofence';
-    //     } else {
-    //       type = 'datetime';
-    //     }
-    //   } 
-    // }
 
     if (type === 'geofence') {
       forms = this.state.forms
@@ -187,7 +175,6 @@ const FormPage = React.createClass ({
       })
     }
 
-    console.log('Forms setState')
     this.setState({
       questions: questions,
       answers: answers,
@@ -256,13 +243,13 @@ const FormPage = React.createClass ({
   },
 
   submit() {
+    if (this.state.isSubmitting) return;
+
     let answers = this.state.answers,
         formId = this.form.id,
         index = this.state.index,
         survey = this.props.survey
-    this.setState({
-      button_text: 'Saving...'
-    });
+    this.setState({ isSubmitting: true });
 
     saveSubmission(formId, answers, (err, res) => {
       if (err) {
@@ -271,12 +258,12 @@ const FormPage = React.createClass ({
           return;
         }
         Alert.alert('Error', err);
+        this.setState({ isSubmitting: false });
+
         return;
       }
 
-      this.setState({
-        button_text: 'Submit'
-      });
+      this.setState({ isSubmitting: false });
 
       // Publish a ToastMessage to our Toaster via pubsub
       const toastMessage = ToastMessage.createFromObject({title: 'Success', message: 'The form has been submitted.', icon: 'check', iconColor: Color.fadedGreen});
@@ -397,6 +384,12 @@ const FormPage = React.createClass ({
             total={this.state.questions.length}
             onPressed={this.changePage}
            />
+
+           {this.state.isSubmitting ? 
+             <Overlay>
+               <Loading color="white" text="Submitting Form..." /> 
+             </Overlay>
+           : null}
         </View>
       )
     }
