@@ -1,6 +1,4 @@
-import { StyleSheet, Platform } from 'react-native'
-import Color from './Color'
-
+import { StyleSheet } from 'react-native';
 
 const ToastStyles = StyleSheet.create({
   wrapper: {
@@ -15,7 +13,7 @@ const ToastStyles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
   },
   container: {
-    flex: .75,
+    flex: 0.75,
     flexDirection: 'column',
     justifyContent: 'center',
     // alignItems: 'stretch',
@@ -23,13 +21,13 @@ const ToastStyles = StyleSheet.create({
     // height: 60
   },
   icon: {
-    flex: .25,
+    flex: 0.25,
     flexDirection: 'column',
   },
   title: {
     fontSize: 18,
     color: 'dimgray',
   },
-})
+});
 
-module.exports = ToastStyles
+module.exports = ToastStyles;

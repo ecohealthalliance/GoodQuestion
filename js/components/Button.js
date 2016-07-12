@@ -2,12 +2,11 @@ import React, {
   TouchableWithoutFeedback,
   View,
   Text,
-} from 'react-native'
+} from 'react-native';
 
-import Styles from '../styles/Styles'
+import Styles from '../styles/Styles';
 
-const Button = React.createClass ({
-
+const Button = React.createClass({
   propTypes: {
     action: React.PropTypes.func.isRequired,
     color: React.PropTypes.string,
@@ -22,31 +21,37 @@ const Button = React.createClass ({
 
   /* Methods */
   handleTouch() {
-    this.props.action()
+    this.props.action();
   },
 
   /* Render */
   render() {
-    let buttonStyle = [Styles.form.button]
-    let buttonTextStyle = [Styles.form.buttonText]
+    let buttonStyle = [Styles.form.button];
+    const buttonTextStyle = [Styles.form.buttonText];
 
     // Square or Round
-    if (this.props.round) buttonStyle = [Styles.form.roundButton]
+    if (this.props.round) {
+      buttonStyle = [Styles.form.roundButton];
+    }
 
     // Optional Rendering options
-    if (this.props.wide) buttonStyle.push(Styles.form.wideButton)
+    if (this.props.wide) {
+      buttonStyle.push(Styles.form.wideButton);
+    }
+
     if (this.props.size) {
-      buttonStyle.push({flex: this.props.size})
+      buttonStyle.push({flex: this.props.size});
     }
 
 
     if (this.props.color === 'primary') {
-      buttonStyle.push(Styles.form.primaryButton)
-      buttonTextStyle.push(Styles.form.primaryButtonText)
+      buttonStyle.push(Styles.form.primaryButton);
+      buttonTextStyle.push(Styles.form.primaryButtonText);
     }
+
     if (this.props.color === 'success') {
-      buttonStyle.push(Styles.form.successButton)
-      buttonTextStyle.push(Styles.form.successButtonText)
+      buttonStyle.push(Styles.form.successButton);
+      buttonTextStyle.push(Styles.form.successButtonText);
     }
 
     return (
@@ -57,8 +62,8 @@ const Button = React.createClass ({
           </Text>
         </View>
       </TouchableWithoutFeedback>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = Button
+module.exports = Button;

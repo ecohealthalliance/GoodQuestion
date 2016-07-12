@@ -2,17 +2,16 @@ import React, {
   View,
   Animated,
   Easing,
-} from 'react-native'
+} from 'react-native';
 
-import Styles from '../styles/Styles'
-import Icon from 'react-native-vector-icons/FontAwesome'
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 /**
  * provides for an animted loading component
  *
  * @note based off the following gist https://gist.github.com/cssoul/eda63b173311a323653b
  */
-const Loading = React.createClass ({
+const Loading = React.createClass({
 
   getInitialState() {
     return {
@@ -26,7 +25,7 @@ const Loading = React.createClass ({
       toValue: 360,
       delay: 0,
       duration: 1500,
-      easing: Easing.linear
+      easing: Easing.linear,
     }).start(this._animate);
   },
 
@@ -39,21 +38,21 @@ const Loading = React.createClass ({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-    }
+    };
     const animation = {transform: [
       {rotate: this.state.angle.interpolate({
         inputRange: [0, 360],
-        outputRange: ['0deg', '360deg']
+        outputRange: ['0deg', '360deg'],
       })},
     ]};
     return (
       <View style={container}>
         <Animated.View style={animation}>
-          <Icon name="spinner" size={120} color="#eee"/>
+          <Icon name='spinner' size={120} color='#eee'/>
         </Animated.View>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = Loading
+module.exports = Loading;

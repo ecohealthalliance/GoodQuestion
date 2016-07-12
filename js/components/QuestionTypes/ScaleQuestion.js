@@ -1,15 +1,12 @@
 import React, {
-  StyleSheet,
   Text,
-  TextInput,
   View,
   Slider,
-} from 'react-native'
-import Styles from '../../styles/Styles'
-import Color from '../../styles/Color'
-import ViewText from '../ViewText'
+} from 'react-native';
+import Styles from '../../styles/Styles';
+import ViewText from '../ViewText';
 
-const ScaleQuestion = React.createClass ({
+const ScaleQuestion = React.createClass({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
@@ -24,7 +21,7 @@ const ScaleQuestion = React.createClass ({
     }),
   },
 
-  getDefaultProps: function () {
+  getDefaultProps() {
     return {
       value: 1,
       properties: {
@@ -34,36 +31,36 @@ const ScaleQuestion = React.createClass ({
     };
   },
 
-  getInitialState: function() {
+  getInitialState() {
     return {
       value: this.props.value,
-    }
+    };
   },
 
   /* Methods */
   handleChange(value) {
     this.setState({
-      value: value
-    })
-    this.props.onChange(value)
+      value: value,
+    });
+    this.props.onChange(value);
   },
 
   /* Render */
   renderNotes() {
-    return this.props.notes.map((note, index)=>{
-      return ( 
-        <Text key={'note-'+this.props.id+'-'+index}>
+    return this.props.notes.map((note, index) => {
+      return (
+        <Text key={`note-${this.props.id}-${index}`}>
           {note}
         </Text>
-      )
-    })
+      );
+    });
   },
 
   render() {
-    const { properties } = this.props
+    const { properties } = this.props;
     return (
       <View style={Styles.question.block}>
-        <ViewText 
+        <ViewText
           style={Styles.question.header}
           textStyle={Styles.question.headerText}>
             Question #{this.props.index}
@@ -80,24 +77,23 @@ const ScaleQuestion = React.createClass ({
           />
         <View style={Styles.question.notes}>
           {
-            properties.minText ? 
-            <Text style={[Styles.type.p, {textAlign: 'center'}]}>
-              {properties.min}: {properties.minText}
-            </Text> 
+            properties.minText
+            ? <Text style={[Styles.type.p, {textAlign: 'center'}]}>
+                {properties.min}: {properties.minText}
+              </Text>
             : null
           }
           {
-            properties.maxText ? 
-            <Text style={[Styles.type.p, {textAlign: 'center'}]}>
-              {properties.max}: {properties.maxText}
-            </Text> 
+            properties.maxText
+            ? <Text style={[Styles.type.p, {textAlign: 'center'}]}>
+                {properties.max}: {properties.maxText}
+              </Text>
             : null
           }
         </View>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = ScaleQuestion
-
+module.exports = ScaleQuestion;

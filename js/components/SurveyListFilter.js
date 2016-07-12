@@ -2,31 +2,30 @@ import React, {
   View,
   Text,
   TouchableWithoutFeedback,
-} from 'react-native'
+} from 'react-native';
 
-import Styles from '../styles/Styles'
-import Color from '../styles/Color'
-import Button from './Button'
+import Styles from '../styles/Styles';
+import Color from '../styles/Color';
 
-import Icon from 'react-native-vector-icons/FontAwesome'
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-const SurveyListFilter = React.createClass ({
+const SurveyListFilter = React.createClass({
   propTypes: {
     filterList: React.PropTypes.func.isRequired,
   },
 
   getInitialState() {
     return {
-      activeButton: 'all'
-    }
+      activeButton: 'all',
+    };
   },
 
   /* Methods */
   handlePress(filter) {
-    this.props.filterList(filter)
+    this.props.filterList(filter);
     this.setState({
-      activeButton: filter
-    })
+      activeButton: filter,
+    });
   },
 
   /* Render */
@@ -62,20 +61,22 @@ const SurveyListFilter = React.createClass ({
           Declined
         </SurveyListFilterButton>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-const SurveyListFilterButton = React.createClass ({
+const SurveyListFilterButton = React.createClass({
   propTypes: {
     active: React.PropTypes.bool.isRequired,
     icon: React.PropTypes.string.isRequired,
     onPress: React.PropTypes.func.isRequired,
   },
   render() {
-    let buttonContainerStyle = {opacity: 0.5}
-    let buttonViewStyle = {flex: 1, paddingHorizontal: 20, paddingVertical: 16, justifyContent: 'center', alignItems: 'center'}
-    if (this.props.active) buttonContainerStyle.opacity = 1
+    const buttonContainerStyle = {opacity: 0.5};
+    let buttonViewStyle = {flex: 1, paddingHorizontal: 20, paddingVertical: 16, justifyContent: 'center', alignItems: 'center'};
+    if (this.props.active) {
+      buttonContainerStyle.opacity = 1;
+    }
     return (
       <View style={[buttonContainerStyle]}>
         <TouchableWithoutFeedback onPress={this.props.onPress} >
@@ -85,9 +86,8 @@ const SurveyListFilterButton = React.createClass ({
           </View>
         </TouchableWithoutFeedback>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-
-module.exports = SurveyListFilter
+module.exports = SurveyListFilter;

@@ -1,8 +1,9 @@
-import Parse from 'parse/react-native'
-import realm from '../data/Realm'
-import {currentUser} from '../api/Account'
-import crypto from 'crypto-js'
-import async from 'async'
+import Parse from 'parse/react-native';
+import realm from '../data/Realm';
+import {currentUser} from '../api/Account';
+import crypto from 'crypto-js';
+import async from 'async';
+import _ from 'lodash';
 
 const Invitation = Parse.Object.extend('Invitation');
 export const InvitationStatus = {
@@ -16,13 +17,14 @@ export const InvitationStatus = {
  * user may only have one submission for each formId
  *
  * @param {string} formId, the unique id for the parse form record
- * @param {object} currentUser, the current parse user saved to AsyncStorage
+ * @param {object} user, the current parse user saved to AsyncStorage
+ *
  */
-function genInvitationId(surveyId, currentUser, done) {
-  const str = '' + currentUser.id + surveyId;
+function genInvitationId(surveyId, user, done) {
+  const str = `${user.id}${surveyId}`;
   const id = crypto.MD5(str).toString();
   done(null, id);
-};
+}
 
 /**
  * upsert a invitation to the local realm database
@@ -34,9 +36,7 @@ function genInvitationId(surveyId, currentUser, done) {
  * @param {boolean} dirty, mark the invitation dirty
  */
 function upsertRealmInvitation(id, surveyId, userId, status, dirty, done) {
-  const invitations = realm
-    .objects('Invitation')
-    .filtered(`uniqueId == "${id}"`);
+  const invitations = realm.objects('Invitation').filtered(`uniqueId == "${id}"`);
   if (invitations.length > 0) {
     const invitation = invitations[0];
     try {
@@ -45,8 +45,8 @@ function upsertRealmInvitation(id, surveyId, userId, status, dirty, done) {
         invitation.status = status;
       });
       done(null, invitation);
-    } catch(e) {
-      done('Error updating realm invitation ' + id);
+    } catch (e) {
+      done(`Error updating realm invitation ${id}`);
     }
     return;
   }
@@ -61,11 +61,11 @@ function upsertRealmInvitation(id, surveyId, userId, status, dirty, done) {
         status: status,
       });
       done(null, invitation);
-    } catch(e) {
-      done('Error saving realm invitation ' + id);
+    } catch (e) {
+      done(`Error saving realm invitation ${id}`);
     }
   });
-};
+}
 
 /**
  * create a invitation on parse-server
@@ -74,24 +74,26 @@ function upsertRealmInvitation(id, surveyId, userId, status, dirty, done) {
  *
  * @param {string} id, the unique id for the realm record
  * @param {string} surveyId, the unique id for the parse form record
- * @param {object} currentUser, the current user
+ * @param {object} user, the current user
  * @param {string} status, the invitation status
  */
-function createParseInvitation(id, surveyId, currentUser, status, done) {
+function createParseInvitation(id, surveyId, user, status, done) {
   const invitation = new Invitation();
   invitation.set('uniqueId', id);
   invitation.set('surveyId', surveyId);
   invitation.set('status', status);
-  invitation.set('userId', currentUser.id);
-  const query = new Parse.Query(Parse.Role)
-  query.equalTo('name', 'admin')
+  invitation.set('userId', user.id);
+  const query = new Parse.Query(Parse.Role);
+  query.equalTo('name', 'admin');
   query.find(
     (roles) => {
-      if (roles.length <= 0) return done('Invalid role.');
+      if (roles.length <= 0) {
+        return done('Invalid role.');
+      }
       const role = roles[0];
       const acl = new Parse.ACL();
-      acl.setReadAccess(currentUser, true);
-      acl.setWriteAccess(currentUser, true);
+      acl.setReadAccess(user, true);
+      acl.setWriteAccess(user, true);
       acl.setRoleReadAccess(role, true);
       acl.setRoleWriteAccess(role, true);
       invitation.setACL(acl);
@@ -99,16 +101,16 @@ function createParseInvitation(id, surveyId, currentUser, status, done) {
         (s) => {
           done(null, s);
         },
-        (e) => {
+        () => {
           done('Error synchronizing to remote server.');
         }
       );
     },
-    (e) => {
-      done('Invalid role.')
+    () => {
+      done('Invalid role.');
     }
   );
-};
+}
 
 /**
  * update an existing invitation on parse-server
@@ -122,14 +124,14 @@ function updateParseInvitation(invitation, status, done) {
       (s) => {
         done(null, s);
       },
-      (e) => {
+      () => {
         done('Error synchronizing to remote server.');
       }
     );
   } else {
-    done('Invalid invitation instance type')
+    done('Invalid invitation instance type');
   }
-};
+}
 
 /**
  * find an invitation on parse by uniqueId
@@ -139,18 +141,18 @@ function updateParseInvitation(invitation, status, done) {
 function findParseInvitation(id, done) {
   const query = new Parse.Query(Invitation);
   query.equalTo('uniqueId', id);
-  query.find({
-    success: function(invitations) {
+  query.find(
+    (invitations) => {
       if (invitations.length > 0) {
         done(null, invitations[0]);
         return;
       }
       done(null, null);
     },
-    error: function(err) {
+    () => {
       done('No results');
     }
-  });
+  );
 }
 
 /**
@@ -159,9 +161,7 @@ function findParseInvitation(id, done) {
  * @param {string} id, the unique id for the realm record
  */
 function markRealmInvitationClean(id, done) {
-  const invitations = realm
-    .objects('Invitation')
-    .filtered(`uniqueId = "${id}"`);
+  const invitations = realm.objects('Invitation').filtered(`uniqueId = "${id}"`);
   if (invitations.length > 0) {
     try {
       const invitation = invitations[0];
@@ -169,13 +169,13 @@ function markRealmInvitationClean(id, done) {
         invitation.dirty = false;
       });
       done(null, invitation);
-    } catch(e) {
-      done('Error update realm invitation ' + id)
+    } catch (e) {
+      done(`Error update realm invitation ${id}`);
     }
   } else {
     done('Invitation does not exist');
   }
-};
+}
 
 /**
  * Accept an invatation to a survey
@@ -184,8 +184,8 @@ function markRealmInvitationClean(id, done) {
  * @param {string} status, the invitation status
  */
 export function markInvitationStatus(surveyId, status, done) {
-  if (typeof status !== 'string' || !InvitationStatus.hasOwnProperty(status.toUpperCase()))  {
-    console.warn(`Invalid status type: ${status}`)
+  if (typeof status !== 'string' || !InvitationStatus.hasOwnProperty(status.toUpperCase())) {
+    console.warn(`Invalid status type: ${status}`);
     return;
   }
   async.auto({
@@ -215,16 +215,18 @@ export function markInvitationStatus(surveyId, status, done) {
     // mark the local submission as clean
     clean: ['save', (cb, results) => {
       markRealmInvitationClean(results.id, cb);
-    }]
-  }, (err, results) => {
-    if (typeof done !== 'function') return;
+    }],
+  }, (err) => {
+    if (typeof done !== 'function') {
+      return;
+    }
     if (err) {
       done(err);
       return;
     }
     done(null, 'The invitation was saved.');
   });
-};
+}
 
 /**
  * load a single cached invitation for the current user
@@ -238,15 +240,13 @@ export function loadCachedInvitation(surveyId, done) {
     },
     invitation: ['currentUser', (cb, results) => {
       const userId = results.currentUser.id;
-      const invitations = realm
-        .objects('Invitation')
-        .filtered(`surveyId == "${surveyId}" AND userId == "${userId}"`);
+      const invitations = realm.objects('Invitation').filtered(`surveyId == "${surveyId}" AND userId == "${userId}"`);
       if (invitations.length > 0) {
         cb(null, invitations[0]);
       } else {
         cb('Invitation does not exist');
       }
-    }]
+    }],
   }, (err, results) => {
     if (err) {
       done(err);
@@ -254,7 +254,7 @@ export function loadCachedInvitation(surveyId, done) {
     }
     done(null, results.invitation);
   });
-};
+}
 
 /**
  * load all cached invitations for the current user
@@ -262,7 +262,9 @@ export function loadCachedInvitation(surveyId, done) {
  * @param {string} surveyId, the unique id for the survey
  */
 export function loadCachedInvitations(surveys, done) {
-  const surveyIds = _.map(surveys, (survey) => { return survey.id });
+  const surveyIds = _.map(surveys, (survey) => {
+    return survey.id;
+  });
   async.auto({
     currentUser: (cb) => {
       currentUser(cb);
@@ -270,36 +272,39 @@ export function loadCachedInvitations(surveys, done) {
     // find any existing cached invitations by surveyIds and userId
     findExisting: ['currentUser', (cb, results) => {
       const userId = results.currentUser.id;
-      let invitations = []
+      let invitations = [];
       if (surveyIds.length > 0) {
-        invitations = realm
-          .objects('Invitation')
-          .filtered(`userId == "${userId}"`)
-          .filtered(surveyIds.map((id) => `surveyId == "${id}"`).join(' OR '));
+        invitations = realm.objects('Invitation').filtered(
+          `userId == "${userId}"`).filtered(
+            surveyIds.map((id) => `surveyId == "${id}"`).join(' OR '));
       }
       cb(null, invitations);
     }],
     // create a default installation object with STATE.PENDING if one does not
     // exist for a survey
     create: ['findExisting', (cb, results) => {
-      const existingIds = _.map(results.findExisting, (invitation) => { return invitation.surveyId });
+      const existingIds = _.map(results.findExisting, (invitation) => {
+        return invitation.surveyId;
+      });
       const difference = _.difference(surveyIds, existingIds);
-      difference.forEach((id) => { markInvitationStatus(id, InvitationStatus.PENDING) })
+      difference.forEach((id) => {
+        markInvitationStatus(id, InvitationStatus.PENDING);
+      });
       cb(null, difference);
     }],
     join: ['create', (cb, results) => {
-      if (results.create.length <= 0) return cb(null, results.findExisting);
+      if (results.create.length <= 0) {
+        return cb(null, results.findExisting);
+      }
       const userId = results.currentUser.id;
-      let invitations = []
+      let invitations = [];
       if (surveyIds.length > 0) {
-        invitations = realm
-          .objects('Invitation')
-          .filtered(`userId == "${userId}"`)
-          .filtered(surveyIds.map((id) => `surveyId == "${id}"`).join(' OR '));
+        invitations = realm.objects('Invitation').filtered(
+          `userId == "${userId}"`).filtered(
+            surveyIds.map((id) => `surveyId == "${id}"`).join(' OR '));
       }
       cb(null, invitations);
-    }]
-    //
+    }],
   }, (err, results) => {
     if (err) {
       done(err);
@@ -307,7 +312,7 @@ export function loadCachedInvitations(surveys, done) {
     }
     done(null, results.join);
   });
-};
+}
 
 /**
  * find local realm invitations
@@ -321,12 +326,10 @@ export function loadAcceptedInvitations(done) {
     },
     invitation: ['currentUser', (cb, results) => {
       const userId = results.currentUser.id;
-      const invitations = realm
-        .objects('Invitation')
-        .filtered(`userId == "${userId}"`)
-        .filtered('status == "accepted"');
+      const invitations = realm.objects('Invitation').filtered(
+        `userId == "${userId}"`).filtered('status == "accepted"');
       cb(null, invitations);
-    }]
+    }],
   }, (err, results) => {
     if (err) {
       done(err);
@@ -334,7 +337,7 @@ export function loadAcceptedInvitations(done) {
     }
     done(null, results.invitation);
   });
-};
+}
 
 /**
  * clears the invitation cache, excluding dirty invitations
@@ -343,12 +346,10 @@ export function clearInvitationCache() {
   const invitations = realm.objects('Invitation').filtered('dirty == false');
   if (invitations.length >= 0) {
     realm.write(() => {
-      realm.delete(invitations)
+      realm.delete(invitations);
     });
   }
-};
-
-
+}
 
 /**
  * loads invitations from the remote server
@@ -357,8 +358,8 @@ export function clearInvitationCache() {
  */
 export function loadInvitations(done) {
   const query = new Parse.Query(Invitation);
-  query.find({
-    success: function(invitations) {
+  query.find(
+    (invitations) => {
       clearInvitationCache();
       const numInvitations = invitations.length;
       let savedInvitations = 0;
@@ -375,9 +376,9 @@ export function loadInvitations(done) {
                 dirty: false,
               });
             });
-            savedInvitations++
-          } catch(e) {
-            failedInvitations++
+            savedInvitations++;
+          } catch (e) {
+            failedInvitations++;
             console.warn(e);
           }
           if (savedInvitations + failedInvitations === numInvitations) {
@@ -388,8 +389,8 @@ export function loadInvitations(done) {
         done(null, []);
       }
     },
-    error: function(err) {
+    (err) => {
       done(err);
     }
-  });
-};
+  );
+}

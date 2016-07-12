@@ -1,4 +1,4 @@
-import { Platform } from 'react-native'
+import { Platform } from 'react-native';
 
 const Variables = {
   HEADER_SIZE: 70,
@@ -8,12 +8,12 @@ const Variables = {
   PROFILE_HEIGHT: 250,
   LOGIN_HEIGHT: 125,
   FOOTER_HEIGHT: 80,
+};
+
+if (Platform.OS === 'android') {
+  Variables.HEADER_SIZE = 60;
+  Variables.HEADER_SIZE_SMALL = 0;
+  Variables.HEADER_PADDING = 0;
 }
 
-if ( Platform.OS === 'android' ) {
-  Variables.HEADER_SIZE = 60
-  Variables.HEADER_SIZE_SMALL = 0
-  Variables.HEADER_PADDING = 0
-}
-
-module.exports = Variables
+module.exports = Variables;

@@ -2,12 +2,11 @@ import React, {
   View,
   Text,
   TouchableOpacity,
-} from 'react-native'
+} from 'react-native';
 
-import Styles from '../styles/Styles'
-import Color from '../styles/Color'
+import Styles from '../styles/Styles';
 
-const Notification = React.createClass ({
+const Notification = React.createClass({
   propTypes: {
     item: React.PropTypes.object.isRequired,
     onPressed: React.PropTypes.func.isRequired,
@@ -24,8 +23,8 @@ const Notification = React.createClass ({
           </View>
         </View>
       </TouchableOpacity>
-    )
-  }
+    );
+  },
 });
 
 module.exports = Notification;

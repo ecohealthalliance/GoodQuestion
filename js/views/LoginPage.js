@@ -1,35 +1,27 @@
 
 import React, {
   Alert,
-  StyleSheet,
-  TouchableHighlight,
   Text,
   TextInput,
   View,
-  TouchableOpacity,
   Image,
-  Dimensions,
   ScrollView,
-} from 'react-native'
+} from 'react-native';
 
-import Variables from '../styles/Variables'
-import Styles from '../styles/Styles'
-import Color from '../styles/Color'
-import Button from '../components/Button'
+import Variables from '../styles/Variables';
+import Styles from '../styles/Styles';
+import Button from '../components/Button';
 
-import { authenticate } from '../api/Account'
-import { addUserToInstallation } from '../api/Installations'
+import { authenticate } from '../api/Account';
+import { addUserToInstallation } from '../api/Installations';
 
+import Joi from '../lib/joi-browser.min';
+import JoiMixins from '../mixins/joi-mixins';
+import EventMixins from '../mixins/event-mixins';
 
-import Joi from '../lib/joi-browser.min'
-import JoiMixins from '../mixins/joi-mixins'
-import he from 'he' // HTML entity encode and decode
+const logo = require('../images/logo_stacked.png');
 
-import EventMixins from '../mixins/event-mixins'
-
-import async from 'async'
-
-const LoginPage = React.createClass ({
+const LoginPage = React.createClass({
   mixins: [
     JoiMixins,
     EventMixins,
@@ -44,52 +36,50 @@ const LoginPage = React.createClass ({
     return {
       email: '',
       password: '',
-      button_text: 'Login',
+      buttonText: 'Login',
       errors: [],
-    }
+    };
   },
 
   /* Methods */
   handleRegistration() {
-    this.props.navigator.push({path:'registration', unsecured: true, title: 'Registration'})
+    this.props.navigator.push({path: 'registration', unsecured: true, title: 'Registration'});
   },
 
   handleVerifyLogin() {
-    let self = this;
-
-    if (self.state.button_text === 'Verifying...') {
+    if (this.state.buttonText === 'Verifying...') {
       return;
     }
 
     // validate
-    let errors = this.joiValidate();
+    const errors = this.joiValidate();
     if (errors.length > 0) {
       Alert.alert('Validation', 'The form errors need corrected to continue.');
       return;
     }
 
-    let state = Object.assign({}, this.state);
-    state.button_text = 'Verifying...';
+    const state = Object.assign({}, this.state);
+    state.buttonText = 'Verifying...';
     this.setState(state);
 
-    authenticate(state.email, state.password, function(err, user) {
+    authenticate(state.email, state.password, (err, user) => {
       if (err) {
-        // reset button_text state
-        state.button_text = 'Login';
-        self.setState(state);
+        // reset buttonText state
+        state.buttonText = 'Login';
+        this.setState(state);
         // show a message
-        Alert.alert('Error', err)
+        Alert.alert('Error', err);
         return;
       }
 
-      addUserToInstallation(user, (err) => {
-        if (err) {
-          console.warn(err);
+      addUserToInstallation(user, (err2) => {
+        if (err2) {
+          console.warn(err2);
           return;
         }
       });
 
-      self.props.setAuthenticated(true);
+      this.props.setAuthenticated(true);
     });
   },
 
@@ -98,7 +88,7 @@ const LoginPage = React.createClass ({
     return (
       <View style={Styles.container.defaultWhite}>
         <View style={Styles.header.banner}>
-          <Image source={require('../images/logo_stacked.png')} style={Styles.header.logo}></Image>
+          <Image source={logo} style={Styles.header.logo}></Image>
         </View>
         <ScrollView
           ref='scrollView'
@@ -146,7 +136,7 @@ const LoginPage = React.createClass ({
               action={this.handleVerifyLogin}
               color='success'
               style={{marginVertical: 10, marginHorizontal: 35}}>
-              {this.state.button_text}
+              {this.state.buttonText}
             </Button>
           </View>
         </ScrollView>
@@ -157,8 +147,8 @@ const LoginPage = React.createClass ({
           Register an Account
         </Button>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = LoginPage
+module.exports = LoginPage;

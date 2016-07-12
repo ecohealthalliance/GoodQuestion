@@ -4,9 +4,8 @@ Form.schema = {
   primaryKey: 'id',
   properties: {
     id: 'string',
-  	surveyId: 'string',
-    
-  	order: 'int',
+    surveyId: 'string',
+    order: 'int',
     title: 'string',
-  }
-}
+  },
+};

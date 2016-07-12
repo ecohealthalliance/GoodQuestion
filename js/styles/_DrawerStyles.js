@@ -1,5 +1,4 @@
-import { StyleSheet } from 'react-native'
-import Color from './Color'
+import Color from './Color';
 // Making this into a stylesheet causes an error.
 // The drawer library expects a plain object.
 export default {
@@ -12,4 +11,4 @@ export default {
   main: {
     paddingLeft: 3,
   },
-}
+};

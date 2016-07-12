@@ -1,14 +1,12 @@
-
 import React, {
-  StyleSheet,
   Text,
   Picker,
-  View
-} from 'react-native'
-import Styles from '../../styles/Styles'
-import ViewText from '../ViewText'
+  View,
+} from 'react-native';
+import Styles from '../../styles/Styles';
+import ViewText from '../ViewText';
 
-const MultipleChoice = React.createClass ({
+const MultipleChoice = React.createClass({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
@@ -18,30 +16,30 @@ const MultipleChoice = React.createClass ({
     properties: React.PropTypes.object.isRequired,
   },
 
-  getDefaultProps: function () {
+  getDefaultProps() {
     return {
       value: '',
       properties: [],
     };
   },
 
-  getInitialState: function() {
+  getInitialState() {
     return {
       value: this.props.value,
-    }
+    };
   },
 
   /* Methods */
   handleChange(value) {
-    this.setState({ value: value })
-    this.props.onChange(value)
+    this.setState({ value: value });
+    this.props.onChange(value);
   },
 
   /* Render */
   render() {
     return (
       <View style={Styles.question.block}>
-        <ViewText 
+        <ViewText
           style={Styles.question.header}
           textStyle={Styles.question.headerText}>
             Question #{this.props.index}
@@ -50,13 +48,15 @@ const MultipleChoice = React.createClass ({
         <Picker
           selectedValue={this.state.value}
           onValueChange={this.handleChange}>
-          {this.props.properties.choices.map((choice, idx)=>{
-            return <Picker.Item key={idx} label={choice} value={choice} />
+          {this.props.properties.choices.map((choice, idx) => {
+            return (
+              <Picker.Item key={idx} label={choice} value={choice} />
+            );
           })}
         </Picker>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = MultipleChoice
+module.exports = MultipleChoice;
