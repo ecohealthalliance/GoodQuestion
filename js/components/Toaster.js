@@ -79,7 +79,7 @@ const Toaster = React.createClass ({
       text: toastMessage.message,
       icon: toastMessage.icon,
       iconColor: toastMessage.iconColor,
-      duration: toastMessage.duration,
+      duration: toastMessage.duration || 4,
       action: toastMessage.action,
     });
 

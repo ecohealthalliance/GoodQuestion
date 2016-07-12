@@ -24,8 +24,8 @@ import ViewText from '../components/ViewText'
 import MapPage from './MapPage'
 import CalendarPage from './CalendarPage'
 
-import { getFormAvailability, acceptSurvey, declineSurvey } from '../api/Surveys'
-import { loadCachedForms } from '../api/Forms'
+import { acceptSurvey, declineSurvey } from '../api/Surveys'
+import { getFormAvailability, loadCachedForms, loadCachedFormDataByTriggerId } from '../api/Forms'
 import { loadCachedQuestionsFromForms } from '../api/Questions'
 import { checkSurveyTimeTriggers, removeTriggers } from '../api/Triggers'
 import { setupGeofences } from '../api/Geofencing'
@@ -153,10 +153,18 @@ const SurveyDetailsPage = React.createClass ({
   },
 
   navigateToForms(type) {
+    const triggerId = this.state.availability.currentTrigger.id;
+    let form;
+    if (triggerId) {
+      const data = loadCachedFormDataByTriggerId(triggerId, type);
+      form = data.form;
+    }
+
     this.props.navigator.push({
       path: 'form',
-      title: this.props.survey.title,
+      title: this.props.survey.title + ': ' + form.title,
       survey: this.props.survey,
+      form: form,
       type: type,
     });
   },
@@ -200,13 +208,13 @@ const SurveyDetailsPage = React.createClass ({
   },
 
   renderFormAvailability() {
-    let availabilityComponent;
-    availability = this.state.availability;
-    if (availability.geofenceTriggersInRange > 0) {
+    const { geofenceTriggersInRange, availableTimeTriggers, nextTimeTrigger } = this.state.availability;
+
+    if (geofenceTriggersInRange > 0) {
       return (
         <View style={Styles.survey.surveyNotes}>
           <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>
-            <Icon name='map-marker' size={20} color={Color.faded} /> {availability.geofenceTriggersInRange} geofence {availability.geofenceTriggersInRange > 1 ? 'forms' : 'form'} available.
+            <Icon name='map-marker' size={20} color={Color.faded} /> {geofenceTriggersInRange} geofence {geofenceTriggersInRange > 1 ? 'forms' : 'form'} available.
           </Text>
           <Button style={[Styles.survey.answerButton]} textStyle={{color: Color.primary}} action={this.navigateToForms.bind(null, 'geofence')}>
             Answer Form
@@ -214,22 +222,22 @@ const SurveyDetailsPage = React.createClass ({
         </View>
       )
 
-    } else if (availability.availableTimeTriggers > 0) {
+    } else if (availableTimeTriggers > 0) {
       return (
         <View style={Styles.survey.surveyNotes}>
           <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>
-            <Icon name='clock-o' size={20} color={Color.faded} /> {availability.availableTimeTriggers} scheduled {availability.availableTimeTriggers > 1 ? 'forms' : 'form'} available.
+            <Icon name='clock-o' size={20} color={Color.faded} /> {availableTimeTriggers} scheduled {availableTimeTriggers > 1 ? 'forms' : 'form'} available.
           </Text>
           <Button style={[Styles.survey.answerButton]} textStyle={{color: Color.primary}} action={this.navigateToForms.bind(null, 'datetime')}>
             Answer Form
           </Button>
         </View>
       )
-    } else if (availability.nextTimeTrigger && availability.nextTimeTrigger > Date.now() ) {
+    } else if (nextTimeTrigger && nextTimeTrigger > Date.now() ) {
       return (
         <View style={Styles.survey.surveyNotes}>
           <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>
-            Next form: {moment(availability.nextTimeTrigger).fromNow()}
+            Next form: {moment(nextTimeTrigger).fromNow()}
           </Text>
         </View>
       )

@@ -204,8 +204,8 @@ function crossGeofence(params) {
       
       // Update Geofence Trigger
       realm.write(() => {
-        trigger.inRange = true;
-        trigger.triggered = _.lowerCase(params.action) == 'exit' ? false : true;
+        trigger.triggered = true;
+        trigger.inRange = _.lowerCase(params.action) == 'exit' ? false : true;
         trigger.updateTimestamp = Date.now();
       })
     } else {
