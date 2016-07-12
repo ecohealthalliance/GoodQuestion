@@ -130,32 +130,32 @@ export function getFormAvailability(surveyId, done) {
       try {
         // Check for availability on pending time triggers.
         let timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId="${surveyId}"`)
-        let availableTimeTriggers = timeTriggers.filtered(`triggered == true AND completed == false`)
+        let availableTimeTriggers = timeTriggers.filtered(`triggered == true AND completed == false`).sorted('datetime');
         if (availableTimeTriggers && availableTimeTriggers.length > 0) {
           result.availableTimeTriggers = availableTimeTriggers.length;
           result.currentTrigger = availableTimeTriggers[0];
           result.currentTriggerType = 'datetime';
         }
 
-        // Check for the next future time trigger.
-        let nextTimeTriggers = timeTriggers.filtered(`triggered == false`).sorted('datetime')
+        // Check for the closest future time trigger.
+        let nextTimeTriggers = timeTriggers.filtered(`triggered == false`).sorted('datetime');
         if (nextTimeTriggers && nextTimeTriggers.length > 0) {
-          result.nextTimeTrigger = nextTimeTriggers[0].datetime
+          result.nextTimeTrigger = nextTimeTriggers[0].datetime;
         }
 
         // Check for active geofence triggers.
-        let geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`)
+        let geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`);
         if (geofenceTriggers && geofenceTriggers.length > 0) {
-          let geofenceTriggersInRange = geofenceTriggers.filtered(`triggered == true AND completed == false AND inRange == true OR sticky == true`)
+          let geofenceTriggersInRange = geofenceTriggers.filtered(`triggered == true AND completed == false AND inRange == true OR sticky == true`);
           result.geofenceTriggersInRange = geofenceTriggersInRange.length;
           result.currentTrigger = geofenceTriggersInRange[0];
           result.currentTriggerType = 'geofence';
         }
       } catch (e) {
-        console.warn(e)
+        console.warn(e);
       }
     }
-    return done(null, result)
+    return done(null, result);
   });
 }
 
