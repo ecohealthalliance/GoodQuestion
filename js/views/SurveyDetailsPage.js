@@ -185,7 +185,7 @@ const SurveyDetailsPage = React.createClass ({
       acceptButtonStyle.push({backgroundColor: Color.positive});
       acceptButtonTextStyle = {color: Color.background2};
       acceptedButtonContainerStyle = {
-        margin: 20,
+        marginVertical: 10,
         borderWidth: 2,
         borderTopWidth: 0,
         borderColor: Color.background1,
@@ -264,30 +264,32 @@ const SurveyDetailsPage = React.createClass ({
             this.state.status == InvitationStatus.ACCEPTED && this.state.questionCount > 0 ?
             <View style={Styles.survey.surveyStats}>
               <View style={Styles.survey.surveyStatsBlock}>
-                <Text>Number of Forms</Text>
-                <Text style={Styles.survey.surveyStatsNumber}>{this.state.formCount}</Text>
+                <Text>{this.state.formCount} Forms</Text> 
               </View>
               <View style={Styles.survey.surveyStatsBlock}>
-                <Text>Number of Questions</Text>
-                <Text style={Styles.survey.surveyStatsNumber}>{this.state.questionCount}</Text>
+                <Text>{this.state.questionCount} Questions</Text> 
               </View>
             </View>
             :
             <View style={Styles.survey.surveyStats}>
               <View style={Styles.survey.surveyStatsBlock}>
-                <Text>Contains {this.state.formCount} Forms</Text> 
+                <Text>Contains {this.state.formCount} forms total.</Text> 
               </View>
             </View>
           }
 
-          { this.state.status === 'accepted' ? this.renderFormAvailability() : null }
+          <View style={{padding: 30}}>
+            { this.state.status === 'accepted' ? this.renderFormAvailability() : null }
 
-          <View style={Styles.survey.surveyNotes}>
-            <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>Administered by:</Text>
-            <Text style={[Styles.type.h2, {marginTop: 0, fontWeight: 'normal'}]}>{this.props.survey.user}</Text>
+            <View style={[Styles.survey.surveyNotes, {paddingVertical: this.state.status === 'accepted' ? 15 : 30}]}>
+              <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>Administered by:</Text>
+              <Text style={[Styles.type.h2, {marginTop: 0, fontWeight: 'normal'}]}>{this.props.survey.user}</Text>
+            </View>
+
+            { this.state.status === 'accepted' ? this.renderAcceptButtons() : null }
           </View>
 
-          { this.state.status === 'accepted' ? this.renderAcceptButtons() : null }
+          
         </ScrollView>
 
         {this.state.status === 'accepted' ? null : this.renderAcceptButtons()}

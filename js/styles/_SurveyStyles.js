@@ -79,7 +79,8 @@ const SurveyStyles = StyleSheet.create({
     color: Color.background1,
   },
   surveyNotes: {
-    padding: 30,
+    // paddingHorizontal: 30,
+    paddingBottom: 15,
   },
 
   acceptanceButtons: {
@@ -123,7 +124,7 @@ const SurveyStyles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderColor: Color.primary,
-    borderRadius: 3,
+    borderRadius: 0,
     backgroundColor: Color.background2,
     margin: 0,
     paddingVertical: 12,
