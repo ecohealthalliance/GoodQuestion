@@ -79,6 +79,7 @@ export default React.createClass({
           />
           <ControlPanelItem
             onPress={this.handleLogout}
+            style={{borderBottomWidth:0}}
             text="Logout"
           />
         </View>

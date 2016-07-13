@@ -310,6 +310,7 @@ const SharedNavigator = React.createClass ({
           panCloseMask={0.25}
           closedDrawerOffset={-3}
           styles={Styles.drawer}
+          elevation={10}
           onClose={this.changeRouteViaControlPanel}
           tweenDuration={200}
           tweenEasing='easeOutCubic'
