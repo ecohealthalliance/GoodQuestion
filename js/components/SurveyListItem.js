@@ -72,9 +72,9 @@ const SurveyListItem = React.createClass ({
   renderIcon() {
     let icon
     switch(this.state.status) {
-      case 'accepted': icon = <Icon name='check-circle' size={28} color={Color.fadedGreen} />; break;
-      case 'declined': icon = <Icon name='times-circle' size={28} color={Color.fadedRed} />; break;
-      default: icon = <Icon name='circle-o' size={28} color={Color.fadedRed} />; break;
+      case 'accepted': icon = <Icon name='check-circle' size={24} color={Color.fadedGreen} />; break;
+      case 'declined': icon = <Icon name='times-circle' size={24} color={Color.fadedRed} />; break;
+      default: icon = <Icon name='circle-o' size={24} color={Color.fadedRed} />; break;
     }
     return (
       <View style={{paddingTop: 4}}>

@@ -42,14 +42,6 @@ const RegistrationPages = React.createClass ({
       borderWidth: 1,
       borderTopWidth: Platform.OS === 'android' ? 20 : 1,
     },
-    registrationHeader: {
-      height: Variables.REGISTRATION_HEIGHT,
-      alignItems:'center',
-      justifyContent:'center',
-      backgroundColor: Color.background1,
-      paddingBottom: 25,
-      marginBottom: 30,
-    },
     dotStyle: {
       // flex: 1,
       // alignSelf: 'center',
@@ -219,7 +211,10 @@ const RegistrationPages = React.createClass ({
   render() {
     return (
       <View style={{flex: 1, backgroundColor: '#fff'}}>
-        <View style={[Styles.header.banner, {paddingBottom: Platform.OS === 'android' ? 5 : 25}]}>
+        <View style={[Styles.header.banner, {
+          height: Variables.REGISTRATION_HEIGHT - 40,
+          paddingBottom: Platform.OS === 'android' ? 5 : 25
+        }]}>
           <Image source={require('../images/logo_stacked.png')} style={Styles.header.logo}></Image>
         </View>
         <Swiper

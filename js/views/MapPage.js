@@ -28,8 +28,8 @@ const MapPage = React.createClass ({
     return {
       stage: 'loading',
       updates: 0,
-      latitude: 0,
-      longitude: 0,
+      latitude: 40.782786,
+      longitude: -73.965850,
       zoom: 0.01,
       markers: [],
       triggers: [],
