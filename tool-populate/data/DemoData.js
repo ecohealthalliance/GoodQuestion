@@ -87,7 +87,6 @@ const DemoData = {
       }
     }
   ]
-
 }
 
 function timestampToFormattedDate (timestamp) {
