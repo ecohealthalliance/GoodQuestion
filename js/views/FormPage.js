@@ -356,8 +356,6 @@ const FormPage = React.createClass ({
     return renderedQuestions
   },
   render() {
-    console.warn('this.form')
-    console.log(this.form)
     if (this.state.isLoading) {
       return (<Loading/>)
     } else if (!this.state.formsInQueue){
