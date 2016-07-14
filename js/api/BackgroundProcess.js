@@ -50,21 +50,9 @@ export function configureGeolocationService(callback) {
 
 export function initializeGeolocationService() {
   configureGeolocationService((state) => {
-    // These events are triggered by the background process, they can be used to control geofence logic
-    // Until we implement those triggers these can still be used for testing background behavior.
-    BackgroundGeolocation.on('location', function(location) {
-      // printTimelog('location update')
-      // console.log(location)
-    })
-
     BackgroundGeolocation.on('error', function(error) {
       // printTimelog('error')
       console.log(error.type + " Error: " + error.code)
-    })
-
-    BackgroundGeolocation.on('motionchange', function(location) {
-      // printTimelog('motion change')
-      // console.log(location)
     })
 
     // Create initial geofence hooks.
