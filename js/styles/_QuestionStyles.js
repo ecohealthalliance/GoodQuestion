@@ -5,7 +5,7 @@ import Color from './Color'
 const QuestionStyles = StyleSheet.create({
   block: {
     marginVertical: 20,
-    marginHorizontal: 8,
+    marginHorizontal: Platform.OS === 'ios' ? 8 : 20,
     marginBottom: 45,
     paddingHorizontal: 10,
     paddingBottom: 10,

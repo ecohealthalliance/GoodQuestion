@@ -342,12 +342,10 @@ const FormPage = React.createClass ({
         default: questionComponent = <Text key={'unknown-question-'+idx}>Unknown Type: {question.type}</Text>; break;
       }
       return (
-        <TouchableWithoutFeedback
-          onPress={this.dismiss}>
-          <View style={{flex: 1}}>
-            {questionComponent}
-          </View>
-        </TouchableWithoutFeedback>
+        <ScrollView 
+        style={{ flex: 1 }}>
+          {questionComponent}
+        </ScrollView>
       )
     })
     
@@ -369,7 +367,11 @@ const FormPage = React.createClass ({
     } else {
       return (
         <View style={{flex: 1}}>
-          <View style={{flex: 1, paddingHorizontal: 20, overflow: 'hidden'}}>
+          <View style={{
+            flex: 1,
+            paddingHorizontal:Platform.OS === 'ios' ? 20 : 0,
+            overflow: 'hidden'
+          }}>
             <Swiper
               ref={(swiper) => {this._swiper = swiper}}
               style={{flex: 1}}
@@ -379,7 +381,7 @@ const FormPage = React.createClass ({
               beforePageChange={this.beforePageChange}
               onPageChange={this.onPageChange}
               children={this.renderQuestions()}
-              threshold={50}>
+              threshold={30}>
             </Swiper>
           </View>
 
