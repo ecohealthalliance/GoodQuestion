@@ -7,6 +7,9 @@ Invitation.schema = {
     dirty: 'bool',
     surveyId: 'string',
     userId: 'string',
-    status: {type: 'string', default: 'pending'},
-  }
-}
+    status: {
+      type: 'string',
+      default: 'pending',
+    },
+  },
+};

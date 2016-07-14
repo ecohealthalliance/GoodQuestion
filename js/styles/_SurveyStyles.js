@@ -1,7 +1,5 @@
-import { StyleSheet } from 'react-native'
-import Color from './Color'
-import Variables from './Variables'
-
+import { StyleSheet } from 'react-native';
+import Color from './Color';
 
 const SurveyStyles = StyleSheet.create({
   list: {
@@ -79,7 +77,6 @@ const SurveyStyles = StyleSheet.create({
   surveyNotes: {
     padding: 30,
   },
-
   acceptanceButtons: {
     justifyContent: 'space-between',
     alignItems: 'stretch',
@@ -114,7 +111,6 @@ const SurveyStyles = StyleSheet.create({
     margin: 0,
     paddingTop: 15,
   },
-
   // Survey Form components
   formButtons: {
     justifyContent: 'space-between',
@@ -151,6 +147,6 @@ const SurveyStyles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: Color.background1,
   },
-})
+});
 
-module.exports = SurveyStyles
+module.exports = SurveyStyles;

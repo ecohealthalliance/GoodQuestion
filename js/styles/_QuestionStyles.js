@@ -1,6 +1,5 @@
-import { StyleSheet, Platform } from 'react-native'
-import Color from './Color'
-
+import { StyleSheet } from 'react-native';
+import Color from './Color';
 
 const QuestionStyles = StyleSheet.create({
   block: {
@@ -25,18 +24,18 @@ const QuestionStyles = StyleSheet.create({
   },
   headerComplete: {
     alignItems: 'center',
-    backgroundColor: Color.success
+    backgroundColor: Color.success,
   },
   headerText: {
     color: Color.primary,
     fontSize: 24,
   },
   headerCompleteIcon: {
-    flex: .3,
-    marginRight: 5
+    flex: 0.3,
+    marginRight: 5,
   },
   headerCompleteView: {
-    flex: .7,
+    flex: 0.7,
   },
   headerCompleteViewText: {
     fontWeight: 'bold',
@@ -53,7 +52,7 @@ const QuestionStyles = StyleSheet.create({
   },
   notes: {
     marginVertical: 15,
-  }
-})
+  },
+});
 
-module.exports = QuestionStyles
+module.exports = QuestionStyles;

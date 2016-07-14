@@ -1,28 +1,25 @@
 
 import React, {
-  StyleSheet,
-  TouchableHighlight,
   Text,
   TextInput,
   View,
   Alert,
   Image,
-  Dimensions,
   ScrollView,
-} from 'react-native'
+} from 'react-native';
 
-import Variables from '../styles/Variables'
-import Color from '../styles/Color'
-import Styles from '../styles/Styles'
-import {currentUser, updateProfile} from '../api/Account'
+import Styles from '../styles/Styles';
+import {currentUser, updateProfile} from '../api/Account';
 
-import Button from '../components/Button'
+import Button from '../components/Button';
 
-import Joi from '../lib/joi-browser.min'
-import JoiMixins from '../mixins/joi-mixins'
-import EventMixins from '../mixins/event-mixins'
+import Joi from '../lib/joi-browser.min';
+import JoiMixins from '../mixins/joi-mixins';
+import EventMixins from '../mixins/event-mixins';
 
-const ProfilePage = React.createClass ({
+const logo = require('../images/profile_logo.png');
+
+const ProfilePage = React.createClass({
   propTypes: {
     navigator: React.PropTypes.object.isRequired,
   },
@@ -39,19 +36,19 @@ const ProfilePage = React.createClass ({
 
   getInitialState() {
     return {
-      button_text: 'Submit',
+      buttonText: 'Submit',
       email: null,
       name: null,
       phone: null,
       errors: [],
-    }
+    };
   },
 
   componentWillMount() {
     currentUser((err, user) => {
       if (err) {
         Alert.alert('Please Login');
-        this.props.navigator.resetTo({path:'login', title:''});
+        this.props.navigator.resetTo({path: 'login', title: ''});
         return;
       }
       this.setState({
@@ -63,10 +60,9 @@ const ProfilePage = React.createClass ({
   },
 
   submit() {
-    const self = this;
-    this.setState({button_text: 'Updating...'});
-    updateProfile(this.state.name, this.state.phone, function(err, user) {
-      self.setState({button_text: 'Submit'});
+    this.setState({buttonText: 'Updating...'});
+    updateProfile(this.state.name, this.state.phone, (err) => {
+      this.setState({buttonText: 'Submit'});
       if (err) {
         Alert.alert('Error', 'There was an error saving.');
         return;
@@ -81,7 +77,7 @@ const ProfilePage = React.createClass ({
       <View style={{flex: 1, backgroundColor: '#fff'}}>
         <ScrollView ref='scrollView' horizontal={false}>
           <View style={Styles.profile.header}>
-            <Image source={require('../images/profile_logo.png')} style={Styles.profile.picture}></Image>
+            <Image source={logo} style={Styles.profile.picture}></Image>
             <Text style={Styles.profile.name}> {this.state.name} </Text>
             <Text style={Styles.profile.phone}> {this.state.phone} </Text>
           </View>
@@ -104,7 +100,7 @@ const ProfilePage = React.createClass ({
                   autoCapitalize='none'
                   autoCorrect={false}
                   returnKeyType='done'
-                  placeholder="Full Name"
+                  placeholder='Full Name'
                 />
               </View>
               <Text style={Styles.form.errorText}>
@@ -121,20 +117,20 @@ const ProfilePage = React.createClass ({
                   autoCapitalize='none'
                   autoCorrect={false}
                   returnKeyType='done'
-                  placeholder="Phone Number"
+                  placeholder='Phone Number'
                 />
               </View>
             </View>
             <View style={Styles.form.bottomForm}>
               <Button action={this.submit} color='primary' wide>
-                {this.state.button_text}
+                {this.state.buttonText}
               </Button>
             </View>
           </View>
         </ScrollView>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = ProfilePage
+module.exports = ProfilePage;

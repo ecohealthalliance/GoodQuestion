@@ -1,19 +1,18 @@
 import React, {
   View,
   Text,
-} from 'react-native'
-import moment from 'moment'
+} from 'react-native';
+import moment from 'moment';
 
-import Styles from '../styles/Styles'
-import Color from '../styles/Color'
+import Styles from '../styles/Styles';
+import Color from '../styles/Color';
 
-import ViewText from './ViewText'
-import CheckBox from 'react-native-checkbox'
-import Icon from 'react-native-vector-icons/FontAwesome'
+import ViewText from './ViewText';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-import { getFormAvailability } from '../api/Surveys'
+import { getFormAvailability } from '../api/Surveys';
 
-const SurveyListItem = React.createClass ({
+const SurveyListItem = React.createClass({
   propTypes: {
     title: React.PropTypes.string.isRequired,
     surveyId: React.PropTypes.string.isRequired,
@@ -28,22 +27,21 @@ const SurveyListItem = React.createClass ({
         nextTimeTrigger: false,
         geofenceTriggersInRange: 0,
       },
-    }
+    };
   },
 
   componentWillReceiveProps(nextProps) {
     if (this.state.status !== nextProps.status) {
-      this.update(nextProps.status)
+      this.update(nextProps.status);
     }
   },
 
   componentDidMount() {
-    this.update(this.props.status)
+    this.update(this.props.status);
   },
 
   shouldComponentUpdate(nextProps, nextState) {
-    return  this.state.status !== nextProps.status ||
-            this.state.availability !== nextState.availability
+    return this.state.status !== nextProps.status || this.state.availability !== nextState.availability;
   },
 
   /* Methods */
@@ -64,30 +62,33 @@ const SurveyListItem = React.createClass ({
         });
       } else {
         this.setState({
-          status: status
+          status: status,
         });
       }
     });
-
   },
 
   /* Render */
   renderIcon() {
-    let icon
-    switch(this.state.status) {
-      case 'accepted': icon = <Icon name='check-circle' size={28} color={Color.fadedGreen} />; break;
-      case 'declined': icon = <Icon name='times-circle' size={28} color={Color.fadedRed} />; break;
-      default: icon = <Icon name='circle-o' size={28} color={Color.fadedRed} />; break;
+    let icon = <Icon name='circle-o' size={28} color={Color.fadedRed} />;
+    switch (this.state.status) {
+      case 'accepted':
+        icon = <Icon name='check-circle' size={28} color={Color.fadedGreen} />;
+        break;
+      case 'declined':
+        icon = <Icon name='times-circle' size={28} color={Color.fadedRed} />;
+        break;
+      default:
     }
     return (
       <View style={{paddingTop: 4}}>
         {icon}
       </View>
-    )
+    );
   },
 
   renderAvailabilityText() {
-    availability = this.state.availability
+    const availability = this.state.availability;
     if (availability.geofenceTriggersInRange > 0) {
       // TODO: notify about geofence triggers
     } else if (availability.availableTimeTriggers > 0) {
@@ -95,15 +96,15 @@ const SurveyListItem = React.createClass ({
         <ViewText textStyle={Styles.survey.itemDescription}>
           {availability.availableTimeTriggers} scheduled {availability.availableTimeTriggers > 1 ? 'forms' : 'form'} available.
         </ViewText>
-      )
-    } else if (availability.nextTimeTrigger && availability.nextTimeTrigger > Date.now() ) {
+      );
+    } else if (availability.nextTimeTrigger && availability.nextTimeTrigger > Date.now()) {
       return (
         <ViewText textStyle={Styles.survey.itemDescription}>
           Next form: {moment(availability.nextTimeTrigger).fromNow()}
         </ViewText>
-      )
+      );
     } else {
-      return null
+      return null;
     }
   },
 
@@ -118,8 +119,8 @@ const SurveyListItem = React.createClass ({
           {this.renderIcon()}
         </View>
       </View>
-    )
-  }
+    );
+  },
 });
 
 module.exports = SurveyListItem;

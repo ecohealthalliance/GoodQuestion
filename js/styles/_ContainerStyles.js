@@ -1,6 +1,6 @@
-import { StyleSheet } from 'react-native'
-import Color from './Color'
-import Variables from './Variables'
+import { StyleSheet } from 'react-native';
+import Color from './Color';
+import Variables from './Variables';
 
 
 const ContainerStyles = StyleSheet.create({
@@ -55,13 +55,13 @@ const ContainerStyles = StyleSheet.create({
   attentionContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   attentionText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: Color.background1
+    color: Color.background1,
   },
 
   fullView: {
@@ -70,12 +70,12 @@ const ContainerStyles = StyleSheet.create({
   },
 
   col75: {
-    flex: .75,
+    flex: 0.75,
     flexDirection: 'column',
   },
 
   col25: {
-    flex: .25,
+    flex: 0.25,
     flexDirection: 'column',
   },
 
@@ -83,6 +83,6 @@ const ContainerStyles = StyleSheet.create({
     margin: 5,
   },
 
-})
+});
 
-module.exports = ContainerStyles
+module.exports = ContainerStyles;

@@ -1,5 +1,6 @@
-import React from 'react-native'
-import he from 'he' // HTML entity encode and decode
+import React from 'react-native';
+// HTML entity encode and decode
+import he from 'he';
 
 export default {
   decodeText(txt) {
@@ -36,7 +37,7 @@ export default {
     this.defaultChangeHandler(name, text);
   },
 
-  checkboxChangeHandler: function(name, value) {
+  checkboxChangeHandler(name, value) {
     if (typeof value !== 'boolean') {
       console.error('Invalid checkbox value');
       return;
@@ -51,27 +52,27 @@ export default {
    * @param {string} viewWrapperRef, the reference string to the View
    * @param {number} offset, any additional offset to scroll (not including the height of the view wrapper)
    */
-  scrollToViewWrapper(scrollRef, viewWrapperRef, offset, syntheticEvent) {
+  scrollToViewWrapper(scrollRef, viewWrapperRef, offset) {
+    let updatedOffset = offset;
     const scrollElement = this.refs[scrollRef];
     const viewWrapperElement = this.refs[viewWrapperRef];
     if (typeof viewWrapperElement === 'undefined') {
       console.warn('The <View> wrapper must have a ref assigned');
       return;
     }
-    viewWrapperElement.measure((ox, oy, width, height, px, py) => {
+    viewWrapperElement.measure((ox, oy, width, height) => {
       if (typeof scrollElement === 'undefined') {
         console.warn('The <ScrollView> must have a ref assigned');
         return;
       }
-      if (typeof offset !== 'number') {
-        syntheticEvent = offset
-        offset = 0;
+      if (typeof updatedOffset !== 'number') {
+        updatedOffset = 0;
       }
-      offset = offset + height;
+      updatedOffset += height;
       const scrollResponder = scrollElement.getScrollResponder();
       scrollResponder.scrollResponderScrollNativeHandleToKeyboard(
         React.findNodeHandle(viewWrapperElement),
-        offset,
+        updatedOffset,
         true
       );
     });
@@ -88,7 +89,7 @@ export default {
       done('The <View> must have a ref assigned');
       return;
     }
-    viewElement.measure((ox, oy, width, height, px, py) => {
+    viewElement.measure((ox, oy, width, height) => {
       done(null, height);
     });
   },
@@ -99,17 +100,17 @@ export default {
    * @param {string} scrollRef, the reference string to the ScrollView
    * @param {number} position, the vertical position to scroll within the ScrollView
    */
-  scrollTo(scrollRef, position, syntheticEvent) {
+  scrollTo(scrollRef, position) {
+    let updatedPosition = position;
     const scrollElement = this.refs[scrollRef];
     if (typeof scrollElement === 'undefined') {
       console.warn('The <ScrollView> must have a ref assigned');
       return;
     }
-    if (typeof position !== 'number') {
-      syntheticEvent = position
-      position = 0;
+    if (typeof updatedPosition !== 'number') {
+      updatedPosition = 0;
     }
-    scrollElement.scrollTo(position)
+    scrollElement.scrollTo(updatedPosition);
   },
 
   /**

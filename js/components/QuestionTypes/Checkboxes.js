@@ -1,19 +1,17 @@
 import React, {
-  StyleSheet,
   Text,
-  TextInput,
   View,
-} from 'react-native'
-import Checkbox from 'react-native-checkbox'
-import Styles from '../../styles/Styles'
-import Color from '../../styles/Color'
-import ViewText from '../ViewText'
-import Icon from 'react-native-vector-icons/FontAwesome'
+} from 'react-native';
+import Checkbox from 'react-native-checkbox';
+import Styles from '../../styles/Styles';
+import Color from '../../styles/Color';
+import ViewText from '../ViewText';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-let uncheckedComponent = <Icon name='circle-o' size={30} color={Color.primary} />
-let checkedComponent = <Icon name='check-circle' size={30} color={Color.primary} />
+let uncheckedComponent = <Icon name='circle-o' size={30} color={Color.primary} />;
+let checkedComponent = <Icon name='check-circle' size={30} color={Color.primary} />;
 
-const Checkboxes = React.createClass ({
+const Checkboxes = React.createClass({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
@@ -26,41 +24,41 @@ const Checkboxes = React.createClass ({
     ]),
   },
 
-  getDefaultProps: function () {
+  getDefaultProps() {
     return {
       value: '',
       properties: [],
-    }
+    };
   },
 
-  getInitialState: function() {
+  getInitialState() {
     return {
-      selectedChoices: this.props.value || []
-    }
+      selectedChoices: this.props.value || [],
+    };
   },
 
   /* Methods */
   handleChange(value) {
     this.setState({
-      selectedChoices: value
-    })
-    this.props.onChange(Array.from(value))
+      selectedChoices: value,
+    });
+    this.props.onChange(Array.from(value));
   },
 
   /* Render */
   render() {
-    let selectedChoices = new Set(this.state.selectedChoices)
+    const selectedChoices = new Set(this.state.selectedChoices);
     return (
       <View style={Styles.question.block}>
-        <ViewText 
+        <ViewText
           style={Styles.question.header}
           textStyle={Styles.question.headerText}>
             Question #{this.props.index}
         </ViewText>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
-        {this.props.properties.choices.map((choice, idx)=>{
+        {this.props.properties.choices.map((choice, idx) => {
           return (
-            <View style={{ marginHorizontal: 15, marginVertical:5}} key={idx}>
+            <View style={{ marginHorizontal: 15, marginVertical: 5}} key={idx}>
               <Checkbox
                 containerStyle={{flex: 1, alignItems: 'flex-start'}}
                 labelContainerStyle={{flex: 1}}
@@ -69,21 +67,21 @@ const Checkboxes = React.createClass ({
                 checked={selectedChoices.has(choice)}
                 uncheckedComponent={uncheckedComponent}
                 checkedComponent={checkedComponent}
-                onChange={(checked)=>{
+                onChange={(checked) => {
                   if (checked) {
-                    selectedChoices.add(choice)
+                    selectedChoices.add(choice);
                   } else {
-                    selectedChoices.delete(choice)
+                    selectedChoices.delete(choice);
                   }
-                  this.handleChange(selectedChoices)
+                  this.handleChange(selectedChoices);
                 }}
               />
             </View>
-          )
+          );
         })}
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = Checkboxes
+module.exports = Checkboxes;

@@ -1,30 +1,27 @@
-import Parse from 'parse/react-native'
-import realm from '../data/Realm'
-import {currentUser} from '../api/Account'
-import crypto from 'crypto-js'
-import async from 'async'
+import Parse from 'parse/react-native';
+import realm from '../data/Realm';
+import {currentUser} from '../api/Account';
+import crypto from 'crypto-js';
+import async from 'async';
 
 const Submission = Parse.Object.extend('Submission');
 
 // Fetches the cached submissions related to a specific form
 export function loadCachedSubmissions(formId) {
-  return realm
-    .objects('Submission')
-    .filtered(`formId = "${formId}"`)
-    .sorted('created');
+  return realm.objects('Submission').filtered(`formId = "${formId}"`).sorted('created');
 }
 
 /**
  * user may only have one submission for each formId
  *
  * @param {string} formId, the unique id for the parse form record
- * @param {object} currentUser, the current parse user saved to AsyncStorage
+ * @param {object} user, the current parse user saved to AsyncStorage
  */
-function genSubmissionId(formId, currentUser, done) {
-  const str = '' + currentUser.id + formId;
+function genSubmissionId(formId, user, done) {
+  const str = `${user.id}${formId}`;
   const id = crypto.MD5(str).toString();
   done(null, id);
-};
+}
 
 /**
  * create a submission on parse-server
@@ -35,21 +32,23 @@ function genSubmissionId(formId, currentUser, done) {
  * @param {object} answers, the answers to the current form
  * @param {object} currentUser, the current parse user saved to AsyncStorage
  */
-function createParseSubmission(id, formId, answers, currentUser, done) {
+function createParseSubmission(id, formId, answers, user, done) {
   const submission = new Submission();
   submission.set('uniqueId', id);
   submission.set('formId', formId);
   submission.set('answers', answers);
-  submission.set('userId', currentUser);
-  const query = new Parse.Query(Parse.Role)
-  query.equalTo('name', 'admin')
+  submission.set('userId', user);
+  const query = new Parse.Query(Parse.Role);
+  query.equalTo('name', 'admin');
   query.find(
     (roles) => {
-      if (roles.length <= 0) return done('Invalid role.');
+      if (roles.length <= 0) {
+        return done('Invalid role.');
+      }
       const role = roles[0];
       const acl = new Parse.ACL();
-      acl.setReadAccess(currentUser, true);
-      acl.setWriteAccess(currentUser, true);
+      acl.setReadAccess(user, true);
+      acl.setWriteAccess(user, true);
       acl.setRoleReadAccess(role, true);
       acl.setRoleWriteAccess(role, true);
       submission.setACL(acl);
@@ -57,16 +56,16 @@ function createParseSubmission(id, formId, answers, currentUser, done) {
         (s) => {
           done(null, s);
         },
-        (e) => {
+        () => {
           done('Error synchronizing to remote server.');
         }
       );
     },
-    (e) => {
-      done('Invalid role.')
+    () => {
+      done('Invalid role.');
     }
   );
-};
+}
 
 /**
  * update an existing submission on parse-server
@@ -80,14 +79,14 @@ function updateParseSubmission(submission, answers, done) {
       (s) => {
         done(null, s);
       },
-      (e) => {
+      () => {
         done('Error synchronizing to remote server.');
       }
     );
   } else {
-    done('Invalid submission instance type')
+    done('Invalid submission instance type');
   }
-};
+}
 
 /**
  * find a submission on parse by uniqueId
@@ -97,18 +96,18 @@ function updateParseSubmission(submission, answers, done) {
 function findParseSubmission(id, done) {
   const query = new Parse.Query(Submission);
   query.equalTo('uniqueId', id);
-  query.find({
-    success: function(submission) {
+  query.find(
+    (submission) => {
       if (submission.length) {
         done(null, submission[0]);
         return;
       }
       done(null, null);
     },
-    error: function(err) {
+    () => {
       done('No results');
     }
-  });
+  );
 }
 
 /**
@@ -120,13 +119,10 @@ function findParseSubmission(id, done) {
  * @param {boolean} dirty, mark the submission diry
  */
 function upsertRealmSubmission(id, formId, answers, dirty, done) {
-  let submissions = realm
-    .objects('Submission')
-    .filtered(`uniqueId = "${id}"`)
-    .sorted('created');
-  let notification = realm.objects('Notification').filtered(`formId = "${formId}"`)
-  let timeTrigger = realm.objects('TimeTrigger').filtered(`formId = "${formId}"`)
-  // let geofenceTrigger = realm.objects('GeofenceTrigger').filtered(`formId = "${formId}"`)
+  const submissions = realm.objects('Submission').filtered(
+    `uniqueId = "${id}"`).sorted('created');
+  const notification = realm.objects('Notification').filtered(`formId = "${formId}"`);
+  const timeTrigger = realm.objects('TimeTrigger').filtered(`formId = "${formId}"`);
   if (submissions.length > 0) {
     const submission = submissions[0];
     try {
@@ -135,8 +131,8 @@ function upsertRealmSubmission(id, formId, answers, dirty, done) {
         submission.answers = JSON.stringify(answers);
       });
       done(null, submission);
-    } catch(e) {
-      done('Error updating realm submission ' + id);
+    } catch (e) {
+      done(`Error updating realm submission ${id}`);
     }
   } else {
     realm.write(() => {
@@ -148,16 +144,19 @@ function upsertRealmSubmission(id, formId, answers, dirty, done) {
           created: new Date(),
           answers: JSON.stringify(answers),
         });
-        if (notification) notification.complete = true
-        if (timeTrigger) timeTrigger.complete = true
-        // if (geofenceTrigger) geofenceTrigger.complete = true
+        if (notification) {
+          notification.complete = true;
+        }
+        if (timeTrigger) {
+          timeTrigger.complete = true;
+        }
         done(null, submission);
-      } catch(e) {
-        done('Error saving realm submission ' + id);
+      } catch (e) {
+        done(`Error saving realm submission ${id}`);
       }
     });
   }
-};
+}
 
 /**
  * mark a local realm submission clean
@@ -165,10 +164,8 @@ function upsertRealmSubmission(id, formId, answers, dirty, done) {
  * @param {string} id, the unique id for the realm record
  */
 function markRealmSubmissionClean(id, done) {
-  let submissions = realm
-    .objects('Submission')
-    .filtered(`uniqueId = "${id}"`)
-    .sorted('created');
+  const submissions = realm.objects('Submission').filtered(
+    `uniqueId = "${id}"`).sorted('created');
   if (submissions.length > 0) {
     try {
       const submission = submissions[0];
@@ -176,8 +173,8 @@ function markRealmSubmissionClean(id, done) {
         submission.dirty = false;
       });
       done(null, submission);
-    } catch(e) {
-      done('Error update realm submission ' + id)
+    } catch (e) {
+      done(`Error update realm submission ${id}`);
     }
   } else {
     done('Submission does not exist');
@@ -217,8 +214,8 @@ export function saveSubmission(formId, answers, done) {
     // mark the local submission as clean
     clean: ['save', (cb, results) => {
       markRealmSubmissionClean(results.id, cb);
-    }]
-  }, (err, results) => {
+    }],
+  }, (err) => {
     if (err) {
       done(err);
       return;
