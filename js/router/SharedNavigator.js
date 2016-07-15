@@ -132,7 +132,7 @@ const SharedNavigator = React.createClass({
       if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
         return;
       }
-      const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form};
+      const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form, index: data.index};
       // TODO sync remote and cached notifications
       // addTimeTriggerNotification(data.survey.id, data.form.id, data.form.title, notification.message, new Date());
       // We will only route the user if notification was remote
