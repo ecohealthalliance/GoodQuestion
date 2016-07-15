@@ -20,15 +20,21 @@ const Swiper = React.createClass({
     activeDotStyle: React.PropTypes.object,
   },
 
-  defaultProps: {
-    index: 0,
-    pager: true,
-    threshold: 25,
-    activeDotColor: 'blue',
-    containerStyle: {},
-    dotContainerStyle: {},
-    dotStyle: {},
-    activeDotStyle: {},
+  getDefaultProps() {
+    return {
+      index: 0,
+      pager: true,
+      threshold: 25,
+      activeDotColor: 'blue',
+      containerStyle: {},
+      dotContainerStyle: {},
+      dotStyle: {},
+      activeDotStyle: {},
+      onPageChange: () => {},
+      beforePageChange: () => {
+        return true;
+      },
+    };
   },
 
   getInitialState() {
@@ -58,10 +64,10 @@ const Swiper = React.createClass({
       const currentIndex = this.state.index;
       let newIndex = this.state.index;
 
-      if (relativeGestureDistance < -0.5 || relativeGestureDistance < 0 && vx <= -0.5) {
+      if (relativeGestureDistance < -0.2 || relativeGestureDistance < 0 && vx <= -0.2) {
         newIndex++;
         shouldContinue = this.shouldContinue(currentIndex, newIndex);
-      } else if (relativeGestureDistance > 0.5 || relativeGestureDistance > 0 && vx >= 0.5) {
+      } else if (relativeGestureDistance > 0.2 || relativeGestureDistance > 0 && vx >= 0.2) {
         newIndex--;
         shouldContinue = this.shouldContinue(currentIndex, newIndex);
       }
@@ -76,14 +82,14 @@ const Swiper = React.createClass({
       onMoveShouldSetPanResponder: (e, gestureState) => {
         const {threshold} = this.props;
 
+        // Only if it exceeds the threshold
+        if (threshold - Math.abs(gestureState.dx) > 0) {
+          return false;
+        }
+
         // Claim responder if it's a horizontal pan
         if (Math.abs(gestureState.dx) > Math.abs(gestureState.dy)) {
           return true;
-        }
-
-        // and only if it exceeds the threshold
-        if (threshold - Math.abs(gestureState.dx) > 0) {
-          return false;
         }
 
         return false;
