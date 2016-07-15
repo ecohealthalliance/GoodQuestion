@@ -9,7 +9,6 @@ import React, {
 } from 'react-native';
 
 import _ from 'lodash';
-import Store from '../data/Store';
 import Styles from '../styles/Styles';
 import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys';
 import { loadCachedQuestionsFromForms } from '../api/Questions';
@@ -25,6 +24,7 @@ const SurveyListPage = React.createClass({
   title: 'Surveys',
   _invitations: [],
   _surveys: [],
+
   getInitialState() {
     return {
       isLoading: true,
@@ -36,22 +36,9 @@ const SurveyListPage = React.createClass({
     };
   },
 
-  componentWillMount() {
-    this._surveys = loadCachedSurveyList().slice();
-    loadCachedInvitations(this._surveys, (err, invitations) => {
-      if (err) {
-        console.warn(err);
-        this._invitations = [];
-      }
-      this._invitations = invitations.slice();
-    });
-  },
-
   componentDidMount() {
-    this.mountTimeStamp = Date.now();
-
-    // Update Survey List from Parse only once every 3 minutes
-    if (this._surveys.length === 0 || Store.lastParseUpdate + 180000 < Date.now()) {
+    this._surveys = loadCachedSurveyList().slice();
+    if (this._surveys.length === 0) {
       loadSurveyList(this.loadList);
     } else {
       this.loadList();
@@ -91,38 +78,36 @@ const SurveyListPage = React.createClass({
     return shouldUpdate;
   },
 
-  /* Methods */
-  loadList(error) {
+  /**
+   * loads the update result from the cache
+   *
+   * @param {object} err, the error from the callback
+   * @param {object} res, the result of the callback
+   * note: these res param is not used as the cache is 'reloaded' prior to
+   * calling this callback
+   */
+  loadList(err) {
     // Prevent this callback from working if the component has unmounted.
     if (this.cancelCallbacks) {
       return;
     }
-
-    if (error) {
-      console.warn(error);
-      this.filterList('all');
-    } else {
-      this._surveys = loadCachedSurveyList().slice();
-      loadCachedInvitations(this._surveys, (err, invitations) => {
-        if (err) {
-          console.warn(err);
-          this._invitations = [];
-        }
-        this._invitations = invitations.slice();
-        let delay = 0;
-        if (this.mountTimeStamp + 750 > Date.now()) {
-          delay = 750;
-        }
-        setTimeout(() => {
-          console.log('setTimeout:this:', this);
-          if (!this.cancelCallbacks) {
-            this.setState({isRefreshing: false});
-            this.filterList('all');
-          }
-        }, delay);
-      });
-
+    if (err) {
+      // continue processing as we always load from the cache even if the
+      // user is 'offline'
+      console.warn(err);
     }
+    this._surveys = loadCachedSurveyList().slice();
+    // loadCachedInvitations is async due to needing the current user
+    loadCachedInvitations(this._surveys, (err2, invitations) => {
+      if (err2) {
+        this._invitations = [];
+      } else {
+        this._invitations = invitations.slice();
+      }
+      if (!this.cancelCallbacks) {
+        this.filterList('all');
+      }
+    });
   },
 
   filterList(query) {
@@ -145,12 +130,17 @@ const SurveyListPage = React.createClass({
 
     this.setState({
       isLoading: false,
+      isRefreshing: false,
       filterType: query === 'all' ? '' : `${query}`,
       dataSource: this.state.dataSource.cloneWithRows(filteredList),
     });
+
   },
 
   updateListFilter(query) {
+    if (this.state.isLoading || this.state.isRefreshing) {
+      return;
+    }
     this.filterList(query);
   },
 
@@ -226,7 +216,11 @@ const SurveyListPage = React.createClass({
         return inv.surveyId === surveyId;
       });
     } catch (e) {
+      // this will happen when another async task modifies the _invitations
+      // array
       console.warn(e);
+      this.props.navigator.resetTo({path: 'surveylist'});
+      return;
     }
     if (invitation && invitation.hasOwnProperty('status')) {
       status = invitation.status;
@@ -244,7 +238,7 @@ const SurveyListPage = React.createClass({
         onPress={() => this.selectSurvey(survey)}
         underlayColor={Color.background3}>
         <View>
-          <SurveyListItem title={survey.title} key={'survey-item-'+survey.id} surveyId={survey.id} status={this.getInvitationStatus(survey.id)} />
+          <SurveyListItem title={survey.title} key={`survey-item-${survey.id}`} surveyId={survey.id} status={this.getInvitationStatus(survey.id)} />
         </View>
       </TouchableHighlight>
     );

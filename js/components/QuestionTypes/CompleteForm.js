@@ -8,12 +8,33 @@ import Button from 'apsl-react-native-button';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const CompleteForm = React.createClass({
-  /* Render */
-  render() {
-    let buttonText = 'Submit';
+  getInitialState() {
+    return {
+      buttonText: 'Submit',
+    };
+  },
+  componentWillMount() {
     if (this.props.nextForm) {
-      buttonText = 'Submit and continue';
+      this.setState({
+        buttonText: 'Submit and continue',
+      });
     }
+  },
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.buttonText) {
+      this.setState({
+        buttonText: 'Submit and continue',
+      });
+    }
+  },
+  submitProxyHandler() {
+    this.setState({
+      buttonText: 'Saving...',
+    }, () => {
+      this.props.submit();
+    });
+  },
+  render() {
     return (
       <View style={Styles.question.block}>
         <View style={[Styles.question.header, Styles.question.headerComplete]} >
@@ -27,10 +48,10 @@ const CompleteForm = React.createClass({
             </Text>
           </View>
         </View>
-        <Button onPress={this.props.submit}
+        <Button onPress={this.submitProxyHandler}
                 style={[Styles.form.primaryButton, {marginTop: 30}]}
                 textStyle={Styles.form.primaryButtonText}>
-                {buttonText}
+                {this.state.buttonText}
         </Button>
       </View>
     );
