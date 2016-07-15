@@ -121,13 +121,13 @@ const Swiper = React.createClass({
   goToPage(pageNumber) {
     let num = pageNumber;
     // Don't scroll outside the bounds of the screens
-    num = Math.max(0, Math.min(pageNumber, this.props.children.length - 1));
+    num = Math.max(0, Math.min(num, this.props.children.length - 1));
     this.setState({
       index: num,
     });
 
-    Animated.spring(this.state.scrollValue, {toValue: pageNumber, friction: this.props.springFriction, tension: this.props.springTension}).start();
-    this.props.onPageChange(pageNumber);
+    Animated.spring(this.state.scrollValue, {toValue: num, friction: this.props.springFriction, tension: this.props.springTension}).start();
+    this.props.onPageChange(num);
   },
 
   handleLayout(event) {
@@ -168,7 +168,7 @@ const Swiper = React.createClass({
     };
 
     return (
-      <View style={[{flex: 1, overflow: 'hidden'}, this.props.containerStyle]} onLayout={this.handleLayout.bind(this)}>
+      <View style={[{flex: 1, overflow: 'hidden'}, this.props.containerStyle]} onLayout={this.handleLayout}>
         <Animated.View
           {...this._panResponder.panHandlers}
           style={[sceneContainerStyle, {transform: [{translateX}]}]}
