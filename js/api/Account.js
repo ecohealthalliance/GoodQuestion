@@ -6,7 +6,8 @@ import Settings from '../settings';
 import { addUserToInstallation } from '../api/Installations';
 
 let _currentUser = null;
-const _networkTimeout = Settings.networkTimeout ? Settings.networkTimeout : 30000;
+const _networkTimeout = Settings.networkTimeout || 10000;
+let _timer = null;
 
 /**
  * Callback 'done' is stanard node.js style (err, res)
@@ -32,9 +33,10 @@ const _networkTimeout = Settings.networkTimeout ? Settings.networkTimeout : 3000
  */
 export function authenticate(username, password, done) {
   let timeout = false;
-  const timer = setTimeout(() => {
+  clearTimeout(_timer);
+  _timer = setTimeout(() => {
     timeout = true;
-    done('Please try again later.');
+    done('Network Timeout');
   }, _networkTimeout);
   async.auto({
     // authenticates against openam
@@ -68,14 +70,19 @@ export function authenticate(username, password, done) {
         (user) => {
           cb(null, user);
         },
-        () => {
+        (err) => {
+          if (err.hasOwnProperty('code') && err.code === 100) {
+            return cb('Network Timeout');
+          }
           cb('Unauthorized');
         }
-      );
+      ).catch(() => {
+        cb('Network Error');
+      });
     }],
   }, (err, results) => {
     if (!timeout) {
-      clearTimeout(timer);
+      clearTimeout(_timer);
       if (err) {
         done(err);
         return;
@@ -86,7 +93,7 @@ export function authenticate(username, password, done) {
 }
 
 /**
- * get the current user
+ * is the current parse user authenticated
  *
  * @param {done} done, the function to execute when done
  * @returns {undefined}

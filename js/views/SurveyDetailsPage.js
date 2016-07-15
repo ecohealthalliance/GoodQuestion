@@ -23,36 +23,53 @@ const SurveyDetailsPage = React.createClass({
   getInitialState() {
     return {
       status: InvitationStatus.PENDING,
+      acceptText: 'Accept',
+      declineText: 'Decline',
     };
   },
   /* Methods */
 
   acceptSurvey() {
     const status = InvitationStatus.ACCEPTED;
-    this.setState({status: status});
-    markInvitationStatus(this.props.survey.id, status, (err) => {
-      if (err) {
-        console.warn(err);
-        return;
-      }
-      checkSurveyTimeTriggers(this.props.survey, true);
-      this.props.navigator.push({
-        path: 'form',
-        title: this.props.survey.title,
-        survey: this.props.survey,
+    this.setState({
+      status: status,
+      acceptText: 'Saving ...',
+    }, () => {
+      markInvitationStatus(this.props.survey.id, status, (err) => {
+        this.setState({
+          acceptText: 'Accept',
+        });
+        if (err) {
+          console.warn(err);
+          return;
+        }
+        checkSurveyTimeTriggers(this.props.survey, true);
+        this.props.navigator.push({
+          path: 'form',
+          title: this.props.survey.title,
+          survey: this.props.survey,
+        });
       });
     });
   },
 
   declineSurvey() {
     const status = InvitationStatus.DECLINED;
-    this.setState({status: status});
-    markInvitationStatus(this.props.survey.id, status, (err) => {
-      if (err) {
-        console.warn(err);
-        return;
-      }
-      this.props.navigator.pop();
+    this.setState({
+      status: status,
+      declineText: 'Saving ...',
+    }, () => {
+      this.setState({status: status});
+      markInvitationStatus(this.props.survey.id, status, (err) => {
+        this.setState({
+          acceptText: 'Decline',
+        });
+        if (err) {
+          console.warn(err);
+          return;
+        }
+        this.props.navigator.pop();
+      });
     });
   },
 
@@ -97,10 +114,12 @@ const SurveyDetailsPage = React.createClass({
 
         <View style={[Styles.survey.acceptanceButtons, {padding: 0}]}>
           <Button style={acceptButtonStyle} textStyle={acceptButtonTextStyle} action={this.acceptSurvey}>
-            <Icon name='check-circle' size={18} color={this.state.status === 'accepted' ? Color.background2 : Color.positive} /> Accept
+            <Icon name='check-circle' size={18} color={this.state.status === 'accepted' ? Color.background2 : Color.positive} />
+            <Text> {this.state.acceptText} </Text>
           </Button>
           <Button style={declineButtonStyle} textStyle={declineButtonTextStyle} action={this.declineSurvey}>
-            <Icon name='times-circle' size={18} color={this.state.status === 'declined' ? Color.background2 : Color.warning} /> Decline
+            <Icon name='times-circle' size={18} color={this.state.status === 'declined' ? Color.background2 : Color.warning} />
+            <Text> {this.state.declineText} </Text>
           </Button>
         </View>
       </View>

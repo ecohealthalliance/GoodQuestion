@@ -1,17 +1,40 @@
 import Parse from 'parse/react-native';
 import realm from '../data/Realm';
 import {currentUser} from '../api/Account';
+import { adminRole } from '../api/Roles';
 import crypto from 'crypto-js';
 import async from 'async';
 import _ from 'lodash';
 
-const Invitation = Parse.Object.extend('Invitation');
 export const InvitationStatus = {
   ACCEPTED: 'accepted',
   DECLINED: 'declined',
   PENDING: 'pending',
 };
-
+const Invitation = Parse.Object.extend('Invitation');
+/**
+ * create an invitation Object with acl assigned
+ *
+ * @param {string} uniqueId, the unique id for the realm record
+ * @param {string} surveyId, the unique id for the parse form record
+ * @param {string} status, the invitation status
+ * @param {object} user, the current parse user saved to AsyncStorage
+ * @param {object} role, the adminRole to be assigned to the object
+ */
+Invitation.create = function create(uniqueId, surveyId, status, user, role) {
+  const invitation = new Invitation();
+  invitation.set('uniqueId', uniqueId);
+  invitation.set('surveyId', surveyId);
+  invitation.set('status', status);
+  invitation.set('userId', user.id);
+  const acl = new Parse.ACL();
+  acl.setReadAccess(user, true);
+  acl.setWriteAccess(user, true);
+  acl.setRoleReadAccess(role, true);
+  acl.setRoleWriteAccess(role, true);
+  invitation.setACL(acl);
+  return invitation;
+};
 
 /**
  * user may only have one submission for each formId
@@ -78,38 +101,21 @@ function upsertRealmInvitation(id, surveyId, userId, status, dirty, done) {
  * @param {string} status, the invitation status
  */
 function createParseInvitation(id, surveyId, user, status, done) {
-  const invitation = new Invitation();
-  invitation.set('uniqueId', id);
-  invitation.set('surveyId', surveyId);
-  invitation.set('status', status);
-  invitation.set('userId', user.id);
-  const query = new Parse.Query(Parse.Role);
-  query.equalTo('name', 'admin');
-  query.find(
-    (roles) => {
-      if (roles.length <= 0) {
-        return done('Invalid role.');
-      }
-      const role = roles[0];
-      const acl = new Parse.ACL();
-      acl.setReadAccess(user, true);
-      acl.setWriteAccess(user, true);
-      acl.setRoleReadAccess(role, true);
-      acl.setRoleWriteAccess(role, true);
-      invitation.setACL(acl);
-      invitation.save(null).then(
-        (s) => {
-          done(null, s);
-        },
-        () => {
-          done('Error synchronizing to remote server.');
-        }
-      );
-    },
-    () => {
+  adminRole((err, role) => {
+    if (err) {
       done('Invalid role.');
+      return;
     }
-  );
+    const invitation = Invitation.create(id, surveyId, status, user, role);
+    invitation.save(null).then(
+      (s) => {
+        done(null, s);
+      },
+      () => {
+        done('Network Error');
+      }
+    );
+  });
 }
 
 /**
@@ -125,7 +131,7 @@ function updateParseInvitation(invitation, status, done) {
         done(null, s);
       },
       () => {
-        done('Error synchronizing to remote server.');
+        done('Network Error');
       }
     );
   } else {
@@ -143,14 +149,37 @@ function findParseInvitation(id, done) {
   query.equalTo('uniqueId', id);
   query.find(
     (invitations) => {
-      if (invitations.length > 0) {
+      if (invitations && invitations.length) {
         done(null, invitations[0]);
         return;
       }
       done(null, null);
     },
     () => {
-      done('No results');
+      done('Network Error');
+    }
+  );
+}
+
+/**
+ * finds invitations on parse by array of uniqueIds
+ *
+ * @param {array} uniqueIds, the unique ids for the records
+ * @param {function} done, the callback in node.js format (err, res)
+ */
+function findParseInvitations(uniqueIds, done) {
+  const query = new Parse.Query(Invitation);
+  query.containedIn('uniqueId', uniqueIds);
+  query.find(
+    (invitations) => {
+      if (invitations && invitations.length) {
+        done(null, invitations);
+        return;
+      }
+      done(null, null);
+    },
+    () => {
+      done('Network Error');
     }
   );
 }
@@ -221,8 +250,10 @@ export function markInvitationStatus(surveyId, status, done) {
       return;
     }
     if (err) {
-      done(err);
-      return;
+      if (err === 'Network Error') {
+        return done(null, 'The invitation was saved locally.');
+      }
+      return done(err);
     }
     done(null, 'The invitation was saved.');
   });
@@ -360,37 +391,172 @@ export function loadInvitations(done) {
   const query = new Parse.Query(Invitation);
   query.find(
     (invitations) => {
-      clearInvitationCache();
-      const numInvitations = invitations.length;
-      let savedInvitations = 0;
-      let failedInvitations = 0;
-      if (numInvitations > 0) {
-        invitations.forEach((invitation) => {
-          try {
-            realm.write(() => {
-              realm.create('Invitation', {
-                uniqueId: invitation.get('uniqueId'),
-                userId: invitation.get('userId'),
-                surveyId: invitation.get('surveyId'),
-                status: invitation.get('status'),
-                dirty: false,
+      if (invitations && invitations.length >= 0) {
+        clearInvitationCache();
+        const numInvitations = invitations.length;
+        let savedInvitations = 0;
+        let failedInvitations = 0;
+        if (numInvitations > 0) {
+          invitations.forEach((invitation) => {
+            try {
+              realm.write(() => {
+                realm.create('Invitation', {
+                  uniqueId: invitation.get('uniqueId'),
+                  userId: invitation.get('userId'),
+                  surveyId: invitation.get('surveyId'),
+                  status: invitation.get('status'),
+                  dirty: false,
+                });
               });
-            });
-            savedInvitations++;
-          } catch (e) {
-            failedInvitations++;
-            console.warn(e);
-          }
-          if (savedInvitations + failedInvitations === numInvitations) {
-            done(null, invitations);
-          }
-        });
-      } else {
-        done(null, []);
+              savedInvitations++;
+            } catch (e) {
+              // we do not 'upsert' on an existing invitations else we will
+              // have data loss when offline
+              console.warn(e);
+              failedInvitations++;
+            }
+            if (savedInvitations + failedInvitations === numInvitations) {
+              done(null, invitations);
+            }
+          });
+        }
+        return;
       }
+      done(null, []);
     },
     (err) => {
       done(err);
     }
   );
+}
+
+/**
+ * loads all cached invitations for the currentthat are marked dirty
+ */
+export function loadDirtyInvitations(done) {
+  async.auto({
+    currentUser: (cb) => {
+      currentUser(cb);
+    },
+    invitations: ['currentUser', (cb, results) => {
+      const userId = results.currentUser.id;
+      const invitations = realm.objects('Invitation').filtered(
+        `userId == "${userId}"`).filtered('dirty == true');
+      cb(null, invitations);
+    }],
+  }, (err, results) => {
+    if (err) {
+      done(err);
+      return;
+    }
+    done(null, results.invitations);
+  });
+}
+
+/**
+ * attempt to save multiple chached invitations to the remote then mark as
+ * clean locally
+ *
+ * @param {array} invitations, array of realm.io model results
+ * @callback {function} done, the callback method in node.js format (err, res)
+ */
+export function propagateInvitations(invitations, done) {
+  const dirty = invitations.slice();
+  const uniqueIds = dirty.map((d) => d.uniqueId);
+  async.auto({
+    // get the current user
+    currentUser: (cb) => {
+      currentUser(cb);
+    },
+    // get the admin role
+    adminRole: ['currentUser', (cb) => {
+      adminRole(cb);
+    }],
+    // find existing parse objects
+    combined: ['adminRole', (cb, results) => {
+      findParseInvitations(uniqueIds, (err, res) => {
+        if (err) {
+          return done(err);
+        }
+        if (res === null) {
+          done('Network Error');
+          return;
+        }
+        if (res && res.length > 0) {
+          // what are the existing uniqueIds on the server
+          const existingIds = res.map((e) => {
+            return e.get('uniqueId');
+          });
+          // what is the difference between the cache and server
+          const difference = _.difference(uniqueIds, existingIds);
+          // get any realm.io submissions that do not exist on the server?
+          const filtered = dirty.filter((d) => {
+            return difference.indexOf(d.uniqueId) >= 0;
+          });
+          // create the missing remote objects and add to an array
+          const missing = [];
+          filtered.forEach((d) => {
+            missing.push(Invitation.create(d.uniqueId, d.surveyId, d.state, results.currentUser, results.adminRole));
+          });
+          // update the existing answers
+          res.forEach((e) => {
+            const s = dirty.filter((d) => {
+              return d.uniqueId === e.get('uniqueId');
+            })[0];
+            if (typeof s !== 'undefined') {
+              e.set('status', s.status);
+            }
+          });
+          // combine all
+          const combined = _.union(res, missing);
+          cb(null, combined);
+          return;
+        }
+        cb(null, []);
+      });
+    }],
+    // save all the objects in one http request
+    saveAll: ['combined', (cb, results) => {
+      const combined = results.combined;
+      const total = combined.length;
+      if (total > 0) {
+        Parse.Object.saveAll(combined,
+          () => {
+            done(null, total);
+          },
+          (e) => {
+            done(e);
+          }
+        );
+      }
+      cb(null, total);
+    }],
+    // mark the local invitation as clean
+    clean: ['saveAll', (cb) => {
+      const numDirty = invitations.length;
+      let count = 0;
+      realm.write(() => {
+        invitations.forEach((invitation) => {
+          count++;
+          if (typeof invitation === 'undefined') {
+            return;
+          }
+          invitation.dirty = false;
+          if (numDirty === count) {
+            cb(null, true);
+          }
+        });
+      });
+    }],
+  }, (err, results) => {
+    if (done && typeof done === 'function') {
+      if (err) {
+        if (err === 'Network Error') {
+          return done(null, 'The invitation was saved locally.');
+        }
+        return done(err);
+      }
+      done(null, results.saveAll);
+    }
+  });
 }

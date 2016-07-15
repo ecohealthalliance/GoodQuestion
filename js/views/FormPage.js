@@ -231,10 +231,6 @@ const FormPage = React.createClass({
     const formId = this.form.id;
     const index = this.state.index;
     const survey = this.props.survey;
-    this.setState({
-      buttonText: 'Saving...',
-    });
-
     saveSubmission(formId, answers, (err) => {
       if (err) {
         if (err === 'Invalid User') {
@@ -244,10 +240,6 @@ const FormPage = React.createClass({
         Alert.alert('Error', err);
         return;
       }
-
-      this.setState({
-        buttonText: 'Submit',
-      });
 
       // Publish a ToastMessage to our Toaster via pubsub
       const toastMessage = ToastMessage.createFromObject({title: 'Success', message: 'The form has been submitted.', icon: 'check', iconColor: Color.fadedGreen});

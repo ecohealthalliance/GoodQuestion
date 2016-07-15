@@ -22,9 +22,9 @@ import Styles from '../styles/Styles';
 // Model
 import Store from '../data/Store';
 
-// Parse
 import {connectToParseServer} from '../api/ParseServer';
 import {isAuthenticated, logout} from '../api/Account';
+import {checkDirtyObjects} from '../services/CheckDirty';
 
 // Views
 import LoginPage from '../views/LoginPage';
@@ -90,19 +90,36 @@ const SharedNavigator = React.createClass({
         onNotification: this._onNotification,
       });
     }
-    checkTimeTriggers();
+    // see if we have an authenticated user
+    isAuthenticated((authenticated) => {
+      if (authenticated) {
+        checkTimeTriggers();
+        checkDirtyObjects((err, res) => {
+          if (err) {
+            console.warn(err);
+          }
+          if (res) {
+            console.log(res);
+          }
+          // set state after the check is complete
+          this.setState({
+            isAuthenticated: authenticated,
+            isLoading: false,
+          });
+        });
+      } else {
+        this.setState({
+          isAuthenticated: authenticated,
+          isLoading: false,
+        });
+      }
+    });
   },
 
   componentDidMount() {
     if (Platform.OS === 'ios') {
       PushNotification.requestPermissions();
     }
-    isAuthenticated((authenticated) => {
-      this.setState({
-        isAuthenticated: authenticated,
-        isLoading: false,
-      });
-    });
   },
 
   _onNotification(notification) {

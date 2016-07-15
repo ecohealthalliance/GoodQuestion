@@ -113,24 +113,29 @@ export function loadSurveys(callback) {
   query.equalTo('active', true);
   query.find(
     (results) => {
-      clearSurveyCache(results);
-      const cachedSurveys = realm.objects('Survey');
-      for (let i = 0; i < results.length; i++) {
-        const cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0];
-        const cachedSurveyTriggers = realm.objects('TimeTrigger').filtered(`surveyId = "${results[i].id}"`);
-        if (!cachedSurvey || !cachedSurveyTriggers || cachedSurveyTriggers.length === 0 || cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime()) {
-          cacheParseSurveys(results[i]);
-          loadForms(results[i]);
+      console.log('loadSurveys.results: ', results);
+      if (results && results.length >= 0) {
+        clearSurveyCache(results);
+        const cachedSurveys = realm.objects('Survey');
+        for (let i = 0; i < results.length; i++) {
+          const cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0];
+          const cachedSurveyTriggers = realm.objects('TimeTrigger').filtered(`surveyId = "${results[i].id}"`);
+          if (!cachedSurvey || !cachedSurveyTriggers || cachedSurveyTriggers.length === 0 || cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime()) {
+            cacheParseSurveys(results[i]);
+            loadForms(results[i]);
+          }
         }
+        Store.lastParseUpdate = Date.now();
+        if (callback) {
+          callback(null, results);
+        }
+        return;
       }
-      Store.lastParseUpdate = Date.now();
-      if (callback) {
-        callback(null, results);
-      }
+      callback(null, []);
     },
-    (error) => {
+    () => {
       if (callback) {
-        callback(error);
+        callback('Network Error');
       }
     }
   );
@@ -149,7 +154,7 @@ export function loadSurveyList(done) {
     invitations: (cb) => {
       loadInvitations(cb);
     },
-  }, (err) => {
+  }, (err, results) => {
     if (err) {
       if (done) {
         done(err);
@@ -157,7 +162,7 @@ export function loadSurveyList(done) {
       return;
     }
     if (done) {
-      done(null, true);
+      done(null, results);
     }
   });
 }

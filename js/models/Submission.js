@@ -7,6 +7,7 @@ Submission.schema = {
     dirty: 'bool',
     created: 'date',
     formId: 'string',
+    userId: 'string',
     // Serialized JSON
     answers: 'string',
   },
