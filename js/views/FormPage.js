@@ -2,6 +2,7 @@ import pubsub from 'pubsub-js';
 import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
 
 import React, {
+  Text,
   TouchableWithoutFeedback,
   View,
   Platform,
@@ -10,6 +11,8 @@ import React, {
 
 import _ from 'lodash';
 import dismissKeyboard from 'dismissKeyboard';
+
+import Styles from '../styles/Styles';
 
 import ShortAnswer from '../components/QuestionTypes/ShortAnswer';
 import Checkboxes from '../components/QuestionTypes/Checkboxes';
@@ -371,6 +374,9 @@ const FormPage = React.createClass({
     return (
       <View style={{flex: 1}}>
         <View style={{flex: 1, paddingHorizontal: 20, overflow: 'hidden'}}>
+          <View style={Styles.form.titleHeading}>
+            <Text style={Styles.form.titleText}> {this.form.title} </Text>
+          </View>
           <Swiper
             ref={(swiper) => {
               this._swiper = swiper;
