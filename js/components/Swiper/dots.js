@@ -29,11 +29,13 @@ const Dots = React.createClass({
     activeColor: React.PropTypes.string,
   },
 
-  defaultProps: {
-    total: 0,
-    active: -1,
-    dotStyle: {},
-    activeDotStyle: {},
+  getDefaultProps() {
+    return {
+      total: 0,
+      active: -1,
+      dotStyle: {},
+      activeDotStyle: {},
+    };
   },
 
   render() {

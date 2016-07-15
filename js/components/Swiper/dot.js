@@ -9,9 +9,11 @@ const Dot = React.createClass({
     style: View.propTypes.style,
   },
 
-  defaultProps: {
-    color: 'rgba(192, 192, 192, 1)',
-    diameter: 10,
+  getDefaultProps() {
+    return {
+      color: 'rgba(192, 192, 192, 1)',
+      diameter: 10,
+    };
   },
 
   render() {
