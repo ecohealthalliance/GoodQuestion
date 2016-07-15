@@ -82,7 +82,7 @@ const Toaster = React.createClass({
     ).start();
     Animated.timing(
       this.state.translateAnim,
-      {toValue: 50, duration: 1200, easing: Easing.out(Easing.quad)}
+      {toValue: 300, duration: 1200, easing: Easing.out(Easing.quad)}
     ).start();
   },
 
