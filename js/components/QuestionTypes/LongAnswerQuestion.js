@@ -73,7 +73,7 @@ const wrapperStyle = {
   marginHorizontal: -10,
   marginBottom: -10,
   padding: 0,
-}
+};
 
 const inputStyle = {
   borderWidth: 0,
@@ -82,6 +82,11 @@ const inputStyle = {
   paddingTop: 10,
   paddingBottom: 0,
   fontSize: 14,
+};
+
+if (Platform.OS === 'ios') {
+  inputStyle.height = 180;
+  inputStyle.paddingVertical = 10;
 }
 
-module.exports = LongAnswerQuestion
+module.exports = LongAnswerQuestion;
