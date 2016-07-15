@@ -22,8 +22,12 @@ export function cacheParseForm(form, surveyId) {
 // Returns an object containing a form and its parent survey
 export function loadCachedFormDataById(formId) {
   const form = realm.objects('Form').filtered(`id = "${formId}"`)[0];
+  const forms = realm.objects('Form').filtered(`surveyId = "${form.surveyId}"`).sorted('order');
+  const index = forms.findIndex((f) => {
+    return f.id === form.id;
+  });
   const survey = realm.objects('Survey').filtered(`id = "${form.surveyId}"`)[0];
-  return { form: form, survey: survey };
+  return { form: form, survey: survey, index: index };
 }
 
 // Fetches the cached forms related to a specific survey
