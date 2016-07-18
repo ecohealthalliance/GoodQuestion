@@ -5,6 +5,7 @@ import {
   TouchableHighlight,
   TouchableWithoutFeedback,
   View,
+  Text,
   Platform,
   Alert,
 } from 'react-native';
@@ -31,6 +32,7 @@ import CompleteForm from '../components/QuestionTypes/CompleteForm';
 // Components
 import Loading from '../components/Loading';
 import Overlay from '../components/Overlay';
+import Styles from '../styles/Styles';
 import Color from '../styles/Color';
 import TypeStyles from '../styles/_TypeStyles';
 import Swiper from '../components/Swiper/Swiper';
@@ -405,8 +407,11 @@ const FormPage = React.createClass({
           <View style={{
             flex: 1,
             paddingHorizontal:Platform.OS === 'ios' ? 20 : 0,
-            overflow: 'hidden'
+            overflow: 'hidden',
           }}>
+            <View style={Styles.form.titleHeading}>
+              <Text style={Styles.form.titleText}> {this.form.title} </Text>
+            </View>
             <Swiper
               ref={(swiper) => {
                 this._swiper = swiper;

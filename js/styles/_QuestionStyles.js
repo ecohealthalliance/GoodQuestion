@@ -28,7 +28,7 @@ const QuestionStyles = StyleSheet.create({
   },
   headerText: {
     color: Color.primary,
-    fontSize: 24,
+    fontSize: 14,
   },
   headerCompleteIcon: {
     flex: 0.3,

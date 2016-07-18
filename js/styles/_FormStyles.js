@@ -2,6 +2,20 @@ import { StyleSheet } from 'react-native';
 import Color from './Color';
 
 const FormStyles = StyleSheet.create({
+  titleHeading: {
+    textAlign: 'center',
+    marginTop: 20,
+    marginLeft: 8,
+    marginRight: 8,
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: Color.background1,
+  },
+  titleText: {
+    flex: 1,
+    color: Color.primary,
+    fontSize: 18,
+  },
   fixedForm: {
     flex: 1,
     justifyContent: 'center',

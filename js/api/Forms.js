@@ -25,18 +25,22 @@ export function cacheParseForm(form, surveyId) {
 
 // Returns an object containing a form and its parent survey
 export function loadCachedFormDataById(formId) {
-  const form = realm.objects('Form').filtered(`id = "${formId}"`)[0]
-  const survey = realm.objects('Survey').filtered(`id = "${form.surveyId}"`)[0]
-  return { form: form, survey: survey }
+  const form = realm.objects('Form').filtered(`id = "${formId}"`)[0];
+  const forms = realm.objects('Form').filtered(`surveyId = "${form.surveyId}"`).sorted('order');
+  const index = forms.findIndex((f) => {
+    return f.id === form.id;
+  });
+  const survey = realm.objects('Survey').filtered(`id = "${form.surveyId}"`)[0];
+  return { form: form, survey: survey, index: index };
 }
 
 // Returns an object containing a form and its parent survey
 export function loadCachedFormDataByTriggerId(triggerId, type) {
   const triggerObjectType = type === 'geofence' ? 'GeofenceTrigger' : 'TimeTrigger';
-  const trigger = realm.objects(triggerObjectType).filtered(`id = "${triggerId}"`)[0]
-  const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0]
-  const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0]
-  return { form: form, survey: survey }
+  const trigger = realm.objects(triggerObjectType).filtered(`id = "${triggerId}"`)[0];
+  const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0];
+  const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0];
+  return { form: form, survey: survey };
 }
 
 // Fetches the cached forms related to a specific survey

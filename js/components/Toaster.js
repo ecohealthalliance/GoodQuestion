@@ -95,11 +95,11 @@ const Toaster = React.createClass ({
     this.inUse = false;
     Animated.timing(
       this.state.fadeAnim,
-      {toValue: 0.1, duration: 400, easing: Easing.out(Easing.quad),}
+      {toValue: 0.1, duration: 400, easing: Easing.out(Easing.quad)}
     ).start();
     Animated.timing(
       this.state.translateAnim,
-      {toValue: 300, duration: 1200, easing: Easing.out(Easing.quad),}
+      {toValue: 300, duration: 1200, easing: Easing.out(Easing.quad)}
     ).start();
   },
 
