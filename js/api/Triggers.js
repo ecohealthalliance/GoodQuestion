@@ -197,6 +197,7 @@ export function checkTimeTriggers(omitNotifications) {
       }
     }
   });
+}
 
 /**
  * Checks the time triggers of a single survey.

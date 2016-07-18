@@ -4,7 +4,6 @@ import realm from '../data/Realm';
 
 import { InvitationStatus, loadCachedInvitation } from './Invitations';
 import { loadQuestions } from './Questions';
-import { loadQuestions } from './Questions';
 import { loadTriggers } from './Triggers';
 
 // Saves a Form object from Parse into our Realm.io local database

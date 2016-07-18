@@ -52,12 +52,9 @@ const ShortAnswer = React.createClass({
           <TextInput
             style={{height: 40, borderColor: Color.background1, borderWidth: 1, paddingLeft: 10}}
             onChangeText={this.handleChange}
-<<<<<<< HEAD
             placeholder="Tap to type..."
             blurOnSubmit={true}
-=======
             placeholder='Tap to type...'
->>>>>>> refs/remotes/origin/master
             value={this.state.value}
           />
         </View>

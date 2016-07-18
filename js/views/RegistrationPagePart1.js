@@ -1,16 +1,13 @@
-
 import React from 'react';
 import {
   Text,
   TextInput,
   View,
-  TouchableWithoutFeedback,
   ScrollView,
 } from 'react-native';
 
 import Variables from '../styles/Variables';
 import Styles from '../styles/Styles';
-import Color from '../styles/Color';
 import Button from '../components/Button';
 import Checkbox from '../components/Checkbox';
 

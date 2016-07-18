@@ -1,61 +1,57 @@
 import React from 'react';
 import {
   Alert,
-  StyleSheet,
   Text,
   View,
   ScrollView,
   Platform,
 } from 'react-native';
-import _ from 'lodash';
+
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Styles from '../styles/Styles';
 import Color from '../styles/Color';
 
-
 import SurveyDetailsMenu from '../components/SurveyDetailsMenu';
 import Loading from '../components/Loading';
 import Button from '../components/Button';
-import ViewText from '../components/ViewText';
 import MapPage from './MapPage';
 import CalendarPage from './CalendarPage';
 
 import { acceptSurvey, declineSurvey } from '../api/Surveys';
 import { getFormAvailability, loadCachedForms, loadCachedFormDataByTriggerId } from '../api/Forms';
 import { loadCachedQuestionsFromForms } from '../api/Questions';
-import { checkSurveyTimeTriggers, removeTriggers } from '../api/Triggers';
+import { checkSurveyTimeTriggers } from '../api/Triggers';
 import { InvitationStatus, markInvitationStatus, loadCachedInvitationById } from '../api/Invitations';
 
 const SurveyDetailsPage = React.createClass({
   propTypes: {
-    survey: React.PropTypes.object.isRequired, // Realm.io Object
+    survey: React.PropTypes.object.isRequired,
     activeTab: React.PropTypes.string,
   },
 
   getInitialState() {
-    return { 
+    return {
       loading: true,
       status: InvitationStatus.PENDING,
       acceptText: 'Accept',
       declineText: 'Decline',
-    }
+    };
   },
 
   componentDidMount() {
-    const self = this;
     const renderDelay = Platform.OS === 'android' ? 300 : 50;
 
     setTimeout(()=>{
-      if (!self.cancelCallbacks) {
+      if (!this.cancelCallbacks) {
         const invitation = loadCachedInvitationById(this.props.survey.id);
         const forms = loadCachedForms(this.props.survey.id);
         const questions = loadCachedQuestionsFromForms(forms);
 
-        let status = invitation && invitation.status ? invitation.status : InvitationStatus.PENDING;
+        const status = invitation && invitation.status ? invitation.status : InvitationStatus.PENDING;
 
-        self.setState({
+        this.setState({
           loading: false,
           forms: forms,
           formCount: forms.length,
@@ -88,7 +84,7 @@ const SurveyDetailsPage = React.createClass({
     const status = InvitationStatus.ACCEPTED;
     
     this.setState({
-      status: status
+      status: status,
       acceptText: 'Saving ...',
     }, ()=>{
       markInvitationStatus(this.props.survey.id, status, (err, res) => {
@@ -122,7 +118,7 @@ const SurveyDetailsPage = React.createClass({
             this.confirmDeclineCurrentSurvey();
           }},
         ]
-      )
+      );
     }
   },
 
@@ -240,8 +236,7 @@ const SurveyDetailsPage = React.createClass({
             Answer Form
           </Button>
         </View>
-      )
-
+      );
     } else if (availableTimeTriggers > 0) {
       return (
         <View style={Styles.survey.surveyNotes}>
@@ -252,15 +247,15 @@ const SurveyDetailsPage = React.createClass({
             Answer Form
           </Button>
         </View>
-      )
-    } else if (nextTimeTrigger && nextTimeTrigger > Date.now() ) {
+      );
+    } else if (nextTimeTrigger && nextTimeTrigger > Date.now()) {
       return (
         <View style={Styles.survey.surveyNotes}>
           <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>
             Next form: {moment(nextTimeTrigger).fromNow()}
           </Text>
         </View>
-      )
+      );
     } else {
       return (
         <View style={Styles.survey.surveyNotes}>
@@ -268,7 +263,7 @@ const SurveyDetailsPage = React.createClass({
             No forms currently available.
           </Text>
         </View>
-      )
+      );
     }
   },
 
@@ -281,19 +276,19 @@ const SurveyDetailsPage = React.createClass({
           </View>
 
           {
-            this.state.status == InvitationStatus.ACCEPTED && this.state.questionCount > 0 ?
+            this.state.status === InvitationStatus.ACCEPTED && this.state.questionCount > 0 ?
             <View style={Styles.survey.surveyStats}>
               <View style={Styles.survey.surveyStatsBlock}>
-                <Text>{this.state.formCount} Forms</Text> 
+                <Text>{this.state.formCount} Forms</Text>
               </View>
               <View style={Styles.survey.surveyStatsBlock}>
-                <Text>{this.state.questionCount} Questions</Text> 
+                <Text>{this.state.questionCount} Questions</Text>
               </View>
             </View>
             :
             <View style={Styles.survey.surveyStats}>
               <View style={Styles.survey.surveyStatsBlock}>
-                <Text>Contains {this.state.formCount} forms total.</Text> 
+                <Text>Contains {this.state.formCount} forms total.</Text>
               </View>
             </View>
           }
@@ -318,14 +313,20 @@ const SurveyDetailsPage = React.createClass({
 
   render() {
     if (this.state.loading) {
-      return ( <Loading/> );
+      return <Loading/>;
     }
 
-    let tab;
-    switch(this.state.activeTab) {
-      case 'geofence': tab = <MapPage navigator={this.props.navigator} survey={this.props.survey} />; break;
-      case 'scheduled': tab = <CalendarPage navigator={this.props.navigator} survey={this.props.survey} />; break;
-      default: tab = this.renderSurveyInfoPage(); break;
+    let tab = null;
+    switch (this.state.activeTab) {
+      case 'geofence':
+        tab = <MapPage navigator={this.props.navigator} survey={this.props.survey} />;
+        break;
+      case 'scheduled':
+        tab = <CalendarPage navigator={this.props.navigator} survey={this.props.survey} />;
+        break;
+      default:
+        tab = this.renderSurveyInfoPage();
+        break;
     }
 
     return (

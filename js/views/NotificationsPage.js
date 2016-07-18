@@ -1,9 +1,5 @@
 import React from 'react';
 import {
-  StyleSheet,
-  TouchableHighlight,
-  Text,
-  TextInput,
   View,
   ListView,
 } from 'react-native';

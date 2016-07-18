@@ -1,6 +1,3 @@
-import pubsub from 'pubsub-js';
-import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
-
 import React from 'react';
 import {
   View,
@@ -9,6 +6,9 @@ import {
   Animated,
   Easing,
 } from 'react-native';
+
+import pubsub from 'pubsub-js';
+import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
 
 import Styles from '../styles/Styles';
 import Color from '../styles/Color';

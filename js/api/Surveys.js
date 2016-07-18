@@ -47,7 +47,7 @@ export function loadAllAcceptedSurveys(callback) {
 export function getSurveyForms(surveyId, callback){
   const Survey = Parse.Object.extend("Survey");
   const query = new Parse.Query(Survey);
-  query.get(surveyId, {
+  query.get(surveyId,
     (survey) => {
       loadForms(survey, function(err, forms){
         if (callback) {
@@ -55,7 +55,7 @@ export function getSurveyForms(surveyId, callback){
         }
       })
     }
-  })
+  );
 }
 
 // Queries the connected Parse server for a list of Surveys.
@@ -183,7 +183,7 @@ function getSurveyOwner(survey) {
   if (!owner) {
     return;
   }
-  owner.fetch({
+  owner.fetch(
     (owner) => {
       realm.write(() => {
         try {
@@ -197,7 +197,7 @@ function getSurveyOwner(survey) {
         }
       })
     }
-  })
+  )
 }
 
 // Erases the current cache of Surveys

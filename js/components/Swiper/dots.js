@@ -59,18 +59,4 @@ const Dots = React.createClass({
   },
 });
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    position: 'absolute',
-    bottom: 25,
-    left: 0,
-    right: 0,    
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor:'transparent',
-  }
-})
-
 module.exports = Dots;

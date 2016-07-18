@@ -5,12 +5,12 @@ import {
   Text,
   TextInput,
   View
-} from 'react-native'
-import Styles from '../../styles/Styles'
-import Color from '../../styles/Color'
-import ViewText from '../ViewText'
+} from 'react-native';
+import Styles from '../../styles/Styles';
+import Color from '../../styles/Color';
+import ViewText from '../ViewText';
 
-import Icon from 'react-native-vector-icons/FontAwesome'
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const CalendarEvent = React.createClass ({
   propTypes: {

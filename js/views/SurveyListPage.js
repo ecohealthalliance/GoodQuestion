@@ -1,19 +1,16 @@
 import React from 'react';
 import {
-  StyleSheet,
   TouchableHighlight,
   TouchableOpacity,
   Text,
   View,
   ListView,
-  Alert,
   RefreshControl,
 } from 'react-native';
 
 import _ from 'lodash';
 import Styles from '../styles/Styles';
 import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys';
-import { loadCachedQuestionsFromForms } from '../api/Questions';
 import { InvitationStatus, loadCachedInvitations } from '../api/Invitations';
 import SurveyListItem from '../components/SurveyListItem';
 import SurveyListFilter from '../components/SurveyListFilter';
@@ -146,8 +143,10 @@ const SurveyListPage = React.createClass({
   },
 
   selectSurvey(survey) {
-    if (this.cancelCallbacks) return
-    
+    if (this.cancelCallbacks) {
+      return;
+    }
+
     this.props.navigator.push({
       path: 'survey-details',
       title: survey.title,

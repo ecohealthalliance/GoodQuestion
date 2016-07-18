@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   View,
+  Platform,
 } from 'react-native';
 
 import Styles from '../../styles/Styles';
@@ -19,12 +20,18 @@ const wrapperStyle = {
 };
 
 const inputStyle = {
-  height: 180,
   borderWidth: 0,
   paddingHorizontal: 15,
-  paddingVertical: 10,
+  textAlignVertical: 'top',
+  paddingTop: 10,
+  paddingBottom: 0,
   fontSize: 14,
 };
+
+if (Platform.OS === 'ios') {
+  inputStyle.height = 180;
+  inputStyle.paddingVertical = 10;
+}
 
 const LongAnswerQuestion = React.createClass({
   propTypes: {
@@ -71,48 +78,15 @@ const LongAnswerQuestion = React.createClass({
             onChangeText={this.handleChange}
             numberOfLines={8}
             multiline={true}
-<<<<<<< HEAD
             blurOnSubmit={true}
-            placeholder="Tap to type..."
-            underlineColorAndroid="transparent"
-=======
             placeholder='Tap to type...'
             underlineColorAndroid='transparent'
->>>>>>> refs/remotes/origin/master
             value={this.state.value}
           />
         </View>
       </View>
-<<<<<<< HEAD
-    )
-  }
-})
-
-const wrapperStyle = {
-  borderColor: Color.background1,
-  borderTopWidth: 1,
-  marginHorizontal: -10,
-  marginBottom: -10,
-  padding: 0,
-};
-
-const inputStyle = {
-  borderWidth: 0,
-  paddingHorizontal: 15,
-  textAlignVertical: 'top',
-  paddingTop: 10,
-  paddingBottom: 0,
-  fontSize: 14,
-};
-
-if (Platform.OS === 'ios') {
-  inputStyle.height = 180;
-  inputStyle.paddingVertical = 10;
-}
-=======
     );
   },
 });
->>>>>>> refs/remotes/origin/master
 
 module.exports = LongAnswerQuestion;

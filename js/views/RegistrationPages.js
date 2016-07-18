@@ -204,9 +204,9 @@ const RegistrationPages = React.createClass({
       <View style={{flex: 1, backgroundColor: '#fff'}}>
         <View style={[Styles.header.banner, {
           height: Variables.REGISTRATION_HEIGHT - 40,
-          paddingBottom: Platform.OS === 'android' ? 5 : 25
+          paddingBottom: Platform.OS === 'android' ? 5 : 25,
         }]}>
-          <Image source={require('../images/logo_stacked.png')} style={Styles.header.logo}></Image>
+          <Image source={logo} style={Styles.header.logo}></Image>
         </View>
         <Swiper
           index={this.state.index}

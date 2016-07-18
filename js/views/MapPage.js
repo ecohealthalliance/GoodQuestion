@@ -148,33 +148,39 @@ const MapPage = React.createClass ({
           showsCompass={true}
         > 
           {
-            this.state.markers.map(marker => (
-              <MapView.Circle
-                key={'circle-'+marker.id}
-                center={marker.position}
-                radius={marker.radius}
-                strokeColor='#700'
-                fillColor={marker.active ? 'rgba(30, 150, 30, 0.5)' : 'rgba(100, 30, 30, 0.5)'}
-              />
-            ))
+            this.state.markers.map((marker) => {
+              return (
+                <MapView.Circle
+                  key={'circle-'+marker.id}
+                  center={marker.position}
+                  radius={marker.radius}
+                  strokeColor='#700'
+                  fillColor={marker.active ? 'rgba(30, 150, 30, 0.5)' : 'rgba(100, 30, 30, 0.5)'}
+                />
+              );
+            })
           }
           {
-            this.state.markers.map(marker => (
-              <MapView.Marker
-                onPress={this.handleMarkerPress.bind(null, marker)} // Android
-                onSelect={this.handleMarkerPress.bind(null, marker)} // iOS
-                key={'marker-'+marker.id}
-                coordinate={marker.position}
-                title={marker.title}
-                description={marker.description}
-              />
-            ))
+            this.state.markers.map((marker) => {
+              return (
+                <MapView.Marker
+                  // Android
+                  onPress={this.handleMarkerPress.bind(null, marker)}
+                  // iOS
+                  onSelect={this.handleMarkerPress.bind(null, marker)}
+                  key={'marker-' + marker.id}
+                  coordinate={marker.position}
+                  title={marker.title}
+                  description={marker.description}
+                />
+              );
+            })
           }
         </MapView>
       </View>
-    )
+    );
   }
-})
+});
 
 const _styles = StyleSheet.create({
   iosMap: {
@@ -187,6 +193,6 @@ const _styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
-})
+});
 
-module.exports = MapPage
+module.exports = MapPage;

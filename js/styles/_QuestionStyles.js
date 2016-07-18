@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import Color from './Color';
 
 const QuestionStyles = StyleSheet.create({
