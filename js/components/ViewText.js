@@ -4,16 +4,14 @@ import {
   TouchableWithoutFeedback,
   View,
   Text,
-} from 'react-native'
+} from 'react-native';
 
-import Styles from '../styles/Styles'
-
-const ViewText = React.createClass ({
+const ViewText = React.createClass({
   getDefaultProps() {
     return {
       style: {},
       textStyle: {},
-    }
+    };
   },
 
   /* Render */
@@ -24,8 +22,8 @@ const ViewText = React.createClass ({
           {this.props.children}
         </Text>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = ViewText
+module.exports = ViewText;

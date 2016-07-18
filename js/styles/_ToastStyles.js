@@ -1,6 +1,4 @@
-import { StyleSheet, Platform } from 'react-native'
-import Color from './Color'
-
+import { StyleSheet } from 'react-native';
 
 const ToastStyles = StyleSheet.create({
   wrapper: {
@@ -30,6 +28,6 @@ const ToastStyles = StyleSheet.create({
     fontSize: 18,
     color: 'dimgray',
   },
-})
+});
 
-module.exports = ToastStyles
+module.exports = ToastStyles;

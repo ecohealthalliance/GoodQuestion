@@ -12,7 +12,7 @@ function loadRoles (options, callback) {
 function createRole(roleToCreate) {
   var acl= new Parse.ACL()
   var role = new Parse.Role(roleToCreate, acl)
-  return role.save(useMasterKey)
+  return role.save(null, useMasterKey)
     .then(function(role){
       console.log(colors.green('Created role "' + roleToCreate + '"'))
     })

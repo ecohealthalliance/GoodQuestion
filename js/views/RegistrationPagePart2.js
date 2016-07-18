@@ -1,30 +1,25 @@
-
 import React from 'react';
 import {
   Text,
-  TextInput,
-  TouchableHighlight,
   View,
-  Image,
   ScrollView,
-} from 'react-native'
+} from 'react-native';
 
-import Button from '../components/Button'
-import Checkbox from '../components/Checkbox'
+import _ from 'lodash';
+import Button from '../components/Button';
+import Styles from '../styles/Styles';
 
-import Styles from '../styles/Styles'
-import Color from '../styles/Color'
+import Checkbox from '../components/Checkbox';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-import Icon from 'react-native-vector-icons/FontAwesome'
+let uncheckedComponent = <Icon name='square-o' size={30} />;
+let checkedComponent = <Icon name='check-square-o' size={30} />;
 
-let uncheckedComponent = (<Icon name='square-o' size={30} />);
-let checkedComponent = (<Icon name='check-square-o' size={30} />);
+import Joi from '../lib/joi-browser.min';
+import JoiMixins from '../mixins/joi-mixins';
+import EventMixins from '../mixins/event-mixins';
 
-import Joi from '../lib/joi-browser.min'
-import JoiMixins from '../mixins/joi-mixins'
-import EventMixins from '../mixins/event-mixins'
-
-const RegistrationPagePart4 = React.createClass ({
+const RegistrationPagePart2 = React.createClass({
 
   propTypes: {
     navigator: React.PropTypes.object.isRequired,
@@ -32,8 +27,8 @@ const RegistrationPagePart4 = React.createClass ({
 
   styles: {
     checkboxWrapper: {
-      alignItems:'center',
-      justifyContent:'center',
+      alignItems: 'center',
+      justifyContent: 'center',
       marginLeft: 50,
       height: 35,
     },
@@ -49,16 +44,16 @@ const RegistrationPagePart4 = React.createClass ({
   ],
 
   schema: {
-    allowLocationServices: Joi.boolean().required().invalid(false).options({language: {any: {invalid: 'must be accepted'}}}).label('Allow Location Services'),
+    allowLocationServices: Joi.boolean().required().invalid(false).options(
+      {language: {any: {invalid: 'must be accepted'}}}).label('Allow Location Services'),
   },
-
 
   getInitialState() {
     return {
-      button_text: 'Next',
+      buttonText: 'Next',
       allowLocationServices: false,
       errors: [],
-    }
+    };
   },
 
   componentWillMount() {
@@ -73,16 +68,12 @@ const RegistrationPagePart4 = React.createClass ({
   },
 
   /* Methods */
-  handleAllowService() {
-    // Call API for location permissions
-  },
-
   buttonStyles() {
-    let styles = [Styles.form.footerButton]
+    const styles = [Styles.form.footerButton];
     if (_.isEmpty(this.state.errors) && this.state.email && this.state.password) {
-      styles.push(Styles.form.footerButtonActive)
+      styles.push(Styles.form.footerButtonActive);
     }
-    return styles
+    return styles;
   },
 
   renderLocationServices() {
@@ -95,7 +86,7 @@ const RegistrationPagePart4 = React.createClass ({
 
   /* Render */
   render() {
-    this.props.buttonStyles(this, this.formInputs)
+    this.props.buttonStyles(this, this.formInputs);
     return (
       <View style={[Styles.container.defaultWhite]}>
         <ScrollView style={Styles.form.registrationView}>
@@ -124,11 +115,11 @@ const RegistrationPagePart4 = React.createClass ({
           action={this.goToNextPage}
           style={this.buttonStyles}
           textStyle={this.buttonTextStyles}>
-          {this.state.button_text}
+          {this.state.buttonText}
         </Button>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = RegistrationPagePart4
+module.exports = RegistrationPagePart2;

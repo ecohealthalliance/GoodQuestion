@@ -1,12 +1,10 @@
-'use strict'
-
 import React from 'react';
 import {
   Component,
   View,
-} from 'react-native'
+} from 'react-native';
 
-const Dot = React.createClass ({
+const Dot = React.createClass({
   propTypes: {
     color: React.PropTypes.string,
     diameter: React.PropTypes.number,
@@ -17,12 +15,11 @@ const Dot = React.createClass ({
     return {
       color: 'rgba(192, 192, 192, 1)',
       diameter: 10,
-    }
+    };
   },
 
   render() {
-    const { color, diameter } = this.props
-
+    const { color, diameter } = this.props;
     return (
       <View
         style={[{
@@ -34,9 +31,8 @@ const Dot = React.createClass ({
           marginVertical: 3,
         }, this.props.style]}
       />
-    )
-  }
-
-})
+    );
+  },
+});
 
 module.exports = Dot;

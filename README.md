@@ -1,4 +1,4 @@
-# GoodQuestion
+# GoodQuestion  [![CircleCI](https://circleci.com/gh/ecohealthalliance/GoodQuestion.svg?style=svg)](https://circleci.com/gh/ecohealthalliance/GoodQuestion)
 Mobile application for taking trigger based surveys.
 
 ### Technologies

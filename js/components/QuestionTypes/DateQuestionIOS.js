@@ -2,59 +2,58 @@ import React from 'react';
 import {
   StyleSheet,
   Text,
-  TextInput,
   View,
-  Platform,
   DatePickerIOS,
-} from 'react-native'
-import Styles from '../../styles/Styles'
-import ViewText from '../ViewText'
+} from 'react-native';
+import Styles from '../../styles/Styles';
+import ViewText from '../ViewText';
 
-const DateQuestionIOS = React.createClass ({
+const DateQuestionIOS = React.createClass({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
     index: React.PropTypes.number.isRequired,
     value: React.PropTypes.oneOfType([
       React.PropTypes.string,
-      React.PropTypes.instanceOf(Date)
+      React.PropTypes.instanceOf(Date),
     ]),
     mode: React.PropTypes.string,
     onChange: React.PropTypes.func.isRequired,
   },
 
-  getDefaultProps: function () {
+  getDefaultProps() {
     return {
       value: new Date(),
-      timeZoneOffset: (-1) * (new Date()).getTimezoneOffset(),
+      timeZoneOffset: -1 * new Date().getTimezoneOffset(),
       mode: 'date',
     };
   },
 
-  getInitialState: function() {
+  getInitialState() {
     return {
       value: this.checkDate(this.props.value),
       timeZoneOffsetInHours: this.props.timeZoneOffset,
-    }
+    };
   },
 
   /* Methods */
   handleChange(value) {
     this.setState({
-      value: value
-    })
-    this.props.onChange(value)
+      value: value,
+    });
+    this.props.onChange(value);
   },
 
   checkDate(value) {
+    let date = value;
     if (typeof value === 'string') {
       try {
-        value = new Date(value);
-      } catch(e) {
-        console.error('could not parse date: ' + value);
+        date = new Date(value);
+      } catch (e) {
+        console.error(`could not parse date:  ${value}`);
       }
     }
-    return value;
+    return date;
   },
 
   /* Render */
@@ -67,16 +66,20 @@ const DateQuestionIOS = React.createClass ({
             Question #{this.props.index}
         </ViewText>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
-        <DatePickerIOS
-          mode={this.props.mode}
-          timeZoneOffsetInMinutes={this.props.timeZoneOffset}
-          onDateChange={this.handleChange}
-          date={this.checkDate(this.state.value)}
-          style={{marginLeft: -9}}
-          />
+        <View style={{flex: 1, alignItems: 'center', overflow: 'hidden'}} >
+          <DatePickerIOS
+            mode={this.props.mode}
+            timeZoneOffsetInMinutes={this.props.timeZoneOffset}
+            onDateChange={this.handleChange}
+            date={this.checkDate(this.state.value)}
+            style={[
+              {transform: [{scale: 0.80}]},
+            ]}
+            />
+        </View>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = DateQuestionIOS
+module.exports = DateQuestionIOS;

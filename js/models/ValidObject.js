@@ -1,4 +1,4 @@
-import Joi from '../lib/joi-browser.min'
+import Joi from '../lib/joi-browser.min';
 
 /**
  * ValidObject is a base class to be extended for validation purposes. It was
@@ -13,7 +13,9 @@ class ValidObject {
    * @return {array} errors, an array of errors
    */
   validate() {
-    if (typeof this._schema === 'undefined') return ['Invalid Schema'];
+    if (typeof this._schema === 'undefined') {
+      return ['Invalid Schema'];
+    }
     const errors = [];
     Object.keys(this._schema).forEach((key) => {
       const value = this[key];
@@ -35,9 +37,11 @@ class ValidObject {
    */
   isValid() {
     const errors = this.validate();
-    if (errors.length > 0) return false;
+    if (errors.length > 0) {
+      return false;
+    }
     return true;
   }
 }
 
-module.exports = ValidObject
+module.exports = ValidObject;

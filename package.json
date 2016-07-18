@@ -1,16 +1,17 @@
 {
   "name": "GoodQuestion",
-  "version": "0.2.8",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start"
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "./node_modules/.bin/eslint -c .eslintrc.js ."
   },
   "dependencies": {
     "apsl-react-native-button": "2.5.0",
     "async": "1.5.2",
-    "colors": "^1.1.2",
-    "crypto-js": "^3.1.6",
-    "he": "^1.1.0",
+    "colors": "1.1.2",
+    "crypto-js": "3.1.6",
+    "he": "1.1.0",
     "lodash": "4.11.1",
     "moment": "2.11.2",
     "parse": "1.8.3",
@@ -27,7 +28,15 @@
     "realm": "^0.14.1"
   },
   "devDependencies": {
-    "commander": "^2.9.0"
+    "babel-cli": "6.10.1",
+    "babel-eslint": "6.1.2",
+    "babel-preset-es2015": "6.9.0",
+    "babel-preset-react-native": "1.9.0",
+    "commander": "2.9.0",
+    "eslint": "3.0.1",
+    "eslint-plugin-babel": "3.3.0",
+    "eslint-plugin-react": "5.2.2",
+    "eslint-plugin-react-native": "1.1.0"
   },
   "bin": {
     "populate-goodquestion": "./tool-populate/index.js"

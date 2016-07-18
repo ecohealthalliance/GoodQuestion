@@ -1,17 +1,12 @@
-import { Platform } from 'react-native'
-import Settings from '../settings'
+import { Platform } from 'react-native';
+import Settings from '../settings';
+import Store from '../data/Store';
+import { setupGeofences } from './Geofencing';
 
-import Store from '../data/Store'
+const BackgroundGeolocation = Platform.OS === 'ios' ? require('react-native-background-geolocation') : require('react-native-background-geolocation-android');
 
-import { addSchedule } from './Schedule'
-import { checkTimeTriggers } from './Triggers'
-import { setupGeofences } from './Geofencing'
+let startTimer = Date.now();
 
-export const BackgroundGeolocation = Platform.OS === 'ios' ?
-                                      require('react-native-background-geolocation') :
-                                      require('react-native-background-geolocation-android')
-
-let startTimer = Date.now()
 
 /**
  * Configures the geolocation library with initial configuration or energy-saving properties for background work.
@@ -102,7 +97,7 @@ export function configureGeolocationService(options = {}, callback) {
       if (callback) callback();
     }
   } catch (e) {
-    console.error(e)
+    console.error(e);
   }
 }
 
@@ -118,7 +113,7 @@ export function initializeGeolocationService() {
 
     BackgroundGeolocation.on('error', function(error) {
       printTimelog('error');
-      console.log(error.type + " Error: " + error.code)
+      console.log(error.type + " Error: " + error.code);
     });
 
     // Create initial geofence hooks.
@@ -167,7 +162,9 @@ export function handleAppStateChange(state) {
 }
 
 function printTimelog(msg) {
-  let timing = ((Date.now() - startTimer) / 1000)
-  timing = Math.ceil(timing)
-  console.log(msg + ': ' + timing + 's')
+  let timing = ((Date.now() - startTimer) / 1000);
+  timing = Math.ceil(timing);
+  console.log(msg + ': ' + timing + 's');
 }
+
+export { BackgroundGeolocation };

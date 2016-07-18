@@ -5,9 +5,10 @@ Submission.schema = {
   properties: {
     uniqueId: 'string',
     dirty: 'bool',
-    created:  'date',
+    created: 'date',
     formId: 'string',
+    userId: 'string',
     // Serialized JSON
     answers: 'string',
-  }
-}
+  },
+};

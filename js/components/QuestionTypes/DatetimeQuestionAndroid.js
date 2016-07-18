@@ -1,20 +1,17 @@
-
 import React from 'react';
 import {
   StyleSheet,
   Text,
-  TextInput,
   View,
   DatePickerAndroid,
   TimePickerAndroid,
-  TouchableWithoutFeedback,
-} from 'react-native'
-import Styles from '../../styles/Styles'
-import ViewText from '../ViewText'
-import Button from 'apsl-react-native-button'
-import moment from 'moment'
+} from 'react-native';
+import Styles from '../../styles/Styles';
+import ViewText from '../ViewText';
+import Button from 'apsl-react-native-button';
+import moment from 'moment';
 
-const DatetimeQuestionAndroid = React.createClass ({
+const DatetimeQuestionAndroid = React.createClass({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
@@ -22,49 +19,50 @@ const DatetimeQuestionAndroid = React.createClass ({
     onChange: React.PropTypes.func.isRequired,
     value: React.PropTypes.oneOfType([
       React.PropTypes.string,
-      React.PropTypes.instanceOf(Date)
+      React.PropTypes.instanceOf(Date),
     ]),
   },
 
-  getInitialState: function() {
-    if (!this.props.value) {
-      return {
-        value: new Date(),
-        date: new Date(),
-      }
-    } else {
-      const date = this.checkDate(this.props.value)
+  getInitialState() {
+    if (this.props.value) {
+      const date = this.checkDate(this.props.value);
       return {
         value: date,
         date: date,
         hour: date.getHours(),
         minute: date.getMinutes(),
         dateText: moment(date).format('MMMM DD, YYYY'),
-        timeText: moment(date.getHours()+':'+date.getMinutes(), 'H:m', true).format('hh:mm A'),
-      }
+        timeText: moment(`${date.getHours()}:${date.getMinutes()}`, 'H:m', true).format('hh:mm A'),
+      };
     }
+    return {
+      value: new Date(),
+      date: new Date(),
+    };
   },
 
   /* Methods */
   // Android date picker pop-up
   async showDatePicker() {
     try {
-      const {action, year, month, day} = await DatePickerAndroid.open({date: this.state.value})
+      const {action, year, month, day} = await DatePickerAndroid.open({date: this.state.value});
       if (action !== DatePickerAndroid.dismissedAction) {
-        var date = new Date(year, month, day)
-        var datetime = new Date(year, month, day)
-        datetime.setHours(this.state.hour, this.state.minute)
+        const date = new Date(year, month, day);
+        const datetime = new Date(year, month, day);
+        datetime.setHours(this.state.hour, this.state.minute);
         this.setState({
           value: datetime,
           date: date,
           dateText: moment(date).format('MMMM DD, YYYY'),
           hasDate: true,
-        })
+        });
 
-        if (this.state.hasTime) this.props.onChange(datetime)
+        if (this.state.hasTime) {
+          this.props.onChange(datetime);
+        }
       }
     } catch ({code, message}) {
-      console.warn('Date Picker Error: ' + code + ' ' + message)
+      console.warn(`Date Picker Error: ${code} ${message}`);
     }
   },
 
@@ -73,35 +71,38 @@ const DatetimeQuestionAndroid = React.createClass ({
     const options = {
       hour: this.state.hour,
       minute: this.state.minute,
-    }
+    };
 
     try {
       const {action, minute, hour} = await TimePickerAndroid.open(options);
       if (action === TimePickerAndroid.timeSetAction) {
-        var datetime = new Date(this.state.date.getTime())
-        datetime.setHours(hour, minute)
+        const datetime = new Date(this.state.date.getTime());
+        datetime.setHours(hour, minute);
         this.setState({
-          timeText: moment(hour+':'+minute, 'H:m', true).format('hh:mm A'),
+          timeText: moment(`${hour}:${minute}`, 'H:m', true).format('hh:mm A'),
           hour: hour,
           minute: minute,
           hasTime: true,
-        })
-        if (this.state.hasDate) this.props.onChange(datetime)
+        });
+        if (this.state.hasDate) {
+          this.props.onChange(datetime);
+        }
       }
     } catch ({code, message}) {
-      console.warn('Time Picker Error: ' + code + ' ' + message)
+      console.warn(`Time Picker Error: ${code} ${message}`);
     }
   },
 
   checkDate(value) {
+    let date = value;
     if (typeof value === 'string') {
       try {
-        value = new Date(value);
-      } catch(e) {
-        console.error('could not parse date: ' + value);
+        date = new Date(value);
+      } catch (e) {
+        console.error(`could not parse date: ${value}`);
       }
     }
-    return value;
+    return date;
   },
 
   /* Render */
@@ -115,13 +116,13 @@ const DatetimeQuestionAndroid = React.createClass ({
           {this.state.hasTime ? 'Update Time' : 'Select Time'}
         </Button>
       </View>
-    )
+    );
   },
 
   render() {
     return (
       <View style={Styles.question.block}>
-        <ViewText 
+        <ViewText
           style={Styles.question.header}
           textStyle={Styles.question.headerText}>
             Question #{this.props.index}
@@ -133,8 +134,8 @@ const DatetimeQuestionAndroid = React.createClass ({
           {this.renderButtons()}
         </View>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = DatetimeQuestionAndroid
+module.exports = DatetimeQuestionAndroid;

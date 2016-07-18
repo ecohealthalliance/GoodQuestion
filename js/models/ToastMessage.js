@@ -1,5 +1,5 @@
-import Joi from '../lib/joi-browser.min'
-import ValidObject from './ValidObject'
+import Joi from '../lib/joi-browser.min';
+import ValidObject from './ValidObject';
 
 /**
  * validation schema for ToastMessage class
@@ -16,7 +16,7 @@ const schema = {
  * pubsub addresses for Toaster.js
  */
 export const ToastAddresses = {
-  SHOW: 'toast:show'
+  SHOW: 'toast:show',
 };
 
 export class ToastMessage extends ValidObject {
@@ -35,10 +35,11 @@ export class ToastMessage extends ValidObject {
     this.message = message;
     this.icon = icon;
     this.iconColor = iconColor;
-    if (typeof duration === 'undefined') {
-      duration = 6;
+    let updatedDuration = duration;
+    if (typeof updatedDuration === 'undefined') {
+      updatedDuration = 6;
     }
-    this.duration = duration;
+    this.duration = updatedDuration;
     this.action = action ? action : ()=>{};
     this._schema = schema;
   }
@@ -52,20 +53,20 @@ export class ToastMessage extends ValidObject {
    */
   static createFromObject(object) {
     let toastMessage = null;
-    if (typeof object !== 'object') return toastMessage;
-
-    const errors = []
+    if (typeof object !== 'object') {
+      return toastMessage;
+    }
     try {
       toastMessage = new ToastMessage(object.title, object.message, object.icon, object.iconColor, object.duration, object.action);
-    } catch(e) {
-      console.warn('Could not construct ToastMessage object from ', object);
+    } catch (e) {
+      console.warn(`Could not construct ToastMessage object from ${object}`);
       return toastMessage;
     }
 
     const valid = toastMessage.isValid();
     if (!valid) {
       const errors = toastMessage.validate();
-      console.warn('Invalid request: ', errors)
+      console.warn(`Invalid request: ${errors}`);
       return toastMessage;
     }
 

@@ -4,12 +4,11 @@ Question.schema = {
   primaryKey: 'id',
   properties: {
     id: 'string',
-  	formId: 'string',
-
-  	order: 'int',
+    formId: 'string',
+    order: 'int',
     text: 'string',
     type: 'string',
     required: 'bool',
     properties: 'string',
-  }
-}
+  },
+};

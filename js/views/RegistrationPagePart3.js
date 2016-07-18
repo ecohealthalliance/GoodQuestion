@@ -3,30 +3,27 @@ import React from 'react';
 import {
   Text,
   TextInput,
-  TouchableHighlight,
   View,
-  Image,
   ScrollView,
-} from 'react-native'
+} from 'react-native';
 
-import Variables from '../styles/Variables'
-import Button from '../components/Button'
-import Styles from '../styles/Styles'
-import Color from '../styles/Color'
+import Variables from '../styles/Variables';
+import Button from '../components/Button';
+import Styles from '../styles/Styles';
 
-import Joi from '../lib/joi-browser.min'
-import JoiMixins from '../mixins/joi-mixins'
-import EventMixins from '../mixins/event-mixins'
+import Joi from '../lib/joi-browser.min';
+import JoiMixins from '../mixins/joi-mixins';
+import EventMixins from '../mixins/event-mixins';
 
-const RegistrationPagePart3 = React.createClass ({
+const RegistrationPagePart3 = React.createClass({
   propTypes: {
     navigator: React.PropTypes.object.isRequired,
   },
 
   styles: {
     checkboxWrapper: {
-      alignItems:'center',
-      justifyContent:'center',
+      alignItems: 'center',
+      justifyContent: 'center',
       marginLeft: 50,
       height: 35,
     },
@@ -34,7 +31,7 @@ const RegistrationPagePart3 = React.createClass ({
 
   formInputs: [
     'name',
-    'phone'
+    'phone',
   ],
 
   mixins: [
@@ -43,42 +40,45 @@ const RegistrationPagePart3 = React.createClass ({
   ],
 
   schema: {
-    name: Joi.string().min(3).required().options({language: {any: {allowOnly: 'must not be empty'}}}).label('Full Name'),
+    name: Joi.string().min(3).required().options(
+      {language: {any: {allowOnly: 'must not be empty'}}}).label('Full Name'),
     phone: Joi.string().optional().label('Phone Number'),
   },
 
   getInitialState() {
     return {
-      button_text: 'Finish',
+      buttonText: 'Finish',
       name: '',
       phone: '',
       errors: [],
-    }
+    };
   },
 
   /* Methods */
   finish() {
-    if (this.state.button_text === 'Sending...') return;
+    if (this.state.buttonText === 'Sending...') {
+      return;
+    }
     this.setState({
-      button_text: 'Sending...'
+      buttonText: 'Sending...',
     });
     const valid = this.props.validatePage(2);
     if (valid) {
       this.props.finish(() => {
         this.setState({
-          button_text: 'Finish'
+          buttonText: 'Finish',
         });
       });
     } else {
       this.setState({
-        button_text: 'Finish'
+        buttonText: 'Finish',
       });
     }
   },
 
   /* Render */
   render() {
-    this.props.buttonStyles(this, this.formInputs)
+    this.props.buttonStyles(this, this.formInputs);
     return (
       <View style={[Styles.container.defaultWhite]}>
         <ScrollView
@@ -102,7 +102,7 @@ const RegistrationPagePart3 = React.createClass ({
                 autoCapitalize='none'
                 autoCorrect={false}
                 returnKeyType='done'
-                placeholder="Full Name"
+                placeholder='Full Name'
               />
             </View>
             <Text style={Styles.form.errorText}>
@@ -119,17 +119,17 @@ const RegistrationPagePart3 = React.createClass ({
                 autoCapitalize='none'
                 autoCorrect={false}
                 returnKeyType='done'
-                placeholder="Phone Number"
+                placeholder='Phone Number'
               />
             </View>
           </View>
         </ScrollView>
-        <Button action={this.finish}  style={this.buttonStyles} textStyle={this.buttonTextStyles}>
-          {this.state.button_text}
+        <Button action={this.finish} style={this.buttonStyles} textStyle={this.buttonTextStyles}>
+          {this.state.buttonText}
         </Button>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = RegistrationPagePart3
+module.exports = RegistrationPagePart3;

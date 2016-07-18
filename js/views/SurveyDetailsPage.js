@@ -6,39 +6,41 @@ import {
   View,
   ScrollView,
   Platform,
-} from 'react-native'
-import realm from '../data/Realm'
-import _ from 'lodash'
-import moment from 'moment'
-import Icon from 'react-native-vector-icons/FontAwesome'
+} from 'react-native';
+import _ from 'lodash';
+import moment from 'moment';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-import Store from '../data/Store'
-import Styles from '../styles/Styles'
-import Color from '../styles/Color'
+import Styles from '../styles/Styles';
+import Color from '../styles/Color';
 
 
-import SurveyDetailsMenu from '../components/SurveyDetailsMenu'
-import Loading from '../components/Loading'
-import Button from '../components/Button'
-import ViewText from '../components/ViewText'
-import MapPage from './MapPage'
-import CalendarPage from './CalendarPage'
+import SurveyDetailsMenu from '../components/SurveyDetailsMenu';
+import Loading from '../components/Loading';
+import Button from '../components/Button';
+import ViewText from '../components/ViewText';
+import MapPage from './MapPage';
+import CalendarPage from './CalendarPage';
 
-import { acceptSurvey, declineSurvey } from '../api/Surveys'
-import { getFormAvailability, loadCachedForms, loadCachedFormDataByTriggerId } from '../api/Forms'
-import { loadCachedQuestionsFromForms } from '../api/Questions'
-import { checkSurveyTimeTriggers, removeTriggers } from '../api/Triggers'
-import { setupGeofences } from '../api/Geofencing'
-import { InvitationStatus, markInvitationStatus, loadCachedInvitationById } from '../api/Invitations'
+import { acceptSurvey, declineSurvey } from '../api/Surveys';
+import { getFormAvailability, loadCachedForms, loadCachedFormDataByTriggerId } from '../api/Forms';
+import { loadCachedQuestionsFromForms } from '../api/Questions';
+import { checkSurveyTimeTriggers, removeTriggers } from '../api/Triggers';
+import { InvitationStatus, markInvitationStatus, loadCachedInvitationById } from '../api/Invitations';
 
-const SurveyDetailsPage = React.createClass ({
+const SurveyDetailsPage = React.createClass({
   propTypes: {
     survey: React.PropTypes.object.isRequired, // Realm.io Object
     activeTab: React.PropTypes.string,
   },
 
   getInitialState() {
-    return { loading: true }
+    return { 
+      loading: true,
+      status: InvitationStatus.PENDING,
+      acceptText: 'Accept',
+      declineText: 'Decline',
+    }
   },
 
   componentDidMount() {
@@ -84,18 +86,26 @@ const SurveyDetailsPage = React.createClass ({
   acceptCurrentSurvey() {
     const self = this;
     const status = InvitationStatus.ACCEPTED;
-    this.setState({status: status});
-    markInvitationStatus(this.props.survey.id, status, (err, res) => {
-      if (err) {
-        console.warn(err);
-        return;
-      }
-      acceptSurvey(self.props.survey, (err, result) => {
-        if (!self.cancelCallbacks) {
-          self.getSurveyData();
+    
+    this.setState({
+      status: status
+      acceptText: 'Saving ...',
+    }, ()=>{
+      markInvitationStatus(this.props.survey.id, status, (err, res) => {
+        this.setState({
+          acceptText: 'Accept',
+        });
+        if (err) {
+          console.warn(err);
+          return;
         }
+        acceptSurvey(self.props.survey, (err, result) => {
+          if (!self.cancelCallbacks) {
+            self.getSurveyData();
+          }
+        });
+        self.getSurveyData();
       });
-      self.getSurveyData();
     });
   },
 
@@ -118,13 +128,21 @@ const SurveyDetailsPage = React.createClass ({
 
   confirmDeclineCurrentSurvey() {
     const status = InvitationStatus.DECLINED;
-    markInvitationStatus(this.props.survey.id, status, (err, res) => {
-      if (err) {
-        console.warn(err);
-        return;
-      }
-      declineSurvey(this.props.survey);
-      this.props.navigator.pop();
+    this.setState({
+      status: status,
+      declineText: 'Saving ...',
+    }, () => {
+      markInvitationStatus(this.props.survey.id, status, (err) => {
+        this.setState({
+          declineText: 'Decline',
+        });
+        if (err) {
+          console.warn(err);
+          return;
+        }
+        declineSurvey(this.props.survey);
+        this.props.navigator.pop();
+      });
     });
   },
 
@@ -198,10 +216,12 @@ const SurveyDetailsPage = React.createClass ({
     return (
       <View style={[Styles.survey.acceptanceButtons, acceptedButtonContainerStyle]}>
         <Button style={acceptButtonStyle} textStyle={acceptButtonTextStyle} action={this.acceptCurrentSurvey}>
-          <Icon name='check-circle' size={18} color={this.state.status === 'accepted' ?  Color.background2 : Color.positive} /> Accept
+          <Icon name='check-circle' size={18} color={this.state.status === 'accepted' ?  Color.background2 : Color.positive} />
+          <Text> {this.state.acceptText} </Text>
         </Button>
         <Button style={declineButtonStyle} textStyle={declineButtonTextStyle} action={this.declineCurrentSurvey}>
-          <Icon name='times-circle' size={18} color={this.state.status === 'declined' ?  Color.background2 : Color.warning} /> Decline
+          <Icon name='times-circle' size={18} color={this.state.status === 'declined' ?  Color.background2 : Color.warning} />
+          <Text> {this.state.declineText} </Text>
         </Button>
       </View>
     );
@@ -289,7 +309,6 @@ const SurveyDetailsPage = React.createClass ({
             { this.state.status === 'accepted' ? this.renderAcceptButtons() : null }
           </View>
 
-          
         </ScrollView>
 
         {this.state.status === 'accepted' ? null : this.renderAcceptButtons()}
@@ -314,11 +333,8 @@ const SurveyDetailsPage = React.createClass ({
         {tab}
         {this.state.status === 'accepted' ? <SurveyDetailsMenu changeTab={this.changeTab} /> : null}
       </View>
-    )
-  }
+    );
+  },
+});
 
-
-
-})
-
-module.exports = SurveyDetailsPage
+module.exports = SurveyDetailsPage;

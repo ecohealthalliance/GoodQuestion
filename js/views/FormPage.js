@@ -1,56 +1,50 @@
+// React
 import React from 'react';
 import {
   StyleSheet,
   TouchableHighlight,
   TouchableWithoutFeedback,
-  Text,
   View,
-  ScrollView,
-  ListView,
-  AsyncStorage,
   Platform,
   Alert,
-} from 'react-native'
+} from 'react-native';
 
+// Libraries
+import _ from 'lodash';
 import pubsub from 'pubsub-js';
-import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
+import moment from 'moment';
+import dismissKeyboard from 'dismissKeyboard';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-import _ from 'lodash'
-import dismissKeyboard from 'dismissKeyboard'
-
-import Store from '../data/Store'
-import Styles from '../styles/Styles';
+// Question Types
 import ShortAnswer from '../components/QuestionTypes/ShortAnswer';
 import Checkboxes from '../components/QuestionTypes/Checkboxes';
 import MultipleChoice from '../components/QuestionTypes/MultipleChoice';
-import ScaleQuestion from '../components/QuestionTypes/ScaleQuestion'
-import LongAnswerQuestion from '../components/QuestionTypes/LongAnswerQuestion'
-import NumberQuestion from '../components/QuestionTypes/NumberQuestion'
-import DateQuestionIOS from '../components/QuestionTypes/DateQuestionIOS'
-import DateQuestionAndroid from '../components/QuestionTypes/DateQuestionAndroid'
-import DatetimeQuestionAndroid from '../components/QuestionTypes/DatetimeQuestionAndroid'
-import TimeQuestionAndroid from '../components/QuestionTypes/TimeQuestionAndroid'
-import CompleteForm from '../components/QuestionTypes/CompleteForm'
-import Button from 'apsl-react-native-button';
-import Submission from '../models/Submission';
+import ScaleQuestion from '../components/QuestionTypes/ScaleQuestion';
+import LongAnswerQuestion from '../components/QuestionTypes/LongAnswerQuestion';
+import NumberQuestion from '../components/QuestionTypes/NumberQuestion';
+import DateQuestionIOS from '../components/QuestionTypes/DateQuestionIOS';
+import DateQuestionAndroid from '../components/QuestionTypes/DateQuestionAndroid';
+import DatetimeQuestionAndroid from '../components/QuestionTypes/DatetimeQuestionAndroid';
+import CompleteForm from '../components/QuestionTypes/CompleteForm';
+
+// Components
 import Loading from '../components/Loading';
 import Overlay from '../components/Overlay';
 import Color from '../styles/Color';
 import TypeStyles from '../styles/_TypeStyles';
 import Swiper from '../components/Swiper/Swiper';
-import SurveyFormNavigator from '../components/SurveyFormNavigator'
-import Icon from 'react-native-vector-icons/FontAwesome'
-import moment from 'moment'
+import SurveyFormNavigator from '../components/SurveyFormNavigator';
 
-import { loadTriggers, loadCachedTriggers } from '../api/Triggers'
-import { validateUser } from '../api/Account'
-import { loadCachedForms, loadActiveGeofenceFormsInRange } from '../api/Forms'
-import { loadCachedSubmissions, saveSubmission} from '../api/Submissions'
-import { loadCachedQuestions } from '../api/Questions'
+// API
+import { ToastAddresses, ToastMessage } from '../models/ToastMessage';
+import { loadTriggers, loadCachedTriggers } from '../api/Triggers';
+import { validateUser } from '../api/Account';
+import { loadCachedForms, loadActiveGeofenceFormsInRange } from '../api/Forms';
+import { loadCachedSubmissions, saveSubmission} from '../api/Submissions';
+import { loadCachedQuestions } from '../api/Questions';
 
-import realm from '../data/Realm'
-
-const FormPage = React.createClass ({
+const FormPage = React.createClass({
   form: null,
   nextForm: null,
   _questionIndex: 0,
@@ -81,39 +75,45 @@ const FormPage = React.createClass ({
   },
 
   validatePage() {
-    let question = this.state.questions[this._questionIndex],
-        answer = this.state.answers[question.id],
-        properties = JSON.parse(question.properties)
+    const question = this.state.questions[this._questionIndex];
+    const answer = this.state.answers[question.id];
+    const properties = JSON.parse(question.properties);
 
-
-    if(question.type == "number" || question.type == "scale") {
-      if(properties.min && answer < properties.min) {
-        return false
+    let valid = false;
+    if (question.type === 'number' || question.type === 'scale') {
+      if (properties.min && answer < properties.min) {
+        valid = false;
       }
-      if(properties.max && answer > properties.max) {
-        return false
+      if (properties.max && answer > properties.max) {
+        valid = false;
       }
-      return true
+      valid = true;
     }
-    if(question.required) {
-      if(question.type == "longAnswer" || question.type == "shortAnswer") {
-        if(!answer) {
-          Alert.alert("A response is required")
+
+    if (question.required) {
+      if (question.type === 'longAnswer' || question.type === 'shortAnswer') {
+        if (!answer) {
+          Alert.alert('A response is required');
         }
-        return Boolean(answer)
+        valid = Boolean(answer);
       } else {
-        return true
+        valid = true;
       }
     } else {
-      return true
+      valid = true;
     }
+    return valid;
   },
 
   beforePageChange(currentPage, nextPage) {
     // Don't validate when going backwards
-    if(nextPage < this._questionIndex) return true
+    if (nextPage < this._questionIndex) {
+      return true;
+    }
     // Don't validate final page
-    if(this._questionIndex >= this.state.questions.length) return true
+    if (this._questionIndex >= this.state.questions.length) {
+      return true;
+    }
     const shouldContinue = this.validatePage();
     if (!shouldContinue) {
       return false;
@@ -122,56 +122,65 @@ const FormPage = React.createClass ({
   },
 
   componentWillMount() {
-    let self = this,
-        index = this.state.index,
-        type = this.props.type,
-        answers = {},
-        forms = this.state.forms,
-        allForms = []
+    const self = this;
+    const index = this.state.index;
+    const type = this.props.type;
+    let answers = {};
+    let forms = this.state.forms;
+    let allForms = [];
     
     if (!forms || forms.length === 0) {
       if (type === 'geofence') {
         forms = loadActiveGeofenceFormsInRange(this.props.survey.id);
       } else if (type === 'datetime') {
-        forms = this.formsWithTriggers()
-        allForms = forms
-        forms = this.filterForms(forms)
-        forms = this.sortForms(forms)
+        forms = this.formsWithTriggers();
+        allForms = forms;
+        forms = this.filterForms(forms);
+        forms = this.sortForms(forms);
       }
     }
 
     if (!forms || forms.length === 0) {
-      futureForms = _.filter(allForms, function(form){
-        return form.trigger > new Date()
-      })
-      this.setState({isLoading: false, futureForms: futureForms, futureFormCount: futureForms.length})
-      return
+      futureForms = _.filter(allForms, (form) => {
+        return form.trigger > new Date();
+      });
+      this.setState({isLoading: false, futureForms: futureForms, futureFormCount: futureForms.length});
+      return;
     }
     
-    this.form = forms[index]
-    this.nextForm = forms[index + 1]
-    let submissions = loadCachedSubmissions(this.form.id),
-        questions = loadCachedQuestions(this.form.id)
+    this.form = forms[index];
+    this.nextForm = forms[index + 1];
+    const submissions = loadCachedSubmissions(this.form.id);
+    const questions = loadCachedQuestions(this.form.id);
     if (submissions.length > 0) {
-      answers = JSON.parse(submissions.slice(-1)[0].answers)
+      answers = JSON.parse(submissions.slice(-1)[0].answers);
     } else {
       // Set default values
-      questions.forEach((question, idx)=>{
-        let properties = JSON.parse(question.properties)
-        answers[question.id] = (()=>{
+      questions.forEach((question) => {
+        const properties = JSON.parse(question.properties);
+        answers[question.id] = (() => {
           switch (question.type) {
-            case 'shortAnswer': return ""
-            case 'checkboxes': return []
-            case 'multipleChoice': return properties.choices[0]
-            case 'longAnswer': return ""
-            case 'number': return properties.min || 0
-            case 'scale': return properties.min || 0
-            case 'date': return new Date()
-            case 'datetime': return new Date()
-            default: return null
+            case 'shortAnswer':
+              return '';
+            case 'checkboxes':
+              return [];
+            case 'multipleChoice':
+              return properties.choices[0];
+            case 'longAnswer':
+              return '';
+            case 'number':
+              return properties.min || 0;
+            case 'scale':
+              return properties.min || 0;
+            case 'date':
+              return new Date();
+            case 'datetime':
+              return new Date();
+            default:
+              return null;
           }
-        })()
-      })
+        })();
+      });
     }
 
     this.setState({
@@ -180,49 +189,51 @@ const FormPage = React.createClass ({
       forms: forms,
       formId: this.form.id,
       isLoading: false,
-      answers: answers,
-      formsInQueue: true
-    })
+      formsInQueue: true,
+    });
   },
 
   componentWillUnmount() {
-    this.cancelCallbacks = true
+    this.cancelCallbacks = true;
   },
 
   componentDidMount() {
-    validateUser()
+    validateUser();
   },
 
   /* Methods */
   filterForms(forms) {
-    let past = new Date()
-    past = past.setDate(past.getDate() - 90) // Temporary 90-day expiration date for forms.
-    return _.filter(forms, function(form){
-      let triggerTime = form.trigger
-      return triggerTime > past && triggerTime < new Date()
-    })
+    let past = new Date();
+    // Temporary 90-day expiration date for forms.
+    past = past.setDate(past.getDate() - 90);
+    return _.filter(forms, (form) => {
+      const triggerTime = form.trigger;
+      return triggerTime > past && triggerTime < new Date();
+    });
   },
 
-  sortForms(forms){
-    return _.sortBy(forms, 'trigger')
+  sortForms(forms) {
+    return _.sortBy(forms, 'trigger');
   },
 
   formsWithTriggers() {
     return _.map(this.state.forms, function(form){
       loadCachedTriggers(form.id)
-        .forEach(function(trigger){ form.trigger = trigger.datetime })
-      return form
-    })
+        .forEach((trigger) => {
+          form.trigger = trigger.datetime;
+        });
+      return form;
+    });
   },
 
-  showFutureFormCount(){
+  showFutureFormCount() {
     if (this.state.futureFormCount > 0) {
       const futureForm = this.state.futureForms[0];
       const title = futureForm.title.trim();
       // TODO support triggers other than time
       const timeTrigger = moment(futureForm.trigger).fromNow();
       let message = `Stay tuned, there is ${this.state.futureFormCount} form remaining...`;
-      let due = `The next form '${title}' is due ${timeTrigger}.`
+      let due = `The next form '${title}' is due ${timeTrigger}.`;
       if (this.state.futureFormCount > 1) {
         message = `Stay tuned, there are ${this.state.futureFormCount} forms remaining...`;
       }
@@ -237,20 +248,18 @@ const FormPage = React.createClass ({
             </Text>
           </View>
         </View>
-      )
+      );
     }
   },
 
   submit() {
     if (this.state.isSubmitting) return;
 
-    let answers = this.state.answers,
-        formId = this.form.id,
-        index = this.state.index,
-        survey = this.props.survey
-    this.setState({ isSubmitting: true });
-
-    saveSubmission(formId, answers, (err, res) => {
+    const answers = this.state.answers;
+    const formId = this.form.id;
+    const index = this.state.index;
+    const survey = this.props.survey;
+    saveSubmission(formId, answers, (err) => {
       if (err) {
         if (err === 'Invalid User') {
           this.props.logout();
@@ -263,7 +272,6 @@ const FormPage = React.createClass ({
       }
 
       this.setState({ isSubmitting: false });
-
       // Publish a ToastMessage to our Toaster via pubsub
       const toastMessage = ToastMessage.createFromObject({
         title: 'Success',
@@ -274,32 +282,35 @@ const FormPage = React.createClass ({
       });
       pubsub.publish(ToastAddresses.SHOW, toastMessage);
 
-      //If there is another form continue onto that
-      if(this.nextForm){
-        this.props.navigator.replace({ path: 'form',
-                                    title: 'Survey: ' + survey.title,
-                                    index: index + 1,
-                                    survey: survey,
-                                  });
-      }
-      else{
+      // If there is another form continue onto that
+      if (this.nextForm) {
+        this.props.navigator.replace({
+          path: 'form',
+          title: `Survey: ${survey.title}`,
+          index: index + 1,
+          survey: survey,
+        });
+      } else {
         this.props.navigator.resetTo({name: 'surveyList', title: 'Surveys'});
       }
     });
   },
 
   setAnswer(questionId, value) {
-    this.state.answers[questionId] = value;
+    const answers = this.state.answers;
+    answers[questionId] = value;
+    this.setState({answers: answers});
+    // this.state.answers[questionId] = value;
   },
 
   changePage(newIndex) {
-    this._swiper.goToPage(newIndex)
+    this._swiper.goToPage(newIndex);
   },
 
   onPageChange(page) {
-    this._questionIndex = page
+    this._questionIndex = page;
     if (this._nav) {
-      this._nav.update(this._questionIndex, this.state.questions.length)
+      this._nav.update(this._questionIndex, this.state.questions.length);
     }
   },
 
@@ -310,52 +321,76 @@ const FormPage = React.createClass ({
   /* Render */
 
   renderQuestions() {
-    var renderedQuestions = this.state.questions.map((question, idx)=>{
-      let questionComponent
+    const renderedQuestions = this.state.questions.map((question, idx) => {
+      let questionComponent = null;
+
       let questionProps = {
         key: question.id,
         id: question.id,
         value: this.state.answers[question.id],
         index: idx + 1,
-        onChange: (value)=> {
-          this.setAnswer(question.id, value)
+        onChange: (value) => {
+          this.setAnswer(question.id, value);
         },
+      };
+
+      questionProps = _.merge(questionProps, question);
+
+      if (questionProps.properties) {
+        questionProps.properties = JSON.parse(questionProps.properties);
       }
 
-      questionProps = _.merge(questionProps, question)
-      if (questionProps.properties) questionProps.properties = JSON.parse(questionProps.properties)
       switch (question.type) {
-        case 'shortAnswer': questionComponent = <ShortAnswer {...questionProps} />; break;
-        case 'checkboxes': questionComponent = <Checkboxes {...questionProps} />; break;
-        case 'multipleChoice': questionComponent = <MultipleChoice {...questionProps} />; break;
-        case 'longAnswer': questionComponent = <LongAnswerQuestion {...questionProps} />; break;
-        case 'number': questionComponent = <NumberQuestion {...questionProps} />; break;
-        case 'scale': questionComponent = <ScaleQuestion {...questionProps} />; break;
+        case 'shortAnswer':
+          questionComponent = <ShortAnswer {...questionProps} />;
+          break;
+        case 'checkboxes':
+          questionComponent = <Checkboxes {...questionProps} />;
+          break;
+        case 'multipleChoice':
+          questionComponent = <MultipleChoice {...questionProps} />;
+          break;
+        case 'longAnswer':
+          questionComponent = <LongAnswerQuestion {...questionProps} />;
+          break;
+        case 'number':
+          questionComponent = <NumberQuestion {...questionProps} />;
+          break;
+        case 'scale':
+          questionComponent = <ScaleQuestion {...questionProps} />;
+          break;
         case 'date':
-          questionComponent = Platform.OS === 'ios' ?
-            <DateQuestionIOS {...questionProps} />  :
-            <DateQuestionAndroid {...questionProps} />; break;
+          questionComponent = Platform.OS === 'ios'
+            ? <DateQuestionIOS {...questionProps} />
+            : <DateQuestionAndroid {...questionProps} />;
+          break;
         case 'datetime':
-          questionComponent = Platform.OS === 'ios' ?
-            <DateQuestionIOS {...questionProps} mode="datetime" /> :
-            <DatetimeQuestionAndroid {...questionProps} />; break;
-        default: questionComponent = <Text key={'unknown-question-'+idx}>Unknown Type: {question.type}</Text>; break;
+          questionComponent = Platform.OS === 'ios'
+            ? <DateQuestionIOS {...questionProps} mode='datetime' />
+            : <DatetimeQuestionAndroid {...questionProps} />;
+          break;
+        default:
+          questionComponent = <Text key={`unknown-question-${idx}`}>Unknown Type: {question.type}</Text>;
+          break;
       }
       return (
-        <ScrollView 
-        style={{ flex: 1 }}>
-          {questionComponent}
-        </ScrollView>
-      )
-    })
-    
-    completeFormView = <View><CompleteForm submit={this.submit} nextForm={this.nextForm}/></View>
-    renderedQuestions.push(completeFormView)
-    return renderedQuestions
+        <TouchableWithoutFeedback
+          onPress={this.dismiss}>
+          <View style={{flex: 1}}>
+            {questionComponent}
+          </View>
+        </TouchableWithoutFeedback>
+      );
+    });
+
+    const completeFormView = <View><CompleteForm submit={this.submit} nextForm={this.nextForm}/></View>;
+    renderedQuestions.push(completeFormView);
+    return renderedQuestions;
   },
+
   render() {
     if (this.state.isLoading) {
-      return (<Loading/>)
+      return (<Loading/>);
     } else if (!this.state.formsInQueue){
       return (
         <View style={TypeStyles.statusMessageContainer}>
@@ -363,7 +398,7 @@ const FormPage = React.createClass ({
           <Text style={TypeStyles.statusMessage}>No active forms</Text>
           {this.showFutureFormCount()}
         </View>
-      )
+      );
     } else {
       return (
         <View style={{flex: 1}}>
@@ -373,7 +408,9 @@ const FormPage = React.createClass ({
             overflow: 'hidden'
           }}>
             <Swiper
-              ref={(swiper) => {this._swiper = swiper}}
+              ref={(swiper) => {
+                this._swiper = swiper;
+              }}
               style={{flex: 1}}
               containerStyle={{overflow: 'visible'}}
               pager={false}
@@ -386,7 +423,9 @@ const FormPage = React.createClass ({
           </View>
 
           <SurveyFormNavigator
-            ref={(nav) => {this._nav = nav}}
+            ref={(nav) => {
+              this._nav = nav;
+            }}
             index={this._questionIndex}
             total={this.state.questions.length}
             onPressed={this.changePage}
@@ -398,9 +437,9 @@ const FormPage = React.createClass ({
              </Overlay>
            : null}
         </View>
-      )
+      );
     }
-  }
-})
+  },
+});
 
-module.exports = FormPage
+module.exports = FormPage;

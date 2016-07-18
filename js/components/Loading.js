@@ -6,18 +6,17 @@ import {
   Easing,
   ActivityIndicator,
   Platform,
-} from 'react-native'
+} from 'react-native';
 
-import Styles from '../styles/Styles'
-import Color from '../styles/Color'
-import Icon from 'react-native-vector-icons/FontAwesome'
+import Color from '../styles/Color';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 /**
  * provides for an animted loading component
  *
  * @note based off the following gist https://gist.github.com/cssoul/eda63b173311a323653b
  */
-const Loading = React.createClass ({
+const Loading = React.createClass({
 
   getInitialState() {
     return {
@@ -31,7 +30,7 @@ const Loading = React.createClass ({
       toValue: 360,
       delay: 0,
       duration: 1500,
-      easing: Easing.linear
+      easing: Easing.linear,
     }).start(this._animate);
   },
 
@@ -99,6 +98,6 @@ const Loading = React.createClass ({
       )
     }
   }
-})
+});
 
-module.exports = Loading
+module.exports = Loading;

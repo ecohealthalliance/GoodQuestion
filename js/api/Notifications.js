@@ -3,29 +3,24 @@ import {
   Vibration,
   AppState,
 } from 'react-native';
-
 import _ from 'lodash';
-import Parse from 'parse/react-native';
-import Store from '../data/Store';
 import realm from '../data/Realm';
 import pubsub from 'pubsub-js';
 
+import Store from '../data/Store';
 import Color from '../styles/Color';
 import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
-import { loadForms } from './Forms';
-
 import PushNotification from 'react-native-push-notification';
-
 
 // Finds and returns a list of pending Notifications from Realm
 export function loadNotifications() {
-  return realm.objects('Notification')
-    .filtered(`completed == false`)
-    .sorted('datetime', true)
+  return realm.objects('Notification').filtered(
+    'complete == false').sorted(
+      'datetime', true);
 }
 
 // Creates a new notification for an active Time Trigger
-export function addTimeTriggerNotification( surveyId, formId, title, description, time ) {
+export function addTimeTriggerNotification(surveyId, formId, title, description, time) {
   try {
     realm.write(() => {
       realm.create('Notification', {
@@ -34,10 +29,10 @@ export function addTimeTriggerNotification( surveyId, formId, title, description
         title: title,
         description: description,
         datetime: time,
-      }, true)
-    })
-  } catch(e) {
-    console.error(e)
+      }, true);
+    });
+  } catch (e) {
+    console.error(e);
   }
 }
 

@@ -6,9 +6,14 @@ Test.schema = {
   name: 'Test',
   primaryKey: 'id',
   properties: {
-  	id: 'string',
-
-    original: {type: 'bool', default: true},
-    newString: {type: 'string', default: 'test 1'},
-  }
-}
+    id: 'string',
+    original: {
+      type: 'bool',
+      default: true,
+    },
+    newString: {
+      type: 'string',
+      default: 'test 1',
+    },
+  },
+};
