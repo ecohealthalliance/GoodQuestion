@@ -7,7 +7,6 @@ import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
-import com.transistorsoft.rnbackgroundgeolocation.RNBackgroundGeolocation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +54,6 @@ public class MainActivity extends ReactActivity {
     protected List<ReactPackage> getPackages() {
         mReactNativePushNotificationPackage = new ReactNativePushNotificationPackage(this);
         return Arrays.<ReactPackage>asList(
-                new RNBackgroundGeolocation(this),      // <-- for background-geolocation
                 new MainReactPackage(),
                 new RealmReactPackage(), mReactNativePushNotificationPackage
         );
