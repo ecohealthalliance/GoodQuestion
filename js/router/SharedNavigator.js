@@ -41,10 +41,6 @@ import { upsertInstallation } from '../api/Installations';
 import { checkTimeTriggers } from '../api/Triggers';
 import { loadCachedFormDataById } from '../api/Forms';
 
-// Background
-import { initializeGeolocationService } from '../api/BackgroundProcess';
-
-initializeGeolocationService();
 connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 
 let navigator = null;
