@@ -48,33 +48,28 @@ export function loadCachedTimeTriggers(options = {}, callback) {
       callback(err, []);
       return
     }
-    
-    try {
-      let triggers = [];
-      const responseLength = response.length;
 
-      let filter = '';
-      let filterOptions = '';
-      if (options.excludeCompleted) filterOptions += ' AND completed == false';
-      if (options.excludeCompleted) filterOptions += ' AND completed == false';
-      if (options.excludeExpired) filterOptions += ' AND expired == false';
-      if (options.includeOnlyTriggered) filterOptions += ' AND triggered == true';
-      
-      if (options.surveyId) {
-        filter = `surveyId = "${options.surveyId.id}"${filterOptions}`;
-        triggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
-      } else {
-        for (var i = 0; i < responseLength; i++) {
-          filter = `surveyId = "${response[i].id}"${filterOptions}`;
-          let surveyTriggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
-          triggers = _.unionBy(triggers, surveyTriggers, 'id');
-        }
-      }
-      callback(null, triggers);
-    } catch (err) {
-      callback(err, []);
-    }
+    let triggers = [];
+    const responseLength = response.length;
+
+    let filter = '';
+    let filterOptions = '';
+    if (options.excludeCompleted) filterOptions += ' AND completed == false';
+    if (options.excludeCompleted) filterOptions += ' AND completed == false';
+    if (options.excludeExpired) filterOptions += ' AND expired == false';
+    if (options.includeOnlyTriggered) filterOptions += ' AND triggered == true';
     
+    if (options.surveyId) {
+      filter = `surveyId = "${options.surveyId.id}"${filterOptions}`;
+      triggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
+    } else {
+      for (var i = 0; i < responseLength; i++) {
+        filter = `surveyId = "${response[i].id}"${filterOptions}`;
+        let surveyTriggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
+        triggers = _.unionBy(triggers, surveyTriggers, 'id');
+      }
+    }
+    callback(null, triggers);
   })
 }
 
