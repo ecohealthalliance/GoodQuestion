@@ -41,7 +41,7 @@ import SurveyFormNavigator from '../components/SurveyFormNavigator'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import moment from 'moment'
 
-import { loadTriggers, loadCachedTrigger } from '../api/Triggers'
+import { loadTriggers, loadCachedTriggers } from '../api/Triggers'
 import { validateUser } from '../api/Account'
 import { loadCachedForms, loadActiveGeofenceFormsInRange } from '../api/Forms'
 import { loadCachedSubmissions, saveSubmission} from '../api/Submissions'
@@ -223,7 +223,7 @@ const FormPage = React.createClass ({
 
   formsWithTriggers() {
     return _.map(this.state.forms, function(form){
-      loadCachedTrigger(form.id)
+      loadCachedTriggers(form.id)
         .forEach(function(trigger){ form.trigger = trigger.datetime })
       return form
     })

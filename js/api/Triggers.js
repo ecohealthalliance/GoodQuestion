@@ -32,13 +32,49 @@ export function loadTriggers(form, survey, callback) {
   })
 }
 
-// Fetches the cached forms related to a specific survey
-export function loadCachedTrigger(formId) {
-  return realm.objects('TimeTrigger').filtered(`formId= "${formId}"`)
+// Fetches the cached triggers related to a specific survey.
+export function loadCachedTriggers(formId) {
+  return realm.objects('TimeTrigger').filtered(`formId= "${formId}"`);
 }
 
 /**
- * Fetches all cached geofence triggers
+ * Fetches all cached datetime triggers for the accepted surveys
+ * @return {object}  Realm object containing an array of 'TimeTrigger' objects,
+ */
+export function loadCachedTimeTriggers(options = {}, callback) {
+  loadAllAcceptedSurveys((err, response) => {
+    if (err) {
+      console.warn(err);
+      callback(err, []);
+      return
+    }
+
+    let triggers = [];
+    const responseLength = response.length;
+
+    let filter = '';
+    let filterOptions = '';
+    if (options.excludeCompleted) filterOptions += ' AND completed == false';
+    if (options.excludeCompleted) filterOptions += ' AND completed == false';
+    if (options.excludeExpired) filterOptions += ' AND expired == false';
+    if (options.includeOnlyTriggered) filterOptions += ' AND triggered == true';
+    
+    if (options.surveyId) {
+      filter = `surveyId = "${options.surveyId.id}"${filterOptions}`;
+      triggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
+    } else {
+      for (var i = 0; i < responseLength; i++) {
+        filter = `surveyId = "${response[i].id}"${filterOptions}`;
+        let surveyTriggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
+        triggers = _.unionBy(triggers, surveyTriggers, 'id');
+      }
+    }
+    callback(null, triggers);
+  })
+}
+
+/**
+ * Fetches all cached geofence triggers for the accepted surveys
  * @return {object}  Realm object containing an array of 'GeofenceTrigger' objects,
  */
 export function loadAllCachedGeofenceTriggers(options = {}, callback) {
@@ -53,9 +89,7 @@ export function loadAllCachedGeofenceTriggers(options = {}, callback) {
     const responseLength = response.length;
     for (var i = 0; i < responseLength; i++) {
       let filter = `surveyId = "${response[i].id}"`;
-
       if (options.excludeCompleted) filter += ' AND completed == false';
-
       let surveyTriggers = Array.from(realm.objects('GeofenceTrigger').filtered(filter));
       triggers = _.unionBy(triggers, surveyTriggers, 'id');
     }

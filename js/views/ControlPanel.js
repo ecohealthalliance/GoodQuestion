@@ -59,6 +59,10 @@ export default React.createClass({
             text="Map"
           />
           <ControlPanelItem
+            onPress={()=> this.navigateToView('calendar', 'Calendar')}
+            text="Calendar"
+          />
+          <ControlPanelItem
             onPress={()=> this.navigateToView('profile', 'Profile')}
             text="Profile"
           />

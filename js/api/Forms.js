@@ -5,7 +5,7 @@ import Store from '../data/Store'
 import realm from '../data/Realm'
 
 import { loadQuestions } from './Questions'
-import { loadTriggers, loadCachedTrigger } from './Triggers'
+import { loadTriggers, loadCachedTriggers } from './Triggers'
 import Submission from '../models/Submission';
 
 
