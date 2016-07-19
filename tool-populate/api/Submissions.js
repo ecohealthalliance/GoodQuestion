@@ -26,8 +26,15 @@ function createAnswer(question) {
   var answer = null
   switch(question.type) {
     case 'multipleChoice':
-    case 'checkboxes':
       answer = choices[randomNum(0, choices.length - 1)]
+      break
+    case 'checkboxes':
+      var numberChosen = randomNum(0, choices.length),
+          _choices = _.shuffle(choices)
+      answer = []
+      for(var i = 0; i < numberChosen; i++){
+        answer.push(_choices[i])
+      }
       break
     case 'longAnswer':
       answer = chance.paragraph({sentences: randomNum(5, 10)})
@@ -36,6 +43,11 @@ function createAnswer(question) {
       answer = chance.sentence({words: randomNum(1, 15)})
       break
     case 'date':
+      // Randomly add repetitive dates
+      random = randomNum(0,2)
+      if (random === 1) answer = new Date('02-14-2016')
+      else answer = chance.date()
+      break
     case 'datetime':
       answer = chance.date()
       break

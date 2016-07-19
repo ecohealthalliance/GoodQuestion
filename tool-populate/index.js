@@ -22,6 +22,7 @@ program
   .option('-r, --reset', 'Erase local Parse data.')
   .option('-p, --publicRead', 'Sets all surveys, forms, questions as public readable')
   .option('-s, --submissions', 'Creates dummy submissions for each dummy user')
+  .option('-c, --clearSubmissions', 'Clears submissions')
   .parse(process.argv)
 
 Parse.initialize(Settings.parse.appId, null, Settings.parse.masterKey)
@@ -39,6 +40,8 @@ if (program.reset) {
   publicRead()
 } else if (program.submissions) {
   createSubmissions()
+} else if (program.clearSubmissions) {
+  clearSubmissions()
 } else {
   program.outputHelp()
 }
@@ -187,4 +190,9 @@ function publicRead() {
 function createSubmissions(){
   console.log('Creating submissions...'.bold)
   Submissions.createSubmissions()
+}
+
+function clearSubmissions(){
+  console.log('\nClearing submissions...'.bold)
+  Submissions.destroyAll()
 }

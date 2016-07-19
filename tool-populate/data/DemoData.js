@@ -37,15 +37,25 @@ const DemoData = {
   questions: [
     {
       type: 'multipleChoice',
-      text: 'What is your favorite color? (multi)',
+      text: 'Which describes the thickness of the underbrush? (multi)',
       properties: {
-        choices: ['red', 'blue', 'green']
+        choices: ['unwalkably thick', 'thick', 'sparse', 'non-existent', 'recently burned']
       }
     }, {
       type: 'checkboxes',
-      text: 'What is your favorite color? (cb)',
+      text: 'Choose the tick species found in the drag. (cb)',
       properties: {
-        choices: ['red', 'blue', 'green']
+        choices: [
+          'Ixodes scapularis',
+          'Dermacentor variabilis',
+          'Amblyomma americanum',
+          'Rhipicephalus sanguineus',
+          'Dermacentor andersoni',
+          'Amblyomma maculatum',
+          'Dermacentor occidentalis',
+          'Ixodes pacificus',
+          'Amblyomma cajennense'
+        ]
       }
     }, {
       type: 'longAnswer',
