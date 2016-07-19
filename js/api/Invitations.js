@@ -391,35 +391,33 @@ export function loadInvitations(done) {
   const query = new Parse.Query(Invitation);
   query.find(
     (invitations) => {
-      if (invitations && invitations.length >= 0) {
+      if (invitations && invitations.length > 0) {
         clearInvitationCache();
         const numInvitations = invitations.length;
         let savedInvitations = 0;
         let failedInvitations = 0;
-        if (numInvitations > 0) {
-          invitations.forEach((invitation) => {
-            try {
-              realm.write(() => {
-                realm.create('Invitation', {
-                  uniqueId: invitation.get('uniqueId'),
-                  userId: invitation.get('userId'),
-                  surveyId: invitation.get('surveyId'),
-                  status: invitation.get('status'),
-                  dirty: false,
-                });
+        invitations.forEach((invitation) => {
+          try {
+            realm.write(() => {
+              realm.create('Invitation', {
+                uniqueId: invitation.get('uniqueId'),
+                userId: invitation.get('userId'),
+                surveyId: invitation.get('surveyId'),
+                status: invitation.get('status'),
+                dirty: false,
               });
-              savedInvitations++;
-            } catch (e) {
-              // we do not 'upsert' on an existing invitations else we will
-              // have data loss when offline
-              console.warn(e);
-              failedInvitations++;
-            }
-            if (savedInvitations + failedInvitations === numInvitations) {
-              done(null, invitations);
-            }
-          });
-        }
+            });
+            savedInvitations++;
+          } catch (e) {
+            // we do not 'upsert' on an existing invitations else we will
+            // have data loss when offline
+            console.warn(e);
+            failedInvitations++;
+          }
+          if (savedInvitations + failedInvitations === numInvitations) {
+            done(null, invitations);
+          }
+        });
         return;
       }
       done(null, []);
