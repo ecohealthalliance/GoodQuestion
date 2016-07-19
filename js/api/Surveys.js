@@ -113,8 +113,7 @@ export function loadSurveys(callback) {
   query.equalTo('active', true);
   query.find(
     (results) => {
-      console.log('loadSurveys.results: ', results);
-      if (results && results.length >= 0) {
+      if (results && results.length > 0) {
         clearSurveyCache(results);
         const cachedSurveys = realm.objects('Survey');
         for (let i = 0; i < results.length; i++) {
