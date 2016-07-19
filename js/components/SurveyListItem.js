@@ -31,7 +31,9 @@ const SurveyListItem = React.createClass({
   },
 
   componentWillReceiveProps(nextProps) {
-    if (!nextProps.status) return;
+    if (!nextProps.status) {
+      return;
+    }
 
     if (this.state.status !== nextProps.status) {
       this.update(nextProps.status);
@@ -68,8 +70,8 @@ const SurveyListItem = React.createClass({
 
   /* Render */
   renderIcon() {
-    let icon
-    switch(this.state.status) {
+    let icon = null;
+    switch (this.state.status) {
       case 'accepted':
         icon = <Icon name='check-circle' size={24} color={Color.fadedGreen} />;
         break;
@@ -101,15 +103,14 @@ const SurveyListItem = React.createClass({
           {availableTimeTriggers} scheduled {availableTimeTriggers > 1 ? 'forms' : 'form'} available.
         </ViewText>
       );
-    } else if (nextTimeTrigger && nextTimeTrigger > Date.now() ) {
+    } else if (nextTimeTrigger && nextTimeTrigger > Date.now()) {
       return (
         <ViewText textStyle={Styles.survey.itemDescription}>
           Next form: {moment(nextTimeTrigger).fromNow()}
         </ViewText>
       );
-    } else {
-      return null;
     }
+    return null;
   },
 
   render() {

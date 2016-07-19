@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -52,7 +51,6 @@ const ShortAnswer = React.createClass({
           <TextInput
             style={{height: 40, borderColor: Color.background1, borderWidth: 1, paddingLeft: 10}}
             onChangeText={this.handleChange}
-            placeholder="Tap to type..."
             blurOnSubmit={true}
             placeholder='Tap to type...'
             value={this.state.value}

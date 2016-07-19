@@ -5,19 +5,19 @@ import { setupGeofences } from './Geofencing';
 
 const BackgroundGeolocation = Platform.OS === 'ios' ? require('react-native-background-geolocation') : require('react-native-background-geolocation-android');
 
-let startTimer = Date.now();
+const startTimer = Date.now();
 
 
 /**
  * Configures the geolocation library with initial configuration or energy-saving properties for background work.
  * @param     {Object}   options              Option arguments
- * @property  {bool}     options.isInitial    If true, will set the configuration for the initial load of the background process. (May also re-trigger geofences if standing over one) 
+ * @property  {bool}     options.isInitial    If true, will set the configuration for the initial load of the background process. (May also re-trigger geofences if standing over one)
  * @property  {bool}     options.energySaving If true, will enable an energy-saving mode, at the cost of accuracy.
  * @param     {Function} callback             Called after the geolocation library updated its settings.
  */
 export function configureGeolocationService(options = {}, callback) {
   try {
-    let config;
+    let config = {};
 
     if (options.energySaving) {
       // Energy-Saving Mode
@@ -50,7 +50,7 @@ export function configureGeolocationService(options = {}, callback) {
         startOnBoot: true,
 
         // iOS config
-        stationaryRadius: 200, // restart tracking after the user has moved 200m
+        stationaryRadius: 200,
         useSignificantChangesOnly: true,
         disableMotionActivityUpdates: true,
       };
@@ -85,16 +85,18 @@ export function configureGeolocationService(options = {}, callback) {
         startOnBoot: true,
 
         // iOS config
-        stationaryRadius: 100, // restart tracking after the user has moved 100m
+        stationaryRadius: 100,
         useSignificantChangesOnly: false,
         disableMotionActivityUpdates: false,
-      }
+      };
     }
     if (options.isInitial) {
       BackgroundGeolocation.configure(config, callback);
     } else {
       BackgroundGeolocation.setConfig(config);
-      if (callback) callback();
+      if (callback) {
+        callback();
+      }
     }
   } catch (e) {
     console.error(e);
@@ -106,24 +108,24 @@ export function configureGeolocationService(options = {}, callback) {
  */
 export function initializeGeolocationService() {
   // Temporarily disable this service for RN 0.29 migration
-  return;
+  // return;
 
   BackgroundGeolocation.stop();
-  configureGeolocationService({isInitial: true}, (state) => {
+  configureGeolocationService({isInitial: true}, () => {
 
-    BackgroundGeolocation.on('error', function(error) {
-      printTimelog('error');
-      console.log(error.type + " Error: " + error.code);
+    BackgroundGeolocation.on('error', (error) => {
+      printTimelog('error'); // eslint-disable-line no-use-before-define
+      console.log(`${error.type} Error: ${error.code}`);
     });
 
     // Create initial geofence hooks.
-    setupGeofences(()=>{
-      BackgroundGeolocation.start((state) => {
+    setupGeofences(() => {
+      BackgroundGeolocation.start(() => {
         Store.backgroundServiceState = 'started';
         console.info('Geolocation tracking started.');
       });
     });
-  })
+  });
 }
 
 /**
@@ -133,12 +135,12 @@ export function initializeGeolocationService() {
  */
 export function handleAppStateChange(state) {
   if (state === 'active') {
-    configureGeolocationService({energySaving: false}, ()=>{
+    configureGeolocationService({energySaving: false}, () => {
       // Switch to active tracking on Android devices
-      if (Platform.OS === 'android' && Store.backgroundServiceState != 'started') {
+      if (Platform.OS === 'android' && Store.backgroundServiceState !== 'started') {
         BackgroundGeolocation.stop(() => {
-          BackgroundGeolocation.start((state) => {
-            console.log(state);
+          BackgroundGeolocation.start((newState) => {
+            console.log(newState);
             Store.backgroundServiceState = 'started';
             console.info('Geolocation tracking started.');
           });
@@ -146,12 +148,12 @@ export function handleAppStateChange(state) {
       }
     });
   } else if (state === 'background') {
-    configureGeolocationService({energySaving: true}, ()=>{
+    configureGeolocationService({energySaving: true}, () => {
       // Switch to geofence tracking only on Android devices.
-      if (Platform.OS === 'android' && Store.backgroundServiceState != 'geofence-only') {
+      if (Platform.OS === 'android' && Store.backgroundServiceState !== 'geofence-only') {
         BackgroundGeolocation.stop(() => {
-          BackgroundGeolocation.startGeofences((state) => {
-            console.log(state);
+          BackgroundGeolocation.startGeofences((newState) => {
+            console.log(newState);
             Store.backgroundServiceState = 'geofence-only';
             console.info('Geolocation tracking started in geofence-only mode.');
           });
@@ -162,9 +164,9 @@ export function handleAppStateChange(state) {
 }
 
 function printTimelog(msg) {
-  let timing = ((Date.now() - startTimer) / 1000);
+  let timing = (Date.now() - startTimer) / 1000;
   timing = Math.ceil(timing);
-  console.log(msg + ': ' + timing + 's');
+  console.log(`${msg}: ${timing}s`);
 }
 
 export { BackgroundGeolocation };

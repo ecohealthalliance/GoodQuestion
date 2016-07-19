@@ -7,14 +7,14 @@ export function cacheParseQuestions(questions, formId) {
   try {
     const questionsLength = questions.length;
     realm.write(() => {
-      for (var i = 0; i < questionsLength; i++) {
+      for (let i = 0; i < questionsLength; i++) {
         realm.create('Question', {
           id: questions[i].id,
           formId: formId,
           order: questions[i].get('order'),
           text: questions[i].get('text'),
           type: questions[i].get('type'),
-          required: questions[i].get('required') ? true : false,
+          required: questions[i].get('required') ? true : false, // eslint-disable-line 
           properties: JSON.stringify(questions[i].get('properties')),
         }, true);
       }
@@ -37,10 +37,7 @@ export function loadCachedQuestions(formId) {
  * @param {array} forms, an array of forms
  */
 export function loadCachedQuestionsFromForms(forms) {
-  return realm.objects('Question')
-    .filtered(forms.map((form) => `formId == "${form.id}"`)
-    .join(' OR '))
-    .sorted('order');
+  return realm.objects('Question').filtered(forms.map((form) => `formId == "${form.id}"`).join(' OR ')).sorted('order');
 }
 
 // Queries the connected Parse server for a list of Questions.

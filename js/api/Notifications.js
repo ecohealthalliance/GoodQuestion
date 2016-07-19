@@ -1,9 +1,9 @@
-import { 
+import {
   Platform,
   Vibration,
   AppState,
 } from 'react-native';
-import _ from 'lodash';
+
 import realm from '../data/Realm';
 import pubsub from 'pubsub-js';
 
@@ -63,13 +63,13 @@ export function showToast(title, message, icon, duration, action) {
  * @param  {bool}   vibrate If set to true, the notification will also vibrate the user's device.
  */
 export function notifyOnBackground(message, vibrate) {
-  if (AppState.currentState != 'active') {
+  if (AppState.currentState !== 'active') {
     if (Store.userSettings.notifyOnGeofence) {
       PushNotification.localNotification({
         message: message,
       });
     }
-    
+
     if (vibrate && Store.userSettings.vibrateOnGeofence) {
       if (Platform.OS === 'android') {
         Vibration.vibrate([0, 500, 200, 500]);

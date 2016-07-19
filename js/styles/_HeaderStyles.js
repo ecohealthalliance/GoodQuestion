@@ -44,8 +44,8 @@ const HeaderStyles = StyleSheet.create({
   banner: {
     // flex: 1,
     height: Variables.REGISTRATION_HEIGHT,
-    alignItems:'center',
-    justifyContent:'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: Color.background1,
     paddingTop: 25,
     paddingBottom: 25,
@@ -56,15 +56,15 @@ const HeaderStyles = StyleSheet.create({
   },
 
   navBarLeftButton: {
-    flex: .1,
-    padding: Platform.OS == 'ios' ? 14 : 18,
-    paddingRight: Platform.OS == 'ios' ? 14 : 16,
+    flex: 0.1,
+    padding: Platform.OS === 'ios' ? 14 : 18,
+    paddingRight: Platform.OS === 'ios' ? 14 : 16,
     marginRight: 2,
   },
   navBarRightButton: {
-    flex: .1,
-    padding: Platform.OS == 'ios' ? 14 : 18,
-    paddingRight: Platform.OS == 'ios' ? 10 : 14,
+    flex: 0.1,
+    padding: Platform.OS === 'ios' ? 14 : 18,
+    paddingRight: Platform.OS === 'ios' ? 10 : 14,
   },
 });
 

@@ -1,8 +1,6 @@
 // React
 import React from 'react';
 import {
-  StyleSheet,
-  TouchableHighlight,
   TouchableWithoutFeedback,
   View,
   Text,
@@ -40,7 +38,7 @@ import SurveyFormNavigator from '../components/SurveyFormNavigator';
 
 // API
 import { ToastAddresses, ToastMessage } from '../models/ToastMessage';
-import { loadTriggers, loadCachedTriggers } from '../api/Triggers';
+import { loadCachedTriggers } from '../api/Triggers';
 import { validateUser } from '../api/Account';
 import { loadCachedForms, loadActiveGeofenceFormsInRange } from '../api/Forms';
 import { loadCachedSubmissions, saveSubmission} from '../api/Submissions';
@@ -61,7 +59,7 @@ const FormPage = React.createClass({
     return {
       type: 'datetime',
       index: 0,
-    }
+    };
   },
 
   getInitialState() {
@@ -72,7 +70,7 @@ const FormPage = React.createClass({
       isLoading: true,
       isSubmitting: false,
       index: this.props.index,
-      formsInQueue: false
+      formsInQueue: false,
     };
   },
 
@@ -124,13 +122,12 @@ const FormPage = React.createClass({
   },
 
   componentWillMount() {
-    const self = this;
     const index = this.state.index;
     const type = this.props.type;
     let answers = {};
     let forms = this.state.forms;
     let allForms = [];
-    
+
     if (!forms || forms.length === 0) {
       if (type === 'geofence') {
         forms = loadActiveGeofenceFormsInRange(this.props.survey.id);
@@ -143,13 +140,13 @@ const FormPage = React.createClass({
     }
 
     if (!forms || forms.length === 0) {
-      futureForms = _.filter(allForms, (form) => {
+      const futureForms = _.filter(allForms, (form) => {
         return form.trigger > new Date();
       });
       this.setState({isLoading: false, futureForms: futureForms, futureFormCount: futureForms.length});
       return;
     }
-    
+
     this.form = forms[index];
     this.nextForm = forms[index + 1];
     const submissions = loadCachedSubmissions(this.form.id);
@@ -219,11 +216,10 @@ const FormPage = React.createClass({
   },
 
   formsWithTriggers() {
-    return _.map(this.state.forms, function(form){
-      loadCachedTriggers(form.id)
-        .forEach((trigger) => {
-          form.trigger = trigger.datetime;
-        });
+    return _.map(this.state.forms, (form) => {
+      loadCachedTriggers(form.id).forEach((trigger) => {
+        form.trigger = trigger.datetime;
+      });
       return form;
     });
   },
@@ -255,7 +251,9 @@ const FormPage = React.createClass({
   },
 
   submit() {
-    if (this.state.isSubmitting) return;
+    if (this.state.isSubmitting) {
+      return;
+    }
 
     const answers = this.state.answers;
     const formId = this.form.id;
@@ -392,58 +390,58 @@ const FormPage = React.createClass({
 
   render() {
     if (this.state.isLoading) {
-      return (<Loading/>);
-    } else if (!this.state.formsInQueue){
+      return <Loading/>;
+    } else if (!this.state.formsInQueue) {
       return (
         <View style={TypeStyles.statusMessageContainer}>
-          <Icon name="clock-o" size={100} color={Color.fadedRed} />
+          <Icon name='clock-o' size={100} color={Color.fadedRed} />
           <Text style={TypeStyles.statusMessage}>No active forms</Text>
           {this.showFutureFormCount()}
         </View>
       );
-    } else {
-      return (
-        <View style={{flex: 1}}>
-          <View style={{
-            flex: 1,
-            paddingHorizontal:Platform.OS === 'ios' ? 20 : 0,
-            overflow: 'hidden',
-          }}>
-            <View style={Styles.form.titleHeading}>
-              <Text style={Styles.form.titleText}> {this.form.title} </Text>
-            </View>
-            <Swiper
-              ref={(swiper) => {
-                this._swiper = swiper;
-              }}
-              style={{flex: 1}}
-              containerStyle={{overflow: 'visible'}}
-              pager={false}
-              index={this._questionIndex}
-              beforePageChange={this.beforePageChange}
-              onPageChange={this.onPageChange}
-              children={this.renderQuestions()}
-              threshold={30}>
-            </Swiper>
-          </View>
-
-          <SurveyFormNavigator
-            ref={(nav) => {
-              this._nav = nav;
-            }}
-            index={this._questionIndex}
-            total={this.state.questions.length}
-            onPressed={this.changePage}
-           />
-
-           {this.state.isSubmitting ? 
-             <Overlay>
-               <Loading color="white" text="Submitting Form..." /> 
-             </Overlay>
-           : null}
-        </View>
-      );
     }
+
+    return (
+      <View style={{flex: 1}}>
+        <View style={{
+          flex: 1,
+          paddingHorizontal: Platform.OS === 'ios' ? 20 : 0,
+          overflow: 'hidden',
+        }}>
+          <View style={Styles.form.titleHeading}>
+            <Text style={Styles.form.titleText}> {this.form.title} </Text>
+          </View>
+          <Swiper
+            ref={(swiper) => {
+              this._swiper = swiper;
+            }}
+            style={{flex: 1}}
+            containerStyle={{overflow: 'visible'}}
+            pager={false}
+            index={this._questionIndex}
+            beforePageChange={this.beforePageChange}
+            onPageChange={this.onPageChange}
+            children={this.renderQuestions()}
+            threshold={30}>
+          </Swiper>
+        </View>
+
+        <SurveyFormNavigator
+          ref={(nav) => {
+            this._nav = nav;
+          }}
+          index={this._questionIndex}
+          total={this.state.questions.length}
+          onPressed={this.changePage}
+         />
+
+          {this.state.isSubmitting
+          ? <Overlay>
+              <Loading color='white' text='Submitting Form...' />
+            </Overlay>
+          : null}
+      </View>
+    );
   },
 });
 

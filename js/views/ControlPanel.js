@@ -55,15 +55,15 @@ export default React.createClass({
             text='Notifications'
           />
           <ControlPanelItem
-            onPress={()=> this.navigateToView('map', 'Map')}
+            onPress={() => this.navigateToView('map', 'Map')}
             text='Map'
           />
           <ControlPanelItem
-            onPress={()=> this.navigateToView('calendar', 'Calendar')}
+            onPress={() => this.navigateToView('calendar', 'Calendar')}
             text='Calendar'
           />
           <ControlPanelItem
-            onPress={()=> this.navigateToView('profile', 'Profile')}
+            onPress={() => this.navigateToView('profile', 'Profile')}
             text='Profile'
           />
           <ControlPanelItem
@@ -81,7 +81,7 @@ export default React.createClass({
           />
           <ControlPanelItem
             onPress={this.handleLogout}
-            style={{borderBottomWidth:0}}
+            style={{borderBottomWidth: 0}}
             text='Logout'
           />
         </View>

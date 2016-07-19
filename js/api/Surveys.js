@@ -7,7 +7,6 @@ import realm from '../data/Realm';
 import { loadForms, loadParseFormDataBySurveyId } from './Forms';
 import { checkSurveyTimeTriggers, removeTriggers } from './Triggers';
 import { loadInvitations, loadAcceptedInvitations } from '../api/Invitations';
-import { setupGeofences } from './Geofencing';
 
 // Attempts to find a survey with a specified id cached in the Store
 export function loadCachedSurvey(id) {
@@ -29,14 +28,14 @@ export function loadAllAcceptedSurveys(callback) {
 
     const surveys = [];
     const invitationsLength = invitations.length;
-    for (var i = 0; i < invitationsLength; i++) {
-      let acceptedSurvey = realm.objects('Survey').filtered(`id = "${invitations[i].surveyId}"`)[0];
+    for (let i = 0; i < invitationsLength; i++) {
+      const acceptedSurvey = realm.objects('Survey').filtered(`id = "${invitations[i].surveyId}"`)[0];
       if (acceptedSurvey) {
         surveys.push(acceptedSurvey);
       }
     }
     callback(null, surveys);
-  })
+  });
 }
 
 /**
@@ -44,46 +43,50 @@ export function loadAllAcceptedSurveys(callback) {
  * @param  {string}   surveyId ID of the target survey to fetch from
  * @param  {Function} callback Callback function which returns an array of Parse 'Form' objects
  */
-export function getSurveyForms(surveyId, callback){
-  const Survey = Parse.Object.extend("Survey");
+export function getSurveyForms(surveyId, callback) {
+  const Survey = Parse.Object.extend('Survey');
   const query = new Parse.Query(Survey);
   query.get(surveyId,
     (survey) => {
-      loadForms(survey, function(err, forms){
+      loadForms(survey, (err, forms) => {
         if (callback) {
           callback(null, forms);
         }
-      })
+      });
     }
   );
 }
 
 // Queries the connected Parse server for a list of Surveys.
 export function loadSurveys(callback) {
-  const Survey = Parse.Object.extend("Survey")
-  const query = new Parse.Query(Survey)
-  query.equalTo("active", true)
+  const Survey = Parse.Object.extend('Survey');
+  const query = new Parse.Query(Survey);
+  query.equalTo('active', true);
   query.find({
-    success: function(results) {
-      clearSurveyCache(results)
-      let cachedSurveys = realm.objects('Survey')
+    success: (results) => {
+      clearSurveyCache(results); // eslint-disable-line no-use-before-define
+      const cachedSurveys = realm.objects('Survey');
       for (let i = 0; i < results.length; i++) {
-        let cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0];
+        const cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0];
         if (!cachedSurvey) {
           loadForms(results[i]);
-        } else if (cachedSurvey.updatedAt.getTime() != results[i].updatedAt.getTime()) {
-          refreshAcceptedSurveyData(results[i].id);
+        } else if (cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime()) {
+          refreshAcceptedSurveyData(results[i].id); // eslint-disable-line no-use-before-define
         }
-        cacheParseSurveys(results[i]);
+        cacheParseSurveys(results[i]); // eslint-disable-line no-use-before-define
       }
       Store.lastParseUpdate = Date.now();
-      if (callback) callback(null, results);
+      if (callback) {
+        callback(null, results);
+      }
     },
-    error: function(error) {
-      if (callback) callback(error);
-    }
-  })
-};
+    error: (error) => {
+      if (callback) {
+        callback(error);
+      }
+    },
+  });
+}
 
 /**
  * fetches remote data for surveys and invitations
@@ -100,10 +103,14 @@ export function loadSurveyList(done) {
     },
   }, (err, results) => {
     if (err) {
-      if (done) done(err);
+      if (done) {
+        done(err);
+      }
       return;
     }
-    if (done) done(null, true);
+    if (done) {
+      done(null, results);
+    }
   });
 }
 
@@ -114,17 +121,19 @@ export function loadSurveyList(done) {
 export function refreshAcceptedSurveyData(surveyId) {
   loadAllAcceptedSurveys((err, results) => {
     if (surveyId) {
-      const surveys = _.filter(results, (survey) => { return survey.id === surveyId });
+      const surveys = _.filter(results, (survey) => {
+        return survey.id === surveyId;
+      });
       const survey = surveys[0];
 
       if (survey) {
-        // loadParseFormDataBySurveyId(survey.id);
+        loadParseFormDataBySurveyId(survey.id);
       }
     } else {
       const resultLength = results.length;
       try {
-        for (var i = 0; i < resultLength; i++) {
-          loadParseFormDataBySurveyId(results[i].id)
+        for (let i = 0; i < resultLength; i++) {
+          loadParseFormDataBySurveyId(results[i].id);
         }
       } catch (e) {
         console.warn(e);
@@ -139,18 +148,18 @@ export function cacheParseSurveys(survey) {
     realm.write(() => {
       realm.create('Survey', {
         id: survey.id,
-        active: survey.get('active') ? true : false,
+        active: survey.get('active') ? true : false, // eslint-disable-line no-unneeded-ternary
         createdAt: survey.get('createdAt'),
         updatedAt: survey.get('updatedAt'),
         title: survey.get('title'),
         description: survey.get('description'),
-        user: 'N/A', // TODO: Get Organization's name.
+        // TODO: Get Organization's name.
+        user: 'N/A',
         forms: [],
-        title: survey.get('title'),
-      }, true)
-      getSurveyOwner(survey);
-    })
-  } catch(e) {
+      }, true);
+      getSurveyOwner(survey); // eslint-disable-line no-use-before-define
+    });
+  } catch (e) {
     console.error(e);
   }
 }
@@ -161,10 +170,12 @@ export function cacheParseSurveys(survey) {
  * @param  {Function} done   Callback function to execute when Questions and Triggers are loaded from Parse
  */
 export function acceptSurvey(survey, done) {
-  loadParseFormDataBySurveyId(survey.id, ()=>{
+  loadParseFormDataBySurveyId(survey.id, () => {
     checkSurveyTimeTriggers(survey, true);
-    if (done) done(null);
-  })
+    if (done) {
+      done(null);
+    }
+  });
 }
 
 /**
@@ -179,33 +190,33 @@ export function declineSurvey(survey) {
 // Gets the name of the owner of a Survey and saves it to Realm database.
 // TODO Get the organization's name
 function getSurveyOwner(survey) {
-  let owner = survey.get("createdBy");
+  const owner = survey.get('createdBy');
   if (!owner) {
     return;
   }
-  owner.fetch(
-    (owner) => {
+  owner.fetch((result) => {
+    if (result) {
       realm.write(() => {
         try {
           realm.create('Survey', {
             id: survey.id,
-            user: 'Organization\'s Name',
-            // user: owner.get("name"),
+            user: 'N/A',
+            // user: result.get("name"),
           }, true);
-        } catch(e) {
+        } catch (e) {
           console.error(e);
         }
-      })
+      });
     }
-  )
+  });
 }
 
 // Erases the current cache of Surveys
 function clearSurveyCache(exclusions) {
   try {
-    let surveys = realm.objects('Survey');
-    let expiredSurveys = [];
-    let excludedIds = [];
+    const surveys = realm.objects('Survey');
+    const expiredSurveys = [];
+    const excludedIds = [];
     for (let i = 0; i < exclusions.length; i++) {
       excludedIds.push(exclusions[i].id);
     }
@@ -216,21 +227,25 @@ function clearSurveyCache(exclusions) {
     for (let i = surveysLength - 1; i >= 0; i--) {
       let expired = true;
       for (let j = excludedIds.length - 1; j >= 0; j--) {
-        if (surveys[i].id === excludedIds[j]) expired = false;
+        if (surveys[i].id === excludedIds[j]) {
+          expired = false;
+        }
       }
-      if (expired) expiredSurveys.push(surveys[i]);
+      if (expired) {
+        expiredSurveys.push(surveys[i]);
+      }
     }
 
     realm.write(() => {
       const expiredSurveysLength = expiredSurveys.length;
       for (let i = 0; i < expiredSurveysLength; i++) {
-        let forms = realm.objects('Form').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`);
-        let timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`);
-        let geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`);
+        const forms = realm.objects('Form').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`);
+        const timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`);
+        const geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`);
 
-        let formsLength = forms.length;
+        const formsLength = forms.length;
         for (let j = 0; j < formsLength; j++) {
-          let questions = realm.objects('Question').filtered(`formId= "${expiredSurveys[i].surveyId}"`);
+          const questions = realm.objects('Question').filtered(`formId= "${expiredSurveys[i].surveyId}"`);
           realm.delete(questions);
         }
         realm.delete(forms);
@@ -238,8 +253,8 @@ function clearSurveyCache(exclusions) {
         realm.delete(geofenceTriggers);
       }
       realm.delete(expiredSurveys);
-    })
+    });
   } catch (e) {
     console.error(e);
   }
-};
+}

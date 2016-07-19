@@ -1,16 +1,30 @@
 import React from 'react';
 import ReactNative, {
-  StyleSheetRegistry,
   StyleSheet,
-  Image,
   Text,
   View,
   TouchableHighlight,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from 'react-native';
 
-const flattenStyle = ReactNative.StyleSheet.flatten;
 const PropTypes = React.PropTypes;
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 2,
+  },
+  labelContainer: {
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  label: {
+    fontSize: 15,
+    lineHeight: 15,
+    color: 'grey',
+  },
+});
 
 const Checkbox = React.createClass({
   propTypes: {
@@ -24,7 +38,7 @@ const Checkbox = React.createClass({
     containerStyle: ReactNative.View.propTypes.style,
     labelBefore: PropTypes.bool,
     children: PropTypes.element,
-    highlight: PropTypes.bool
+    highlight: PropTypes.bool,
   },
 
   getDefaultProps() {
@@ -32,71 +46,52 @@ const Checkbox = React.createClass({
       label: null,
       labelBefore: false,
       checked: false,
-      highlight: true
-    }
-  },
-
-  toggle() {
-    
+      highlight: true,
+    };
   },
 
   onChange() {
-    if(this.props.onChange){
+    if (this.props.onChange) {
       this.props.onChange(!this.props.checked);
     }
   },
 
   render() {
     if (!this.props.uncheckedComponent) {
-      throw new Error('Checkbox requires a property for checkedComponent')
+      throw new Error('Checkbox requires a property for checkedComponent');
     }
     if (!this.props.checkedComponent) {
-      throw new Error('Checkbox requires a property for uncheckedComponent')
+      throw new Error('Checkbox requires a property for uncheckedComponent');
     }
 
-    let checkbox;
+    let checkbox = null;
     if (this.props.checked) {
       checkbox = this.props.checkedComponent;
     } else {
       checkbox = this.props.uncheckedComponent;
     }
 
-    let labelContainer;
+    let labelContainer = null;
     if (this.props.label) {
-      labelContainer = (
-        <View style={[styles.labelContainer, this.props.labelContainerStyle]}>
-          <Text style={[styles.label, this.props.labelStyle]}>{this.props.label}</Text>
-        </View>
-      );
+      labelContainer = <View style={[styles.labelContainer, this.props.labelContainerStyle]}>
+                         <Text style={[styles.label, this.props.labelStyle]}>{this.props.label}</Text>
+                       </View>;
     } else if (this.props.children) {
-      labelContainer = (
-        <View style={[styles.labelContainer, this.props.labelContainerStyle]}>
-          {this.props.children}
-        </View>
-      )
-    } else {
-      labelContainer = null;
+      labelContainer = <View style={[styles.labelContainer, this.props.labelContainerStyle]}>
+                         {this.props.children}
+                       </View>;
     }
 
-    const containerStyle = [
-        styles.container,
-        this.props.containerStyle
-    ];
-
-    let container = (
-      <View style={containerStyle}>
-        {checkbox}
-        {labelContainer}
-      </View>
-    );
+    let container = <View style={[styles.container, this.props.containerStyle]}>
+                      {checkbox}
+                      {labelContainer}
+                    </View>;
 
     if (this.props.labelBefore) {
-      container = (
-        <View style={containerStyle}>
-          {labelContainer}
-          {checkbox}
-        </View>
-      );
+      container = <View style={[styles.container, this.props.containerStyle]}>
+                    {labelContainer}
+                    {checkbox}
+                  </View>;
     }
 
     if (this.props.highlight) {
@@ -105,30 +100,13 @@ const Checkbox = React.createClass({
           {container}
         </TouchableHighlight>
       );
-    } else {
-      return (
-        <TouchableWithoutFeedback onPress={this.onChange}>
-          {container}
-        </TouchableWithoutFeedback>
-      );
     }
-  }
-});
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 2,
-  },
-  labelContainer: {
-    marginLeft: 10,
-    marginRight: 10
-  },
-  label: {
-    fontSize: 15,
-    lineHeight: 15,
-    color: 'grey',
+    return (
+      <TouchableWithoutFeedback onPress={this.onChange}>
+        {container}
+      </TouchableWithoutFeedback>
+    );
   },
 });
 

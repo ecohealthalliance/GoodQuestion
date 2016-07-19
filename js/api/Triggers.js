@@ -1,27 +1,9 @@
-import _ from 'lodash'
+import _ from 'lodash';
 import Parse from 'parse/react-native';
 import realm from '../data/Realm';
 import { loadAcceptedInvitations } from '../api/Invitations';
 import { loadAllAcceptedSurveys } from './Surveys';
 import { removeGeofenceById, addGeofence } from '../api/Geofencing';
-
-// Saves a Form object from Parse into our Realm.io local database
-function cacheTimeTrigger(trigger, form, survey) {
-  try {
-    const datetime = new Date(trigger.get('properties').datetime);
-    realm.write(() => {
-      realm.create('TimeTrigger', {
-        id: trigger.id,
-        formId: form.id,
-        surveyId: survey.id,
-        title: form.get('title'),
-        datetime: datetime,
-      }, true);
-    });
-  } catch (e) {
-    console.error(e);
-  }
-}
 
 // Queries the connected Parse server for a list of Triggers.
 export function loadTriggers(cachedForm, survey, callback) {
@@ -34,12 +16,14 @@ export function loadTriggers(cachedForm, survey, callback) {
         (results) => {
           for (let i = 0; i < results.length; i++) {
             if (results[i].get('type') === 'datetime') {
-              cacheTimeTrigger(results[i], form, survey);
+              cacheTimeTrigger(results[i], form, survey); // eslint-disable-line no-use-before-define
             } else if (results[i].get('type') === 'geofence') {
-              cacheGeofenceTrigger(results[i], form, survey);
+              cacheGeofenceTrigger(results[i], form, survey); // eslint-disable-line no-use-before-define
             }
           }
-          if (callback) callback(null, results);
+          if (callback) {
+            callback(null, results);
+          }
         },
         (error, results) => {
           console.warn(`Error: ${error.code} ${error.message}`);
@@ -66,36 +50,31 @@ export function loadCachedTimeTriggers(options = {}, callback) {
     if (err) {
       console.warn(err);
       callback(err, []);
-      return
+      return;
     }
-    
-    try {
 
-      let triggers = [];
-      let filter = '';
-      let filterOptions = '';
-      if (options.excludeCompleted) filterOptions += ' AND completed == false';
-      if (options.excludeExpired) filterOptions += ' AND expired == false';
-      if (options.includeOnlyTriggered) filterOptions += ' AND triggered == true';
-      
-      if (options.surveyId) {
-        filter = `surveyId = "${options.surveyId}"${filterOptions}`;
-        triggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
-      } else {
-        const responseLength = response.length;
-        for (var i = 0; i < responseLength; i++) {
-          filter = `surveyId = "${response[i].id}"${filterOptions}`;
-          let surveyTriggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
-          triggers = _.unionBy(triggers, surveyTriggers, 'id');
-        }
+    let triggers = [];
+    let filter = '';
+    let filterOptions = '';
+
+    filterOptions += options.excludeCompleted ? ' AND completed == false' : '';
+    filterOptions += options.excludeExpired ? ' AND expired == false' : '';
+    filterOptions += options.includeOnlyTriggered ? ' AND triggered == true' : '';
+
+    if (options.surveyId) {
+      filter = `surveyId = "${options.surveyId}"${filterOptions}`;
+      triggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
+    } else {
+      const responseLength = response.length;
+      for (let i = 0; i < responseLength; i++) {
+        filter = `surveyId = "${response[i].id}"${filterOptions}`;
+        const surveyTriggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
+        triggers = _.unionBy(triggers, surveyTriggers, 'id');
       }
-      
-      callback(null, triggers);
-    } catch (err) {
-      callback(err, []);
     }
-    
-  })
+
+    callback(null, triggers);
+  });
 }
 
 /**
@@ -107,35 +86,36 @@ export function loadCachedGeofenceTriggers(options = {}, callback) {
     if (err) {
       console.warn(err);
       callback(err, []);
-      return
+      return;
     }
-    
+
     let filter = '';
     let filterOptions = '';
     let triggers = [];
-    if (options.excludeCompleted) filterOptions += ' AND completed == false';
-    if (options.includeOnlyTriggered) filterOptions += ' AND triggered == true';
+
+    filterOptions += options.excludeCompleted ? ' AND completed == false' : '';
+    filterOptions += options.includeOnlyTriggered ? ' AND triggered == true' : '';
 
     if (options.surveyId) {
       filter = `surveyId = "${options.surveyId}"${filterOptions}`;
       triggers = Array.from(realm.objects('GeofenceTrigger').filtered(filter));
     } else {
       const responseLength = response.length;
-      for (var i = 0; i < responseLength; i++) {
+      for (let i = 0; i < responseLength; i++) {
         filter = `surveyId = "${response[i].id}"${filterOptions}`;
-        let surveyTriggers = Array.from(realm.objects('GeofenceTrigger').filtered(filter));
+        const surveyTriggers = Array.from(realm.objects('GeofenceTrigger').filtered(filter));
         triggers = _.unionBy(triggers, surveyTriggers, 'id');
       }
     }
 
     callback(null, triggers);
-  })
+  });
 }
 
 // Saves a Form object from Parse into our Realm.io local database
 export function cacheTimeTrigger(trigger, form, survey) {
   try {
-    let datetime = new Date(trigger.get('properties').datetime)
+    const datetime = new Date(trigger.get('properties').datetime);
     realm.write(() => {
       realm.create('TimeTrigger', {
         id: trigger.id,
@@ -145,8 +125,8 @@ export function cacheTimeTrigger(trigger, form, survey) {
         datetime: datetime,
       }, true);
     });
-  } catch(e) {
-    console.error(e)
+  } catch (e) {
+    console.error(e);
   }
 }
 
@@ -158,7 +138,7 @@ export function cacheTimeTrigger(trigger, form, survey) {
  */
 export function cacheGeofenceTrigger(trigger, form, survey) {
   try {
-    let newTrigger = {
+    const newTrigger = {
       id: trigger.id,
       formId: form.id,
       surveyId: survey.id,
@@ -174,7 +154,7 @@ export function cacheGeofenceTrigger(trigger, form, survey) {
       realm.create('GeofenceTrigger', newTrigger, true);
     });
     addGeofence(newTrigger);
-  } catch(e) {
+  } catch (e) {
     console.warn(e);
   }
 }
@@ -189,11 +169,11 @@ export function checkTimeTriggers(omitNotifications) {
       console.warn(err);
       return;
     }
-    if (invitations && invitations.length > 0 ) {
+    if (invitations && invitations.length > 0) {
       const surveyIds = invitations.map((invitation) => invitation.surveyId);
       const surveys = realm.objects('Survey').filtered(surveyIds.map((id) => `id == "${id}"`).join(' OR '));
-      for (var i = 0; i < surveys.length; i++) {
-        checkSurveyTimeTriggers(surveys[i], omitNotifications)
+      for (let i = 0; i < surveys.length; i++) {
+        checkSurveyTimeTriggers(surveys[i], omitNotifications); // eslint-disable-line no-use-before-define
       }
     }
   });
@@ -215,9 +195,9 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
   // Record the new trigger
   const triggerLength = triggers.length;
   realm.write(() => {
-    for (var i = 0; i < triggerLength; i++) {
+    for (let i = 0; i < triggerLength; i++) {
       if (triggers[i] && triggers[i].datetime < now && triggers[i].datetime > past) {
-        let activeTrigger = realm.create('TimeTrigger', {
+        const activeTrigger = realm.create('TimeTrigger', {
           id: triggers[i].id,
           triggered: true,
         }, true);
@@ -246,7 +226,7 @@ export function removeTriggers(surveyId) {
   const geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`);
   const geofenceTriggersLength = geofenceTriggers.length;
 
-  for (var i = geofenceTriggersLength - 1; i >= 0; i--) {
+  for (let i = geofenceTriggersLength - 1; i >= 0; i--) {
     if (geofenceTriggers[i]) {
       removeGeofenceById(geofenceTriggers[i].id);
     }

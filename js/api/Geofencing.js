@@ -1,25 +1,23 @@
-import { InteractionManager, Platform } from 'react-native'
-import _ from 'lodash'
-import Parse from 'parse/react-native'
-import Store from '../data/Store'
-import realm from '../data/Realm'
-import PushNotification from 'react-native-push-notification';
+import _ from 'lodash';
+import Store from '../data/Store';
+import realm from '../data/Realm';
 
-import { BackgroundGeolocation } from './BackgroundProcess'
-import { loadCachedGeofenceTriggers } from './Triggers'
-import { showToast, notifyOnBackground } from './Notifications'
+import { BackgroundGeolocation } from './BackgroundProcess';
+import { loadCachedGeofenceTriggers } from './Triggers';
+import { showToast, notifyOnBackground } from './Notifications';
 
-
-let activeMap; // Cache a MapPage component for to update when geofencing triggers are crossed.
-let supressNotificationsTimestamp; // Timer to suppress repeated notifications when geofences get updated.
+// Cache a MapPage component for to update when geofencing triggers are crossed.
+let activeMap = null;
+// Timer to suppress repeated notifications when geofences get updated.
+let supressNotificationsTimestamp = 0;
 
 /**
  * Caches a MapPage component inside a variable for easy access
  * @param {element} component     React class element to be cached
  */
 export function setActiveMap(component) {
-  activeMap = component
-  BackgroundGeolocation.on('geofence', crossGeofence);
+  activeMap = component;
+  BackgroundGeolocation.on('geofence', crossGeofence); // eslint-disable-line no-use-before-define
 }
 
 /**
@@ -27,9 +25,9 @@ export function setActiveMap(component) {
  * @param  {element} component    React class element to be cleared
  */
 export function clearActiveMap(component) {
-  if (activeMap == component) {
-    component.active = false
-    activeMap = null
+  if (activeMap === component) {
+    component.active = false;
+    activeMap = null;
   }
 }
 
@@ -39,12 +37,12 @@ export function clearActiveMap(component) {
  */
 export function setupGeofences(callback) {
   // BackgroundGeolocation.stop()
-  
+
   loadCachedGeofenceTriggers({excludeCompleted: true}, (err, response) => {
-    resetGeofences((err) => {
-      if (err) {
+    resetGeofences((err2) => { // eslint-disable-line no-use-before-define
+      if (err2) {
         console.warn('Unable to load geofence triggers');
-        console.warn(err);
+        console.warn(err2);
         return;
       }
 
@@ -57,22 +55,24 @@ export function setupGeofences(callback) {
           notifyOnEntry: true,
           notifyOnExit: true,
           notifyOnDwell: true,
-          loiteringDelay: 30000
-        }
-      })
-      
-      console.log('Adding ' + triggerGeofences.length + ' geofences...')
-      supressNotificationsTimestamp = Date.now() + 5000;
-      BackgroundGeolocation.addGeofences(triggerGeofences, function() {
-        console.log("Successfully added geofences.");
-      }, function(error) {
-          console.warn("Failed to add geofences.", error);
+          loiteringDelay: 30000,
+        };
       });
 
-      if (callback) callback();
-    })
-    BackgroundGeolocation.on('geofence', crossGeofence);
-  })
+      console.log(`Adding ${triggerGeofences.length} geofences...`);
+      supressNotificationsTimestamp = Date.now() + 5000;
+      BackgroundGeolocation.addGeofences(triggerGeofences, () => {
+        console.log('Successfully added geofences.');
+      }, (err3) => {
+        console.warn('Failed to add geofences.', err3);
+      });
+
+      if (callback) {
+        callback();
+      }
+    });
+    BackgroundGeolocation.on('geofence', crossGeofence); // eslint-disable-line no-use-before-define
+  });
 }
 
 export function addGeofence(trigger) {
@@ -84,15 +84,15 @@ export function addGeofence(trigger) {
     notifyOnEntry: true,
     notifyOnExit: true,
     notifyOnDwell: false,
-    loiteringDelay: 60000
+    loiteringDelay: 60000,
   };
-  
+
   supressNotificationsTimestamp = Date.now() + 5000;
-  BackgroundGeolocation.addGeofence(geofence, function () {
-    console.log("Successfully added geofence.");
-    BackgroundGeolocation.on('geofence', crossGeofence);
-  }, function (error) {
-    console.warn("Failed to add geofence.", error);
+  BackgroundGeolocation.addGeofence(geofence, () => {
+    console.log('Successfully added geofence.');
+    BackgroundGeolocation.on('geofence', crossGeofence); // eslint-disable-line no-use-before-define
+  }, (error) => {
+    console.warn('Failed to add geofence.', error);
   });
 }
 
@@ -102,17 +102,15 @@ export function addGeofence(trigger) {
  */
 export function resetGeofences(callback) {
   supressNotificationsTimestamp = Date.now() + 5000;
-  BackgroundGeolocation.removeGeofences(
-    function success() {
-      console.log('Cleared current geofencing settings.')
-      callback(null)
-    },
-    function error(e) {
-      console.warn('Error resetting geofencing settings.')
-      console.warn(e)
-      callback(e)
+  BackgroundGeolocation.removeGeofences(() => {
+      console.log('Cleared current geofencing settings.');
+      callback(null);
+    }, (err) => {
+      console.warn('Error resetting geofencing settings.');
+      console.warn(err);
+      callback(err);
     }
-  )
+  );
 }
 
 /**
@@ -122,7 +120,7 @@ export function resetGeofences(callback) {
 export function removeGeofenceById(id) {
   supressNotificationsTimestamp = Date.now() + 5000;
   BackgroundGeolocation.removeGeofence(id, () => {
-    console.log('Removed geofence: ' + id);
+    console.log(`Removed geofence: ${id}`);
   });
 }
 
@@ -135,18 +133,18 @@ export function getUserLocationData(callback) {
     latitude: 0,
     longitude: 0,
     accuracy: 0,
-    timestamp: new Date()
+    timestamp: new Date(),
   };
 
-  if (Store.backgroundServiceState == 'deactivated') {
-    console.log('deactivated, returning blank data')
+  if (Store.backgroundServiceState === 'deactivated') {
+    console.log('deactivated, returning blank data');
     callback(coords);
     return;
   }
 
   try {
-    BackgroundGeolocation.getLocations( function success (locations) {
-      let current = locations[0];
+    BackgroundGeolocation.getLocations((locations) => {
+      const current = locations[0];
       if (current && current.coords) {
         coords = {
           latitude: current.coords.latitude,
@@ -158,13 +156,12 @@ export function getUserLocationData(callback) {
       } else {
         callback(coords);
       }
-    }, function fail () {
+    }, () => {
       callback(coords);
     });
   } catch (e) {
     callback(coords);
   }
-  
 }
 
 /**
@@ -172,8 +169,8 @@ export function getUserLocationData(callback) {
  * @param  {objects} params Parameters provided by the crossed geofence
  */
 function crossGeofence(params) {
-  console.log('Geofence crossed: ' + params.action + ' - ' + params.identifier);
-  
+  console.log(`Geofence crossed: ${params.action} - ${params.identifier}`);
+
   // Update Map
   if (activeMap && activeMap.active) {
     activeMap.updateMarkers(params);
@@ -183,12 +180,12 @@ function crossGeofence(params) {
     const trigger = realm.objects('GeofenceTrigger').filtered(`id = "${params.identifier}"`)[0];
     if (trigger) {
       // Notify on entry
-      if (_.lowerCase(params.action) == 'enter' && supressNotificationsTimestamp < Date.now()) {
+      if (_.lowerCase(params.action) === 'enter' && supressNotificationsTimestamp < Date.now()) {
         const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0];
         const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0];
 
         if (form && survey) {
-          notifyOnBackground(form.title + ' - New geofence form available.', true);
+          notifyOnBackground(`${form.title} - New geofence form available.`, true);
 
           showToast(form.title, 'New geofence form available.', 'globe', 8, () => {
             Store.navigator.push({
@@ -196,23 +193,23 @@ function crossGeofence(params) {
               title: survey.title,
               forms: form,
               survey: survey,
-              type: 'geofence'
+              type: 'geofence',
             });
           });
         }
       }
-      
+
       // Update Geofence Trigger
       realm.write(() => {
         trigger.triggered = true;
-        trigger.inRange = _.lowerCase(params.action) == 'exit' ? false : true;
+        trigger.inRange = _.lowerCase(params.action) === 'exit' ? false : true; // eslint-disable-line no-unneeded-ternary
         trigger.updateTimestamp = Date.now();
-      })
+      });
     } else {
       console.warn('Trigger not found.');
     }
   } catch (e) {
-    console.warn(e)
+    console.warn(e);
   }
 }
 
@@ -220,8 +217,8 @@ function crossGeofence(params) {
  * Dev: logs a list of the currently active geofences in the native API.
  */
 export function logActiveGeofences() {
-  BackgroundGeolocation.getGeofences(function(geofences) {
-    console.log('active geofences: ')
-    console.log(geofences)
+  BackgroundGeolocation.getGeofences((geofences) => {
+    console.log('active geofences: ');
+    console.log(geofences);
   });
 }

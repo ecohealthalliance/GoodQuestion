@@ -57,47 +57,45 @@ const Loading = React.createClass({
       const animation = {transform: [
         {rotate: this.state.angle.interpolate({
           inputRange: [0, 360],
-          outputRange: ['0deg', '360deg']
+          outputRange: ['0deg', '360deg'],
         })},
       ]};
 
       return (
         <View style={container}>
           <Animated.View style={animation}>
-            <Icon name="spinner" size={120} color={this.props.color || Color.faded}/>
+            <Icon name='spinner' size={120} color={this.props.color || Color.faded}/>
           </Animated.View>
-          {this.props.text ?
-            <Text style={textStyle}>
-              {this.props.text}
-            </Text>
-          :null}
+          {this.props.text
+            ? <Text style={textStyle}>
+                {this.props.text}
+              </Text>
+            : null}
         </View>
-      )
-
-    } else {
-      // Use a default loading animation for Android until RN gets custom native animation support.
-      const animation = {
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 8,
-      };
-
-      return (
-        <View style={container}>
-          <ActivityIndicator
-            style={animation}
-            size='large'
-            color={ this.props.color || Color.primary }
-          />
-          {this.props.text ?
-            <Text style={textStyle}>
-              {this.props.text}
-            </Text>
-          :null}
-        </View>
-      )
+      );
     }
-  }
+
+    // Use a default loading animation for Android until RN gets custom native animation support.
+    const animation = {
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 8,
+    };
+    return (
+      <View style={container}>
+        <ActivityIndicator
+          style={animation}
+          size='large'
+          color={ this.props.color || Color.primary }
+        />
+        {this.props.text
+          ? <Text style={textStyle}>
+              {this.props.text}
+            </Text>
+          : null}
+      </View>
+    );
+  },
 });
 
 module.exports = Loading;

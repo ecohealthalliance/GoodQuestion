@@ -44,7 +44,7 @@ import ProfilePage from '../views/ProfilePage';
 import { upsertInstallation } from '../api/Installations';
 import { checkTimeTriggers } from '../api/Triggers';
 import { loadCachedFormDataById } from '../api/Forms';
-import { addTimeTriggerNotification } from '../api/Notifications';
+// import { addTimeTriggerNotification } from '../api/Notifications';
 
 // Background
 import { initializeGeolocationService, handleAppStateChange } from '../api/BackgroundProcess';
@@ -122,10 +122,9 @@ const SharedNavigator = React.createClass({
   },
 
   componentDidMount() {
-    const self = this;
     isAuthenticated((authenticated) => {
       if (authenticated) {
-        self.checkNotificationPermissions();
+        this.checkNotificationPermissions();
       }
       this.setState({
         isAuthenticated: authenticated,
@@ -141,14 +140,14 @@ const SharedNavigator = React.createClass({
     if (Platform.OS === 'ios') {
       PushNotification.checkPermissions((result) => {
         if (
-          PushNotification.isLoaded && 
-          !result.alert || 
-          !result.badge || 
+          PushNotification.isLoaded &&
+          !result.alert ||
+          !result.badge ||
           !result.sound
         ) {
           console.log('Requesting new PushNotification permissions.');
-          PushNotification.requestPermissions().then((permissions)=>{
-            if (!result.alert || !result.badge || !result.sound) {
+          PushNotification.requestPermissions().then((permissions) => {
+            if (!permissions.alert || !permissions.badge || !permissions.sound) {
               // TODO: Notify of missing permissions and how to fix them.
               // Settings -> GoodQuestion -> Notifications
               // Notify only once.
@@ -191,7 +190,7 @@ const SharedNavigator = React.createClass({
     if (platform === 'ios') {
       PushNotification.setApplicationIconBadgeNumber(0);
     }
-    upsertInstallation(token, platform, (err, res) => {
+    upsertInstallation(token, platform, (err) => {
       if (err) {
         console.error(err);
         return;
@@ -230,22 +229,22 @@ const SharedNavigator = React.createClass({
     if (this._controlPanel && this._controlPanel.navigating) {
       const path = this._controlPanel.nextPath;
       const title = this._controlPanel.nextTitle;
-      if (navigator) {
-        const routeStack = navigator.getCurrentRoutes();
-        const currentRoutePath = routeStack[routeStack.length - 1].path;
-        if (path !== currentRoutePath) {
-          if (path === 'surveylist') {
-            // Reset route stack when viewing map to avoid multiple map components from being loaded at the same time.
-            navigator.resetTo({path: path, title: title});
-          } else {
-            if (navigator.getCurrentRoutes().length == 1) {
-              navigator.push({path: path, title: title});
-            } else {
-              navigator.replaceAtIndex({path: path, title: title}, 1, () => {
-                navigator.popToRoute(navigator.getCurrentRoutes()[1]);
-              })
-            }
-          }
+      if (!navigator) {
+        return;
+      }
+
+      const routeStack = navigator.getCurrentRoutes();
+      const currentRoutePath = routeStack[routeStack.length - 1].path;
+      if (path !== currentRoutePath) {
+        if (path === 'surveylist') {
+          // Reset route stack when viewing map to avoid multiple map components from being loaded at the same time.
+          navigator.resetTo({path: path, title: title});
+        } else if (navigator.getCurrentRoutes().length === 1) {
+            navigator.push({path: path, title: title});
+        } else {
+          navigator.replaceAtIndex({path: path, title: title}, 1, () => {
+            navigator.popToRoute(navigator.getCurrentRoutes()[1]);
+          });
         }
       }
     }
@@ -332,9 +331,6 @@ const SharedNavigator = React.createClass({
 
   /* Render */
   render() {
-    const initialRoute = { path:'surveylist', title: 'Surveys' }
-    // const initialRoute = { path:'calendar', title: 'Test Calendar' }
-
     // show loading component without the navigationBar
     if (this.state.isLoading) {
       return (

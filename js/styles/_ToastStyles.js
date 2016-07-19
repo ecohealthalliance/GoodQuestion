@@ -12,14 +12,14 @@ const ToastStyles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
   },
   container: {
-    flex: .8,
+    flex: 0.8,
     flexDirection: 'column',
     justifyContent: 'center',
     paddingVertical: 20,
     paddingRight: 20,
   },
   icon: {
-    flex: .20,
+    flex: 0.20,
     flexDirection: 'column',
     paddingTop: 23,
     paddingLeft: 20,

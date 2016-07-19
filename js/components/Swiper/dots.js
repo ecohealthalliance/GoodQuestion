@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Component,
   StyleSheet,
   View,
 } from 'react-native';

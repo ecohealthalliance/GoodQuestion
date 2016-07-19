@@ -1,6 +1,4 @@
-import realm from '../data/Realm';
-
-export default class Survey {};
+export default class Survey {}
 
 Survey.schema = {
   name: 'Survey',

@@ -13,9 +13,8 @@ import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
 import Styles from '../styles/Styles';
 import Color from '../styles/Color';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { connectToaster } from '../api/Notifications';
 
-const Toaster = React.createClass ({
+const Toaster = React.createClass({
   inUse: false,
   propTypes: {
     navigator: React.PropTypes.object,
@@ -56,7 +55,6 @@ const Toaster = React.createClass ({
       return;
     }
 
-    const self = this;
     this.inUse = true;
     this.state.fadeAnim.setValue(0);
     this.state.translateAnim.setValue(150);
@@ -81,8 +79,8 @@ const Toaster = React.createClass ({
 
     // Prevent toast from being re-used in quick sucession.
     if (toastMessage.duration && toastMessage.duration >= 2) {
-      setTimeout(()=>{
-        self.inUse = false;
+      setTimeout(() => {
+        this.inUse = false;
       }, 2000);
     }
 

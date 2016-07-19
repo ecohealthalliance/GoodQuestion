@@ -1,11 +1,8 @@
 import React from 'react';
 import {
-  StyleSheet,
   Text,
   TextInput,
   View,
-  Slider,
-  TouchableWithoutFeedback,
 } from 'react-native';
 import Styles from '../../styles/Styles';
 import Button from '../Button';

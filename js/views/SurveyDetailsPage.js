@@ -22,7 +22,6 @@ import CalendarPage from './CalendarPage';
 import { acceptSurvey, declineSurvey } from '../api/Surveys';
 import { getFormAvailability, loadCachedForms, loadCachedFormDataByTriggerId } from '../api/Forms';
 import { loadCachedQuestionsFromForms } from '../api/Questions';
-import { checkSurveyTimeTriggers } from '../api/Triggers';
 import { InvitationStatus, markInvitationStatus, loadCachedInvitationById } from '../api/Invitations';
 
 const SurveyDetailsPage = React.createClass({
@@ -43,7 +42,7 @@ const SurveyDetailsPage = React.createClass({
   componentDidMount() {
     const renderDelay = Platform.OS === 'android' ? 300 : 50;
 
-    setTimeout(()=>{
+    setTimeout(() => {
       if (!this.cancelCallbacks) {
         const invitation = loadCachedInvitationById(this.props.survey.id);
         const forms = loadCachedForms(this.props.survey.id);
@@ -80,14 +79,13 @@ const SurveyDetailsPage = React.createClass({
 
   /* Methods */
   acceptCurrentSurvey() {
-    const self = this;
     const status = InvitationStatus.ACCEPTED;
-    
+
     this.setState({
       status: status,
       acceptText: 'Saving ...',
-    }, ()=>{
-      markInvitationStatus(this.props.survey.id, status, (err, res) => {
+    }, () => {
+      markInvitationStatus(this.props.survey.id, status, (err) => {
         this.setState({
           acceptText: 'Accept',
         });
@@ -95,30 +93,36 @@ const SurveyDetailsPage = React.createClass({
           console.warn(err);
           return;
         }
-        acceptSurvey(self.props.survey, (err, result) => {
-          if (!self.cancelCallbacks) {
-            self.getSurveyData();
+        acceptSurvey(this.props.survey, (err2) => {
+          if (err2) {
+            console.warn(err);
+            return;
+          }
+          if (!this.cancelCallbacks) {
+            this.getSurveyData();
           }
         });
-        self.getSurveyData();
+        this.getSurveyData();
       });
     });
   },
 
   declineCurrentSurvey() {
-    if (this.state.status != 'accepted') {
-      this.confirmDeclineCurrentSurvey();
-    } else {
+    if (this.state.status === 'accepted') {
       Alert.alert(
         'Decline survey',
         'Are you sure you\'d like to decline this accepted survey?',
         [
-          {text: 'Cancel', onPress: () => {console.log('Survey decline canceled')}, style: 'cancel'},
+          {text: 'Cancel', style: 'cancel', onPress: () => {
+            console.log('Survey decline canceled');
+          }},
           {text: 'OK', onPress: () => {
             this.confirmDeclineCurrentSurvey();
           }},
         ]
       );
+    } else {
+      this.confirmDeclineCurrentSurvey();
     }
   },
 
@@ -168,7 +172,7 @@ const SurveyDetailsPage = React.createClass({
 
   navigateToForms(type) {
     const triggerId = this.state.availability.currentTrigger.id;
-    let form;
+    let form = {};
     if (triggerId) {
       const data = loadCachedFormDataByTriggerId(triggerId, type);
       form = data.form;
@@ -176,7 +180,7 @@ const SurveyDetailsPage = React.createClass({
 
     this.props.navigator.push({
       path: 'form',
-      title: this.props.survey.title + ': ' + form.title,
+      title: this.props.survey.title,
       survey: this.props.survey,
       form: form,
       type: type,
@@ -189,11 +193,15 @@ const SurveyDetailsPage = React.createClass({
 
   /* Render */
   renderAcceptButtons() {
+    // Accept button
     let acceptButtonStyle = [Styles.survey.acceptButton];
     let acceptButtonTextStyle = {color: Color.positive};
+    let acceptedButtonContainerStyle = {};
+    let acceptIconColor = Color.background2;
+    // Decline button
     let declineButtonStyle = [Styles.survey.declineButton];
     let declineButtonTextStyle = {color: Color.warning};
-    let acceptedButtonContainerStyle = {};
+    let declineIconColor = Color.background2;
 
     if (this.state.status === 'accepted') {
       acceptButtonStyle.push({backgroundColor: Color.positive});
@@ -204,19 +212,21 @@ const SurveyDetailsPage = React.createClass({
         borderTopWidth: 0,
         borderColor: Color.background1,
       };
+      acceptIconColor = Color.positive;
     } else if (this.state.status === 'declined') {
       declineButtonStyle.push({backgroundColor: Color.warning});
       declineButtonTextStyle = {color: Color.background2};
+      declineIconColor = Color.warning;
     }
 
     return (
       <View style={[Styles.survey.acceptanceButtons, acceptedButtonContainerStyle]}>
         <Button style={acceptButtonStyle} textStyle={acceptButtonTextStyle} action={this.acceptCurrentSurvey}>
-          <Icon name='check-circle' size={18} color={this.state.status === 'accepted' ?  Color.background2 : Color.positive} />
+          <Icon name='check-circle' size={18} color={acceptIconColor} />
           <Text> {this.state.acceptText} </Text>
         </Button>
         <Button style={declineButtonStyle} textStyle={declineButtonTextStyle} action={this.declineCurrentSurvey}>
-          <Icon name='times-circle' size={18} color={this.state.status === 'declined' ?  Color.background2 : Color.warning} />
+          <Icon name='times-circle' size={18} color={declineIconColor} />
           <Text> {this.state.declineText} </Text>
         </Button>
       </View>
@@ -256,15 +266,15 @@ const SurveyDetailsPage = React.createClass({
           </Text>
         </View>
       );
-    } else {
-      return (
-        <View style={Styles.survey.surveyNotes}>
-          <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>
-            No forms currently available.
-          </Text>
-        </View>
-      );
     }
+
+    return (
+      <View style={Styles.survey.surveyNotes}>
+        <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>
+          No forms currently available.
+        </Text>
+      </View>
+    );
   },
 
   renderSurveyInfoPage() {
@@ -276,21 +286,20 @@ const SurveyDetailsPage = React.createClass({
           </View>
 
           {
-            this.state.status === InvitationStatus.ACCEPTED && this.state.questionCount > 0 ?
-            <View style={Styles.survey.surveyStats}>
-              <View style={Styles.survey.surveyStatsBlock}>
-                <Text>{this.state.formCount} Forms</Text>
+            this.state.status === InvitationStatus.ACCEPTED && this.state.questionCount > 0
+            ? <View style={Styles.survey.surveyStats}>
+                <View style={Styles.survey.surveyStatsBlock}>
+                  <Text>{this.state.formCount} Forms</Text>
+                </View>
+                <View style={Styles.survey.surveyStatsBlock}>
+                  <Text>{this.state.questionCount} Questions</Text>
+                </View>
               </View>
-              <View style={Styles.survey.surveyStatsBlock}>
-                <Text>{this.state.questionCount} Questions</Text>
+            : <View style={Styles.survey.surveyStats}>
+                <View style={Styles.survey.surveyStatsBlock}>
+                  <Text>Contains {this.state.formCount} forms total.</Text>
+                </View>
               </View>
-            </View>
-            :
-            <View style={Styles.survey.surveyStats}>
-              <View style={Styles.survey.surveyStatsBlock}>
-                <Text>Contains {this.state.formCount} forms total.</Text>
-              </View>
-            </View>
           }
 
           <View style={{padding: 30}}>

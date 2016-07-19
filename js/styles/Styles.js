@@ -25,7 +25,6 @@ const Styles = {
   question: QuestionStyles,
   profile: ProfileStyles,
   calendar: CalendarStyles,
-  toast: ToastStyles,
 };
 
 module.exports = Styles;
