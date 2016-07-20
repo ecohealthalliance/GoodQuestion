@@ -77,6 +77,7 @@ export function clearCachedForms(surveyId) {
 // Loads Form data from a single Survey and retuns it via callback after the related questions have also been fetched.
 export function loadForms(survey, callback) {
   clearCachedForms(survey.id)
+  console.log(survey)
   const surveyFormRelations = survey.get('forms')
   if (surveyFormRelations) {
     surveyFormRelations.query().ascending("createdAt").find({
@@ -87,8 +88,6 @@ export function loadForms(survey, callback) {
           // Only include the current form if there have been no submissions to it yet.
           if(submission.length == 0){
             cacheParseForm(form, survey.id)
-            loadTriggers(form, survey)
-            loadQuestions(form)
           }
         }
         if (callback) callback(null, results, survey)
@@ -103,6 +102,69 @@ export function loadForms(survey, callback) {
   }
 }
 
+
+/**
+ * Loads Form data from Parse, then caches it.
+ * Also collects and caches Question/Trigger data related to those forms.
+ * @param  {string}   surveyId ID of the Survey stored in the Parse server.
+ * @param  {Function} callback Callback function to return after Questions for each form have been updated. Can return multiple times to update components.
+ */
+export function loadParseFormDataBySurveyId(surveyId, callback) {
+  const Survey = Parse.Object.extend("Survey");
+  const surveyQuery = new Parse.Query(Survey);
+  // surveyQuery.equalTo("id", surveyId);
+  
+  // Query the Parse server for the target survey.
+  surveyQuery.get(surveyId, {
+    success: function(survey) {
+      if (survey) {
+        const surveyFormRelations = survey.get('forms');
+        
+        // Find the form relations of the survey.
+        if (surveyFormRelations) {
+          surveyFormRelations.query().ascending("createdAt").find({
+            success: function(forms) {
+              // If data was returned, prune the old cache and refresh with new data.
+              clearCachedForms(surveyId);
+              for (let i = 0; i < forms.length; i++) {
+                let form = forms[i];
+                let submission = realm.objects('Submission').filtered(`formId = "${form.id}"`);
+                // Only include the current form if there have been no submissions to it yet.
+                if (submission.length == 0) {
+                  cacheParseForm(form, survey.id);
+                  loadTriggers(form, survey);
+                  loadQuestions(form, (err, questions)=>{
+                    callback(null, forms, survey);
+                  });
+                }
+              }
+            },
+            error: function(error, forms) {
+              console.warn("Error: " + error.code + " " + error.message);
+              if (callback) callback(error, forms, survey);
+            }
+          });
+        } else {
+          console.warn('No survey relations found with surveyId ' + surveyId);
+        }
+      } else {
+        console.warn('No surveys found with id ' + surveyId);
+      }
+    },
+
+    error: function(error) {
+      console.warn("Error: " + error.code + " " + error.message);
+      if (callback) callback(error);
+    }
+
+
+  })
+}
+
+/**
+ * Tags notifications and triggers as completed after a form has been filled.
+ * @param  {string} formId ID of the completed form
+ */
 export function completeForm(formId) {
   console.log('COMPLETING FORM: ' + formId);
 

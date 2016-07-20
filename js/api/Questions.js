@@ -43,7 +43,10 @@ export function loadCachedQuestions(formId) {
  * @param {array} forms, an array of forms
  */
 export function loadCachedQuestionsFromForms(forms) {
-  return realm.objects('Question').filtered(forms.map((form) => `formId == "${form.id}"`).join(' OR ')).sorted('order');
+  return realm.objects('Question')
+    .filtered(forms.map((form) => `formId == "${form.id}"`)
+    .join(' OR '))
+    .sorted('order');
 }
 
 // Queries the connected Parse server for a list of Questions.

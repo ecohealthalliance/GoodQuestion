@@ -4,6 +4,7 @@ import Parse from 'parse/react-native'
 import realm from '../data/Realm'
 import { loadAllAcceptedSurveys } from './Surveys'
 import { loadAcceptedInvitations } from '../api/Invitations'
+import { removeGeofenceById, setupGeofences, addGeofence } from '../api/Geofencing'
 
 // Queries the connected Parse server for a list of Triggers.
 export function loadTriggers(form, survey, callback) {
@@ -16,11 +17,12 @@ export function loadTriggers(form, survey, callback) {
         success: function(results) {
           for (var i = 0; i < results.length; i++) {
             if (results[i].get('type') === 'datetime') {
-              cacheTimeTrigger(results[i], form, survey)
+              cacheTimeTrigger(results[i], form, survey);
             } else if (results[i].get('type') === 'geofence') {
-              cacheGeofenceTrigger(results[i], form, survey)
+              cacheGeofenceTrigger(results[i], form, survey);
             }
           }
+
           if (callback) callback(null, results)
         },
         error: function(error, results) {
@@ -46,38 +48,37 @@ export function loadCachedTimeTriggers(options = {}, callback) {
     if (err) {
       console.warn(err);
       callback(err, []);
-      return
+      return;
     }
 
     let triggers = [];
-    const responseLength = response.length;
-
     let filter = '';
     let filterOptions = '';
-    if (options.excludeCompleted) filterOptions += ' AND completed == false';
     if (options.excludeCompleted) filterOptions += ' AND completed == false';
     if (options.excludeExpired) filterOptions += ' AND expired == false';
     if (options.includeOnlyTriggered) filterOptions += ' AND triggered == true';
     
     if (options.surveyId) {
-      filter = `surveyId = "${options.surveyId.id}"${filterOptions}`;
+      filter = `surveyId = "${options.surveyId}"${filterOptions}`;
       triggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
     } else {
+      const responseLength = response.length;
       for (var i = 0; i < responseLength; i++) {
         filter = `surveyId = "${response[i].id}"${filterOptions}`;
         let surveyTriggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
         triggers = _.unionBy(triggers, surveyTriggers, 'id');
       }
     }
+    
     callback(null, triggers);
-  })
+  });
 }
 
 /**
  * Fetches all cached geofence triggers for the accepted surveys
  * @return {object}  Realm object containing an array of 'GeofenceTrigger' objects,
  */
-export function loadAllCachedGeofenceTriggers(options = {}, callback) {
+export function loadCachedGeofenceTriggers(options = {}, callback) {
   loadAllAcceptedSurveys((err, response) => {
     if (err) {
       console.warn(err);
@@ -85,13 +86,22 @@ export function loadAllCachedGeofenceTriggers(options = {}, callback) {
       return
     }
     
+    let filter = '';
+    let filterOptions = '';
     let triggers = [];
-    const responseLength = response.length;
-    for (var i = 0; i < responseLength; i++) {
-      let filter = `surveyId = "${response[i].id}"`;
-      if (options.excludeCompleted) filter += ' AND completed == false';
-      let surveyTriggers = Array.from(realm.objects('GeofenceTrigger').filtered(filter));
-      triggers = _.unionBy(triggers, surveyTriggers, 'id');
+    if (options.excludeCompleted) filterOptions += ' AND completed == false';
+    if (options.includeOnlyTriggered) filterOptions += ' AND triggered == true';
+
+    if (options.surveyId) {
+      filter = `surveyId = "${options.surveyId}"${filterOptions}`;
+      triggers = Array.from(realm.objects('GeofenceTrigger').filtered(filter));
+    } else {
+      const responseLength = response.length;
+      for (var i = 0; i < responseLength; i++) {
+        filter = `surveyId = "${response[i].id}"${filterOptions}`;
+        let surveyTriggers = Array.from(realm.objects('GeofenceTrigger').filtered(filter));
+        triggers = _.unionBy(triggers, surveyTriggers, 'id');
+      }
     }
 
     callback(null, triggers);
@@ -126,20 +136,24 @@ export function cacheTimeTrigger(trigger, form, survey) {
  */
 export function cacheGeofenceTrigger(trigger, form, survey) {
   try {
-    realm.write(() => {
-      realm.create('GeofenceTrigger', {
-        id: trigger.id,
-        formId: form.id,
-        surveyId: survey.id,
+    let newTrigger = {
+      id: trigger.id,
+      formId: form.id,
+      surveyId: survey.id,
 
-        title: form.get('title'),
-        latitude: trigger.get('properties').latitude,
-        longitude: trigger.get('properties').longitude,
-        radius: trigger.get('properties').radius || 10,
-      }, true)
-    })
+      title: form.get('title'),
+      latitude: trigger.get('properties').latitude,
+      longitude: trigger.get('properties').longitude,
+      radius: trigger.get('properties').radius || 10,
+
+      updateTimestamp: Date.now(),
+    };
+    realm.write(() => {
+      realm.create('GeofenceTrigger', newTrigger, true);
+    });
+    addGeofence(newTrigger);
   } catch(e) {
-    console.warn(e)
+    console.warn(e);
   }
 }
 
@@ -198,5 +212,26 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
         }
       }
     }
+  });
+}
+
+/**
+ * Removes triggers from Realm cache of a specified Survey
+ * @param  {string} surveyId The ID of the target survey
+ */
+export function removeTriggers(surveyId) {
+  const timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId="${surveyId}"`);
+  const geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`);
+  const geofenceTriggersLength = geofenceTriggers.length;
+
+  for (var i = geofenceTriggersLength - 1; i >= 0; i--) {
+    if (geofenceTriggers[i]) {
+      removeGeofenceById(geofenceTriggers[i].id);
+    }
+  }
+
+  realm.write(() => {
+    realm.delete(timeTriggers);
+    realm.delete(geofenceTriggers);
   });
 }

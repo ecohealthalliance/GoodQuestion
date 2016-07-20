@@ -10,7 +10,7 @@ import _ from 'lodash';
 import Styles from '../styles/Styles';
 import MapView from 'react-native-maps';
 
-import { loadAllCachedGeofenceTriggers } from '../api/Triggers';
+import { loadCachedGeofenceTriggers } from '../api/Triggers';
 import { loadCachedFormDataByGeofence } from '../api/Forms';
 import { BackgroundGeolocation } from '../api/BackgroundProcess';
 import { setActiveMap, clearActiveMap, getUserLocationData } from '../api/Geofencing';
@@ -21,12 +21,10 @@ import Loading from '../components/Loading';
 const MapPage = React.createClass ({
   propTypes: {
     navigator: React.PropTypes.object.isRequired,
-    triggers: React.PropTypes.object
+    survey: React.PropTypes.object
   },
 
   getInitialState() {
-    let triggers = this.props.triggers
-
     return {
       stage: 'loading',
       updates: 0,
@@ -34,14 +32,17 @@ const MapPage = React.createClass ({
       longitude: -81.58495,
       zoom: 0.01,
       markers: [],
-      triggers: triggers || [],
+      triggers: [],
     }
   },
 
   componentDidMount() {
     const self = this;
 
-    loadAllCachedGeofenceTriggers({excludeCompleted: true}, (err, response) => {
+    loadCachedGeofenceTriggers({
+      surveyId: this.props.survey ? this.props.survey.id : false, 
+      excludeCompleted: true,
+    }, (err, response) => {
       setActiveMap(self);
       self.active = true;
       self.generateTriggerMarkers(response);
@@ -50,7 +51,7 @@ const MapPage = React.createClass ({
         if (!self.cancelCallbacks) {
           self.setState({stage: 'ready'});
         }
-      }, 350);
+      }, 300);
     })
   },
 
