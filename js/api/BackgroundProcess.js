@@ -75,7 +75,7 @@ export function configureGeolocationService(options = {}, callback) {
         stopTimeout: 5,
 
         // Application config
-        debug: false,
+        debug: true,
 
         // Android config
         forceReloadOnLocationChange: false,
@@ -110,7 +110,6 @@ export function initializeGeolocationService() {
   // Temporarily disable this service for RN 0.29 migration
   // return;
 
-  BackgroundGeolocation.stop();
   configureGeolocationService({isInitial: true}, () => {
 
     BackgroundGeolocation.on('error', (error) => {
