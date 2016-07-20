@@ -6,11 +6,26 @@ import React, {
   Platform,
   Animated,
   Easing,
+  StyleSheet,
 } from 'react-native';
 
 import Styles from '../styles/Styles';
 import Color from '../styles/Color';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
+const _styles = StyleSheet.create({
+  notificationIcon: {
+    position: 'absolute',
+    top: 20,
+    right: 16,
+    backgroundColor: Color.warning,
+    width: 12,
+    height: 12,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: Color.background1
+  },
+});
 
 const Header = React.createClass({
   propTypes: {
@@ -114,6 +129,7 @@ const Header = React.createClass({
       <TouchableWithoutFeedback onPress={this.props.openDrawer}>
         <View style={Styles.header.navBarRightButton}>
           <Icon name='bars' size={25} color='#FFFFFF' />
+          <View style={_styles.notificationIcon} />
         </View>
       </TouchableWithoutFeedback>
     );
@@ -144,13 +160,13 @@ const Header = React.createClass({
     return (
       <View style={navbarStyles}>
         {this.renderIOSPadding()}
-          <TouchableWithoutFeedback onPress={this.navigateBack}>
-            {
-            this.state.index > 0
-              ? <View style={Styles.header.navBarLeftButton}><Icon name='chevron-left' size={25} color='#FFFFFF' /></View>
-              : <View style={Styles.header.navBarLeftButton}><Icon name='chevron-left' size={25} color={Color.background1} /></View>
-            }
-          </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback onPress={this.navigateBack}>
+          {
+          this.state.index > 0
+            ? <View style={Styles.header.navBarLeftButton}><Icon name='chevron-left' size={25} color='#FFFFFF' /></View>
+            : <View style={Styles.header.navBarLeftButton}><Icon name='chevron-left' size={25} color={Color.background1} /></View>
+          }
+        </TouchableWithoutFeedback>
         <View style={Styles.header.navBarTitle}>
           <Animated.Text
             source={{uri: 'http://i.imgur.com/XMKOH81.jpg'}}

@@ -1,5 +1,8 @@
 import realm from '../data/Realm';
 
+export let newNotifications = 0;
+
+
 // Finds and returns a list of pending Notifications from Realm
 export function loadNotifications() {
   return realm.objects('Notification').filtered(
