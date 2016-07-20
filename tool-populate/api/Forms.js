@@ -24,10 +24,10 @@ function randomHour(dayTimestamp) {
   return date;
 }
 
-function createDemoForm(parentSurvey, dayStartTimestamp) {
+function createDemoForm(parentSurvey, dayStartTimestamp, order) {
   var newForm = new Form()
   var acl = new Parse.ACL()
-  newForm.set('title', 'Form ' + Date.now())
+  newForm.set('title', 'Form #' + order)
   newForm.set('order', 1)
   newForm.set('deleted', false)
   newForm.save(null, useMasterKey)
