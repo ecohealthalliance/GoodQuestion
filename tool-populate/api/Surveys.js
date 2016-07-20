@@ -30,23 +30,27 @@ function createDemoSurvey (surveyData, startDate, endDate) {
   var endDateTimestamp = parseDate(endDate)
   var numberOfDays = dayDiff(startDateTimestamp, endDateTimestamp)
   var newSurvey = new Survey()
-  newSurvey.set('title', surveyData.title)
-  newSurvey.set('description', surveyData.description)
-  newSurvey.set('user', surveyData.user)
-  newSurvey.set('createdAt', surveyData.created)
-  newSurvey.set('active', true)
-  newSurvey.set('deleted', false)
-  newSurvey.save(null, useMasterKey)
-    .then(function(newSurvey){
-      for (var i = 0; i < numberOfDays; i++) {
-        Forms.createDemoForm(newSurvey, startDateTimestamp + i * 86400000)
-      }
-    })
-    .then(function(){
-      return Users.setUserRights(newSurvey)
-    })
-    .fail(function(error){
-      console.warn('Failed to create demo Survey, error code: ' + error.message)
+  var query = new Parse.Query('Survey')
+  query.count(useMasterKey)
+    .then(function(surveyCount){
+      newSurvey.set('title', surveyData.title +' #'+ ++surveyCount)
+      newSurvey.set('description', surveyData.description)
+      newSurvey.set('user', surveyData.user)
+      newSurvey.set('createdAt', surveyData.created)
+      newSurvey.set('active', true)
+      newSurvey.set('deleted', false)
+      newSurvey.save(null, useMasterKey)
+        .then(function(newSurvey){
+          for (var i = 0; i < numberOfDays; i++) {
+            Forms.createDemoForm(newSurvey, startDateTimestamp + i * 86400000)
+          }
+        })
+        .then(function(){
+          return Users.setUserRights(newSurvey)
+        })
+        .fail(function(error){
+          console.warn('Failed to create demo Survey, error code: ' + error.message)
+        })
     })
 }
 

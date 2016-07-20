@@ -28,7 +28,7 @@ const DemoData = {
   },
   surveys: [
     {
-      title: 'Demo Survey #1',
+      title: 'Demo Survey',
       description: 'Demo survey for testing various things',
       created: Date.now() - 10000,
     }
