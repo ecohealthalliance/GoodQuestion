@@ -4,8 +4,9 @@ import React, {
 } from 'react-native';
 
 import Styles from '../styles/Styles';
-import { loadNotifications } from '../api/Notifications';
+import { loadNotifications, markNotificationsAsViewed, clearNotifications } from '../api/Notifications';
 import { loadCachedFormDataById } from '../api/Forms';
+import Button from '../components/Button';
 import Notification from '../components/Notification';
 
 const NotificationsPage = React.createClass({
@@ -23,7 +24,7 @@ const NotificationsPage = React.createClass({
   },
 
   componentDidMount() {
-    // this.loadList()
+    markNotificationsAsViewed(this.state.list);
   },
 
   componentWillUnmount() {
@@ -62,6 +63,16 @@ const NotificationsPage = React.createClass({
     });
   },
 
+  handleClear() {
+    const currentNotifications = this.state.list;
+    this.setState({
+      list: [],
+      dataSource: this.state.dataSource.cloneWithRows([]),
+    }, () => {
+      clearNotifications(currentNotifications);
+    });
+  },
+
   /* Render */
   renderItem(item) {
     return (
@@ -77,6 +88,7 @@ const NotificationsPage = React.createClass({
           contentContainerStyle = { [Styles.container.default, Styles.survey.list, {flex: 0}] }
           enableEmptySections
         />
+        <Button action={this.handleClear}>Clear</Button>
       </View>
     );
   },

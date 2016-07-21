@@ -27,10 +27,26 @@ const _styles = StyleSheet.create({
 });
 
 export default React.createClass({
+  propTypes: {
+    counter: React.PropTypes.number,
+  },
+
+  getDefaultProps() {
+    return {
+      counter: 0,
+    };
+  },
+
   getInitialState() {
     return {
-      counter: 25,
+      counter: this.props.counter,
     };
+  },
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      counter: nextProps.counter,
+    });
   },
 
   /* Render */

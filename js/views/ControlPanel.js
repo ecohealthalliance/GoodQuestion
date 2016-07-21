@@ -4,6 +4,7 @@ import React, {
   Text,
   Linking,
 } from 'react-native';
+import Store from '../data/Store';
 import Styles from '../styles/Styles';
 import ControlPanelItem from '../components/ControlPanelItem';
 import { version } from '../../package';
@@ -15,12 +16,28 @@ export default React.createClass({
     this.nextTitle = '';
   },
 
+  getInitialState() {
+    return {
+      notificationCount: Store.newNotifications,
+    };
+  },
+
+
+  /* Methods */
   navigateToView(path, title) {
     this.navigating = true;
     this.nextPath = path;
     this.nextTitle = title;
-    // this.props.changeRoute()
     this.props.closeDrawer();
+  },
+
+  navigateToNotificationsView() {
+    Store.newNotifications = 0;
+    this.setState({
+      notificationCount: 0,
+    }, () => {
+      this.navigateToView('notifications', 'Notifications');
+    });
   },
 
   handleLogout() {
@@ -40,8 +57,17 @@ export default React.createClass({
     );
   },
 
-  render() {
+  updateNotifications() {
+    const notifications = loadNotifications();
+    let count = notifications.length;
+    if (count > 99) {
+      count = 99;
+    }
+    this.setState({notificationCount: count});
+  },
 
+  /* Render */
+  render() {
     return (
       <View style={Styles.controlPanel.container}>
         <View style={Styles.controlPanel.itemList}>
@@ -50,8 +76,9 @@ export default React.createClass({
             text='Surveys'
           />
           <ControlPanelItem
-            onPress={() => this.navigateToView('notifications', 'Notifications')}
+            onPress={this.navigateToNotificationsView}
             text='Notifications'
+            counter={this.state.notificationCount}
           />
           <ControlPanelItem
             onPress={() => this.navigateToView('profile', 'Profile')}

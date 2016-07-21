@@ -8,6 +8,10 @@ Notification.schema = {
     title: 'string',
     description: 'string',
     datetime: 'date',
+    viewed: {
+      type: 'bool',
+      default: false,
+    },
     complete: {
       type: 'bool',
       default: false,

@@ -8,10 +8,12 @@ import React, {
   Easing,
   StyleSheet,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Styles from '../styles/Styles';
 import Color from '../styles/Color';
-import Icon from 'react-native-vector-icons/FontAwesome';
+
+import Store from '../data/Store';
 
 const _styles = StyleSheet.create({
   notificationIcon: {
@@ -44,6 +46,7 @@ const Header = React.createClass({
       bounceValue: new Animated.Value(0),
       fadeAnim: new Animated.Value(0),
       translateAnim: new Animated.Value(0),
+      hasNewNotifications: Store.newNotifications > 0,
     };
   },
 
@@ -91,10 +94,15 @@ const Header = React.createClass({
         title: title,
         index: position,
         path: path,
+        hasNewNotifications: Store.newNotifications,
       });
     } catch (e) {
       console.warn(e);
     }
+  },
+
+  updateNotifications() {
+    this.setState({hasNewNotifications: Store.newNotifications > 0});
   },
 
   backToLogin() {
@@ -129,7 +137,11 @@ const Header = React.createClass({
       <TouchableWithoutFeedback onPress={this.props.openDrawer}>
         <View style={Styles.header.navBarRightButton}>
           <Icon name='bars' size={25} color='#FFFFFF' />
-          <View style={_styles.notificationIcon} />
+          {
+            this.state.hasNewNotifications
+            ? <View style={_styles.notificationIcon} />
+            : null
+          }
         </View>
       </TouchableWithoutFeedback>
     );
