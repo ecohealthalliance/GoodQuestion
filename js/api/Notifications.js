@@ -15,7 +15,7 @@ import PushNotification from 'react-native-push-notification';
 // Finds and returns a list of pending Notifications from Realm
 export function loadNotifications() {
   return realm.objects('Notification').filtered(
-    'complete == false').sorted(
+    'completed == false').sorted(
       'datetime', true);
 }
 

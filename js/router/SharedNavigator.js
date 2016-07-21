@@ -49,7 +49,6 @@ import { loadCachedFormDataById } from '../api/Forms';
 // Background
 import { initializeGeolocationService, handleAppStateChange } from '../api/BackgroundProcess';
 
-initializeGeolocationService();
 connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 
 let navigator = null;
@@ -124,7 +123,7 @@ const SharedNavigator = React.createClass({
   componentDidMount() {
     isAuthenticated((authenticated) => {
       if (authenticated) {
-        this.checkNotificationPermissions();
+        this.initializeUserServices();
       }
       this.setState({
         isAuthenticated: authenticated,
@@ -205,6 +204,11 @@ const SharedNavigator = React.createClass({
     }, () => {
       navigator.resetTo({path: 'surveylist', title: 'Surveys'});
     });
+  },
+
+  initializeUserServices() {
+    this.checkNotificationPermissions();
+    initializeGeolocationService();
   },
 
   logoutHandler() {

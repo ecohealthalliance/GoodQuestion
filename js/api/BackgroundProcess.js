@@ -56,7 +56,7 @@ export function configureGeolocationService(options = {}, callback) {
       };
     } else {
       // High Accuracy Mode
-      console.log('Configuring Geolocation: High Accuracy Mode');
+      console.log('BackgroundGeolocation.configure');
       config = {
         // License validations
         orderId: Settings.licenses.BackgroundGeolocation.bundleId,
@@ -107,21 +107,21 @@ export function configureGeolocationService(options = {}, callback) {
  * Stops any running background services and initializes a new process.
  */
 export function initializeGeolocationService() {
-  // Temporarily disable this service for RN 0.29 migration
-  // return;
+  // Temporary fix: Start the library before configuration to prevent a native crash.
+  BackgroundGeolocation.start(() => {
+    configureGeolocationService({isInitial: true}, () => {
 
-  configureGeolocationService({isInitial: true}, () => {
+      BackgroundGeolocation.on('error', (error) => {
+        printTimelog('error'); // eslint-disable-line no-use-before-define
+        console.log(`${error.type} Error: ${error.code}`);
+      });
 
-    BackgroundGeolocation.on('error', (error) => {
-      printTimelog('error'); // eslint-disable-line no-use-before-define
-      console.log(`${error.type} Error: ${error.code}`);
-    });
-
-    // Create initial geofence hooks.
-    setupGeofences(() => {
-      BackgroundGeolocation.start(() => {
-        Store.backgroundServiceState = 'started';
-        console.info('Geolocation tracking started.');
+      // Create initial geofence hooks.
+      setupGeofences(() => {
+        BackgroundGeolocation.start(() => {
+          Store.backgroundServiceState = 'started';
+          console.info('Geolocation tracking started.');
+        });
       });
     });
   });
