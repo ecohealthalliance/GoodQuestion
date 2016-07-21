@@ -1,4 +1,5 @@
 import React, {
+  Alert,
   View,
   ListView,
 } from 'react-native';
@@ -13,7 +14,8 @@ const NotificationsPage = React.createClass({
   title: 'Notifications',
 
   getInitialState() {
-    const pendingNotifications = loadNotifications();
+    let pendingNotifications = loadNotifications();
+    pendingNotifications = [...pendingNotifications, ...pendingNotifications, ...pendingNotifications, ...pendingNotifications, ...pendingNotifications]
     const dataSource = new ListView.DataSource({
       rowHasChanged: (row1, row2) => row1 !== row2,
     });
@@ -64,13 +66,18 @@ const NotificationsPage = React.createClass({
   },
 
   handleClear() {
-    const currentNotifications = this.state.list;
-    this.setState({
-      list: [],
-      dataSource: this.state.dataSource.cloneWithRows([]),
-    }, () => {
-      clearNotifications(currentNotifications);
-    });
+    Alert.alert('Confirm', 'Are you sure you would like to clear ALL notifications?', [
+      {text: 'Cancel', onPress: () => { }, style: 'cancel' },
+      {text: 'OK', onPress: () => {
+        const currentNotifications = this.state.list;
+        this.setState({
+          list: [],
+          dataSource: this.state.dataSource.cloneWithRows([]),
+        }, () => {
+          clearNotifications(currentNotifications);
+        });
+      }},
+    ]);
   },
 
   /* Render */
@@ -83,12 +90,19 @@ const NotificationsPage = React.createClass({
   render() {
     return (
       <View style={[Styles.container.default, {flex: 1}]}>
-        <ListView dataSource = { this.state.dataSource }
-          renderRow = { this.renderItem }
-          contentContainerStyle = { [Styles.container.default, Styles.survey.list, {flex: 0}] }
-          enableEmptySections
-        />
-        <Button action={this.handleClear}>Clear</Button>
+        <View style={{flex: 1, paddingBottom: 60}}>
+          <ListView dataSource = { this.state.dataSource }
+            renderRow = { this.renderItem }
+            contentContainerStyle = { [Styles.container.default, Styles.survey.list, {flex: 0}] }
+            enableEmptySections
+          />
+        </View>
+        <Button
+          action={this.handleClear}
+          style={Styles.form.footerButton}
+          textStyle={[Styles.form.registerText, Styles.form.registerTextActive]}>
+          Clear
+        </Button>
       </View>
     );
   },

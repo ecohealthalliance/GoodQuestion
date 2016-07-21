@@ -5,7 +5,8 @@ import Settings from '../settings';
 import realm from '../data/Realm';
 import Store from '../data/Store';
 
-import { upsertInstallation } from '../api/Installations';
+import { loadCachedFormDataById } from './Forms';
+import { upsertInstallation } from './Installations';
 
 
 export function initializeNotifications() {
@@ -43,6 +44,8 @@ function _onRegister(registration) {
 }
 
 function _onNotification(notification) {
+  console.log("GOT NOTIFICATION");
+  console.log(notification);
   if (typeof notification === 'undefined') {
     return;
   }
@@ -93,13 +96,14 @@ export function markNotificationsAsViewed(notifications) {
   });
 }
 
-export function clearNotifications(notifications) {
-  const notificationLength = notifications.length;
-  console.warn(notifications)
+/**
+ * Deletes all current notifications
+ * @return {[type]} [description]
+ */
+export function clearNotifications() {
+  const notifications = loadNotifications();
   realm.write(() => {
-    for (let i = 0; i < notificationLength; i++) {
-      notifications[i].complete = true;
-    }
+    realm.delete(notifications);
   });
 }
 
