@@ -5,7 +5,7 @@ import { setupGeofences } from './Geofencing';
 
 const BackgroundGeolocation = Platform.OS === 'ios' ? require('react-native-background-geolocation') : require('react-native-background-geolocation-android');
 
-const startTimer = Date.now();
+let startTimer = Date.now();
 
 
 /**
@@ -56,7 +56,7 @@ export function configureGeolocationService(options = {}, callback) {
       };
     } else {
       // High Accuracy Mode
-      console.log('BackgroundGeolocation.configure');
+      console.log('Configuring Geolocation: High Accuracy Mode');
       config = {
         // License validations
         orderId: Settings.licenses.BackgroundGeolocation.bundleId,
@@ -75,7 +75,7 @@ export function configureGeolocationService(options = {}, callback) {
         stopTimeout: 5,
 
         // Application config
-        debug: true,
+        debug: false,
 
         // Android config
         forceReloadOnLocationChange: false,
@@ -104,9 +104,11 @@ export function configureGeolocationService(options = {}, callback) {
 }
 
 /**
- * Stops any running background services and initializes a new process.
+ * Starts and configures the native geolocation service.
+ * Sets up the initial set of geofences.
  */
 export function initializeGeolocationService() {
+  startTimer = Date.now();
   // Temporary fix: Start the library before configuration to prevent a native crash.
   BackgroundGeolocation.start(() => {
     configureGeolocationService({isInitial: true}, () => {
@@ -162,6 +164,10 @@ export function handleAppStateChange(state) {
   }
 }
 
+/**
+ * Prints the timing since the service was initialized. For debugging purposes.
+ * @param  {String} msg Message to log.
+ */
 function printTimelog(msg) {
   let timing = (Date.now() - startTimer) / 1000;
   timing = Math.ceil(timing);

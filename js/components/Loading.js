@@ -75,7 +75,7 @@ const Loading = React.createClass({
       );
     }
 
-    // Use a default loading animation for Android until RN gets custom native animation support.
+    // Use a default loading animation for Android until RN gets native custom animation support.
     const animation = {
       alignItems: 'center',
       justifyContent: 'center',
