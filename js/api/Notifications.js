@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Platform, AppState } from 'react-native';
 import PushNotification from 'react-native-push-notification';
 
 import Settings from '../settings';
@@ -27,6 +27,11 @@ export function initializeNotifications() {
   // Store count of new notifications
   const newNotifications = loadNotifications({newOnly: true});
   Store.newNotifications = newNotifications.length;
+
+  PushNotification.getScheduledLocalNotifications((notes) => {
+    console.log('notes');
+    console.log(notes);
+  });
 }
 
 function _onRegister(registration) {
@@ -49,18 +54,10 @@ function _onNotification(notification) {
   if (typeof notification === 'undefined') {
     return;
   }
-  // TODO determine the type of notification
   if (notification.hasOwnProperty('data') && notification.data.hasOwnProperty('formId')) {
-    const data = loadCachedFormDataById(notification.data.formId);
-    if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
-      return;
-    }
-    const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form, index: data.index};
-    // TODO sync remote and cached notifications
-    // addTimeTriggerNotification(data.survey.id, data.form.id, data.form.title, notification.message, new Date());
-    // We will only route the user if notification was remote
-    if (notification.foreground) {
+    if (notification.foreground && AppState.currentState === 'active') {
       Store.newNotifications++;
+      // addTimeTriggerNotification(data.survey.id, data.form.id, data.form.title, notification.message, new Date());
       if (this._header) {
         this._header.updateNotifications();
       }
@@ -68,6 +65,11 @@ function _onNotification(notification) {
         this._controlPanel.updateNotifications();
       }
     } else {
+      const data = loadCachedFormDataById(notification.data.formId);
+      if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
+        return;
+      }
+      const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form, index: data.index};
       if (Store.navigator) {
         Store.navigator.resetTo(path);
       } else {
@@ -94,6 +96,10 @@ export function markNotificationsAsViewed(notifications) {
       notifications[i].viewed = true;
     }
   });
+}
+
+export function syncNotifications() {
+
 }
 
 /**
