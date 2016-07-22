@@ -60,7 +60,7 @@ const MapPage = React.createClass({
         if (!this.cancelCallbacks) {
           this.setState({stage: 'ready'});
         }
-      }, 350);
+      }, 300);
     });
   },
 

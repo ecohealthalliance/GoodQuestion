@@ -109,21 +109,19 @@ export function configureGeolocationService(options = {}, callback) {
  */
 export function initializeGeolocationService() {
   startTimer = Date.now();
-  // Temporary fix: Start the library before configuration to prevent a native crash.
-  BackgroundGeolocation.start(() => {
-    configureGeolocationService({isInitial: true}, () => {
 
-      BackgroundGeolocation.on('error', (error) => {
-        printTimelog('error'); // eslint-disable-line no-use-before-define
-        console.log(`${error.type} Error: ${error.code}`);
-      });
+  configureGeolocationService({isInitial: true}, () => {
 
-      // Create initial geofence hooks.
-      setupGeofences(() => {
-        BackgroundGeolocation.start(() => {
-          Store.backgroundServiceState = 'started';
-          console.info('Geolocation tracking started.');
-        });
+    BackgroundGeolocation.on('error', (error) => {
+      printTimelog('error'); // eslint-disable-line no-use-before-define
+      console.log(`${error.type} Error: ${error.code}`);
+    });
+
+    // Create initial geofence hooks.
+    setupGeofences(() => {
+      BackgroundGeolocation.start(() => {
+        Store.backgroundServiceState = 'started';
+        console.info('Geolocation tracking started.');
       });
     });
   });
