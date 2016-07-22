@@ -48,36 +48,30 @@ export function loadCachedTimeTriggers(options = {}, callback) {
     if (err) {
       console.warn(err);
       callback(err, []);
-      return
+      return;
     }
-    
-    try {
 
-      let triggers = [];
-      let filter = '';
-      let filterOptions = '';
-      if (options.excludeCompleted) filterOptions += ' AND completed == false';
-      if (options.excludeExpired) filterOptions += ' AND expired == false';
-      if (options.includeOnlyTriggered) filterOptions += ' AND triggered == true';
-      
-      if (options.surveyId) {
-        filter = `surveyId = "${options.surveyId}"${filterOptions}`;
-        triggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
-      } else {
-        const responseLength = response.length;
-        for (var i = 0; i < responseLength; i++) {
-          filter = `surveyId = "${response[i].id}"${filterOptions}`;
-          let surveyTriggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
-          triggers = _.unionBy(triggers, surveyTriggers, 'id');
-        }
+    let triggers = [];
+    let filter = '';
+    let filterOptions = '';
+    if (options.excludeCompleted) filterOptions += ' AND completed == false';
+    if (options.excludeExpired) filterOptions += ' AND expired == false';
+    if (options.includeOnlyTriggered) filterOptions += ' AND triggered == true';
+    
+    if (options.surveyId) {
+      filter = `surveyId = "${options.surveyId}"${filterOptions}`;
+      triggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
+    } else {
+      const responseLength = response.length;
+      for (var i = 0; i < responseLength; i++) {
+        filter = `surveyId = "${response[i].id}"${filterOptions}`;
+        let surveyTriggers = Array.from(realm.objects('TimeTrigger').filtered(filter));
+        triggers = _.unionBy(triggers, surveyTriggers, 'id');
       }
-      
-      callback(null, triggers);
-    } catch (err) {
-      callback(err, []);
     }
     
-  })
+    callback(null, triggers);
+  });
 }
 
 /**

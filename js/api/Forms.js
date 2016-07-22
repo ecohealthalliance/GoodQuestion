@@ -205,7 +205,6 @@ export function loadParseFormDataBySurveyId(surveyId, callback) {
         }
       } else {
         console.warn('No surveys found with id ' + surveyId);
-        console.log(surveys)
       }
     },
 

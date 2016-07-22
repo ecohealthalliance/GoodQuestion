@@ -112,12 +112,15 @@ export function loadSurveyList(done) {
  */
 export function refreshAcceptedSurveyData(surveyId) {
   loadAllAcceptedSurveys((err, results) => {
+    if (err) {
+      return;
+    }
     if (surveyId) {
       const surveys = _.filter(results, (survey) => { return survey.id === surveyId });
       const survey = surveys[0];
 
       if (survey) {
-        // loadParseFormDataBySurveyId(survey.id);
+        loadParseFormDataBySurveyId(survey.id);
       }
     } else {
       const resultLength = results.length;
