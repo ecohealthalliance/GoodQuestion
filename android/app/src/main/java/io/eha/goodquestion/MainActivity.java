@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.react.ReactActivity;
+import com.microsoft.codepush.react.CodePush;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 
@@ -46,6 +47,11 @@ public class MainActivity extends ReactActivity {
         return io.eha.goodquestion.BuildConfig.DEBUG;
     }
 
+    @Override
+    protected String getJSBundleFile() {
+        return CodePush.getJSBundleFile();
+    }
+
     /**
      * A list of packages used by the app. If the app uses additional views
      * or modules besides the default ones, add more packages here.
@@ -54,8 +60,9 @@ public class MainActivity extends ReactActivity {
     protected List<ReactPackage> getPackages() {
         mReactNativePushNotificationPackage = new ReactNativePushNotificationPackage(this);
         return Arrays.<ReactPackage>asList(
-                new MainReactPackage(),
-                new RealmReactPackage(), mReactNativePushNotificationPackage
+            new MainReactPackage(),
+            new CodePush(this.getResources().getString(R.string.CODE_PUSH_KEY), this, io.eha.goodquestion.BuildConfig.DEBUG),
+            new RealmReactPackage(), mReactNativePushNotificationPackage
         );
     }
 

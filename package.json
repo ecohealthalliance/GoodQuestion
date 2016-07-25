@@ -19,6 +19,7 @@
     "react": "0.14.8",
     "react-native": "0.25.1",
     "react-native-checkbox": "https://github.com/dan-nyanko/react-native-checkbox#master",
+    "react-native-code-push": "^1.13.5-beta",
     "react-native-drawer": "2.2.2",
     "react-native-push-notification": "1.0.7",
     "react-native-vector-icons": "1.3.4",

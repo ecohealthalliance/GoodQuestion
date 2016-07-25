@@ -4,10 +4,12 @@ import React, {
   Navigator,
   BackAndroid,
   Alert,
+  AppState,
 } from 'react-native';
 
 import Drawer from 'react-native-drawer';
 import PushNotification from 'react-native-push-notification';
+import CodePush from 'react-native-code-push';
 
 import Settings from '../settings';
 
@@ -113,6 +115,14 @@ const SharedNavigator = React.createClass({
   },
 
   componentDidMount() {
+    // check for hot code push updates
+    CodePush.sync();
+    AppState.addEventListener('change', (newState) => {
+      if (newState === 'active') {
+        CodePush.sync();
+      }
+    });
+    // ask for permissions to push notifications
     if (Platform.OS === 'ios') {
       PushNotification.requestPermissions();
     }
