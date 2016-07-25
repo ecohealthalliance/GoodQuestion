@@ -1,5 +1,7 @@
-import React, {
-  Keyboard,
+import React from 'react';
+import {
+  // Keyboard,
+  DeviceEventEmitter,
   View,
   Platform,
   StyleSheet,
@@ -7,7 +9,6 @@ import React, {
 
 const _style = StyleSheet.create({
   container: {
-    // position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
@@ -33,30 +34,39 @@ const Footer = React.createClass({
     };
   },
 
-  componentWillMount () {
-    // if (Platform.OS === 'ios') {
-      Keyboard.addListener(Keyboard, 'keyboardWillShow', this.keyboardWillShow);
-      Keyboard.addListener(Keyboard, 'keyboardWillHide', this.keyboardWillHide);
-    // } else {
-      // Keyboard.addListener(Keyboard, 'KeyboardDidShow', this.keyboardWillShow);
-      // Keyboard.addListener(Keyboard, 'KeyboardDidHide', this.keyboardWillHide);
-    // }
+  componentDidMount() {
+    const updateListener = Platform.OS === 'android' ? 'keyboardDidShow' : 'keyboardWillShow';
+    const resetListener = Platform.OS === 'android' ? 'keyboardDidHide' : 'keyboardWillHide';
+    this._listeners = [
+      DeviceEventEmitter.addListener(updateListener, this.handleKeyboardShow),
+      DeviceEventEmitter.addListener(resetListener, this.handleKeyboardHide)
+    ];
+  },
+  
+  // RN 0.27+
+  // componentDidMount() {
+  //   const updateListener = Platform.OS === 'android' ? 'keyboardDidShow' : 'keyboardWillShow';
+  //   const resetListener = Platform.OS === 'android' ? 'keyboardDidHide' : 'keyboardWillHide';
+  //   this._listeners = [
+  //     Keyboard.addListener(updateListener, this.handleKeyboardShow),
+  //     Keyboard.addListener(resetListener, this.handleKeyboardHide)
+  //   ];
+  // },
+
+  componentWillUnmount() {
+    this._listeners.forEach(listener => listener.remove());
   },
 
   /* Methods */
-  keyboardWillShow() {
-    console.warn('keyboardWillShow')
-    console.warn('keyboardWillShow')
-    console.warn('keyboardWillShow')
+  handleKeyboardShow(frames) {
+    console.warn('KEYBOARD UP')
     this.setState({
       keyboardOpen: true,
     });
   },
 
-  keyboardWillHide() {
-    console.warn('keyboardWillHide')
-    console.warn('keyboardWillHide')
-    console.warn('keyboardWillHide')
+  handleKeyboardHide() {
+    console.warn('KEYBOARD DOWN')
     this.setState({
       keyboardOpen: false,
     });
@@ -68,7 +78,7 @@ const Footer = React.createClass({
 
     if (this.props.hideWithKeyboard && this.state.keyboardOpen) {
       dynamicContainer = {
-        height: 100,
+        height: 1,
       };
     }
     return (
