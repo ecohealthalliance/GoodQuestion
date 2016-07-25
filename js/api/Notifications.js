@@ -52,15 +52,14 @@ function _onNotification(notification) {
   console.log(`New notification received: ${notification.push_id}`);
 
   if (notification.hasOwnProperty('data') && notification.data.hasOwnProperty('formId')) {
-
-    const data = loadCachedFormDataById(notification.data.formId);
-    if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
-      return;
-    }
-    const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form, index: data.index};
-    const appNotification = addAppNotification(data.survey.id, data.form.id, data.form.title, notification.message, new Date());
-
     if (notification.foreground) {
+      const data = loadCachedFormDataById(notification.data.formId);
+      if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
+        return;
+      }
+      const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form, index: data.index};
+      const appNotification = addAppNotification(data.survey.id, data.form.id, data.form.title, notification.message, new Date());
+
       if (AppState.currentState === 'active') {
         Store.newNotifications++;
         pubsub.publish('onNotification', appNotification);
