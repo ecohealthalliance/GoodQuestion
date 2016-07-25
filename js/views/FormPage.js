@@ -25,6 +25,7 @@ import DateQuestionAndroid from '../components/QuestionTypes/DateQuestionAndroid
 import DatetimeQuestionAndroid from '../components/QuestionTypes/DatetimeQuestionAndroid';
 import CompleteForm from '../components/QuestionTypes/CompleteForm';
 
+import Footer from '../components/Footer';
 import Loading from '../components/Loading';
 import Color from '../styles/Color';
 import TypeStyles from '../styles/_TypeStyles';
@@ -391,15 +392,17 @@ const FormPage = React.createClass({
             threshold={50}>
           </Swiper>
         </View>
-
-        <SurveyFormNavigator
-          ref={(nav) => {
-            this._nav = nav;
-          }}
-          index={this._questionIndex}
-          total={this.state.questions.length}
-          onPressed={this.changePage}
-         />
+        
+        <Footer style={{height: 50}}>
+          <SurveyFormNavigator
+            ref={(nav) => {
+              this._nav = nav;
+            }}
+            index={this._questionIndex}
+            total={this.state.questions.length}
+            onPressed={this.changePage}
+           />
+        </Footer>
       </View>
     );
   },
