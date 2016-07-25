@@ -1,5 +1,6 @@
 import { Platform, AppState } from 'react-native';
 import PushNotification from 'react-native-push-notification';
+import pubsub from 'pubsub-js';
 
 import Settings from '../settings';
 import realm from '../data/Realm';
@@ -28,10 +29,10 @@ export function initializeNotifications() {
   const newNotifications = loadNotifications({newOnly: true});
   Store.newNotifications = newNotifications.length;
 
-  PushNotification.getScheduledLocalNotifications((notes) => {
-    console.log('notes');
-    console.log(notes);
-  });
+  // PushNotification.getScheduledLocalNotifications((notes) => {
+  //   console.log('notes');
+  //   console.log(notes);
+  // });
 }
 
 function _onRegister(registration) {
@@ -55,25 +56,27 @@ function _onNotification(notification) {
     return;
   }
   if (notification.hasOwnProperty('data') && notification.data.hasOwnProperty('formId')) {
+
+    const data = loadCachedFormDataById(notification.data.formId);
+    if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
+      return;
+    }
+    const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form, index: data.index};
+
+    const appNotification = addAppNotification(data.survey.id, data.form.id, data.form.title, notification.message, new Date());
+
     if (notification.foreground && AppState.currentState === 'active') {
       Store.newNotifications++;
-      // addTimeTriggerNotification(data.survey.id, data.form.id, data.form.title, notification.message, new Date());
-      if (this._header) {
-        this._header.updateNotifications();
-      }
-      if (this._controlPanel) {
-        this._controlPanel.updateNotifications();
-      }
+      pubsub.publish('onNotification', appNotification);
     } else {
-      const data = loadCachedFormDataById(notification.data.formId);
-      if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
-        return;
-      }
-      const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form, index: data.index};
+      const routeStack = [
+        {path: 'surveylist', title: 'Surveys'},
+        path,
+      ];
       if (Store.navigator) {
-        Store.navigator.resetTo(path);
+        Store.navigator.immediatelyResetRouteStack(routeStack);
       } else {
-        Store.initialRoute = path;
+        Store.initialRouteStack = routeStack;
       }
     }
   }
@@ -98,34 +101,46 @@ export function markNotificationsAsViewed(notifications) {
   });
 }
 
-export function syncNotifications() {
 
-}
 
 /**
- * Deletes all current notifications
- * @return {[type]} [description]
+ * Marks notifications as completed
  */
 export function clearNotifications() {
   const notifications = loadNotifications();
   realm.write(() => {
-    realm.delete(notifications);
+    for (let i = 0; i < notifications.length; i++) {
+      notifications[i].complete = true;
+    }
   });
 }
 
-// Creates a new notification for an active Time Trigger
-export function addTimeTriggerNotification(surveyId, formId, title, description, time) {
+
+/**
+ * Creates a new notification object to be viewed in-app
+ * @param {string} surveyId    Unique ID for the target Survey
+ * @param {string} formId      Unique ID of the target Form
+ * @param {string} title       Title of the notification
+ * @param {string} description Description of the notification
+ * @param {object} time        Date object of when the notification was posted
+ */
+export function addAppNotification(surveyId, formId, title, description, time) {
   try {
+    const newNotification = {
+      surveyId: surveyId,
+      formId: formId,
+      title: title,
+      description: description,
+      datetime: time,
+      viewed: false,
+      complete: false,
+    };
     realm.write(() => {
-      realm.create('Notification', {
-        surveyId: surveyId,
-        formId: formId,
-        title: title,
-        description: description,
-        datetime: time,
-      }, true);
+      realm.create('Notification', newNotification, true);
     });
+    return newNotification;
   } catch (e) {
     console.error(e);
+    return null;
   }
 }

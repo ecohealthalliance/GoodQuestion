@@ -4,9 +4,11 @@ import React, {
   Text,
   Linking,
 } from 'react-native';
+import pubsub from 'pubsub-js';
 import Store from '../data/Store';
 import Styles from '../styles/Styles';
 import ControlPanelItem from '../components/ControlPanelItem';
+import { loadNotifications } from '../api/Notifications';
 import { version } from '../../package';
 
 export default React.createClass({
@@ -22,6 +24,11 @@ export default React.createClass({
     };
   },
 
+  componentDidMount() {
+    pubsub.subscribe('onNotification', () => {
+      this.updateNotifications();
+    });
+  },
 
   /* Methods */
   navigateToView(path, title) {

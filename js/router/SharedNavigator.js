@@ -44,7 +44,7 @@ import { initializeNotifications } from '../api/Notifications';
 connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 
 let navigator = null;
-let initialRoute = Store.initialRoute;
+let initialRouteStack = Store.initialRouteStack;
 const toaster = <Toaster key='toaster' />;
 
 // Binds the hardware "back button" from Android devices
@@ -265,7 +265,7 @@ const SharedNavigator = React.createClass({
                // Store globally so we can use the navigator outside components
               Store.navigator = nav;
             }}
-            initialRoute={initialRoute}
+            initialRouteStack={initialRouteStack}
             renderScene={this.routeMapper}
             configureScene={(route) => this.setSceneConfig(route)}
             style={{flex: 1}}
@@ -287,7 +287,7 @@ const SharedNavigator = React.createClass({
         ref={(nav) => {
           navigator = nav;
         }}
-        initialRoute={initialRoute}
+        initialRouteStack={initialRouteStack}
         renderScene={this.routeMapper}
         configureScene={(route) => this.setSceneConfig(route)}
         style={{flex: 1}}

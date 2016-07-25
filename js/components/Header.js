@@ -8,6 +8,7 @@ import React, {
   Easing,
   StyleSheet,
 } from 'react-native';
+import pubsub from 'pubsub-js';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Styles from '../styles/Styles';
@@ -55,7 +56,7 @@ const Header = React.createClass({
   },
 
   componentWillReceiveProps(nextProps) {
-    this.updateTitle(nextProps.navigator);
+    this.updateTitle();
   },
 
   componentDidMount() {
@@ -63,12 +64,16 @@ const Header = React.createClass({
       this.state.fadeAnim,
       {toValue: 1}
     ).start();
+
+    pubsub.subscribe('onNotification', () => {
+      this.updateTitle();
+    });
   },
 
   /* Methods */
-  updateTitle(navigator, indexOffset = 0) {
-    try {
-      const routeStack = navigator.getCurrentRoutes();
+  updateTitle(indexOffset = 0) {
+    if (Store.navigator) {
+      const routeStack = Store.navigator.getCurrentRoutes();
       const position = routeStack.length - 1 - indexOffset;
       let title = this.state.title;
       let path = this.state.path;
@@ -96,8 +101,6 @@ const Header = React.createClass({
         path: path,
         hasNewNotifications: Store.newNotifications,
       });
-    } catch (e) {
-      console.warn(e);
     }
   },
 
@@ -121,7 +124,7 @@ const Header = React.createClass({
         ]
       );
     } else {
-      this.updateTitle(this.props.navigator, 1);
+      this.updateTitle(1);
       this.props.navigator.pop();
     }
   },

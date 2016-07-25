@@ -7,10 +7,9 @@ const Store = {
   navigator: false,
 
   // Shared variables
-  initialRoute: { 
-    path: 'surveylist',
-    title: 'Surveys',
-  },
+  initialRouteStack: [
+    { path: 'surveylist', title: 'Surveys' },
+  ],
   newNotifications: 0,
 };
 
