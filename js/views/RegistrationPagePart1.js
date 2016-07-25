@@ -10,6 +10,7 @@ import React, {
 import Variables from '../styles/Variables';
 import Styles from '../styles/Styles';
 import Button from '../components/Button';
+import Footer from '../components/Footer';
 
 import Checkbox from 'react-native-checkbox';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -190,10 +191,11 @@ const RegistrationPagePart1 = React.createClass({
             </View>
           </View>
         </ScrollView>
-
-        <Button action={this.goToNextPage} style={this.buttonStyles} textStyle={this.buttonTextStyles}>
-          {this.state.buttonText}
-        </Button>
+        <Footer>
+          <Button action={this.goToNextPage} style={this.buttonStyles} textStyle={this.buttonTextStyles}>
+            {this.state.buttonText}
+          </Button>
+        </Footer>
       </View>
     );
   },

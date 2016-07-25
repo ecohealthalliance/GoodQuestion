@@ -8,6 +8,7 @@ import React, {
 
 import Variables from '../styles/Variables';
 import Button from '../components/Button';
+import Footer from '../components/Footer';
 import Styles from '../styles/Styles';
 
 import Joi from '../lib/joi-browser.min';
@@ -123,9 +124,11 @@ const RegistrationPagePart3 = React.createClass({
             </View>
           </View>
         </ScrollView>
-        <Button action={this.finish} style={this.buttonStyles} textStyle={this.buttonTextStyles}>
-          {this.state.buttonText}
-        </Button>
+        <Footer>
+          <Button action={this.finish} style={this.buttonStyles} textStyle={this.buttonTextStyles}>
+            {this.state.buttonText}
+          </Button>
+        </Footer>
       </View>
     );
   },

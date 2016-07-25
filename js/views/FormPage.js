@@ -392,7 +392,6 @@ const FormPage = React.createClass({
             threshold={50}>
           </Swiper>
         </View>
-        
         <Footer style={{height: 50}}>
           <SurveyFormNavigator
             ref={(nav) => {

@@ -14,7 +14,7 @@ const _style = StyleSheet.create({
     right: 0,
     height: 60,
     overflow: 'hidden',
-  }
+  },
 });
 
 const Footer = React.createClass({
@@ -25,7 +25,7 @@ const Footer = React.createClass({
   getDefaultProps() {
     return {
       hideWithKeyboard: true,
-    }
+    };
   },
 
   getInitialState() {
@@ -39,10 +39,10 @@ const Footer = React.createClass({
     const resetListener = Platform.OS === 'android' ? 'keyboardDidHide' : 'keyboardWillHide';
     this._listeners = [
       DeviceEventEmitter.addListener(updateListener, this.handleKeyboardShow),
-      DeviceEventEmitter.addListener(resetListener, this.handleKeyboardHide)
+      DeviceEventEmitter.addListener(resetListener, this.handleKeyboardHide),
     ];
   },
-  
+
   // RN 0.27+
   // componentDidMount() {
   //   const updateListener = Platform.OS === 'android' ? 'keyboardDidShow' : 'keyboardWillShow';
@@ -54,19 +54,17 @@ const Footer = React.createClass({
   // },
 
   componentWillUnmount() {
-    this._listeners.forEach(listener => listener.remove());
+    this._listeners.forEach((listener) => listener.remove());
   },
 
   /* Methods */
-  handleKeyboardShow(frames) {
-    console.warn('KEYBOARD UP')
+  handleKeyboardShow() {
     this.setState({
       keyboardOpen: true,
     });
   },
 
   handleKeyboardHide() {
-    console.warn('KEYBOARD DOWN')
     this.setState({
       keyboardOpen: false,
     });

@@ -172,7 +172,7 @@ const FormStyles = StyleSheet.create({
   registrationView: {
     paddingTop: 25,
     paddingBottom: 35,
-    marginBottom: 50,
+    marginBottom: 0,
   },
   registerText: {
     fontSize: 16,
