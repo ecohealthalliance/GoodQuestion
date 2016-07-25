@@ -19,6 +19,7 @@ export function initializeNotifications() {
       onNotification: _onNotification,
     });
   } else {
+    PushNotification.requestPermissions();
     PushNotification.configure({
       onRegister: _onRegister,
       onNotification: _onNotification,
@@ -28,11 +29,6 @@ export function initializeNotifications() {
   // Store count of new notifications
   const newNotifications = loadNotifications({newOnly: true});
   Store.newNotifications = newNotifications.length;
-
-  // PushNotification.getScheduledLocalNotifications((notes) => {
-  //   console.log('notes');
-  //   console.log(notes);
-  // });
 }
 
 function _onRegister(registration) {
@@ -50,11 +46,11 @@ function _onRegister(registration) {
 }
 
 function _onNotification(notification) {
-  console.log("GOT NOTIFICATION");
-  console.log(notification);
   if (typeof notification === 'undefined') {
     return;
   }
+  console.log(`New notification received: ${notification.push_id}`);
+
   if (notification.hasOwnProperty('data') && notification.data.hasOwnProperty('formId')) {
 
     const data = loadCachedFormDataById(notification.data.formId);
@@ -62,21 +58,22 @@ function _onNotification(notification) {
       return;
     }
     const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form, index: data.index};
-
     const appNotification = addAppNotification(data.survey.id, data.form.id, data.form.title, notification.message, new Date());
 
-    if (notification.foreground && AppState.currentState === 'active') {
-      Store.newNotifications++;
-      pubsub.publish('onNotification', appNotification);
-    } else {
-      const routeStack = [
-        {path: 'surveylist', title: 'Surveys'},
-        path,
-      ];
-      if (Store.navigator) {
-        Store.navigator.immediatelyResetRouteStack(routeStack);
+    if (notification.foreground) {
+      if (AppState.currentState === 'active') {
+        Store.newNotifications++;
+        pubsub.publish('onNotification', appNotification);
       } else {
-        Store.initialRouteStack = routeStack;
+        const routeStack = [
+          {path: 'surveylist', title: 'Surveys'},
+          path,
+        ];
+        if (Store.navigator) {
+          Store.navigator.immediatelyResetRouteStack(routeStack);
+        } else {
+          Store.initialRouteStack = routeStack;
+        }
       }
     }
   }
@@ -101,8 +98,6 @@ export function markNotificationsAsViewed(notifications) {
   });
 }
 
-
-
 /**
  * Marks notifications as completed
  */
@@ -115,6 +110,19 @@ export function clearNotifications() {
   });
 }
 
+/**
+ * Marks a single notification as completed
+ * @param  {object} notification Realm 'Notification' object to be marked
+ */
+export function clearNotification(notification) {
+  try {
+    realm.write(() => {
+      notification.complete = true;
+    });
+  } catch(e) {
+    console.warn('Invalid Notification object: ', notification);
+  }
+}
 
 /**
  * Creates a new notification object to be viewed in-app
@@ -132,8 +140,6 @@ export function addAppNotification(surveyId, formId, title, description, time) {
       title: title,
       description: description,
       datetime: time,
-      viewed: false,
-      complete: false,
     };
     realm.write(() => {
       realm.create('Notification', newNotification, true);

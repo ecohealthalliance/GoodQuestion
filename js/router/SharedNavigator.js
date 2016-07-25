@@ -7,7 +7,6 @@ import React, {
 } from 'react-native';
 
 import Drawer from 'react-native-drawer';
-import PushNotification from 'react-native-push-notification';
 
 import Settings from '../settings';
 
@@ -100,12 +99,6 @@ const SharedNavigator = React.createClass({
         });
       }
     });
-  },
-
-  componentDidMount() {
-    if (Platform.OS === 'ios') {
-      PushNotification.requestPermissions();
-    }
   },
 
   /* Methods */
@@ -271,9 +264,6 @@ const SharedNavigator = React.createClass({
             style={{flex: 1}}
             navigationBar={
               <Header
-                ref={(ref) => {
-                  this._header = ref;
-                }}
                 title={this.state.title}
                 openDrawer={this.openControlPanel} />
             }

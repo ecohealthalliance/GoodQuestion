@@ -5,7 +5,7 @@ import React, {
 } from 'react-native';
 
 import Styles from '../styles/Styles';
-import { loadNotifications, markNotificationsAsViewed, clearNotifications } from '../api/Notifications';
+import { loadNotifications, markNotificationsAsViewed, clearNotifications, clearNotification } from '../api/Notifications';
 import { loadCachedFormDataById } from '../api/Forms';
 import Button from '../components/Button';
 import Notification from '../components/Notification';
@@ -56,6 +56,8 @@ const NotificationsPage = React.createClass({
     if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
       return;
     }
+
+    clearNotification(notification);
     this.props.navigator.push({
       path: 'form',
       title: data.survey.title,
