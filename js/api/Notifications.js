@@ -65,7 +65,7 @@ function _onNotification(notification) {
       return;
     }
 
-    const appNotification = addAppNotification({
+    addAppNotification({
       id: notification.push_id,
       surveyId: data.survey.id,
       formId: data.form.id,
