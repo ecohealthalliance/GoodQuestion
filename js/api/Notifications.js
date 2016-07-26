@@ -154,6 +154,9 @@ export function clearNotification(notification) {
  * @return {object}                         New Realm object of the type 'Notification'
  */
 export function addAppNotification(notification) {
+  if (!notification) {
+    return;
+  }
   try {
     let newNotification = null;
     realm.write(() => {
