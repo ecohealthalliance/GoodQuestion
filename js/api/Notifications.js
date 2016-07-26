@@ -10,6 +10,9 @@ import { loadCachedFormDataById } from './Forms';
 import { upsertInstallation } from './Installations';
 
 
+/**
+ * Configures and initializes the background notification service.
+ */
 export function initializeNotifications() {
   // Configure Push Notifications
   if (Platform.OS === 'android') {
@@ -26,7 +29,7 @@ export function initializeNotifications() {
     });
   }
 
-  // Store count of new notifications
+  // Cache count of new notifications in the Store
   const newNotifications = loadNotifications({newOnly: true});
   Store.newNotifications = newNotifications.length;
 }
@@ -45,20 +48,31 @@ function _onRegister(registration) {
   });
 }
 
+/**
+ * Event fired when the user receives a push notification on the background or starts the app via a notification
+ * @param  {object} notification Push Notification json object
+ */
 function _onNotification(notification) {
   if (typeof notification === 'undefined') {
     return;
   }
   console.log(`New notification received: ${notification.push_id}`);
 
-  if (notification.hasOwnProperty('data') && notification.data.hasOwnProperty('formId')) {
+  if (notification.hasOwnProperty('push_id') && notification.hasOwnProperty('data') && notification.data.hasOwnProperty('formId')) {
     if (notification.foreground) {
       const data = loadCachedFormDataById(notification.data.formId);
       if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
         return;
       }
       const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form, index: data.index};
-      const appNotification = addAppNotification(data.survey.id, data.form.id, data.form.title, notification.message, new Date());
+      const appNotification = addAppNotification({
+        id: notification.push_id,
+        surveyId: data.survey.id,
+        formId: data.form.id,
+        title: data.form.title,
+        description: notification.message,
+        time: new Date(),
+      });
 
       if (AppState.currentState === 'active') {
         Store.newNotifications++;
@@ -88,6 +102,10 @@ export function loadNotifications(options = {}) {
       'datetime', true);
 }
 
+/**
+ * Marks shown notifications as having been first viewed by the user
+ * @param  {array} notifications Array of Realm 'Notificaion' objects
+ */
 export function markNotificationsAsViewed(notifications) {
   const notificationLength = notifications.length;
   realm.write(() => {
@@ -98,7 +116,7 @@ export function markNotificationsAsViewed(notifications) {
 }
 
 /**
- * Marks notifications as completed
+ * Marks all current notifications as completed
  */
 export function clearNotifications() {
   const notifications = loadNotifications();
@@ -125,23 +143,26 @@ export function clearNotification(notification) {
 
 /**
  * Creates a new notification object to be viewed in-app
- * @param {string} surveyId    Unique ID for the target Survey
- * @param {string} formId      Unique ID of the target Form
- * @param {string} title       Title of the notification
- * @param {string} description Description of the notification
- * @param {object} time        Date object of when the notification was posted
+ * @param {string} notification             Object data to be recorded in Realm
+ * @param {string} notification.surveyId    Unique ID for the Notification's target Survey
+ * @param {string} notification.formId      Unique ID of the Notification's target Form
+ * @param {string} notification.title       Title of the notification
+ * @param {string} notification.description Description of the notification
+ * @param {object} notification.time        Date object of when the notification was posted
+ * @return {object}                         New Realm object of the type 'Notification'
  */
-export function addAppNotification(surveyId, formId, title, description, time) {
+export function addAppNotification(notification) {
   try {
-    const newNotification = {
-      surveyId: surveyId,
-      formId: formId,
-      title: title,
-      description: description,
-      datetime: time,
-    };
+    let newNotification = null;
     realm.write(() => {
-      realm.create('Notification', newNotification, true);
+      let newNotification = realm.create('Notification', {
+        id: notification.id,
+        surveyId: notification.surveyId,
+        formId: notification.formId,
+        title: notification.title,
+        description: notification.description,
+        datetime: notification.time,
+      }, true);
     });
     return newNotification;
   } catch (e) {

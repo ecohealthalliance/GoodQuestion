@@ -1,8 +1,9 @@
-export default class Notification {}
+export default class Notification{}
 Notification.schema = {
   name: 'Notification',
-  primaryKey: 'formId',
+  primaryKey: 'id',
   properties: {
+    id: 'string',
     formId: 'string',
     surveyId: 'string',
     title: 'string',
