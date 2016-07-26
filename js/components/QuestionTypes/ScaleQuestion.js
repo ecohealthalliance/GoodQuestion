@@ -2,6 +2,7 @@ import React, {
   Text,
   View,
   Slider,
+  Animated,
 } from 'react-native';
 import Styles from '../../styles/Styles';
 import ViewText from '../ViewText';
@@ -34,14 +35,28 @@ const ScaleQuestion = React.createClass({
   getInitialState() {
     return {
       value: this.props.value,
+      scaleAnim: new Animated.Value(1),
     };
   },
 
   /* Methods */
   handleChange(value) {
+    this.state.scaleAnim.setValue(1.5);
     this.setState({
       value: value,
+    }, () => {
+      Animated.spring(
+        this.state.scaleAnim,
+        {
+          toValue: 1,
+          friction: 4,
+          tension: 10,
+        }
+      ).start();
     });
+  },
+
+  handleRelease(value) {
     this.props.onChange(value);
   },
 
@@ -56,6 +71,22 @@ const ScaleQuestion = React.createClass({
     });
   },
 
+  renderSteps() {
+    return (
+      <View style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        marginHorizontal: 40,
+        borderLeftWidth: 5,
+        borderRightWidth: 5,
+        borderColor: '#f00',
+        height: 50,
+      }}></View>
+    );
+  },
+
   render() {
     const { properties } = this.props;
     return (
@@ -66,15 +97,39 @@ const ScaleQuestion = React.createClass({
             Question #{this.props.index}
         </ViewText>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
-        <Text style={[Styles.type.h1, {textAlign: 'center'}]}>{this.state.value}</Text>
-        <Slider
-          value={this.state.value}
-          minimumValue={properties.min}
-          maximumValue={properties.max}
-          step={1}
-          onValueChange={this.handleChange}
-          style={{marginHorizontal: 20}}
-          />
+        <View style={{height: 100}}>
+          <Animated.Text
+            style={[Styles.type.h1, {
+              fontSize: 50,
+              textAlign: 'center',
+              transform: [
+                {scale: this.state.scaleAnim},
+              ],
+            }]}
+            >
+            {this.state.value}
+          </Animated.Text>
+        </View>
+
+        <View style={{flex: 1, height: 50, marginHorizontal: 20}}>
+          <Text style={{position: 'absolute', top: 5, left: 0, textAlign: 'center'}}>{properties.min}</Text>
+          <Slider
+            value={properties.min}
+            minimumValue={properties.min}
+            maximumValue={properties.max}
+            step={1}
+            onValueChange={this.handleChange}
+            onSlidingComplete={this.handleRelease}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              marginHorizontal: 15,
+            }}
+            />
+          <Text style={{position: 'absolute', top: 5, right: 0, textAlign: 'center'}}>{properties.max}</Text>
+        </View>
         <View style={Styles.question.notes}>
           {
             properties.minText
