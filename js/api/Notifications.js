@@ -59,25 +59,27 @@ function _onNotification(notification) {
   console.log(`New notification received: ${notification.push_id}`);
 
   if (notification.hasOwnProperty('push_id') && notification.hasOwnProperty('data') && notification.data.hasOwnProperty('formId')) {
-    if (notification.foreground) {
-      const data = loadCachedFormDataById(notification.data.formId);
-      if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
-        return;
-      }
-      const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form, index: data.index};
-      const appNotification = addAppNotification({
-        id: notification.push_id,
-        surveyId: data.survey.id,
-        formId: data.form.id,
-        title: data.form.title,
-        description: notification.message,
-        time: new Date(),
-      });
 
+    const data = loadCachedFormDataById(notification.data.formId);
+    if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
+      return;
+    }
+
+    const appNotification = addAppNotification({
+      id: notification.push_id,
+      surveyId: data.survey.id,
+      formId: data.form.id,
+      title: data.form.title,
+      description: notification.message,
+      time: new Date(),
+    });
+
+    if (notification.foreground) {
       if (AppState.currentState === 'active') {
         Store.newNotifications++;
         pubsub.publish('onNotification', appNotification);
       } else {
+        const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form, index: data.index};
         const routeStack = [
           {path: 'surveylist', title: 'Surveys'},
           path,
@@ -116,27 +118,27 @@ export function markNotificationsAsViewed(notifications) {
 }
 
 /**
- * Marks all current notifications as completed
+ * Deletes all current notifications from the Realm database
  */
 export function clearNotifications() {
   const notifications = loadNotifications();
   realm.write(() => {
-    for (let i = 0; i < notifications.length; i++) {
-      notifications[i].complete = true;
-    }
+    realm.delete(notifications);
   });
 }
 
 /**
- * Marks a single notification as completed
+ * Deletes a single notification from the Realm database
  * @param  {object} notification Realm 'Notification' object to be marked
  */
 export function clearNotification(notification) {
   try {
-    realm.write(() => {
-      notification.complete = true;
-    });
-  } catch(e) {
+    if (notification) {
+      realm.write(() => {
+        realm.delete(notification);
+      });
+    }
+  } catch (e) {
     console.warn('Invalid Notification object: ', notification);
   }
 }
@@ -155,7 +157,7 @@ export function addAppNotification(notification) {
   try {
     let newNotification = null;
     realm.write(() => {
-      let newNotification = realm.create('Notification', {
+      newNotification = realm.create('Notification', {
         id: notification.id,
         surveyId: notification.surveyId,
         formId: notification.formId,

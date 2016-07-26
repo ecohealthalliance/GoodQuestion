@@ -37,7 +37,6 @@ import ControlPanel from '../views/ControlPanel';
 import ProfilePage from '../views/ProfilePage';
 
 import { checkTimeTriggers } from '../api/Triggers';
-import { loadCachedFormDataById } from '../api/Forms';
 import { initializeNotifications } from '../api/Notifications';
 
 connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);

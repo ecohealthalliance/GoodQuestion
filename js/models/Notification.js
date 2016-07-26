@@ -1,4 +1,4 @@
-export default class Notification{}
+export default class Notification {}
 Notification.schema = {
   name: 'Notification',
   primaryKey: 'id',

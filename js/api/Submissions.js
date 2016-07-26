@@ -177,7 +177,7 @@ function upsertRealmSubmission(id, formId, userId, answers, dirty, done) {
           answers: JSON.stringify(answers),
         });
         if (notification) {
-          notification.complete = true;
+          realm.delete(notification);
         }
         if (timeTrigger) {
           timeTrigger.complete = true;

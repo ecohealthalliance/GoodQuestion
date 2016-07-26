@@ -26,7 +26,7 @@ const _styles = StyleSheet.create({
     height: 12,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: Color.background1
+    borderColor: Color.background1,
   },
 });
 
@@ -55,7 +55,7 @@ const Header = React.createClass({
     // NoOp https://github.com/facebook/react-native/issues/6205
   },
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps() {
     this.updateTitle();
   },
 

@@ -77,10 +77,7 @@ module.exports = {
         "before": true
       }
     ],
-    "linebreak-style": [
-      "error",
-      "unix"
-    ],
+    "linebreak-style": "off",
     "lines-around-comment": "off",
     "max-depth": "error",
     "max-len": "off",
@@ -166,7 +163,7 @@ module.exports = {
     "no-unmodified-loop-condition": "error",
     "no-unneeded-ternary": "error",
     "no-unused-expressions": "error",
-    "no-use-before-define": "error",
+    "no-use-before-define": "off",
     "no-useless-call": "error",
     "no-useless-computed-key": "error",
     "no-useless-concat": "error",
