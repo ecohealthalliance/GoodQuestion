@@ -75,10 +75,7 @@ function _onNotification(notification) {
     });
 
     if (notification.foreground) {
-      if (AppState.currentState === 'active') {
-        Store.newNotifications++;
-        pubsub.publish('onNotification', appNotification);
-      } else {
+      if (AppState.currentState !== 'active') {
         const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form, index: data.index};
         const routeStack = [
           {path: 'surveylist', title: 'Surveys'},
@@ -169,6 +166,8 @@ export function addAppNotification(notification) {
         datetime: notification.time,
       }, true);
     });
+    Store.newNotifications++;
+    pubsub.publish('onNotification', newNotification);
     return newNotification;
   } catch (e) {
     console.error(e);
