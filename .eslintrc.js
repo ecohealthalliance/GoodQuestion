@@ -77,10 +77,7 @@ module.exports = {
         "before": true
       }
     ],
-    "linebreak-style": [
-      "error",
-      "unix"
-    ],
+    "linebreak-style": "off",
     "lines-around-comment": "off",
     "max-depth": "error",
     "max-len": "off",
