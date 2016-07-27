@@ -197,11 +197,11 @@ const SurveyDetailsPage = React.createClass({
     let acceptButtonStyle = [Styles.survey.acceptButton];
     let acceptButtonTextStyle = {color: Color.positive};
     let acceptedButtonContainerStyle = {};
-    let acceptIconColor = Color.background2;
+    let acceptIconColor = Color.positive;
     // Decline button
     let declineButtonStyle = [Styles.survey.declineButton];
     let declineButtonTextStyle = {color: Color.warning};
-    let declineIconColor = Color.background2;
+    let declineIconColor = Color.warning;
 
     if (this.state.status === 'accepted') {
       acceptButtonStyle.push({backgroundColor: Color.positive});
@@ -212,11 +212,11 @@ const SurveyDetailsPage = React.createClass({
         borderTopWidth: 0,
         borderColor: Color.background1,
       };
-      acceptIconColor = Color.positive;
+      acceptIconColor = Color.background2;
     } else if (this.state.status === 'declined') {
       declineButtonStyle.push({backgroundColor: Color.warning});
       declineButtonTextStyle = {color: Color.background2};
-      declineIconColor = Color.warning;
+      declineIconColor = Color.background2;
     }
 
     return (
