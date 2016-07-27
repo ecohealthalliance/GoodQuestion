@@ -4,7 +4,8 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  View
+  View,
+  Platform,
 } from 'react-native'
 
 import Styles from '../../styles/Styles'
