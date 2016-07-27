@@ -215,8 +215,6 @@
 				D446CD411D01DB0B008CF54A /* libAirMaps.a in Frameworks */,
 				376AE00E1CF63AD3007ADFDC /* libRCTPushNotification.a in Frameworks */,
 				D49CD8271CEE5AF000178F0F /* libsqlite3.tbd in Frameworks */,
-				D49CD8251CEE5AE000178F0F /* TSLocationManager.framework in Frameworks */,
-				D49CD8231CEE5A6800178F0F /* libRNBackgroundGeolocation.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
@@ -361,7 +359,6 @@
 			children = (
 				D446CD2D1D01DAF3008CF54A /* AirMaps.xcodeproj */,
 				376ADFFB1CF63ABE007ADFDC /* RCTPushNotification.xcodeproj */,
-				D49CD80F1CEE5A5300178F0F /* RNBackgroundGeolocation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
 				00C302B51ABCB90400DB3ED1 /* RCTGeolocation.xcodeproj */,
@@ -414,7 +411,6 @@
 			isa = PBXGroup;
 			children = (
 				D49CD8261CEE5AF000178F0F /* libsqlite3.tbd */,
-				D49CD8241CEE5AE000178F0F /* TSLocationManager.framework */,
 				59027C1D1CE4ED4200110480 /* libRealmJS.a */,
 				BA72AAE0624D4568BCC62B37 /* libc++.tbd */,
 				8B832CA7646945768EABA7A6 /* libz.tbd */,
@@ -583,10 +579,6 @@
 				{
 					ProductGroup = 59027C0E1CE4ECE300110480 /* Products */;
 					ProjectRef = 6A2952F9CD4A424186BE3AFE /* RealmReact.xcodeproj */;
-				},
-				{
-					ProductGroup = D49CD8101CEE5A5300178F0F /* Products */;
-					ProjectRef = D49CD80F1CEE5A5300178F0F /* RNBackgroundGeolocation.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -835,10 +827,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Dan Nyanko (SVMV72ANRB)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Dan Nyanko (SVMV72ANRB)";
 				DEAD_CODE_STRIPPING = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/../node_modules/react-native-background-geolocation/**",
-					"$(PROJECT_DIR)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -864,10 +853,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Dan Nyanko (SVMV72ANRB)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Dan Nyanko (SVMV72ANRB)";
 				DEAD_CODE_STRIPPING = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/../node_modules/react-native-background-geolocation/**",
-					"$(PROJECT_DIR)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,

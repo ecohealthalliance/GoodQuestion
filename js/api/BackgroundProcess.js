@@ -7,7 +7,6 @@ const BackgroundGeolocation = Platform.OS === 'ios' ? require('react-native-back
 
 let startTimer = Date.now();
 
-
 /**
  * Configures the geolocation library with initial configuration or energy-saving properties for background work.
  * @param     {Object}   options              Option arguments

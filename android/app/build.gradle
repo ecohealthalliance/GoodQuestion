@@ -84,8 +84,8 @@ android {
         applicationId "io.eha.goodquestion"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 11
-        versionName "1.0.1"
+        versionCode 15
+        versionName "1.0.4"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -127,12 +127,6 @@ android {
                         versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
             }
         }
-    }
-}
-
-repositories {
-    flatDir {
-        dirs "../../node_modules/react-native-background-geolocation-android/android/libs"
     }
 }
 

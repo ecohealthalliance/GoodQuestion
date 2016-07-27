@@ -3,6 +3,7 @@
     android:versionCode="1"
     android:versionName="1.0">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -85,7 +86,6 @@
       <meta-data
         android:name="com.google.android.geo.API_KEY"
         android:value="AIzaSyD3tJy2Eb_gp1KSxGsVKN-BY1XgytmHQTY" />
-
     </application>
 
 </manifest>

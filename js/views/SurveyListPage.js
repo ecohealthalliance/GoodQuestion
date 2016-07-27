@@ -175,7 +175,7 @@ const SurveyListPage = React.createClass({
     return (
       <View style={[Styles.container.attentionContainer]}>
         <Text style={[Styles.container.attentionText]}>
-          No {this.state.filterType}surveys
+          No {this.state.filterType} surveys
         </Text>
         <TouchableOpacity onPress={() => this.reloadEmpty()}>
             <Icon name='refresh' size={24} color={Color.primary} />
