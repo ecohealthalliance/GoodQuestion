@@ -3,6 +3,7 @@ import React, {
   View,
   Slider,
   Animated,
+  Platform,
 } from 'react-native';
 import Styles from '../../styles/Styles';
 import ViewText from '../ViewText';
@@ -89,6 +90,11 @@ const ScaleQuestion = React.createClass({
 
   render() {
     const { properties } = this.props;
+    const sliderTextStyle = {
+      position: 'absolute',
+      top: Platform.OS === 'android' ? 5 : 10,
+      textAlign: 'center',
+    }
     return (
       <View style={Styles.question.block}>
         <ViewText
@@ -117,7 +123,7 @@ const ScaleQuestion = React.createClass({
         </View>
 
         <View style={{flex: 1, height: 50, marginHorizontal: 20}}>
-          <Text style={{position: 'absolute', top: 5, left: 0, textAlign: 'center'}}>{properties.min}</Text>
+          <Text style={[sliderTextStyle, {left: 0}]}>{properties.min}</Text>
           <Slider
             value={properties.min}
             minimumValue={properties.min}
@@ -139,7 +145,7 @@ const ScaleQuestion = React.createClass({
               marginHorizontal: 15,
             }}
             />
-          <Text style={{position: 'absolute', top: 5, right: 0, textAlign: 'center'}}>{properties.max}</Text>
+          <Text style={[sliderTextStyle, {right: 0}]}>{properties.max}</Text>
         </View>
         <View style={Styles.question.notes}>
           {
