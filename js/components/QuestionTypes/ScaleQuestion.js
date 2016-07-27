@@ -94,7 +94,7 @@ const ScaleQuestion = React.createClass({
       position: 'absolute',
       top: Platform.OS === 'android' ? 5 : 10,
       textAlign: 'center',
-    }
+    };
     return (
       <View style={Styles.question.block}>
         <ViewText
