@@ -51,7 +51,7 @@ const MapPage = React.createClass ({
         if (!self.cancelCallbacks) {
           self.setState({stage: 'ready'});
         }
-      }, 350);
+      }, 300);
     })
   },
 
