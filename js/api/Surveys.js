@@ -98,6 +98,7 @@ export function cacheParseSurveys(survey) {
         description: survey.get('description'),
         user: 'Test University',
         forms: [],
+        expired: survey.get('deleted'),
       }, true);
       getSurveyOwner(survey);
     });

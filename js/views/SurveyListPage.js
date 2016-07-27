@@ -112,11 +112,27 @@ const SurveyListPage = React.createClass({
 
   filterList(query) {
     let filteredList = [];
+    const isExpired = query === 'expired';
 
     // Filter the survey by category
     if (query === 'all') {
-      filteredList = this._surveys.slice();
+      // Return all active surveys
+      filteredList = _.filter(this._surveys, (survey) => {
+        return !survey.expired;
+      });
+    } else if (query === 'expired') {
+      // Return accepted surveys that have been deactivated
+      const invitations = _.filter(this._invitations, (invitation) => {
+        return invitation.status === 'accepted';
+      });
+      const surveyIds = _.map(invitations, (invitation) => {
+        return invitation.surveyId;
+      });
+      filteredList = _.filter(this._surveys, (survey) => {
+        return surveyIds.indexOf(survey.id) >= 0 && survey.expired;
+      });
     } else {
+      // Returns active surveys filtered by their status
       const invitations = _.filter(this._invitations, (invitation) => {
         return invitation.status === query;
       });
@@ -124,7 +140,7 @@ const SurveyListPage = React.createClass({
         return invitation.surveyId;
       });
       filteredList = _.filter(this._surveys, (survey) => {
-        return surveyIds.indexOf(survey.id) >= 0;
+        return surveyIds.indexOf(survey.id) >= 0 && !survey.expired;
       });
     }
 

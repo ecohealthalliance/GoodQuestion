@@ -60,6 +60,13 @@ const SurveyListFilter = React.createClass({
           >
           Declined
         </SurveyListFilterButton>
+        <SurveyListFilterButton
+          active={this.state.activeButton === 'expired'}
+          onPress={this.handlePress.bind(this, 'expired')}
+          icon='stop-circle-o'
+          >
+          Expired
+        </SurveyListFilterButton>
       </View>
     );
   },
