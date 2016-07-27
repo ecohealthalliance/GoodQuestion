@@ -7,7 +7,7 @@ import PushNotification from 'react-native-push-notification';
 
 import { BackgroundGeolocation } from './BackgroundProcess'
 import { loadCachedGeofenceTriggers } from './Triggers'
-import { showToast } from './Notifications'
+import { showToast, notifyOnBackground } from './Notifications'
 
 
 let activeMap; // Cache a MapPage component for to update when geofencing triggers are crossed.
@@ -37,7 +37,7 @@ export function clearActiveMap(component) {
  * Creates native geofence objects using the 3rd-party geolocation library.
  * Erases previous set of native geofences and adds new ones based on geofence triggers.
  */
-export function setupGeofences() {
+export function setupGeofences(callback) {
   // BackgroundGeolocation.stop()
   
   loadCachedGeofenceTriggers({excludeCompleted: true}, (err, response) => {
@@ -59,11 +59,13 @@ export function setupGeofences() {
           notifyOnDwell: true,
           loiteringDelay: 30000
         }
+
       });
 
       BackgroundGeolocation.start(() => {
         console.info('Geolocation tracking started.')
         console.log('Adding ' + triggerGeofences.length + ' geofences...')
+        supressNotificationsTimestamp = Date.now() + 5000;
         BackgroundGeolocation.addGeofences(triggerGeofences, function() {
           // https://github.com/transistorsoft/react-native-background-geolocation-android/issues/56
           // this callback will never fire, see issue above
@@ -85,8 +87,8 @@ export function addGeofence(trigger) {
     longitude: trigger.longitude,
     notifyOnEntry: true,
     notifyOnExit: true,
-    notifyOnDwell: true,
-    loiteringDelay: 30000
+    notifyOnDwell: false,
+    loiteringDelay: 60000
   };
   
   supressNotificationsTimestamp = Date.now() + 5000;
@@ -174,13 +176,7 @@ function crossGeofence(params) {
         const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0];
 
         if (form && survey) {
-          if (Platform.OS === 'android') {
-            BackgroundGeolocation.playSound(25);
-          } else {
-            // TODO: find a proper tone on iOS
-            // http://iphonedevwiki.net/index.php/AudioServices
-            // BackgroundGeolocation.playSound(1000);
-          }
+          notifyOnBackground(form.title + ' - New geofence form available.', true);
 
           showToast(form.title, 'New geofence form available.', 'globe', 8, () => {
             Store.navigator.push({
@@ -196,8 +192,8 @@ function crossGeofence(params) {
       
       // Update Geofence Trigger
       realm.write(() => {
-        trigger.inRange = true;
-        trigger.triggered = _.lowerCase(params.action) == 'exit' ? false : true;
+        trigger.triggered = true;
+        trigger.inRange = _.lowerCase(params.action) == 'exit' ? false : true;
         trigger.updateTimestamp = Date.now();
       })
     } else {

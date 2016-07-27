@@ -68,7 +68,7 @@ const FormPage = React.createClass ({
   },
 
   getInitialState() {
-    const forms = this.props.form ? [this.props.form] : loadCachedForms(this.props.survey.id)
+    const forms = this.props.form ? [this.props.form] : loadCachedForms(this.props.survey.id);
 
     return {
       forms: forms,
@@ -76,7 +76,7 @@ const FormPage = React.createClass ({
       index: this.props.index,
       button_text: 'Submit',
       formsInQueue: false
-    }
+    };
   },
 
   validatePage() {
@@ -125,32 +125,18 @@ const FormPage = React.createClass ({
         index = this.state.index,
         type = this.props.type,
         answers = {},
-        forms,
-        allForms
+        forms = this.state.forms,
+        allForms = []
     
-    // Find most relevant form if no form type was provided.
-    // if (!type) {
-    //   if (!forms || forms.length === 0) {
-    //     forms = loadActiveGeofenceFormsInRange();
-
-    //     if (forms.length > 0) {
-    //       type = 'geofence';
-    //     } else {
-    //       type = 'datetime';
-    //     }
-    //   } 
-    // }
-
-    if (type === 'geofence') {
-      forms = this.state.forms
-      if (!forms || forms.length === 0) {
+    if (!forms || forms.length === 0) {
+      if (type === 'geofence') {
         forms = loadActiveGeofenceFormsInRange(this.props.survey.id);
+      } else if (type === 'datetime') {
+        forms = this.formsWithTriggers()
+        allForms = forms
+        forms = this.filterForms(forms)
+        forms = this.sortForms(forms)
       }
-    } else if (type === 'datetime') {
-      forms = this.formsWithTriggers()
-      allForms = forms
-      forms = this.filterForms(forms)
-      forms = this.sortForms(forms)
     }
 
     if (!forms || forms.length === 0) {
@@ -279,7 +265,13 @@ const FormPage = React.createClass ({
       });
 
       // Publish a ToastMessage to our Toaster via pubsub
-      const toastMessage = ToastMessage.createFromObject({title: 'Success', message: 'The form has been submitted.', icon: 'check', iconColor: Color.fadedGreen});
+      const toastMessage = ToastMessage.createFromObject({
+        title: 'Success',
+        duration: 2,
+        message: 'The form has been submitted.',
+        icon: 'check',
+        iconColor: Color.fadedGreen,
+      });
       pubsub.publish(ToastAddresses.SHOW, toastMessage);
 
       //If there is another form continue onto that
@@ -364,6 +356,8 @@ const FormPage = React.createClass ({
     return renderedQuestions
   },
   render() {
+    console.warn('this.form')
+    console.log(this.form)
     if (this.state.isLoading) {
       return (<Loading/>)
     } else if (!this.state.formsInQueue){

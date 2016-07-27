@@ -8,6 +8,7 @@ import {
   Text,
   InteractionManager,
   Alert,
+  AppState,
 } from 'react-native'
 
 import Drawer from 'react-native-drawer'
@@ -50,7 +51,7 @@ import { loadCachedFormDataById } from '../api/Forms'
 import { addTimeTriggerNotification } from '../api/Notifications'
 
 // Background
-import { initializeGeolocationService } from '../api/BackgroundProcess'
+import { initializeGeolocationService, handleAppStateChange } from '../api/BackgroundProcess'
 
 initializeGeolocationService()
 connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
@@ -110,6 +111,9 @@ const SharedNavigator = React.createClass ({
         isLoading: false,
       });
     });
+
+    // Handle changes on AppState to minimize impact on batery life.
+    AppState.addEventListener('change', handleAppStateChange);
   },
 
   checkNotificationPermissions() {

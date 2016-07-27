@@ -12,7 +12,7 @@ import ViewText from './ViewText'
 import Checkbox from './Checkbox'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
-import { getFormAvailability } from '../api/Surveys'
+import { getFormAvailability } from '../api/Forms'
 
 const SurveyListItem = React.createClass ({
   propTypes: {
@@ -40,11 +40,6 @@ const SurveyListItem = React.createClass ({
 
   componentDidMount() {
     this.update(this.props.status)
-  },
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return  this.state.status !== nextProps.status ||
-            this.state.availability !== nextState.availability
   },
 
   /* Methods */
@@ -87,23 +82,24 @@ const SurveyListItem = React.createClass ({
   },
 
   renderAvailabilityText() {
-    availability = this.state.availability
-    if (availability.geofenceTriggersInRange > 0) {
+    const { geofenceTriggersInRange, availableTimeTriggers, nextTimeTrigger } = this.state.availability;
+
+    if (geofenceTriggersInRange > 0) {
       return (
         <ViewText textStyle={Styles.survey.itemDescription}>
-          {availability.geofenceTriggersInRange} geofence {availability.geofenceTriggersInRange > 1 ? 'forms' : 'form'} available.
+          {geofenceTriggersInRange} geofence {geofenceTriggersInRange > 1 ? 'forms' : 'form'} available.
         </ViewText>
       )
-    } else if (availability.availableTimeTriggers > 0) {
+    } else if (availableTimeTriggers > 0) {
       return (
         <ViewText textStyle={Styles.survey.itemDescription}>
-          {availability.availableTimeTriggers} scheduled {availability.availableTimeTriggers > 1 ? 'forms' : 'form'} available.
+          {availableTimeTriggers} scheduled {availableTimeTriggers > 1 ? 'forms' : 'form'} available.
         </ViewText>
       )
-    } else if (availability.nextTimeTrigger && availability.nextTimeTrigger > Date.now() ) {
+    } else if (nextTimeTrigger && nextTimeTrigger > Date.now() ) {
       return (
         <ViewText textStyle={Styles.survey.itemDescription}>
-          Next form: {moment(availability.nextTimeTrigger).fromNow()}
+          Next form: {moment(nextTimeTrigger).fromNow()}
         </ViewText>
       )
     } else {

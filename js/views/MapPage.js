@@ -11,7 +11,7 @@ import Styles from '../styles/Styles';
 import MapView from 'react-native-maps';
 
 import { loadCachedGeofenceTriggers } from '../api/Triggers';
-import { loadCachedFormDataByGeofence } from '../api/Forms';
+import { loadCachedFormDataByTriggerId } from '../api/Forms';
 import { BackgroundGeolocation } from '../api/BackgroundProcess';
 import { setActiveMap, clearActiveMap, getUserLocationData } from '../api/Geofencing';
 
@@ -28,8 +28,8 @@ const MapPage = React.createClass ({
     return {
       stage: 'loading',
       updates: 0,
-      latitude: 28.46986,
-      longitude: -81.58495,
+      latitude: 0,
+      longitude: 0,
       zoom: 0.01,
       markers: [],
       triggers: [],
@@ -110,17 +110,16 @@ const MapPage = React.createClass ({
   },
 
   handleMarkerPress(marker) {
-    const data = loadCachedFormDataByGeofence(marker.id)
+    const data = loadCachedFormDataByTriggerId(marker.id, 'geofence');
 
     if (marker.active) {
-    // if (true) { // for testing
       this.props.navigator.push({
         path: 'form',
         title: data.survey.title,
-        forms: data.form,
         survey: data.survey,
+        form: data.form,
         type: 'geofence'
-      })
+      });
     }
   },
 
