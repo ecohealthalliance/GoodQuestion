@@ -18,7 +18,7 @@
     "react": "^15.2.0",
     "react-native": "^0.29.1",
     "react-native-background-geolocation": "^1.0.0",
-    "react-native-background-geolocation-android": "git+ssh://git@github.com/transistorsoft/react-native-background-geolocation-android.git#react-native-0.29.0",
+    "react-native-background-geolocation-android": "git+ssh://git@github.com/transistorsoft/react-native-background-geolocation-android.git#2.0.0",
     "react-native-checkbox": "https://github.com/dan-nyanko/react-native-checkbox#master",
     "react-native-drawer": "^2.2.6",
     "react-native-maps": "^0.4.2",
