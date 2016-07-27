@@ -28,6 +28,7 @@ import DatetimeQuestionAndroid from '../components/QuestionTypes/DatetimeQuestio
 import CompleteForm from '../components/QuestionTypes/CompleteForm';
 
 // Components
+import Footer from '../components/Footer';
 import Loading from '../components/Loading';
 import Overlay from '../components/Overlay';
 import Styles from '../styles/Styles';
@@ -426,20 +427,22 @@ const FormPage = React.createClass({
           </Swiper>
         </View>
 
-        <SurveyFormNavigator
-          ref={(nav) => {
-            this._nav = nav;
-          }}
-          index={this._questionIndex}
-          total={this.state.questions.length}
-          onPressed={this.changePage}
-         />
+        <Footer style={{height: 50}}>
+          <SurveyFormNavigator
+            ref={(nav) => {
+              this._nav = nav;
+            }}
+            index={this._questionIndex}
+            total={this.state.questions.length}
+            onPressed={this.changePage}
+           />
+        </Footer>
 
-          {this.state.isSubmitting
-          ? <Overlay>
-              <Loading color='white' text='Submitting Form...' />
-            </Overlay>
-          : null}
+        {this.state.isSubmitting
+        ? <Overlay>
+            <Loading color='white' text='Submitting Form...' />
+          </Overlay>
+        : null}
       </View>
     );
   },
