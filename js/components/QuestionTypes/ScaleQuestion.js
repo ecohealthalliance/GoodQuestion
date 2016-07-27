@@ -41,7 +41,7 @@ const ScaleQuestion = React.createClass({
 
   /* Methods */
   handleChange(value) {
-    this.state.scaleAnim.setValue(1.5);
+    this.state.scaleAnim.setValue(1.3);
     this.setState({
       value: value,
     }, () => {
@@ -97,9 +97,14 @@ const ScaleQuestion = React.createClass({
             Question #{this.props.index}
         </ViewText>
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
-        <View style={{height: 100}}>
+        <View style={{
+          height: 60,
+          marginBottom: 20,
+          justifyContent: 'center',
+          overflow: 'hidden',
+        }}>
           <Animated.Text
-            style={[Styles.type.h1, {
+            style={[{
               fontSize: 50,
               textAlign: 'center',
               transform: [
@@ -120,6 +125,12 @@ const ScaleQuestion = React.createClass({
             step={1}
             onValueChange={this.handleChange}
             onSlidingComplete={this.handleRelease}
+            hitSlop={{
+              top: 50,
+              bottom: 50,
+              left: 50,
+              right: 50,
+            }}
             style={{
               position: 'absolute',
               top: 0,
