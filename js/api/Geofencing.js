@@ -17,7 +17,7 @@ let supressNotificationsTimestamp = 0;
  */
 export function setActiveMap(component) {
   activeMap = component;
-  BackgroundGeolocation.on('geofence', crossGeofence); // eslint-disable-line no-use-before-define
+  BackgroundGeolocation.on('geofence', crossGeofence);
 }
 
 /**
@@ -39,7 +39,7 @@ export function setupGeofences(callback) {
   // BackgroundGeolocation.stop()
 
   loadCachedGeofenceTriggers({excludeCompleted: true}, (err, response) => {
-    resetGeofences((err2) => { // eslint-disable-line no-use-before-define
+    resetGeofences((err2) => {
       if (err2) {
         console.warn('Unable to load geofence triggers');
         console.warn(err2);
@@ -71,7 +71,7 @@ export function setupGeofences(callback) {
         callback();
       }
     });
-    BackgroundGeolocation.on('geofence', crossGeofence); // eslint-disable-line no-use-before-define
+    BackgroundGeolocation.on('geofence', crossGeofence);
   });
 }
 
@@ -90,7 +90,7 @@ export function addGeofence(trigger) {
   supressNotificationsTimestamp = Date.now() + 5000;
   BackgroundGeolocation.addGeofence(geofence, () => {
     console.log('Successfully added geofence.');
-    BackgroundGeolocation.on('geofence', crossGeofence); // eslint-disable-line no-use-before-define
+    BackgroundGeolocation.on('geofence', crossGeofence);
   }, (error) => {
     console.warn('Failed to add geofence.', error);
   });
@@ -202,7 +202,7 @@ function crossGeofence(params) {
       // Update Geofence Trigger
       realm.write(() => {
         trigger.triggered = true;
-        trigger.inRange = _.lowerCase(params.action) === 'exit' ? false : true; // eslint-disable-line no-unneeded-ternary
+        trigger.inRange = _.lowerCase(params.action) === 'exit';
         trigger.updateTimestamp = Date.now();
       });
     } else {

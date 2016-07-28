@@ -64,16 +64,16 @@ export function loadSurveys(callback) {
   query.equalTo('active', true);
   query.find({
     success: (results) => {
-      clearSurveyCache(results); // eslint-disable-line no-use-before-define
+      clearSurveyCache(results);
       const cachedSurveys = realm.objects('Survey');
       for (let i = 0; i < results.length; i++) {
         const cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0];
         if (!cachedSurvey) {
           loadForms(results[i]);
         } else if (cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime()) {
-          refreshAcceptedSurveyData(results[i].id); // eslint-disable-line no-use-before-define
+          refreshAcceptedSurveyData(results[i].id);
         }
-        cacheParseSurveys(results[i]); // eslint-disable-line no-use-before-define
+        cacheParseSurveys(results[i]);
       }
       Store.lastParseUpdate = Date.now();
       if (callback) {
@@ -151,7 +151,7 @@ export function cacheParseSurveys(survey) {
     realm.write(() => {
       realm.create('Survey', {
         id: survey.id,
-        active: survey.get('active') ? true : false, // eslint-disable-line no-unneeded-ternary
+        active: survey.get('active'),
         createdAt: survey.get('createdAt'),
         updatedAt: survey.get('updatedAt'),
         title: survey.get('title'),
@@ -160,7 +160,7 @@ export function cacheParseSurveys(survey) {
         user: 'N/A',
         forms: [],
       }, true);
-      getSurveyOwner(survey); // eslint-disable-line no-use-before-define
+      getSurveyOwner(survey);
     });
   } catch (e) {
     console.error(e);

@@ -112,7 +112,7 @@ export function initializeGeolocationService() {
   configureGeolocationService({isInitial: true}, () => {
 
     BackgroundGeolocation.on('error', (error) => {
-      printTimelog('error'); // eslint-disable-line no-use-before-define
+      printTimelog('error');
       console.log(`${error.type} Error: ${error.code}`);
     });
 

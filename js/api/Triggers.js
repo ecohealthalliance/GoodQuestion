@@ -16,9 +16,9 @@ export function loadTriggers(cachedForm, survey, callback) {
         (results) => {
           for (let i = 0; i < results.length; i++) {
             if (results[i].get('type') === 'datetime') {
-              cacheTimeTrigger(results[i], form, survey); // eslint-disable-line no-use-before-define
+              cacheTimeTrigger(results[i], form, survey);
             } else if (results[i].get('type') === 'geofence') {
-              cacheGeofenceTrigger(results[i], form, survey); // eslint-disable-line no-use-before-define
+              cacheGeofenceTrigger(results[i], form, survey);
             }
           }
           if (callback) {
@@ -173,7 +173,7 @@ export function checkTimeTriggers(omitNotifications) {
       const surveyIds = invitations.map((invitation) => invitation.surveyId);
       const surveys = realm.objects('Survey').filtered(surveyIds.map((id) => `id == "${id}"`).join(' OR '));
       for (let i = 0; i < surveys.length; i++) {
-        checkSurveyTimeTriggers(surveys[i], omitNotifications); // eslint-disable-line no-use-before-define
+        checkSurveyTimeTriggers(surveys[i], omitNotifications);
       }
     }
   });
