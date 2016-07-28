@@ -237,7 +237,6 @@ const Calendar = React.createClass({
           const isToday = moment().isSame(newDay, 'month') && moment().isSame(newDay, 'day');
           const isSelected = moment(this.state.selectedDate).isSame(newDay, 'month') && moment(this.state.selectedDate).isSame(newDay, 'day');
           let hasEvent = false;
-          /* eslint-disable */
           if (this.props.eventDates) {
             for (let x = 0; x < this.props.eventDates.length; x++) {
               hasEvent = moment(this.props.eventDates[x]).isSame(newDay, 'day');
@@ -246,7 +245,6 @@ const Calendar = React.createClass({
               }
             }
           }
-          /* eslint-enable*/
 
           days.push(
             <CalendarDay
@@ -257,7 +255,7 @@ const Calendar = React.createClass({
               isToday={isToday}
               isSelected={isSelected}
               hasEvent={hasEvent}
-              usingEvents={this.props.eventDates.length > 0 ? true : false} // eslint-disable-line
+              usingEvents={this.props.eventDates.length > 0}
               customStyle={this.props.customStyle}
             />
           );

@@ -8,6 +8,16 @@ const BackgroundGeolocation = Platform.OS === 'ios' ? require('react-native-back
 let startTimer = Date.now();
 
 /**
+ * Prints the timing since the service was initialized. For debugging purposes.
+ * @param  {String} msg Message to log.
+ */
+function printTimelog(msg) {
+  let timing = (Date.now() - startTimer) / 1000;
+  timing = Math.ceil(timing);
+  console.log(`${msg}: ${timing}s`);
+}
+
+/**
  * Configures the geolocation library with initial configuration or energy-saving properties for background work.
  * @param     {Object}   options              Option arguments
  * @property  {bool}     options.isInitial    If true, will set the configuration for the initial load of the background process. (May also re-trigger geofences if standing over one)
@@ -159,16 +169,6 @@ export function handleAppStateChange(state) {
       }
     });
   }
-}
-
-/**
- * Prints the timing since the service was initialized. For debugging purposes.
- * @param  {String} msg Message to log.
- */
-function printTimelog(msg) {
-  let timing = (Date.now() - startTimer) / 1000;
-  timing = Math.ceil(timing);
-  console.log(`${msg}: ${timing}s`);
 }
 
 export { BackgroundGeolocation };
