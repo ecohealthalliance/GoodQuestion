@@ -234,13 +234,13 @@ const Calendar = React.createClass({
           days.push(<CalendarDay key={`${i},${j}`} filler={true} />);
         } else if (currentDay < daysInMonth) {
           newDay = moment(dayStart).set('date', currentDay + 1);
-          const isToday = moment().isSame(newDay, 'month') && moment().isSame(newDay, 'day') ? true : false; // eslint-disable-line
-          const isSelected = moment(this.state.selectedDate).isSame(newDay, 'month') && moment(this.state.selectedDate).isSame(newDay, 'day') ? true : false; // eslint-disable-line
+          const isToday = moment().isSame(newDay, 'month') && moment().isSame(newDay, 'day');
+          const isSelected = moment(this.state.selectedDate).isSame(newDay, 'month') && moment(this.state.selectedDate).isSame(newDay, 'day');
           let hasEvent = false;
           /* eslint-disable */
           if (this.props.eventDates) {
             for (let x = 0; x < this.props.eventDates.length; x++) {
-              hasEvent = moment(this.props.eventDates[x]).isSame(newDay, 'day') ? true : false;
+              hasEvent = moment(this.props.eventDates[x]).isSame(newDay, 'day');
               if (hasEvent) {
                 break;
               }

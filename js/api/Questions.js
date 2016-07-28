@@ -14,7 +14,7 @@ export function cacheParseQuestions(questions, formId) {
           order: questions[i].get('order'),
           text: questions[i].get('text'),
           type: questions[i].get('type'),
-          required: questions[i].get('required') ? true : false, // eslint-disable-line 
+          required: questions[i].get('required') ? true : false, // eslint-disable-line
           properties: JSON.stringify(questions[i].get('properties')),
         }, true);
       }

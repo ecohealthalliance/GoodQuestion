@@ -147,10 +147,10 @@ const CalendarPage = React.createClass({
           prevButtonText={'Prev'}
           nextButtonText={'Next'}
           onDateSelect={this.selectDate}
-          onTouchPrev={() => console.log('Back TOUCH')}     // eslint-disable-line no-console
-          onTouchNext={() => console.log('Forward TOUCH')}  // eslint-disable-line no-console
-          onSwipePrev={() => console.log('Back SWIPE')}     // eslint-disable-line no-console
-          onSwipeNext={() => console.log('Forward SWIPE')}  // eslint-disable-line no-console
+          onTouchPrev={() => console.log('Back TOUCH')}
+          onTouchNext={() => console.log('Forward TOUCH')}
+          onSwipePrev={() => console.log('Back SWIPE')}
+          onSwipeNext={() => console.log('Forward SWIPE')}
           eventDates={this.state.events}
           customStyle={Styles.calendar}
         />
