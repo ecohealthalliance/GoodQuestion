@@ -22,7 +22,7 @@
     "react-native-checkbox": "https://github.com/dan-nyanko/react-native-checkbox#master",
     "react-native-drawer": "^2.2.6",
     "react-native-maps": "^0.4.2",
-    "react-native-push-notification": "^2.0.0",
+    "react-native-push-notification": "2.0.0",
     "react-native-vector-icons": "2.0.3",
     "realm": "^0.14.1"
   },
