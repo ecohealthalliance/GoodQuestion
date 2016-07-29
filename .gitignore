@@ -30,7 +30,6 @@ local.properties
 *.apk
 *.iml
 *.jks
-android/gradle.properties
 
 # node.js
 #
