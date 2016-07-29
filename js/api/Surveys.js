@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import async from 'async';
 import Parse from 'parse/react-native';
 import Store from '../data/Store';
@@ -5,6 +6,9 @@ import realm from '../data/Realm';
 
 import { loadForms } from './Forms';
 import { InvitationStatus, loadInvitations, loadCachedInvitation } from '../api/Invitations';
+
+// Live realm.io object containing all cached 'Survey' entries.
+export const realmSurveys = realm.objects('Survey');
 
 // Attempts to find a survey with a specified id cached in the Store
 export function loadCachedSurvey(id) {
@@ -28,38 +32,6 @@ export function getSurveyForms(surveyId, callback) {
       });
     }
   );
-}
-
-// Erases the current cache of Surveys
-function clearSurveyCache(exclusions) {
-  try {
-    const surveys = realm.objects('Survey');
-    const expiredSurveys = [];
-    const excludedIds = [];
-    for (let i = 0; i < exclusions.length; i++) {
-      excludedIds.push(exclusions[i].id);
-    }
-
-    // Standard JS array.filter doesn't work with these Realm objects, so we have to take care of this filtering manually.
-    // Current version of Realm.io does not support exclusion queries for strings.
-    for (let i = surveys.length - 1; i >= 0; i--) {
-      let expired = true;
-      for (let j = excludedIds.length - 1; j >= 0; j--) {
-        if (surveys[i].id === excludedIds[j]) {
-          expired = false;
-        }
-      }
-      if (expired) {
-        expiredSurveys.push(surveys[i]);
-      }
-    }
-
-    realm.write(() => {
-      realm.delete(expiredSurveys);
-    });
-  } catch (e) {
-    console.error(e);
-  }
 }
 
 // Gets the name of the owner of a Survey and saves it to Realm database.
@@ -98,7 +70,6 @@ export function cacheParseSurveys(survey) {
         description: survey.get('description'),
         user: 'Test University',
         forms: [],
-        expired: survey.get('deleted'),
       }, true);
       getSurveyOwner(survey);
     });
@@ -108,21 +79,35 @@ export function cacheParseSurveys(survey) {
 }
 
 // Queries the connected Parse server for a list of Surveys.
-export function loadSurveys(callback) {
+export function loadSurveys(options = {}, callback) {
   const Survey = Parse.Object.extend('Survey');
   const query = new Parse.Query(Survey);
-  query.equalTo('active', true);
+  query.equalTo('deleted', false);
+
+  // Optional: Limit Parse request to fetch active or inactive surveys only.
+  if (options.active) {
+    query.equalTo('active', true);
+  } else if (options.expired) {
+    query.equalTo('active', false);
+  }
+
+  // Optional: Query objects using an array of ids.
+  if (options.surveyIds) {
+    query.containedIn('objectId', options.surveyIds);
+  }
+
   query.find(
     (results) => {
       if (results && results.length > 0) {
-        clearSurveyCache(results);
         const cachedSurveys = realm.objects('Survey');
         for (let i = 0; i < results.length; i++) {
           const cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0];
           const cachedSurveyTriggers = realm.objects('TimeTrigger').filtered(`surveyId = "${results[i].id}"`);
           if (!cachedSurvey || !cachedSurveyTriggers || cachedSurveyTriggers.length === 0 || cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime()) {
             cacheParseSurveys(results[i]);
-            loadForms(results[i]);
+            if (results[i].active) {
+              loadForms(results[i]);
+            }
           }
         }
         Store.lastParseUpdate = Date.now();
@@ -142,6 +127,58 @@ export function loadSurveys(callback) {
 }
 
 /**
+ * Removes a list of Surveys from the Realm cache.
+ * @param  {array} deletedIds Array of string ids for all of the Surveys to be removed
+ */
+function pruneDeletedSurveys(deletedIds) {
+  let surveyFilter = 'id == ""';
+  deletedIds.forEach((id) => {
+    surveyFilter += ` OR id == "${id}"`;
+  });
+  const deletedSurveys = realmSurveys.filtered(surveyFilter);
+  realm.write(() => {
+    realm.delete(deletedSurveys);
+  });
+}
+
+/**
+ * Finds the cached surveys missing from the latest Parse query, then checks those Surveys to identify their activity or deletion status.
+ * If any active surveys are still missing from the second query, they will be pruned from the local realm database.
+ * @param  {array} currentSurveys  Array of 'Survey' Parse objects
+ */
+function resolveMissingSurveys(currentSurveys, callback) {
+  const surveyIds = [];
+  let surveyFilter = 'active == true';
+  currentSurveys.forEach((survey) => {
+    surveyFilter += ` AND id != "${survey.id}"`;
+  });
+  const missingSurveys = realmSurveys.filtered(surveyFilter);
+  if (missingSurveys.length === 0) {
+    if (callback) {
+      callback(null, []);
+    }
+    return;
+  }
+
+  missingSurveys.forEach((survey) => {
+    surveyIds.push(survey.id);
+  });
+
+  loadSurveys({surveyIds: surveyIds}, (results) => {
+    const newIds = [];
+    results.forEach((survey) => {
+      newIds.push(survey.id);
+    });
+
+    const missingIds = _.xor(surveyIds, newIds);
+    pruneDeletedSurveys(missingIds);
+    if (callback) {
+      callback(null, missingIds);
+    }
+  });
+}
+
+/**
  * fetches remote data for surveys and invitations
  *
  * @param {function} done, the callback for when the async operations are done
@@ -149,11 +186,47 @@ export function loadSurveys(callback) {
 export function loadSurveyList(done) {
   async.auto({
     surveys: (cb) => {
-      loadSurveys(cb);
+      loadSurveys({active: true}, cb);
     },
     invitations: (cb) => {
       loadInvitations(cb);
     },
+    missing: ['surveys', 'invitations', (cb, results) => {
+      resolveMissingSurveys(results.surveys, cb);
+    }],
+  }, (err, results) => {
+    if (err) {
+      if (done) {
+        done(err);
+      }
+      return;
+    }
+    if (done) {
+      done(null, results);
+    }
+  });
+}
+
+/**
+ * Fetches list of Invitations from remote, then acquires the expired Surveys in which the user had previously accepted.
+ * @param {function} done, the callback for when the async operations are done
+ */
+export function loadExpiredSurveyList(done) {
+  async.auto({
+    invitations: (cb) => {
+      loadInvitations(cb);
+    },
+    surveys: ['invitations', (cb, results) => {
+      const acceptedInvitations = results.invitations.filter((invitation) => {
+        return invitation.get('status') === 'accepted';
+      });
+      let surveyIds = [];
+      acceptedInvitations.forEach((invitation) => {
+        surveyIds.push(invitation.get('surveyId'));
+      });
+      surveyIds = _.uniq(surveyIds);
+      loadSurveys({expired: true, surveyIds: surveyIds}, cb);
+    }],
   }, (err, results) => {
     if (err) {
       if (done) {

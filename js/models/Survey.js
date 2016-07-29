@@ -17,6 +17,5 @@ Survey.schema = {
     user: 'string',
     title: 'string',
     description: 'string',
-    expired: 'bool',
   },
 };

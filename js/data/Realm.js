@@ -11,7 +11,7 @@ import TimeTrigger from '../models/TimeTrigger';
 import Test from '../models/Test';
 
 const realmInstance = new Realm({
-  schemaVersion: 45,
+  schemaVersion: 48,
   schema: [
     Survey,
     Form,
@@ -32,7 +32,7 @@ const realmInstance = new Realm({
 export function clearRealmCache(objectName, idExclusions) {
   try {
     const objects = realmInstance.objects(objectName);
-    const expiredSurveys = [];
+    const expiredItems = [];
     const excludedIds = [];
     for (let i = 0; i < idExclusions.length; i++) {
       excludedIds.push(idExclusions[i].id);
@@ -48,12 +48,12 @@ export function clearRealmCache(objectName, idExclusions) {
         }
       }
       if (expired) {
-        expiredSurveys.push(objects[i]);
+        expiredItems.push(objects[i]);
       }
     }
 
     realmInstance.write(() => {
-      realmInstance.delete(expiredSurveys);
+      realmInstance.delete(expiredItems);
     });
   } catch (e) {
     console.error(e);
