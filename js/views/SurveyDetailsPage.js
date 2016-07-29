@@ -5,6 +5,7 @@ import {
   Text,
   View,
   ScrollView,
+  Platform,
 } from 'react-native'
 import realm from '../data/Realm'
 import _ from 'lodash'
@@ -37,32 +38,42 @@ const SurveyDetailsPage = React.createClass ({
   },
 
   getInitialState() {
-    const invitation = loadCachedInvitationById(this.props.survey.id);
-    const forms = loadCachedForms(this.props.survey.id);
-    const questions = loadCachedQuestionsFromForms(forms);
-
-    let status = invitation && invitation.status ? invitation.status : InvitationStatus.PENDING;
-
-    return {
-      forms: forms,
-      formCount: forms.length,
-      questions: questions,
-      questionCount: questions.length,
-      status: status,
-      activeTab: 'surveys',
-      availability: {
-        availableTimeTriggers: 0,
-        nextTimeTrigger: false,
-        geofenceTriggersInRange: 0,
-        currentTrigger: {},
-      },
-    }
+    return { loading: true }
   },
 
   componentDidMount() {
-    if (this.state.status === 'accepted') {
-      this.getSurveyData();
-    }
+    const self = this;
+    const renderDelay = Platform.OS === 'android' ? 300 : 50;
+
+    setTimeout(()=>{
+      if (!self.cancelCallbacks) {
+        const invitation = loadCachedInvitationById(this.props.survey.id);
+        const forms = loadCachedForms(this.props.survey.id);
+        const questions = loadCachedQuestionsFromForms(forms);
+
+        let status = invitation && invitation.status ? invitation.status : InvitationStatus.PENDING;
+
+        self.setState({
+          loading: false,
+          forms: forms,
+          formCount: forms.length,
+          questions: questions,
+          questionCount: questions.length,
+          status: status,
+          activeTab: 'surveys',
+          availability: {
+            availableTimeTriggers: 0,
+            nextTimeTrigger: false,
+            geofenceTriggersInRange: 0,
+          },
+        });
+
+
+        if (this.state.status === 'accepted') {
+          this.getSurveyData();
+        }
+      }
+    }, renderDelay);
   },
 
   componentWillUnmount() {
@@ -174,7 +185,7 @@ const SurveyDetailsPage = React.createClass ({
       acceptButtonStyle.push({backgroundColor: Color.positive});
       acceptButtonTextStyle = {color: Color.background2};
       acceptedButtonContainerStyle = {
-        margin: 20,
+        marginVertical: 10,
         borderWidth: 2,
         borderTopWidth: 0,
         borderColor: Color.background1,
@@ -253,30 +264,32 @@ const SurveyDetailsPage = React.createClass ({
             this.state.status == InvitationStatus.ACCEPTED && this.state.questionCount > 0 ?
             <View style={Styles.survey.surveyStats}>
               <View style={Styles.survey.surveyStatsBlock}>
-                <Text>Number of Forms</Text>
-                <Text style={Styles.survey.surveyStatsNumber}>{this.state.formCount}</Text>
+                <Text>{this.state.formCount} Forms</Text> 
               </View>
               <View style={Styles.survey.surveyStatsBlock}>
-                <Text>Number of Questions</Text>
-                <Text style={Styles.survey.surveyStatsNumber}>{this.state.questionCount}</Text>
+                <Text>{this.state.questionCount} Questions</Text> 
               </View>
             </View>
             :
             <View style={Styles.survey.surveyStats}>
               <View style={Styles.survey.surveyStatsBlock}>
-                <Text>Contains {this.state.formCount} Forms</Text> 
+                <Text>Contains {this.state.formCount} forms total.</Text> 
               </View>
             </View>
           }
 
-          { this.state.status === 'accepted' ? this.renderFormAvailability() : null }
+          <View style={{padding: 30}}>
+            { this.state.status === 'accepted' ? this.renderFormAvailability() : null }
 
-          <View style={Styles.survey.surveyNotes}>
-            <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>Administered by:</Text>
-            <Text style={[Styles.type.h2, {marginTop: 0, fontWeight: 'normal'}]}>{this.props.survey.user}</Text>
+            <View style={[Styles.survey.surveyNotes, {paddingVertical: this.state.status === 'accepted' ? 15 : 30}]}>
+              <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>Administered by:</Text>
+              <Text style={[Styles.type.h2, {marginTop: 0, fontWeight: 'normal'}]}>{this.props.survey.user}</Text>
+            </View>
+
+            { this.state.status === 'accepted' ? this.renderAcceptButtons() : null }
           </View>
 
-          { this.state.status === 'accepted' ? this.renderAcceptButtons() : null }
+          
         </ScrollView>
 
         {this.state.status === 'accepted' ? null : this.renderAcceptButtons()}
@@ -285,6 +298,10 @@ const SurveyDetailsPage = React.createClass ({
   },
 
   render() {
+    if (this.state.loading) {
+      return ( <Loading/> );
+    }
+
     let tab;
     switch(this.state.activeTab) {
       case 'geofence': tab = <MapPage navigator={this.props.navigator} survey={this.props.survey} />; break;

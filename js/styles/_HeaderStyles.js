@@ -43,7 +43,7 @@ const HeaderStyles = StyleSheet.create({
 
   banner: {
     // flex: 1,
-    height: 160,
+    height: Variables.REGISTRATION_HEIGHT,
     alignItems:'center',
     justifyContent:'center',
     backgroundColor: Color.background1,

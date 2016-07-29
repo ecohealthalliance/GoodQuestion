@@ -54,6 +54,7 @@ const ShortAnswer = React.createClass ({
             style={{height: 40, borderColor: Color.background1, borderWidth: 1, paddingLeft: 10}}
             onChangeText={this.handleChange}
             placeholder="Tap to type..."
+            blurOnSubmit={true}
             value={this.state.value}
           />
         </View>

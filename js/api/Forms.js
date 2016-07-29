@@ -224,13 +224,18 @@ export function loadParseFormDataBySurveyId(surveyId, callback) {
 export function completeForm(formId) {
   console.log('COMPLETING FORM: ' + formId);
 
-  const notification = realm.objects('Notification').filtered(`formId = "${formId}"`)[0]
-  const timeTrigger = realm.objects('TimeTrigger').filtered(`formId = "${formId}"`)[0]
-  const geofenceTrigger = realm.objects('GeofenceTrigger').filtered(`formId = "${formId}"`)[0]
+  try {
+    const notification = realm.objects('Notification').filtered(`formId = "${formId}"`)[0];
+    const timeTrigger = realm.objects('TimeTrigger').filtered(`formId = "${formId}"`)[0];
+    const geofenceTrigger = realm.objects('GeofenceTrigger').filtered(`formId = "${formId}"`)[0];
 
-  realm.write(() => {
-    if (notification) notification.completed = true;
-    if (timeTrigger) timeTrigger.completed = true;
-    if (geofenceTrigger) geofenceTrigger.completed = true;
-  });
+    realm.write(() => {
+      if (notification) notification.completed = true;
+      if (timeTrigger) timeTrigger.completed = true;
+      if (geofenceTrigger) geofenceTrigger.completed = true;
+    });
+  } catch (e) {
+    console.warn(e);
+  }
+  
 }

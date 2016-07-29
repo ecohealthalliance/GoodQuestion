@@ -36,6 +36,10 @@ const Checkbox = React.createClass({
     }
   },
 
+  toggle() {
+    
+  },
+
   onChange() {
     if(this.props.onChange){
       this.props.onChange(!this.props.checked);
@@ -115,7 +119,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 5,
+    paddingVertical: 2,
   },
   labelContainer: {
     marginLeft: 10,

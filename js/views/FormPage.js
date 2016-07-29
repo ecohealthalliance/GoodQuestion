@@ -34,6 +34,7 @@ import CompleteForm from '../components/QuestionTypes/CompleteForm'
 import Button from 'apsl-react-native-button';
 import Submission from '../models/Submission';
 import Loading from '../components/Loading';
+import Overlay from '../components/Overlay';
 import Color from '../styles/Color';
 import TypeStyles from '../styles/_TypeStyles';
 import Swiper from '../components/Swiper/Swiper';
@@ -73,8 +74,8 @@ const FormPage = React.createClass ({
     return {
       forms: forms,
       isLoading: true,
+      isSubmitting: false,
       index: this.props.index,
-      button_text: 'Submit',
       formsInQueue: false
     };
   },
@@ -173,7 +174,6 @@ const FormPage = React.createClass ({
       })
     }
 
-    console.log('Forms setState')
     this.setState({
       questions: questions,
       answers: answers,
@@ -242,13 +242,13 @@ const FormPage = React.createClass ({
   },
 
   submit() {
+    if (this.state.isSubmitting) return;
+
     let answers = this.state.answers,
         formId = this.form.id,
         index = this.state.index,
         survey = this.props.survey
-    this.setState({
-      button_text: 'Saving...'
-    });
+    this.setState({ isSubmitting: true });
 
     saveSubmission(formId, answers, (err, res) => {
       if (err) {
@@ -257,12 +257,12 @@ const FormPage = React.createClass ({
           return;
         }
         Alert.alert('Error', err);
+        this.setState({ isSubmitting: false });
+
         return;
       }
 
-      this.setState({
-        button_text: 'Submit'
-      });
+      this.setState({ isSubmitting: false });
 
       // Publish a ToastMessage to our Toaster via pubsub
       const toastMessage = ToastMessage.createFromObject({
@@ -342,12 +342,10 @@ const FormPage = React.createClass ({
         default: questionComponent = <Text key={'unknown-question-'+idx}>Unknown Type: {question.type}</Text>; break;
       }
       return (
-        <TouchableWithoutFeedback
-          onPress={this.dismiss}>
-          <View style={{flex: 1}}>
-            {questionComponent}
-          </View>
-        </TouchableWithoutFeedback>
+        <ScrollView 
+        style={{ flex: 1 }}>
+          {questionComponent}
+        </ScrollView>
       )
     })
     
@@ -356,8 +354,6 @@ const FormPage = React.createClass ({
     return renderedQuestions
   },
   render() {
-    console.warn('this.form')
-    console.log(this.form)
     if (this.state.isLoading) {
       return (<Loading/>)
     } else if (!this.state.formsInQueue){
@@ -371,7 +367,11 @@ const FormPage = React.createClass ({
     } else {
       return (
         <View style={{flex: 1}}>
-          <View style={{flex: 1, paddingHorizontal: 20, overflow: 'hidden'}}>
+          <View style={{
+            flex: 1,
+            paddingHorizontal:Platform.OS === 'ios' ? 20 : 0,
+            overflow: 'hidden'
+          }}>
             <Swiper
               ref={(swiper) => {this._swiper = swiper}}
               style={{flex: 1}}
@@ -381,7 +381,7 @@ const FormPage = React.createClass ({
               beforePageChange={this.beforePageChange}
               onPageChange={this.onPageChange}
               children={this.renderQuestions()}
-              threshold={50}>
+              threshold={30}>
             </Swiper>
           </View>
 
@@ -391,6 +391,12 @@ const FormPage = React.createClass ({
             total={this.state.questions.length}
             onPressed={this.changePage}
            />
+
+           {this.state.isSubmitting ? 
+             <Overlay>
+               <Loading color="white" text="Submitting Form..." /> 
+             </Overlay>
+           : null}
         </View>
       )
     }

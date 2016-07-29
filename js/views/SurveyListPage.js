@@ -217,7 +217,7 @@ const SurveyListPage = React.createClass ({
         onPress={() => this.selectSurvey(survey)}
         underlayColor={Color.background3}>
         <View>
-          <SurveyListItem title={survey.title} surveyId={survey.id} status={this.getInvitationStatus(survey.id)} />
+          <SurveyListItem title={survey.title} surveyId={survey.id} status={this.getInvitationStatus(survey.id)} isRefreshing={this.state.isRefreshing} />
         </View>
       </TouchableHighlight>
     );

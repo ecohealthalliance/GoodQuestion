@@ -15,7 +15,7 @@ export default StyleSheet.create({
   },
   item: {
     flex: 1,
-  	paddingVertical: 20,
+  	paddingVertical: 14,
     paddingHorizontal: 0,
     borderBottomWidth: 1,
     borderColor: Color.background1Edge,

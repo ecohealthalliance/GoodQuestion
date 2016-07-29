@@ -110,6 +110,9 @@ export function configureGeolocationService(options = {}, callback) {
  * Stops any running background services and initializes a new process.
  */
 export function initializeGeolocationService() {
+  // Temporarily disable this service for RN 0.29 migration
+  return;
+
   BackgroundGeolocation.stop();
   configureGeolocationService({isInitial: true}, (state) => {
 

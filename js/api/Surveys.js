@@ -146,7 +146,7 @@ export function cacheParseSurveys(survey) {
         updatedAt: survey.get('updatedAt'),
         title: survey.get('title'),
         description: survey.get('description'),
-        user: 'Test University', // get parse user name
+        user: 'N/A', // TODO: Get Organization's name.
         forms: [],
         title: survey.get('title'),
       }, true)

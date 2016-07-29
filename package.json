@@ -14,17 +14,17 @@
     "lodash": "4.11.1",
     "moment": "2.11.2",
     "parse": "1.8.3",
-    "react": "^15.1.0",
-    "react-native": "0.28.0",
     "pubsub-js": "1.5.3",
+    "react": "^15.2.0",
+    "react-native": "^0.29.1",
     "react-native-background-geolocation": "^1.0.0",
-    "react-native-background-geolocation-android": "git+ssh://git@github.com/ecohealthalliance/react-native-android.git",
+    "react-native-background-geolocation-android": "git+ssh://git@github.com/transistorsoft/react-native-background-geolocation-android.git#2.0.0",
     "react-native-checkbox": "https://github.com/dan-nyanko/react-native-checkbox#master",
-    "react-native-drawer": "^2.2.2",
+    "react-native-drawer": "^2.2.6",
     "react-native-maps": "^0.4.2",
-    "react-native-push-notification": "^1.0.7",
+    "react-native-push-notification": "2.0.0",
     "react-native-vector-icons": "2.0.3",
-    "realm": "^0.13.2"
+    "realm": "^0.14.1"
   },
   "devDependencies": {
     "commander": "^2.9.0"

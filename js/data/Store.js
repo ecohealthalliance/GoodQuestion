@@ -6,7 +6,7 @@ const Store = {
 
   // App State
   appState: 'active',
-  backgroundServiceState: 'started',
+  backgroundServiceState: 'deactivated',
 
   userSettings: {
     vibrateOnGeofence: true,

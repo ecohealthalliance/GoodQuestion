@@ -14,7 +14,8 @@ const SurveyStyles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
+    height: 66,
+    paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderColor: Color.background1,
   },
@@ -23,7 +24,7 @@ const SurveyStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    height: 70,
+    height: 60,
     left: 0,
     right: 0,
     bottom: 0,
@@ -37,11 +38,12 @@ const SurveyStyles = StyleSheet.create({
     borderWidth: 2,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
+    // fontWeight: 'bold',
     color: 'dimgray',
   },
   itemDescription: {
-    paddingTop: 6,
+    // paddingTop: 6,
     fontSize: 12,
     color: 'dimgray',
   },
@@ -77,7 +79,8 @@ const SurveyStyles = StyleSheet.create({
     color: Color.background1,
   },
   surveyNotes: {
-    padding: 30,
+    // paddingHorizontal: 30,
+    paddingBottom: 15,
   },
 
   acceptanceButtons: {
@@ -121,7 +124,7 @@ const SurveyStyles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderColor: Color.primary,
-    borderRadius: 3,
+    borderRadius: 0,
     backgroundColor: Color.background2,
     margin: 0,
     paddingVertical: 12,
