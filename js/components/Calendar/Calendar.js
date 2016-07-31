@@ -2,20 +2,18 @@ import React from 'react';
 import {
   Dimensions,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
-} from 'react-native'
-import moment from 'moment'
-import CalendarDay from './CalendarDay'
-import CalendarStyles from './CalendarStyles'
+  View,
+} from 'react-native';
+import moment from 'moment';
+import CalendarDay from './CalendarDay';
+import CalendarStyles from './CalendarStyles';
 
-let MAX_COLUMNS = 7,
-    MAX_ROWS = 7,
-    DEVICE_WIDTH = Dimensions.get('window').width - 60,
-    VIEW_INDEX = 2
+const DEVICE_WIDTH = Dimensions.get('window').width - 60,
+      MAX_COLUMNS = 7,
+      MAX_ROWS = 7,
+      VIEW_INDEX = 2;
 
 const Calendar = React.createClass({
   propTypes: {
@@ -47,137 +45,146 @@ const Calendar = React.createClass({
       startDate: moment().format('YYYY-MM-DD'),
       eventDates: [],
       customStyle: {},
-    }
+    };
   },
 
   getInitialState() {
     return {
       calendarDates: this.getInitialStack(),
       selectedDate: moment(this.props.selectedDate).format(),
-      currentMonth: moment(this.props.startDate).format()
-    }
+      currentMonth: moment(this.props.startDate).format(),
+    };
   },
 
   componentWillMount() {
-    this.renderedMonths = []
+    this.renderedMonths = [];
   },
 
   componentDidMount() {
-    this._scrollToItem(VIEW_INDEX)
+    this._scrollToItem(VIEW_INDEX);
   },
 
   getInitialStack() {
-    var initialStack = []
+    const initialStack = [];
     if (this.props.scrollEnabled) {
-      initialStack.push(moment(this.props.startDate).subtract(2, 'month').format())
-      initialStack.push(moment(this.props.startDate).subtract(1, 'month').format())
-      initialStack.push(moment(this.props.startDate).format())
-      initialStack.push(moment(this.props.startDate).add(1, 'month').format())
-      initialStack.push(moment(this.props.startDate).add(2, 'month').format())
+      initialStack.push(moment(this.props.startDate).subtract(2, 'month').format());
+      initialStack.push(moment(this.props.startDate).subtract(1, 'month').format());
+      initialStack.push(moment(this.props.startDate).format());
+      initialStack.push(moment(this.props.startDate).add(1, 'month').format());
+      initialStack.push(moment(this.props.startDate).add(2, 'month').format());
     } else {
-      initialStack.push(moment(this.props.startDate).format())
+      initialStack.push(moment(this.props.startDate).format());
     }
-    return initialStack
+    return initialStack;
   },
-  
+
   /* Methods */
 
   _prependMonth() {
-    var calendarDates = this.state.calendarDates
-    calendarDates.unshift(moment(calendarDates[0]).subtract(1, 'month').format())
-    calendarDates.pop()
+    const calendarDates = this.state.calendarDates;
+    calendarDates.unshift(moment(calendarDates[0]).subtract(1, 'month').format());
+    calendarDates.pop();
     this.setState({
       calendarDates: calendarDates,
-      currentMonth: calendarDates[this.props.scrollEnabled ? VIEW_INDEX : 0]
-    })
+      currentMonth: calendarDates[this.props.scrollEnabled ? VIEW_INDEX : 0],
+    });
   },
 
-  _appendMonth(){
-    var calendarDates = this.state.calendarDates
-    calendarDates.push(moment(calendarDates[calendarDates.length - 1]).add(1, 'month').format())
-    calendarDates.shift()
+  _appendMonth() {
+    const calendarDates = this.state.calendarDates;
+    calendarDates.push(moment(calendarDates[calendarDates.length - 1]).add(1, 'month').format());
+    calendarDates.shift();
     this.setState({
       calendarDates: calendarDates,
-      currentMonth: calendarDates[this.props.scrollEnabled ? VIEW_INDEX : 0]
-    })
+      currentMonth: calendarDates[this.props.scrollEnabled ? VIEW_INDEX : 0],
+    });
   },
 
   _selectDate(date) {
     this.setState({
       selectedDate: date,
-    })
-    this.props.onDateSelect && this.props.onDateSelect(date.format())
+    });
+    if (this.props.onDateSelect) {
+      this.props.onDateSelect(date.format());
+    }
   },
 
-  _onPrev(){
-    this._prependMonth()
-    this._scrollToItem(VIEW_INDEX)
-    this.props.onTouchPrev && this.props.onTouchPrev(this.state.calendarDates[VIEW_INDEX])
+  _onPrev() {
+    this._prependMonth();
+    this._scrollToItem(VIEW_INDEX);
+    if (this.props.onTouchPrev) {
+      this.props.onTouchPrev(this.state.calendarDates[VIEW_INDEX]);
+    }
   },
 
-  _onNext(){
-    this._appendMonth()
-    this._scrollToItem(VIEW_INDEX)
-    this.props.onTouchNext && this.props.onTouchNext(this.state.calendarDates[VIEW_INDEX])
+  _onNext() {
+    this._appendMonth();
+    this._scrollToItem(VIEW_INDEX);
+    if (this.props.onTouchNext) {
+      this.props.onTouchNext(this.state.calendarDates[VIEW_INDEX]);
+    }
   },
 
   _scrollToItem(itemIndex) {
-    var scrollToX = itemIndex * DEVICE_WIDTH
+    const scrollToX = itemIndex * DEVICE_WIDTH;
     if (this.props.scrollEnabled) {
-      this.refs.calendar.scrollTo({x: scrollToX, y: 0, animated: false})
+      this.refs.calendar.scrollTo({x: scrollToX, y: 0, animated: false});
     }
   },
 
   _scrollEnded(event) {
-    var position = event.nativeEvent.contentOffset.x
-    var currentPage = position / DEVICE_WIDTH
+    const position = event.nativeEvent.contentOffset.x;
+    const currentPage = position / DEVICE_WIDTH;
 
     if (currentPage < VIEW_INDEX) {
-      this._prependMonth()
-      this._scrollToItem(VIEW_INDEX)
-      this.props.onSwipePrev && this.props.onSwipePrev()
+      this._prependMonth();
+      this._scrollToItem(VIEW_INDEX);
+      if (this.props.onSwipePrev) {
+        this.props.onSwipePrev();
+      }
     } else if (currentPage > VIEW_INDEX) {
-      this._appendMonth()
-      this._scrollToItem(VIEW_INDEX)
-      this.props.onSwipeNext && this.props.onSwipeNext()
-    } else {
-      return false
+      this._appendMonth();
+      this._scrollToItem(VIEW_INDEX);
+      if (this.props.onSwipeNext) {
+        this.props.onSwipeNext();
+      }
     }
+    return false;
   },
 
   /* Styling */
-  
+
   _dayCircleStyle(newDay, isSelected, isToday) {
-    var dayCircleStyle = [CalendarStyles.dayCircleFiller, this.props.customStyle.dayCircleFiller]
+    const dayCircleStyle = [CalendarStyles.dayCircleFiller, this.props.customStyle.dayCircleFiller];
     if (isSelected && !isToday) {
-      dayCircleStyle.push(CalendarStyles.selectedDayCircle)
-      dayCircleStyle.push(this.props.customStyle.selectedDayCircle)
+      dayCircleStyle.push(CalendarStyles.selectedDayCircle);
+      dayCircleStyle.push(this.props.customStyle.selectedDayCircle);
     } else if (isSelected && isToday) {
-      dayCircleStyle.push(CalendarStyles.currentDayCircle)
-      dayCircleStyle.push(this.props.customStyle.currentDayCircle)
+      dayCircleStyle.push(CalendarStyles.currentDayCircle);
+      dayCircleStyle.push(this.props.customStyle.currentDayCircle);
     }
-    return dayCircleStyle
+    return dayCircleStyle;
   },
 
   _dayTextStyle(newDay, isSelected, isToday) {
-    var dayTextStyle = [CalendarStyles.day, this.props.customStyle.day]
+    const dayTextStyle = [CalendarStyles.day, this.props.customStyle.day];
     if (isToday && !isSelected) {
-      dayTextStyle.push(CalendarStyles.currentDayText)
-      dayTextStyle.push(this.props.customStyle.currentDayText)
+      dayTextStyle.push(CalendarStyles.currentDayText);
+      dayTextStyle.push(this.props.customStyle.currentDayText);
     } else if (isToday || isSelected) {
-      dayTextStyle.push(CalendarStyles.selectedDayText)
-      dayTextStyle.push(this.props.customStyle.selectedDayText)
+      dayTextStyle.push(CalendarStyles.selectedDayText);
+      dayTextStyle.push(this.props.customStyle.selectedDayText);
     } else if (moment(newDay).day() === 6 || moment(newDay).day() === 0) {
-      dayTextStyle.push(CalendarStyles.weekendDayText)
-      dayTextStyle.push(this.props.customStyle.weekendDayText)
+      dayTextStyle.push(CalendarStyles.weekendDayText);
+      dayTextStyle.push(this.props.customStyle.weekendDayText);
     }
-    return dayTextStyle
+    return dayTextStyle;
   },
 
   /* Render */
 
-  renderTopBar(date) {
-    if(this.props.showControls) {
+  renderTopBar() {
+    if (this.props.showControls) {
       return (
         <View style={[CalendarStyles.calendarControls, this.props.customStyle.calendarControls]}>
           <TouchableOpacity style={[CalendarStyles.controlButton, this.props.customStyle.controlButton]} onPress={this._onPrev}>
@@ -190,101 +197,104 @@ const Calendar = React.createClass({
             <Text style={[CalendarStyles.controlButtonText, this.props.customStyle.controlButtonText]}>{this.props.nextButtonText}</Text>
           </TouchableOpacity>
         </View>
-      )
-    } else {
-      return (
-        <View style={[CalendarStyles.calendarControls, this.props.customStyle.calendarControls]}>
-          <Text style={[CalendarStyles.title, this.props.customStyle.title]}>{moment(this.state.currentMonth).format(this.props.titleFormat)}</Text>
-        </View>
-      )
+      );
     }
+    return (
+      <View style={[CalendarStyles.calendarControls, this.props.customStyle.calendarControls]}>
+        <Text style={[CalendarStyles.title, this.props.customStyle.title]}>{moment(this.state.currentMonth).format(this.props.titleFormat)}</Text>
+      </View>
+    );
   },
 
   renderHeading() {
     return (
       <View style={[CalendarStyles.calendarHeading, this.props.customStyle.calendarHeading]}>
         {this.props.dayHeadings.map((day, i) =>
-          <Text key={i} style={i == 0 || i == 6 ? [CalendarStyles.weekendHeading, this.props.customStyle.weekendHeading] : [CalendarStyles.dayHeading, this.props.customStyle.dayHeading]}>{day}</Text>
+          <Text key={i} style={i === 0 || i === 6 ? [CalendarStyles.weekendHeading, this.props.customStyle.weekendHeading] : [CalendarStyles.dayHeading, this.props.customStyle.dayHeading]}>{day}</Text>
         )}
       </View>
-    )
+    );
   },
 
   renderMonthView(date) {
-    var dayStart = moment(date).startOf('month').format(),
-      daysInMonth = moment(dayStart).daysInMonth(),
-      offset = moment(dayStart).get('day'),
-      preFiller = 0,
-      currentDay = 0,
-      weekRows = [],
-      renderedMonthView
+    const dayStart = moment(date).startOf('month').format(),
+          daysInMonth = moment(dayStart).daysInMonth(),
+          offset = moment(dayStart).get('day'),
+          weekRows = [];
 
-    for (var i = 0; i < MAX_COLUMNS; i++) {
-      var days = []
-      for (var j = 0; j < MAX_ROWS; j++) {
+    let currentDay = 0,
+        newDay = moment(dayStart).set('date', currentDay),
+        preFiller = 0,
+        renderedMonthView = null;
+
+    for (let i = 0; i < MAX_COLUMNS; i++) {
+      const days = [];
+      for (let j = 0; j < MAX_ROWS; j++) {
         if (preFiller < offset) {
-          days.push(<CalendarDay key={`${i},${j}`} filler={true} />)
-        } else {
-          if(currentDay < daysInMonth) {
-            var newDay = moment(dayStart).set('date', currentDay + 1)
-            var isToday = (moment().isSame(newDay, 'month') && moment().isSame(newDay, 'day')) ? true : false
-            var isSelected = (moment(this.state.selectedDate).isSame(newDay, 'month') && moment(this.state.selectedDate).isSame(newDay, 'day')) ? true : false
-            var hasEvent = false
-            if (this.props.eventDates) {
-              for (var x = 0; x < this.props.eventDates.length; x++) {
-                hasEvent = moment(this.props.eventDates[x]).isSame(newDay, 'day') ? true : false
-                if (hasEvent) { break }
+          days.push(<CalendarDay key={`${i},${j}`} filler={true} />);
+        } else if (currentDay < daysInMonth) {
+          newDay = moment(dayStart).set('date', currentDay + 1);
+          const isToday = moment().isSame(newDay, 'month') && moment().isSame(newDay, 'day');
+          const isSelected = moment(this.state.selectedDate).isSame(newDay, 'month') && moment(this.state.selectedDate).isSame(newDay, 'day');
+          let hasEvent = false;
+          if (this.props.eventDates) {
+            for (let x = 0; x < this.props.eventDates.length; x++) {
+              hasEvent = moment(this.props.eventDates[x]).isSame(newDay, 'day');
+              if (hasEvent) {
+                break;
               }
             }
-
-            days.push((
-              <CalendarDay
-                key={`${i},${j}`}
-                onPress={this._selectDate}
-                currentDay={currentDay}
-                newDay={newDay}
-                isToday={isToday}
-                isSelected={isSelected}
-                hasEvent={hasEvent}
-                usingEvents={this.props.eventDates.length > 0 ? true : false}
-                customStyle={this.props.customStyle}
-              />
-            ))
-            currentDay++
           }
-        }
-        preFiller++
-      } // row
 
-      if(days.length > 0 && days.length < 7) {
-        for (var x = days.length; x < 7; x++) {
-          days.push(<CalendarDay key={x} filler={true}/>)
+          days.push(
+            <CalendarDay
+              key={`${i},${j}`}
+              onPress={this._selectDate}
+              currentDay={currentDay}
+              newDay={newDay}
+              isToday={isToday}
+              isSelected={isSelected}
+              hasEvent={hasEvent}
+              usingEvents={this.props.eventDates.length > 0}
+              customStyle={this.props.customStyle}
+            />
+          );
+          currentDay++;
         }
-        weekRows.push(<View key={weekRows.length} style={[CalendarStyles.weekRow, this.props.customStyle.weekRow]}>{days}</View>)
-      } else {
-        weekRows.push(<View key={weekRows.length} style={[CalendarStyles.weekRow, this.props.customStyle.weekRow]}>{days}</View>)
+        preFiller++;
       }
-    } // column
 
-    renderedMonthView = <View key={moment(newDay).month()} style={CalendarStyles.monthContainer}>{weekRows}</View>
+      if (days.length > 0 && days.length < 7) {
+        for (let x = days.length; x < 7; x++) {
+          days.push(<CalendarDay key={x} filler={true}/>);
+        }
+        weekRows.push(<View key={weekRows.length} style={[CalendarStyles.weekRow, this.props.customStyle.weekRow]}>{days}</View>);
+      } else {
+        weekRows.push(<View key={weekRows.length} style={[CalendarStyles.weekRow, this.props.customStyle.weekRow]}>{days}</View>);
+      }
+    }
+
+    renderedMonthView = <View key={moment(newDay).month()} style={CalendarStyles.monthContainer}>{weekRows}</View>;
     // keep this rendered month view in case it can be reused without generating it again
-    this.renderedMonths.push([date, renderedMonthView])
-    return renderedMonthView
+    this.renderedMonths.push([date, renderedMonthView]);
+    return renderedMonthView;
   },
 
   _renderedMonth(date) {
-    var renderedMonth = null
+    let renderedMonth = null;
     if (moment(this.state.currentMonth).isSame(date, 'month')) {
-      renderedMonth = this.renderMonthView(date)
+      renderedMonth = this.renderMonthView(date);
     } else {
-      for (var i = 0; i < this.renderedMonths.length; i++) {
+      for (let i = 0; i < this.renderedMonths.length; i++) {
         if (moment(this.renderedMonths[i][0]).isSame(date, 'month')) {
-          renderedMonth = this.renderedMonths[i][1]
+          renderedMonth = this.renderedMonths[i][1];
         }
       }
-      if (!renderedMonth) { renderedMonth = this.renderMonthView(date) }
+      if (!renderedMonth) {
+        renderedMonth = this.renderMonthView(date);
+      }
     }
-    return renderedMonth
+    return renderedMonth;
   },
 
   render() {
@@ -292,27 +302,33 @@ const Calendar = React.createClass({
       <View style={[CalendarStyles.calendarContainer, this.props.customStyle.calendarContainer]}>
         {this.renderTopBar()}
         {this.renderHeading(this.props.titleFormat)}
-        {this.props.scrollEnabled ?
-          <ScrollView
-            ref='calendar'
-            horizontal={true}
-            scrollEnabled={true}
-            pagingEnabled={true}
-            removeClippedSubviews={true}
-            scrollEventThrottle={600}
-            showsHorizontalScrollIndicator={false}
-            automaticallyAdjustContentInsets={false}
-            onMomentumScrollEnd={(event) => this._scrollEnded(event)}>
-              {this.state.calendarDates.map((date) => { return this._renderedMonth(date) })}
-          </ScrollView>
-          :
-          <View ref='calendar'>
-            {this.state.calendarDates.map((date) => { return this._renderedMonth(date) })}
-          </View>
+        {
+          this.props.scrollEnabled
+          ? <ScrollView
+              ref='calendar'
+              horizontal={true}
+              scrollEnabled={true}
+              pagingEnabled={true}
+              removeClippedSubviews={true}
+              scrollEventThrottle={600}
+              showsHorizontalScrollIndicator={false}
+              automaticallyAdjustContentInsets={false}
+              onMomentumScrollEnd={(event) => {
+                this._scrollEnded(event);
+              }}>
+              {this.state.calendarDates.map((date) => {
+                return this._renderedMonth(date);
+              })}
+            </ScrollView>
+          : <View ref='calendar'>
+              {this.state.calendarDates.map((date) => {
+                return this._renderedMonth(date);
+              })}
+            </View>
         }
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = Calendar
+module.exports = Calendar;

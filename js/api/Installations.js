@@ -1,9 +1,8 @@
-import Parse from 'parse/react-native'
-import async from 'async'
-import moment from 'moment'
-import Settings from '../settings'
-import { version, name } from '../../package'
-import { currentUser} from './Account'
+import Parse from 'parse/react-native';
+import async from 'async';
+import Settings from '../settings';
+import { version, name } from '../../package';
+import { currentUser } from './Account';
 
 /**
  * find a single installation object using REST API and masterKey
@@ -18,21 +17,22 @@ function findInstallation(installationId, done) {
       'X-Parse-Application-Id': Settings.parse.appId,
       'X-Parse-Master-Key': Settings.parse.masterKey,
       'Content-Type': 'application/json',
-    }
+    },
   };
-  const url = Settings.parse.serverUrl + '/installations?where=' + encodeURIComponent(JSON.stringify({installationId: installationId}));
-  fetch(url, authConfig).then(function(res) {
+  const encoded = encodeURIComponent(JSON.stringify({installationId: installationId}));
+  const url = `${Settings.parse.serverUrl}/installations?where=${encoded}`;
+  fetch(url, authConfig).then((res) => {
     if (!res.ok) {
       // no results
       done(null, null);
       return;
     }
     return res.text();
-  }).then(function(responseText) {
+  }).then((responseText) => {
     let jsonData = {};
     try {
       jsonData = JSON.parse(responseText);
-    } catch(e) {
+    } catch (e) {
       done(e.message);
       return;
     }
@@ -42,14 +42,14 @@ function findInstallation(installationId, done) {
       return;
     }
     done(null, jsonData.results[0]);
-  }).catch(function(e) {
+  }).catch((e) => {
     if (e.hasOwnProperty('message')) {
       done(e.message);
       return;
     }
     done(errorMsg);
   });
-};
+}
 
 /**
  * update the installation object using REST API and masterKey
@@ -83,20 +83,20 @@ function updateInstallation(installation, user, done) {
       'X-Parse-Master-Key': Settings.parse.masterKey,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(update)
+    body: JSON.stringify(update),
   };
-  const url = Settings.parse.serverUrl + '/installations/' + installation.objectId;
-  fetch(url, authConfig).then(function(res) {
+  const url = `${Settings.parse.serverUrl}/installations/${installation.objectId}`;
+  fetch(url, authConfig).then((res) => {
     if (!res.ok) {
       done(errorMsg);
       return;
     }
     return res.text();
-  }).then(function(responseText) {
+  }).then((responseText) => {
     let jsonData = {};
     try {
       jsonData = JSON.parse(responseText);
-    } catch(e) {
+    } catch (e) {
       done(e);
       return;
     }
@@ -105,14 +105,14 @@ function updateInstallation(installation, user, done) {
       return;
     }
     done(null, jsonData);
-  }).catch(function(e) {
+  }).catch((e) => {
     if (e.hasOwnProperty('message')) {
       done(e.message);
       return;
     }
     done(errorMsg);
   });
-};
+}
 
 /**
  * update the installation object using REST API and masterKey
@@ -132,7 +132,7 @@ function createInstallation(installationId, user, tokenId, platform, done) {
     parseVersion: parseVersion,
     runCount: 1,
     userId: user.id,
-  }
+  };
   if (platform === 'android') {
     installation.pushType = 'gcm';
   }
@@ -146,20 +146,20 @@ function createInstallation(installationId, user, tokenId, platform, done) {
       'X-Parse-Master-Key': Settings.parse.masterKey,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(installation)
+    body: JSON.stringify(installation),
   };
-  const url = Settings.parse.serverUrl + '/installations';
-  fetch(url, authConfig).then(function(res) {
+  const url = `${Settings.parse.serverUrl}/installations`;
+  fetch(url, authConfig).then((res) => {
     if (!res.ok) {
       done(errorMsg);
       return;
     }
     return res.text();
-  }).then(function(responseText) {
+  }).then((responseText) => {
     let jsonData = {};
     try {
       jsonData = JSON.parse(responseText);
-    } catch(e) {
+    } catch (e) {
       done(e);
       return;
     }
@@ -168,14 +168,14 @@ function createInstallation(installationId, user, tokenId, platform, done) {
       return;
     }
     done(null, jsonData);
-  }).catch(function(e) {
+  }).catch((e) => {
     if (e.hasOwnProperty('message')) {
       done(e.message);
       return;
     }
     done(errorMsg);
   });
-};
+}
 
 /**
  * create an installation object using parse-server rest API
@@ -188,89 +188,85 @@ export function upsertInstallation(tokenId, platform, done) {
   async.auto({
     // get the installationId from Parse
     id: (cb) => {
-      Parse._getInstallationId()
-        .then(function(id) {
-          cb(null, id);
-        })
-        .catch(function(e){
-          cb(e);
-        });
+      Parse._getInstallationId().then((id) => {
+        cb(null, id);
+      }).catch((e) => {
+        cb(e);
+      });
     },
     // get the current user
-    user: ['id', function(cb, results) {
+    user: ['id', (cb) => {
       currentUser((err, user) => {
         if (err) {
           if (err === 'Invalid User') {
             // create an installation object even with an unauthenticated user
             // by sending an object with an empty id
-            cb(null, {id:''});
+            cb(null, { id: '' });
           } else {
             cb(err);
           }
-          return
+          return;
         }
         cb(null, user);
-      })
+      });
     }],
     // find existing installation object
-    find: ['user', function(cb, results) {
+    find: ['user', (cb, results) => {
       const installationId = results.id;
       findInstallation(installationId, cb);
     }],
     // save or update the installation object
-    save: ['find', function(cb, results) {
+    save: ['find', (cb, results) => {
       if (results.find === null) {
         createInstallation(results.id, results.user, tokenId, platform, cb);
       } else {
         updateInstallation(results.find, results.user, cb);
       }
-    }]
-  }, function(err, results) {
+    }],
+  }, (err, results) => {
     if (err) {
       done(err);
       return;
     }
     done(null, results.save);
   });
-};
+}
 
 
 /**
  * adds the authenticated user to the installation object using parse-server rest API
  *
- * @param {object} currentUser, the current user
+ * @param {object} user, the current user
  * @param {function} the function to execute when done
  */
-export function addUserToInstallation(currentUser, done) {
+export function addUserToInstallation(user, done) {
   async.auto({
     // get the installationId from Parse
     id: (cb) => {
-      Parse._getInstallationId()
-        .then(function(id) {
-          cb(null, id);
-        })
-        .catch(function(e){
-          cb(e);
-        });
+      Parse._getInstallationId().then((id) => {
+        cb(null, id);
+      }).catch((e) => {
+        cb(e);
+      });
     },
     // find existing installation object
-    find: ['id', function(cb, results) {
+    find: ['id', (cb, results) => {
       const installationId = results.id;
       findInstallation(installationId, cb);
     }],
     // save or update the installation object
-    save: ['find', function(cb, results) {
+    save: ['find', (cb, results) => {
       if (results.find === null) {
-        cb('No installation exists')
+        cb('No installation exists');
       } else {
-        updateInstallation(results.find, currentUser, cb);
+        updateInstallation(results.find, user, cb);
       }
-    }]
-  }, function(err, results) {
+    }],
+  }, (err, results) => {
     if (err) {
       done(err);
       return;
     }
     done(null, results.save);
   });
-};
+}

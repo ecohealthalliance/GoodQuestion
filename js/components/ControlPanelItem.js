@@ -3,9 +3,9 @@ import {
   View,
   Text,
   TouchableWithoutFeedback,
-} from 'react-native'
+} from 'react-native';
 
-import Styles from '../styles/Styles'
+import Styles from '../styles/Styles';
 
 export default React.createClass({
   render() {
@@ -17,6 +17,6 @@ export default React.createClass({
           </View>
         </TouchableWithoutFeedback>
       </View>
-    )
-  }
-})
+    );
+  },
+});

@@ -3,31 +3,30 @@ import {
   View,
   Text,
   TouchableOpacity,
-} from 'react-native'
+} from 'react-native';
 
-import Styles from '../styles/Styles'
-import Color from '../styles/Color'
-import Button from './Button'
+import Styles from '../styles/Styles';
+import Color from '../styles/Color';
 
-import Icon from 'react-native-vector-icons/FontAwesome'
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-const SurveyDetailsMenu = React.createClass ({
+const SurveyDetailsMenu = React.createClass({
   propTypes: {
     changeTab: React.PropTypes.func.isRequired,
   },
 
   getInitialState() {
     return {
-      activeButton: 'survey'
-    }
+      activeButton: 'survey',
+    };
   },
 
   /* Methods */
   handlePress(tab) {
-    this.props.changeTab(tab)
+    this.props.changeTab(tab);
     this.setState({
-      activeButton: tab
-    })
+      activeButton: tab,
+    });
   },
 
   /* Render */
@@ -56,20 +55,23 @@ const SurveyDetailsMenu = React.createClass ({
           Geofence
         </SurveyListFilterButton>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-const SurveyListFilterButton = React.createClass ({
+const SurveyListFilterButton = React.createClass({
   propTypes: {
     active: React.PropTypes.bool.isRequired,
     icon: React.PropTypes.string.isRequired,
     onPress: React.PropTypes.func.isRequired,
   },
   render() {
-    let buttonContainerStyle = {opacity: 0.5}
-    let buttonViewStyle = {flex: 1, paddingHorizontal: 20, paddingVertical: 12, justifyContent: 'center', alignItems: 'center'}
-    if (this.props.active) buttonContainerStyle.opacity = 1
+    const buttonContainerStyle = {opacity: 0.5};
+    let buttonViewStyle = {flex: 1, paddingHorizontal: 20, paddingVertical: 12, justifyContent: 'center', alignItems: 'center'};
+    if (this.props.active) {
+      buttonContainerStyle.opacity = 1;
+    }
+
     return (
       <View style={[buttonContainerStyle]}>
         <TouchableOpacity onPress={this.props.onPress} >
@@ -79,9 +81,9 @@ const SurveyListFilterButton = React.createClass ({
           </View>
         </TouchableOpacity>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
 
-module.exports = SurveyDetailsMenu
+module.exports = SurveyDetailsMenu;

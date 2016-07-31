@@ -12,12 +12,61 @@ let activeMap = null;
 let supressNotificationsTimestamp = 0;
 
 /**
+ * Event function for when geofences are entered, exited, or dwelled on.
+ * @param  {objects} params Parameters provided by the crossed geofence
+ */
+export function crossGeofence(params) {
+  console.log(`Geofence crossed: ${params.action} - ${params.identifier}`);
+
+  // Update Map
+  if (activeMap && activeMap.active) {
+    activeMap.updateMarkers(params);
+  }
+
+  try {
+    const trigger = realm.objects('GeofenceTrigger').filtered(`id = "${params.identifier}"`)[0];
+    if (trigger) {
+      // Notify on entry
+      if (_.lowerCase(params.action) === 'enter' && supressNotificationsTimestamp < Date.now()) {
+        const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0];
+        const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0];
+
+        if (form && survey) {
+          notifyOnBackground(`${form.title} - New geofence form available.`, true);
+
+          showToast(form.title, 'New geofence form available.', 'globe', 8, () => {
+            Store.navigator.push({
+              path: 'form',
+              title: survey.title,
+              forms: form,
+              survey: survey,
+              type: 'geofence',
+            });
+          });
+        }
+      }
+
+      // Update Geofence Trigger
+      realm.write(() => {
+        trigger.triggered = true;
+        trigger.inRange = _.lowerCase(params.action) === 'exit';
+        trigger.updateTimestamp = Date.now();
+      });
+    } else {
+      console.warn('Trigger not found.');
+    }
+  } catch (e) {
+    console.warn(e);
+  }
+}
+
+/**
  * Caches a MapPage component inside a variable for easy access
  * @param {element} component     React class element to be cached
  */
 export function setActiveMap(component) {
   activeMap = component;
-  BackgroundGeolocation.on('geofence', crossGeofence); // eslint-disable-line no-use-before-define
+  BackgroundGeolocation.on('geofence', crossGeofence);
 }
 
 /**
@@ -32,6 +81,23 @@ export function clearActiveMap(component) {
 }
 
 /**
+ * Erases all active geofences in the native geofencing api.
+ * @param  {Function} callback Callback function to execute afterwards.
+ */
+export function resetGeofences(callback) {
+  supressNotificationsTimestamp = Date.now() + 5000;
+  BackgroundGeolocation.removeGeofences(() => {
+      console.log('Cleared current geofencing settings.');
+      callback(null);
+    }, (err) => {
+      console.warn('Error resetting geofencing settings.');
+      console.warn(err);
+      callback(err);
+    }
+  );
+}
+
+/**
  * Creates native geofence objects using the 3rd-party geolocation library.
  * Erases previous set of native geofences and adds new ones based on geofence triggers.
  */
@@ -39,7 +105,7 @@ export function setupGeofences(callback) {
   // BackgroundGeolocation.stop()
 
   loadCachedGeofenceTriggers({excludeCompleted: true}, (err, response) => {
-    resetGeofences((err2) => { // eslint-disable-line no-use-before-define
+    resetGeofences((err2) => {
       if (err2) {
         console.warn('Unable to load geofence triggers');
         console.warn(err2);
@@ -75,6 +141,10 @@ export function setupGeofences(callback) {
   });
 }
 
+/**
+ * Adds a single geofence to the native geolocation API.
+ * @param {object} trigger Realm 'Trigger' object containing the geofence's required data.
+ */
 export function addGeofence(trigger) {
   const geofence = {
     identifier: trigger.id,
@@ -94,23 +164,6 @@ export function addGeofence(trigger) {
   }, (error) => {
     console.warn('Failed to add geofence.', error);
   });
-}
-
-/**
- * Erases all active geofences in the native geofencing api.
- * @param  {Function} callback Callback function to execute afterwards.
- */
-export function resetGeofences(callback) {
-  supressNotificationsTimestamp = Date.now() + 5000;
-  BackgroundGeolocation.removeGeofences(() => {
-      console.log('Cleared current geofencing settings.');
-      callback(null);
-    }, (err) => {
-      console.warn('Error resetting geofencing settings.');
-      console.warn(err);
-      callback(err);
-    }
-  );
 }
 
 /**
@@ -161,55 +214,6 @@ export function getUserLocationData(callback) {
     });
   } catch (e) {
     callback(coords);
-  }
-}
-
-/**
- * Event function for when geofences are entered, exited, or dwelled on.
- * @param  {objects} params Parameters provided by the crossed geofence
- */
-function crossGeofence(params) {
-  console.log(`Geofence crossed: ${params.action} - ${params.identifier}`);
-
-  // Update Map
-  if (activeMap && activeMap.active) {
-    activeMap.updateMarkers(params);
-  }
-
-  try {
-    const trigger = realm.objects('GeofenceTrigger').filtered(`id = "${params.identifier}"`)[0];
-    if (trigger) {
-      // Notify on entry
-      if (_.lowerCase(params.action) === 'enter' && supressNotificationsTimestamp < Date.now()) {
-        const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0];
-        const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0];
-
-        if (form && survey) {
-          notifyOnBackground(`${form.title} - New geofence form available.`, true);
-
-          showToast(form.title, 'New geofence form available.', 'globe', 8, () => {
-            Store.navigator.push({
-              path: 'form',
-              title: survey.title,
-              forms: form,
-              survey: survey,
-              type: 'geofence',
-            });
-          });
-        }
-      }
-
-      // Update Geofence Trigger
-      realm.write(() => {
-        trigger.triggered = true;
-        trigger.inRange = _.lowerCase(params.action) === 'exit';
-        trigger.updateTimestamp = Date.now();
-      });
-    } else {
-      console.warn('Trigger not found.');
-    }
-  } catch (e) {
-    console.warn(e);
   }
 }
 

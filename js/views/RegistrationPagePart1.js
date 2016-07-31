@@ -1,42 +1,36 @@
-
 import React from 'react';
 import {
   Text,
   TextInput,
   View,
-  TouchableHighlight,
-  TouchableWithoutFeedback,
-  Image,
-  Alert,
-  Dimensions,
   ScrollView,
-} from 'react-native'
+} from 'react-native';
 
-import Variables from '../styles/Variables'
-import Styles from '../styles/Styles'
-import Color from '../styles/Color'
-import Button from '../components/Button'
-import Checkbox from '../components/Checkbox'
+import Variables from '../styles/Variables';
+import Styles from '../styles/Styles';
+import Button from '../components/Button';
 
-import Icon from 'react-native-vector-icons/FontAwesome'
+import Checkbox from '../components/Checkbox';
+import Footer from '../components/Footer';
 
-const uncheckedComponent = (<Icon name='square-o' size={30} />);
-const checkedComponent = (<Icon name='check-square-o' size={30} />);
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-import Joi from '../lib/joi-browser.min'
-import JoiMixins from '../mixins/joi-mixins'
-import EventMixins from '../mixins/event-mixins'
-import he from 'he' // HTML entity encode and decode
+const uncheckedComponent = <Icon name='square-o' size={30} />;
+const checkedComponent = <Icon name='check-square-o' size={30} />;
 
-const RegistrationPagePart1 = React.createClass ({
+import Joi from '../lib/joi-browser.min';
+import JoiMixins from '../mixins/joi-mixins';
+import EventMixins from '../mixins/event-mixins';
+
+const RegistrationPagePart1 = React.createClass({
   propTypes: {
     navigator: React.PropTypes.object.isRequired,
   },
 
   styles: {
     checkboxWrapper: {
-      alignItems:'center',
-      justifyContent:'center',
+      alignItems: 'center',
+      justifyContent: 'center',
       marginLeft: 50,
       height: 35,
     },
@@ -46,7 +40,7 @@ const RegistrationPagePart1 = React.createClass ({
     'email',
     'password',
     'confirmPassword',
-    'acceptedTerms'
+    'acceptedTerms',
   ],
   mixins: [
     JoiMixins,
@@ -54,44 +48,31 @@ const RegistrationPagePart1 = React.createClass ({
   ],
 
   schema: {
-    email: Joi.string()
-      .email({minDomainAtoms: 2})
-      .required()
-      .options({language: {any: {allowOnly: 'must be a valid email'}}})
-      .label('Email'),
-    password: Joi.string()
-      .regex(/^([a-zA-Z0-9@*#]{8,15})$/)
-      .required().options({language: {string: {regex: {base: 'must be between 8 and 15 alphanumeric characters'}}}})
-      .label('Password'),
-    confirmPassword: Joi.string()
-      .regex(/^([a-zA-Z0-9@*#]{8,15})$/)
-      .required().options({language: {string: {regex: {base: 'must be between 8 and 15 alphanumeric characters'}}}})
-      .label('Confirm Password'),
-    acceptedTerms: Joi.boolean()
-      .required()
-      .invalid(false)
-      .options({language: {any: {invalid: 'must be accepted'}}})
-      .label('Terms of Service'),
+    email: Joi.string().email({minDomainAtoms: 2}).required().options(
+      {language: {any: {allowOnly: 'must be a valid email'}}}).label('Email'),
+    password: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().options(
+      {language: {string: {regex: {base: 'must be between 8 and 15 alphanumeric characters'}}}}).label('Password'),
+    confirmPassword: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().options(
+      {language: {string: {regex: {base: 'must be between 8 and 15 alphanumeric characters'}}}}).label('Confirm Password'),
+    acceptedTerms: Joi.boolean().required().invalid(false).options(
+      {language: {any: {invalid: 'must be accepted'}}}).label('Terms of Service'),
   },
 
   getInitialState() {
     return {
       title: 'Registration',
-      button_text: 'Next',
+      buttonText: 'Next',
       email: '',
       password: '',
       confirmPassword: '',
       acceptedTerms: false,
       errors: {},
-    }
-  },
-
-  componentWillMount() {
+    };
   },
 
   /* Methods */
   goToTermsPage() {
-    this.props.navigator.push({path: 'terms', unsecured: true, title: 'Terms of Service'})
+    this.props.navigator.push({path: 'terms', unsecured: true, title: 'Terms of Service'});
   },
 
   goToNextPage() {
@@ -109,7 +90,7 @@ const RegistrationPagePart1 = React.createClass ({
     };
     if (password !== value) {
       state.errors[name] = '"Confirm Password" does not match password';
-      state[name] = value
+      state[name] = value;
       this.setState(state);
       return;
     }
@@ -124,12 +105,11 @@ const RegistrationPagePart1 = React.createClass ({
         <Text style={Styles.type.link} onPress={this.goToTermsPage}>Terms of Service.</Text>
       </Text>
     );
-    this.props.navigator.push({path: 'terms', title: 'Terms of Service'})
   },
 
   /* Render */
   render() {
-    this.props.buttonStyles(this, this.formInputs)
+    this.props.buttonStyles(this, this.formInputs);
     return (
       <View style={[Styles.container.defaultWhite]}>
         <ScrollView
@@ -209,13 +189,14 @@ const RegistrationPagePart1 = React.createClass ({
             </View>
           </View>
         </ScrollView>
-
-        <Button action={this.goToNextPage}  style={this.buttonStyles} textStyle={this.buttonTextStyles}>
-          {this.state.button_text}
-        </Button>
+        <Footer>
+          <Button action={this.goToNextPage} style={this.buttonStyles} textStyle={this.buttonTextStyles}>
+            {this.state.buttonText}
+          </Button>
+        </Footer>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = RegistrationPagePart1
+module.exports = RegistrationPagePart1;

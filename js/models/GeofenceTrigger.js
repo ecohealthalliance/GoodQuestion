@@ -1,12 +1,13 @@
 export default class GeofenceTrigger {}
+
 GeofenceTrigger.schema = {
   name: 'GeofenceTrigger',
   primaryKey: 'id',
   properties: {
-  	id: 'string',
-  	formId: 'string',
-  	surveyId: 'string',
-    
+    id: 'string',
+    formId: 'string',
+    surveyId: 'string',
+
     title: 'string',
     latitude: {type: 'double', default: 0},
     longitude: {type: 'double', default: 0},
@@ -17,5 +18,5 @@ GeofenceTrigger.schema = {
     inRange: {type: 'bool', default: false},
 
     completed: {type: 'bool', default: false},
-  }
-}
+  },
+};

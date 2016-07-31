@@ -1,59 +1,56 @@
 import React from 'react';
 import {
   Alert,
-  StyleSheet,
   Text,
   View,
   ScrollView,
   Platform,
-} from 'react-native'
-import realm from '../data/Realm'
-import _ from 'lodash'
-import moment from 'moment'
-import Icon from 'react-native-vector-icons/FontAwesome'
+} from 'react-native';
 
-import Store from '../data/Store'
-import Styles from '../styles/Styles'
-import Color from '../styles/Color'
+import moment from 'moment';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
+import Styles from '../styles/Styles';
+import Color from '../styles/Color';
 
-import SurveyDetailsMenu from '../components/SurveyDetailsMenu'
-import Loading from '../components/Loading'
-import Button from '../components/Button'
-import ViewText from '../components/ViewText'
-import MapPage from './MapPage'
-import CalendarPage from './CalendarPage'
+import SurveyDetailsMenu from '../components/SurveyDetailsMenu';
+import Loading from '../components/Loading';
+import Button from '../components/Button';
+import MapPage from './MapPage';
+import CalendarPage from './CalendarPage';
 
-import { acceptSurvey, declineSurvey } from '../api/Surveys'
-import { getFormAvailability, loadCachedForms, loadCachedFormDataByTriggerId } from '../api/Forms'
-import { loadCachedQuestionsFromForms } from '../api/Questions'
-import { checkSurveyTimeTriggers, removeTriggers } from '../api/Triggers'
-import { setupGeofences } from '../api/Geofencing'
-import { InvitationStatus, markInvitationStatus, loadCachedInvitationById } from '../api/Invitations'
+import { acceptSurvey, declineSurvey } from '../api/Surveys';
+import { getFormAvailability, loadCachedForms, loadCachedFormDataByTriggerId } from '../api/Forms';
+import { loadCachedQuestionsFromForms } from '../api/Questions';
+import { InvitationStatus, markInvitationStatus, loadCachedInvitationById } from '../api/Invitations';
 
-const SurveyDetailsPage = React.createClass ({
+const SurveyDetailsPage = React.createClass({
   propTypes: {
-    survey: React.PropTypes.object.isRequired, // Realm.io Object
+    survey: React.PropTypes.object.isRequired,
     activeTab: React.PropTypes.string,
   },
 
   getInitialState() {
-    return { loading: true }
+    return {
+      loading: true,
+      status: InvitationStatus.PENDING,
+      acceptText: 'Accept',
+      declineText: 'Decline',
+    };
   },
 
   componentDidMount() {
-    const self = this;
     const renderDelay = Platform.OS === 'android' ? 300 : 50;
 
-    setTimeout(()=>{
-      if (!self.cancelCallbacks) {
+    setTimeout(() => {
+      if (!this.cancelCallbacks) {
         const invitation = loadCachedInvitationById(this.props.survey.id);
         const forms = loadCachedForms(this.props.survey.id);
         const questions = loadCachedQuestionsFromForms(forms);
 
-        let status = invitation && invitation.status ? invitation.status : InvitationStatus.PENDING;
+        const status = invitation && invitation.status ? invitation.status : InvitationStatus.PENDING;
 
-        self.setState({
+        this.setState({
           loading: false,
           forms: forms,
           formCount: forms.length,
@@ -82,49 +79,70 @@ const SurveyDetailsPage = React.createClass ({
 
   /* Methods */
   acceptCurrentSurvey() {
-    const self = this;
     const status = InvitationStatus.ACCEPTED;
-    this.setState({status: status});
-    markInvitationStatus(this.props.survey.id, status, (err, res) => {
-      if (err) {
-        console.warn(err);
-        return;
-      }
-      acceptSurvey(self.props.survey, (err, result) => {
-        if (!self.cancelCallbacks) {
-          self.getSurveyData();
+
+    this.setState({
+      status: status,
+      acceptText: 'Saving ...',
+    }, () => {
+      markInvitationStatus(this.props.survey.id, status, (err) => {
+        this.setState({
+          acceptText: 'Accept',
+        });
+        if (err) {
+          console.warn(err);
+          return;
         }
+        acceptSurvey(this.props.survey, (err2) => {
+          if (err2) {
+            console.warn(err);
+            return;
+          }
+          if (!this.cancelCallbacks) {
+            this.getSurveyData();
+          }
+        });
+        this.getSurveyData();
       });
-      self.getSurveyData();
     });
   },
 
   declineCurrentSurvey() {
-    if (this.state.status != 'accepted') {
-      this.confirmDeclineCurrentSurvey();
-    } else {
+    if (this.state.status === 'accepted') {
       Alert.alert(
         'Decline survey',
         'Are you sure you\'d like to decline this accepted survey?',
         [
-          {text: 'Cancel', onPress: () => {console.log('Survey decline canceled')}, style: 'cancel'},
+          {text: 'Cancel', style: 'cancel', onPress: () => {
+            console.log('Survey decline canceled');
+          }},
           {text: 'OK', onPress: () => {
             this.confirmDeclineCurrentSurvey();
           }},
         ]
-      )
+      );
+    } else {
+      this.confirmDeclineCurrentSurvey();
     }
   },
 
   confirmDeclineCurrentSurvey() {
     const status = InvitationStatus.DECLINED;
-    markInvitationStatus(this.props.survey.id, status, (err, res) => {
-      if (err) {
-        console.warn(err);
-        return;
-      }
-      declineSurvey(this.props.survey);
-      this.props.navigator.pop();
+    this.setState({
+      status: status,
+      declineText: 'Saving ...',
+    }, () => {
+      markInvitationStatus(this.props.survey.id, status, (err) => {
+        this.setState({
+          declineText: 'Decline',
+        });
+        if (err) {
+          console.warn(err);
+          return;
+        }
+        declineSurvey(this.props.survey);
+        this.props.navigator.pop();
+      });
     });
   },
 
@@ -154,7 +172,7 @@ const SurveyDetailsPage = React.createClass ({
 
   navigateToForms(type) {
     const triggerId = this.state.availability.currentTrigger.id;
-    let form;
+    let form = {};
     if (triggerId) {
       const data = loadCachedFormDataByTriggerId(triggerId, type);
       form = data.form;
@@ -162,7 +180,7 @@ const SurveyDetailsPage = React.createClass ({
 
     this.props.navigator.push({
       path: 'form',
-      title: this.props.survey.title + ': ' + form.title,
+      title: this.props.survey.title,
       survey: this.props.survey,
       form: form,
       type: type,
@@ -175,11 +193,15 @@ const SurveyDetailsPage = React.createClass ({
 
   /* Render */
   renderAcceptButtons() {
+    // Accept button
     let acceptButtonStyle = [Styles.survey.acceptButton];
     let acceptButtonTextStyle = {color: Color.positive};
+    let acceptedButtonContainerStyle = {};
+    let acceptIconColor = Color.positive;
+    // Decline button
     let declineButtonStyle = [Styles.survey.declineButton];
     let declineButtonTextStyle = {color: Color.warning};
-    let acceptedButtonContainerStyle = {};
+    let declineIconColor = Color.warning;
 
     if (this.state.status === 'accepted') {
       acceptButtonStyle.push({backgroundColor: Color.positive});
@@ -190,18 +212,22 @@ const SurveyDetailsPage = React.createClass ({
         borderTopWidth: 0,
         borderColor: Color.background1,
       };
+      acceptIconColor = Color.background2;
     } else if (this.state.status === 'declined') {
       declineButtonStyle.push({backgroundColor: Color.warning});
       declineButtonTextStyle = {color: Color.background2};
+      declineIconColor = Color.background2;
     }
 
     return (
       <View style={[Styles.survey.acceptanceButtons, acceptedButtonContainerStyle]}>
         <Button style={acceptButtonStyle} textStyle={acceptButtonTextStyle} action={this.acceptCurrentSurvey}>
-          <Icon name='check-circle' size={18} color={this.state.status === 'accepted' ?  Color.background2 : Color.positive} /> Accept
+          <Icon name='check-circle' size={18} color={acceptIconColor} />
+          <Text> {this.state.acceptText} </Text>
         </Button>
         <Button style={declineButtonStyle} textStyle={declineButtonTextStyle} action={this.declineCurrentSurvey}>
-          <Icon name='times-circle' size={18} color={this.state.status === 'declined' ?  Color.background2 : Color.warning} /> Decline
+          <Icon name='times-circle' size={18} color={declineIconColor} />
+          <Text> {this.state.declineText} </Text>
         </Button>
       </View>
     );
@@ -220,8 +246,7 @@ const SurveyDetailsPage = React.createClass ({
             Answer Form
           </Button>
         </View>
-      )
-
+      );
     } else if (availableTimeTriggers > 0) {
       return (
         <View style={Styles.survey.surveyNotes}>
@@ -232,24 +257,24 @@ const SurveyDetailsPage = React.createClass ({
             Answer Form
           </Button>
         </View>
-      )
-    } else if (nextTimeTrigger && nextTimeTrigger > Date.now() ) {
+      );
+    } else if (nextTimeTrigger && nextTimeTrigger > Date.now()) {
       return (
         <View style={Styles.survey.surveyNotes}>
           <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>
             Next form: {moment(nextTimeTrigger).fromNow()}
           </Text>
         </View>
-      )
-    } else {
-      return (
-        <View style={Styles.survey.surveyNotes}>
-          <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>
-            No forms currently available.
-          </Text>
-        </View>
-      )
+      );
     }
+
+    return (
+      <View style={Styles.survey.surveyNotes}>
+        <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>
+          No forms currently available.
+        </Text>
+      </View>
+    );
   },
 
   renderSurveyInfoPage() {
@@ -261,21 +286,20 @@ const SurveyDetailsPage = React.createClass ({
           </View>
 
           {
-            this.state.status == InvitationStatus.ACCEPTED && this.state.questionCount > 0 ?
-            <View style={Styles.survey.surveyStats}>
-              <View style={Styles.survey.surveyStatsBlock}>
-                <Text>{this.state.formCount} Forms</Text> 
+            this.state.status === InvitationStatus.ACCEPTED && this.state.questionCount > 0
+            ? <View style={Styles.survey.surveyStats}>
+                <View style={Styles.survey.surveyStatsBlock}>
+                  <Text>{this.state.formCount} Forms</Text>
+                </View>
+                <View style={Styles.survey.surveyStatsBlock}>
+                  <Text>{this.state.questionCount} Questions</Text>
+                </View>
               </View>
-              <View style={Styles.survey.surveyStatsBlock}>
-                <Text>{this.state.questionCount} Questions</Text> 
+            : <View style={Styles.survey.surveyStats}>
+                <View style={Styles.survey.surveyStatsBlock}>
+                  <Text>Contains {this.state.formCount} forms total.</Text>
+                </View>
               </View>
-            </View>
-            :
-            <View style={Styles.survey.surveyStats}>
-              <View style={Styles.survey.surveyStatsBlock}>
-                <Text>Contains {this.state.formCount} forms total.</Text> 
-              </View>
-            </View>
           }
 
           <View style={{padding: 30}}>
@@ -289,7 +313,6 @@ const SurveyDetailsPage = React.createClass ({
             { this.state.status === 'accepted' ? this.renderAcceptButtons() : null }
           </View>
 
-          
         </ScrollView>
 
         {this.state.status === 'accepted' ? null : this.renderAcceptButtons()}
@@ -299,14 +322,20 @@ const SurveyDetailsPage = React.createClass ({
 
   render() {
     if (this.state.loading) {
-      return ( <Loading/> );
+      return <Loading/>;
     }
 
-    let tab;
-    switch(this.state.activeTab) {
-      case 'geofence': tab = <MapPage navigator={this.props.navigator} survey={this.props.survey} />; break;
-      case 'scheduled': tab = <CalendarPage navigator={this.props.navigator} survey={this.props.survey} />; break;
-      default: tab = this.renderSurveyInfoPage(); break;
+    let tab = null;
+    switch (this.state.activeTab) {
+      case 'geofence':
+        tab = <MapPage navigator={this.props.navigator} survey={this.props.survey} />;
+        break;
+      case 'scheduled':
+        tab = <CalendarPage navigator={this.props.navigator} survey={this.props.survey} />;
+        break;
+      default:
+        tab = this.renderSurveyInfoPage();
+        break;
     }
 
     return (
@@ -314,11 +343,8 @@ const SurveyDetailsPage = React.createClass ({
         {tab}
         {this.state.status === 'accepted' ? <SurveyDetailsMenu changeTab={this.changeTab} /> : null}
       </View>
-    )
-  }
+    );
+  },
+});
 
-
-
-})
-
-module.exports = SurveyDetailsPage
+module.exports = SurveyDetailsPage;

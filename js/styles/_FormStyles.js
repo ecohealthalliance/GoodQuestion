@@ -1,8 +1,21 @@
-import { StyleSheet, Platform } from 'react-native'
-import Color from './Color'
-
+import { StyleSheet } from 'react-native';
+import Color from './Color';
 
 const FormStyles = StyleSheet.create({
+  titleHeading: {
+    textAlign: 'center',
+    marginTop: 20,
+    marginLeft: 8,
+    marginRight: 8,
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: Color.background1,
+  },
+  titleText: {
+    flex: 1,
+    color: Color.primary,
+    fontSize: 18,
+  },
   fixedForm: {
     flex: 1,
     justifyContent: 'center',
@@ -59,7 +72,10 @@ const FormStyles = StyleSheet.create({
     backgroundColor: Color.success,
   },
   primaryButtonText: {
-    color: Color.background2
+    color: Color.background2,
+  },
+  successButtonText: {
+    color: Color.background3,
   },
   wideButton: {
     marginHorizontal: 0,
@@ -71,12 +87,6 @@ const FormStyles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 20,
     color: Color.primary,
-  },
-  primaryButtonText: {
-    color: Color.background2,
-  },
-  successButtonText: {
-    color: Color.background3,
   },
   errorText: {
     paddingLeft: 5,
@@ -107,12 +117,12 @@ const FormStyles = StyleSheet.create({
     borderRadius: 5,
   },
   submitBtn: {
-    margin: 5
+    margin: 5,
   },
   questionBtn: {
     borderColor: Color.secondary,
     borderWidth: 2,
-    margin: 5
+    margin: 5,
   },
   doubleButtonLeft: {
     flex: 1,
@@ -156,24 +166,24 @@ const FormStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  footerButtonActive:{
+  footerButtonActive: {
     backgroundColor: Color.success,
   },
   registrationView: {
     paddingTop: 25,
     paddingBottom: 35,
-    marginBottom: 50,
+    marginBottom: 0,
   },
   registerText: {
     fontSize: 16,
     fontWeight: 'bold',
   },
   registerTextActive: {
-    color: Color.primary
+    color: Color.primary,
   },
   registerTextInactive: {
-    color: Color.secondary
+    color: Color.secondary,
   },
-})
+});
 
-module.exports = FormStyles
+module.exports = FormStyles;

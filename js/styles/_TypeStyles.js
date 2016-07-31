@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native'
-import Color from './Color'
+import { StyleSheet } from 'react-native';
+import Color from './Color';
 
 const TypeStyles = StyleSheet.create({
 
@@ -27,22 +27,22 @@ const TypeStyles = StyleSheet.create({
   statusMessageContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop:100
+    marginTop: 100,
   },
   statusMessage: {
     textAlign: 'center',
     fontSize: 26,
-    color: Color.primary
+    color: Color.primary,
   },
   statusMessageSecondary: {
     color: Color.secondary,
-    fontSize: 14
+    fontSize: 14,
   },
   // Interactive
   link: {
     color: Color.primary,
     fontWeight: 'bold',
   },
-})
+});
 
-module.exports = TypeStyles
+module.exports = TypeStyles;

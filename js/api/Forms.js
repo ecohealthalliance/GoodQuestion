@@ -1,108 +1,107 @@
-import { InteractionManager } from 'react-native'
-import _ from 'lodash'
-import Parse from 'parse/react-native'
-import Store from '../data/Store'
-import realm from '../data/Realm'
+import _ from 'lodash';
+import Parse from 'parse/react-native';
+import realm from '../data/Realm';
 
-import { InvitationStatus, loadCachedInvitation } from './Invitations'
-import { loadQuestions } from './Questions'
-import { loadTriggers, loadCachedTriggers } from './Triggers'
-import { loadCachedSubmissions } from './Submissions'
-import Submission from '../models/Submission';
-
+import { InvitationStatus, loadCachedInvitation } from './Invitations';
+import { loadQuestions } from './Questions';
+import { loadTriggers } from './Triggers';
 
 // Saves a Form object from Parse into our Realm.io local database
 export function cacheParseForm(form, surveyId) {
-  // InteractionManager.runAfterInteractions(() => {
-    try {
-      realm.write(() => {
-        let newForm = realm.create('Form', {
-          id: form.id,
-          surveyId: surveyId,
-          order: form.get('order'),
-          title: form.get('title'),
-        }, true)
-      })
-    } catch(e) {
-      console.error(e)
-    }
-  // })
+  try {
+    realm.write(() => {
+      realm.create('Form', {
+        id: form.id,
+        surveyId: surveyId,
+        order: form.get('order'),
+        title: form.get('title'),
+      }, true);
+    });
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 // Returns an object containing a form and its parent survey
 export function loadCachedFormDataById(formId) {
-  const form = realm.objects('Form').filtered(`id = "${formId}"`)[0]
-  const survey = realm.objects('Survey').filtered(`id = "${form.surveyId}"`)[0]
-  return { form: form, survey: survey }
+  const form = realm.objects('Form').filtered(`id = "${formId}"`)[0];
+  const forms = realm.objects('Form').filtered(`surveyId = "${form.surveyId}"`).sorted('order');
+  const index = forms.findIndex((f) => {
+    return f.id === form.id;
+  });
+  const survey = realm.objects('Survey').filtered(`id = "${form.surveyId}"`)[0];
+  return { form: form, survey: survey, index: index };
 }
 
 // Returns an object containing a form and its parent survey
 export function loadCachedFormDataByTriggerId(triggerId, type) {
   const triggerObjectType = type === 'geofence' ? 'GeofenceTrigger' : 'TimeTrigger';
-
-  const trigger = realm.objects(triggerObjectType).filtered(`id = "${triggerId}"`)[0]
-  const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0]
-  const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0]
-  return { form: form, survey: survey }
+  const trigger = realm.objects(triggerObjectType).filtered(`id = "${triggerId}"`)[0];
+  const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0];
+  const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0];
+  return { form: form, survey: survey };
 }
 
 // Fetches the cached forms related to a specific survey
 export function loadCachedForms(surveyId) {
-  return realm.objects('Form').filtered(`surveyId = "${surveyId}"`)
+  return realm.objects('Form').filtered(`surveyId = "${surveyId}"`);
 }
 
 export function loadActiveGeofenceFormsInRange(surveyId) {
   try {
-    const triggers = realm.objects('GeofenceTrigger')
-      .filtered(`surveyId = "${surveyId}" AND triggered == true AND completed == false AND inRange == true OR sticky == true`);
+    const triggers = realm.objects('GeofenceTrigger').filtered(`surveyId = "${surveyId}" AND triggered == true AND completed == false AND inRange == true OR sticky == true`);
 
     let forms = [];
     const triggersLength = triggers.length;
-    for (var i = 0; i < triggersLength; i++) {
+    for (let i = 0; i < triggersLength; i++) {
       const triggerForms = Array.from(realm.objects('Form').filtered(`id = "${triggers[i].formId}"`));
       forms = _.unionBy(forms, triggerForms, 'id');
     }
 
     return forms;
   } catch (e) {
-    alert(e)
+    console.warn(e);
     return [];
   }
 }
 
 export function clearCachedForms(surveyId) {
-  let formsToDelete = realm.objects('Form').filtered(`surveyId = "${surveyId}"`);
-    realm.write(() => {
-      realm.delete(formsToDelete)
-    })
-  return
+  const formsToDelete = realm.objects('Form').filtered(`surveyId = "${surveyId}"`);
+  realm.write(() => {
+    realm.delete(formsToDelete);
+  });
+  return;
 }
 
 // Loads Form data from a single Survey and retuns it via callback after the related questions have also been fetched.
 export function loadForms(survey, callback) {
-  clearCachedForms(survey.id)
-  console.log(survey)
-  const surveyFormRelations = survey.get('forms')
+  clearCachedForms(survey.id);
+  const surveyFormRelations = survey.get('forms');
   if (surveyFormRelations) {
-    surveyFormRelations.query().ascending("createdAt").find({
-      success: function(results) {
-        for (var i = 0; i < results.length; i++) {
-          let form = results[i]
-          let submission = realm.objects('Submission').filtered(`formId = "${form.id}"`)
+    surveyFormRelations.query().ascending('createdAt').find({
+      success: (results) => {
+        const numResults = results.length;
+        for (let i = 0; i < numResults; i++) {
+          const form = results[i];
+          const submission = realm.objects('Submission').filtered(`formId = "${form.id}"`);
           // Only include the current form if there have been no submissions to it yet.
-          if(submission.length == 0){
-            cacheParseForm(form, survey.id)
+          if (submission.length === 0) {
+            cacheParseForm(form, survey.id);
           }
         }
-        if (callback) callback(null, results, survey)
+        if (callback) {
+          callback(null, results, survey);
+        }
       },
-      error: function(error, results) {
-        console.warn("Error: " + error.code + " " + error.message)
-        if (callback) callback(error, results, survey)
-      }
-    })
+      error: (error, results) => {
+        console.warn(`Error: ${error.code} ${error.message}`);
+        if (callback) {
+          callback(error, results, survey);
+        }
+      },
+    });
   } else {
-    console.warn("Error: Unable to find relation \"forms\" for Survey object." )
+    console.warn('Error: Unable to find relation "forms" for Survey object.');
   }
 }
 
@@ -129,8 +128,8 @@ export function getFormAvailability(surveyId, done) {
     if (invitation && invitation.status === InvitationStatus.ACCEPTED) {
       try {
         // Check for availability on pending time triggers.
-        let timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId="${surveyId}"`)
-        let availableTimeTriggers = timeTriggers.filtered(`triggered == true AND completed == false`).sorted('datetime');
+        const timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId="${surveyId}"`);
+        const availableTimeTriggers = timeTriggers.filtered('triggered == true AND completed == false').sorted('datetime');
         if (availableTimeTriggers && availableTimeTriggers.length > 0) {
           result.availableTimeTriggers = availableTimeTriggers.length;
           result.currentTrigger = availableTimeTriggers[0];
@@ -138,15 +137,15 @@ export function getFormAvailability(surveyId, done) {
         }
 
         // Check for the closest future time trigger.
-        let nextTimeTriggers = timeTriggers.filtered(`triggered == false`).sorted('datetime');
+        const nextTimeTriggers = timeTriggers.filtered('triggered == false').sorted('datetime');
         if (nextTimeTriggers && nextTimeTriggers.length > 0) {
           result.nextTimeTrigger = nextTimeTriggers[0].datetime;
         }
 
         // Check for active geofence triggers.
-        let geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`);
+        const geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`);
         if (geofenceTriggers && geofenceTriggers.length > 0) {
-          let geofenceTriggersInRange = geofenceTriggers.filtered(`triggered == true AND completed == false AND inRange == true OR sticky == true`);
+          const geofenceTriggersInRange = geofenceTriggers.filtered('triggered == true AND completed == false AND inRange == true OR sticky == true');
           result.geofenceTriggersInRange = geofenceTriggersInRange.length;
           result.currentTrigger = geofenceTriggersInRange[0];
           result.currentTriggerType = 'geofence';
@@ -155,7 +154,7 @@ export function getFormAvailability(surveyId, done) {
         console.warn(e);
       }
     }
-    return done(null, result);
+    done(null, result);
   });
 }
 
@@ -166,55 +165,56 @@ export function getFormAvailability(surveyId, done) {
  * @param  {Function} callback Callback function to return after Questions for each form have been updated. Can return multiple times to update components.
  */
 export function loadParseFormDataBySurveyId(surveyId, callback) {
-  const Survey = Parse.Object.extend("Survey");
+  const Survey = Parse.Object.extend('Survey');
   const surveyQuery = new Parse.Query(Survey);
-  // surveyQuery.equalTo("id", surveyId);
-  
+
   // Query the Parse server for the target survey.
   surveyQuery.get(surveyId, {
-    success: function(survey) {
+    success: (survey) => {
       if (survey) {
         const surveyFormRelations = survey.get('forms');
-        
+
         // Find the form relations of the survey.
         if (surveyFormRelations) {
-          surveyFormRelations.query().ascending("createdAt").find({
-            success: function(forms) {
+          surveyFormRelations.query().ascending('createdAt').find({
+            success: (forms) => {
               // If data was returned, prune the old cache and refresh with new data.
               clearCachedForms(surveyId);
               for (let i = 0; i < forms.length; i++) {
-                let form = forms[i];
-                let submission = realm.objects('Submission').filtered(`formId = "${form.id}"`);
+                const form = forms[i];
+                const submission = realm.objects('Submission').filtered(`formId = "${form.id}"`);
                 // Only include the current form if there have been no submissions to it yet.
-                if (submission.length == 0) {
+                if (submission.length === 0) {
                   cacheParseForm(form, survey.id);
                   loadTriggers(form, survey);
-                  loadQuestions(form, (err, questions)=>{
-                    callback(null, forms, survey);
+                  loadQuestions(form, (err, questions) => {
+                    callback(null, forms, survey, questions);
                   });
                 }
               }
             },
-            error: function(error, forms) {
-              console.warn("Error: " + error.code + " " + error.message);
-              if (callback) callback(error, forms, survey);
-            }
+            error: (error, forms) => {
+              console.warn(`Error: ${error.code} - ${error.message}`);
+              if (callback) {
+                callback(error, forms, survey);
+              }
+            },
           });
         } else {
-          console.warn('No survey relations found with surveyId ' + surveyId);
+          console.warn(`No survey relations found with surveyId ${surveyId}`);
         }
       } else {
-        console.warn('No surveys found with id ' + surveyId);
+        console.warn(`No surveys found with id ${surveyId}`);
       }
     },
 
-    error: function(error) {
-      console.warn("Error: " + error.code + " " + error.message);
-      if (callback) callback(error);
-    }
-
-
-  })
+    error: (error) => {
+      console.warn(`Error: ${error.code} - ${error.message}`);
+      if (callback) {
+        callback(error);
+      }
+    },
+  });
 }
 
 /**
@@ -222,7 +222,7 @@ export function loadParseFormDataBySurveyId(surveyId, callback) {
  * @param  {string} formId ID of the completed form
  */
 export function completeForm(formId) {
-  console.log('COMPLETING FORM: ' + formId);
+  console.log(`COMPLETING FORM: ${formId}`);
 
   try {
     const notification = realm.objects('Notification').filtered(`formId = "${formId}"`)[0];
@@ -230,12 +230,17 @@ export function completeForm(formId) {
     const geofenceTrigger = realm.objects('GeofenceTrigger').filtered(`formId = "${formId}"`)[0];
 
     realm.write(() => {
-      if (notification) notification.completed = true;
-      if (timeTrigger) timeTrigger.completed = true;
-      if (geofenceTrigger) geofenceTrigger.completed = true;
+      if (notification) {
+        notification.completed = true;
+      }
+      if (timeTrigger) {
+        timeTrigger.completed = true;
+      }
+      if (geofenceTrigger) {
+        geofenceTrigger.completed = true;
+      }
     });
   } catch (e) {
     console.warn(e);
   }
-  
 }

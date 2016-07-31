@@ -1,6 +1,6 @@
-import { StyleSheet, Platform } from 'react-native'
-import Color from './Color'
-import Variables from './Variables'
+import { StyleSheet, Platform } from 'react-native';
+import Color from './Color';
+import Variables from './Variables';
 
 
 const HeaderStyles = StyleSheet.create({
@@ -20,7 +20,7 @@ const HeaderStyles = StyleSheet.create({
     backgroundColor: Color.background1,
   },
   navBarClear: {
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
   iOSPadding: {
     flex: 1,
@@ -33,7 +33,7 @@ const HeaderStyles = StyleSheet.create({
   },
 
   navBarTitle: {
-    flex: .8,
+    flex: 0.8,
     marginRight: 10,
   },
   navBarTitleText: {
@@ -44,8 +44,8 @@ const HeaderStyles = StyleSheet.create({
   banner: {
     // flex: 1,
     height: Variables.REGISTRATION_HEIGHT,
-    alignItems:'center',
-    justifyContent:'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: Color.background1,
     paddingTop: 25,
     paddingBottom: 25,
@@ -56,17 +56,16 @@ const HeaderStyles = StyleSheet.create({
   },
 
   navBarLeftButton: {
-    flex: .1,
-    padding: Platform.OS == 'ios' ? 14 : 18,
-    paddingRight: Platform.OS == 'ios' ? 14 : 16,
+    flex: 0.1,
+    padding: Platform.OS === 'ios' ? 14 : 18,
+    paddingRight: Platform.OS === 'ios' ? 14 : 16,
     marginRight: 2,
   },
   navBarRightButton: {
-    flex: .1,
-    padding: Platform.OS == 'ios' ? 14 : 18,
-    paddingRight: Platform.OS == 'ios' ? 10 : 14,
-
+    flex: 0.1,
+    padding: Platform.OS === 'ios' ? 14 : 18,
+    paddingRight: Platform.OS === 'ios' ? 10 : 14,
   },
-})
+});
 
-module.exports = HeaderStyles
+module.exports = HeaderStyles;

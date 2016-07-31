@@ -1,8 +1,5 @@
-import { StyleSheet, Dimensions, Platform } from 'react-native'
-import Color from './Color'
-import Variables from './Variables'
-
-const DEVICE_WIDTH = Dimensions.get('window').width - 60
+import { StyleSheet, Platform } from 'react-native';
+import Color from './Color';
 
 const CalendarStyles = StyleSheet.create({
   calendarContainer: {
@@ -10,7 +7,6 @@ const CalendarStyles = StyleSheet.create({
     paddingTop: 10,
     paddingHorizontal: 30,
     backgroundColor: 'transparent',
-
   },
   monthContainer: {
     flex: 1,
@@ -48,7 +44,7 @@ const CalendarStyles = StyleSheet.create({
     fontSize: 15,
     textAlign: 'center',
     paddingVertical: 5,
-    color: '#cccccc'
+    color: '#cccccc',
   },
   weekRow: {
     flexDirection: 'row',
@@ -76,10 +72,9 @@ const CalendarStyles = StyleSheet.create({
     borderRadius: 2,
   },
   eventIndicator: {
-    backgroundColor: '#cccccc'
+    backgroundColor: '#cccccc',
   },
-  
-  
+
 
   // Day Circles
   dayCircleFiller: {
@@ -167,6 +162,6 @@ const CalendarStyles = StyleSheet.create({
     color: Color.faded,
     textAlign: 'center',
   },
-})
+});
 
-module.exports = CalendarStyles
+module.exports = CalendarStyles;

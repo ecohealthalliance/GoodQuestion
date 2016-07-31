@@ -4,64 +4,59 @@ import {
   Platform,
   Navigator,
   BackAndroid,
-  TouchableOpacity,
-  Text,
-  InteractionManager,
   Alert,
   AppState,
-} from 'react-native'
+} from 'react-native';
 
-import Drawer from 'react-native-drawer'
+import Drawer from 'react-native-drawer';
 import PushNotification from 'react-native-push-notification';
 
-import Settings from '../settings'
+import Settings from '../settings';
 
 // Components
-import Header from '../components/Header'
-import Toaster from '../components/Toaster'
-import Loading from '../components/Loading'
+import Header from '../components/Header';
+import Loading from '../components/Loading';
+import Toaster from '../components/Toaster';
 
 // Styles
-import Styles from '../styles/Styles'
+import Styles from '../styles/Styles';
 
 // Model
-import Store from '../data/Store'
+import Store from '../data/Store';
 
-// Parse
-import Parse from 'parse/react-native'
-import {connectToParseServer} from '../api/ParseServer'
-import {isAuthenticated, register, logout} from '../api/Account'
+import {connectToParseServer} from '../api/ParseServer';
+import {isAuthenticated, logout} from '../api/Account';
+import {checkDirtyObjects} from '../services/CheckDirty';
 
 // Views
-import LoginPage from '../views/LoginPage'
-import SurveyListPage from '../views/SurveyListPage'
-import TermsOfServicePage from '../views/TermsOfServicePage'
-import SurveyDetailsPage from '../views/SurveyDetailsPage'
-import NotificationsPage from '../views/NotificationsPage'
-import MapPage from '../views/MapPage'
-import CalendarPage from '../views/CalendarPage'
-import RegistrationPages from '../views/RegistrationPages'
-import FormPage from '../views/FormPage'
-import ControlPanel from '../views/ControlPanel'
-import ProfilePage from '../views/ProfilePage'
+import LoginPage from '../views/LoginPage';
+import SurveyListPage from '../views/SurveyListPage';
+import TermsOfServicePage from '../views/TermsOfServicePage';
+import SurveyDetailsPage from '../views/SurveyDetailsPage';
+import NotificationsPage from '../views/NotificationsPage';
+import MapPage from '../views/MapPage';
+import CalendarPage from '../views/CalendarPage';
+import RegistrationPages from '../views/RegistrationPages';
+import FormPage from '../views/FormPage';
+import ControlPanel from '../views/ControlPanel';
+import ProfilePage from '../views/ProfilePage';
 
-import { upsertInstallation } from '../api/Installations'
-import { checkTimeTriggers } from '../api/Triggers'
-import { loadCachedFormDataById } from '../api/Forms'
-import { addTimeTriggerNotification } from '../api/Notifications'
+import { upsertInstallation } from '../api/Installations';
+import { checkTimeTriggers } from '../api/Triggers';
+import { loadCachedFormDataById } from '../api/Forms';
+// import { addTimeTriggerNotification } from '../api/Notifications';
 
 // Background
-import { initializeGeolocationService, handleAppStateChange } from '../api/BackgroundProcess'
+import { initializeGeolocationService, handleAppStateChange } from '../api/BackgroundProcess';
 
-initializeGeolocationService()
 connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 
-let navigator;
-let initialRoute = { path:'surveylist', title: 'Surveys' };
-const toaster = <Toaster key='toaster' />
+let navigator = null;
+let initialRoute = { path: 'surveylist', title: 'Surveys' };
+const toaster = <Toaster key='toaster' />;
 
 // Binds the hardware "back button" from Android devices
-if ( Platform.OS === 'android' ) {
+if (Platform.OS === 'android') {
   BackAndroid.addEventListener('hardwareBackPress', () => {
     if (navigator && navigator.getCurrentRoutes().length > 1) {
       navigator.pop();
@@ -69,19 +64,21 @@ if ( Platform.OS === 'android' ) {
     }
     Alert.alert('Confirm', 'Are you sure that you want to exit?', [
       {text: 'Cancel', onPress: () => { }, style: 'cancel' },
-      {text: 'OK', onPress: () => { BackAndroid.exitApp(); }}
+      {text: 'OK', onPress: () => {
+        BackAndroid.exitApp();
+      }},
     ]);
     return true;
   });
 }
 
-const SharedNavigator = React.createClass ({
+const SharedNavigator = React.createClass({
   getInitialState() {
     return {
       title: '',
       isLoading: true,
       isAuthenticated: false,
-    }
+    };
   },
 
   componentWillMount() {
@@ -97,14 +94,36 @@ const SharedNavigator = React.createClass ({
         onNotification: this._onNotification,
       });
     }
-    checkTimeTriggers();
+    // see if we have an authenticated user
+    isAuthenticated((authenticated) => {
+      if (authenticated) {
+        checkTimeTriggers();
+        checkDirtyObjects((err, res) => {
+          if (err) {
+            console.warn(err);
+          }
+          if (res) {
+            console.log(res);
+          }
+          // set state after the check is complete
+          this.setState({
+            isAuthenticated: authenticated,
+            isLoading: false,
+          });
+        });
+      } else {
+        this.setState({
+          isAuthenticated: authenticated,
+          isLoading: false,
+        });
+      }
+    });
   },
 
   componentDidMount() {
-    const self = this;
     isAuthenticated((authenticated) => {
       if (authenticated) {
-        self.checkNotificationPermissions();
+        this.initializeUserServices();
       }
       this.setState({
         isAuthenticated: authenticated,
@@ -120,33 +139,35 @@ const SharedNavigator = React.createClass ({
     if (Platform.OS === 'ios') {
       PushNotification.checkPermissions((result) => {
         if (
-          PushNotification.isLoaded && 
-          !result.alert || 
-          !result.badge || 
+          PushNotification.isLoaded &&
+          !result.alert ||
+          !result.badge ||
           !result.sound
         ) {
           console.log('Requesting new PushNotification permissions.');
-          PushNotification.requestPermissions().then((permissions)=>{
-            if (!result.alert || !result.badge || !result.sound) {
+          PushNotification.requestPermissions().then((permissions) => {
+            if (!permissions.alert || !permissions.badge || !permissions.sound) {
               // TODO: Notify of missing permissions and how to fix them.
               // Settings -> GoodQuestion -> Notifications
               // Notify only once.
             }
           });
         }
-      })
+      });
     }
   },
 
   _onNotification(notification) {
-    if (typeof notification === 'undefined') return;
+    if (typeof notification === 'undefined') {
+      return;
+    }
     // TODO determine the type of notification
-    if (notification.hasOwnProperty('data')  && notification.data.hasOwnProperty('formId')) {
+    if (notification.hasOwnProperty('data') && notification.data.hasOwnProperty('formId')) {
       const data = loadCachedFormDataById(notification.data.formId);
       if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
         return;
       }
-      const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form}
+      const path = {path: 'form', title: data.survey.title, survey: data.survey, form: data.form, index: data.index};
       // TODO sync remote and cached notifications
       // addTimeTriggerNotification(data.survey.id, data.form.id, data.form.title, notification.message, new Date());
       // We will only route the user if notification was remote
@@ -154,7 +175,7 @@ const SharedNavigator = React.createClass ({
         if (typeof navigator === 'undefined') {
           initialRoute = path;
         } else {
-          navigator.resetTo(path)
+          navigator.resetTo(path);
         }
       }
     }
@@ -165,8 +186,10 @@ const SharedNavigator = React.createClass ({
     const platform = registration.os;
 
     this.checkNotificationPermissions();
-    if (platform === 'ios') PushNotification.setApplicationIconBadgeNumber(0);
-    upsertInstallation(token, platform, (err, res) => {
+    if (platform === 'ios') {
+      PushNotification.setApplicationIconBadgeNumber(0);
+    }
+    upsertInstallation(token, platform, (err) => {
       if (err) {
         console.error(err);
         return;
@@ -177,90 +200,118 @@ const SharedNavigator = React.createClass ({
   /* Methods */
   setAuthenticated(authenticated) {
     this.setState({
-      isAuthenticated: authenticated
-    }, function() {
-      navigator.resetTo({path:'surveylist', title:'Surveys'});
+      isAuthenticated: authenticated,
+    }, () => {
+      navigator.resetTo({path: 'surveylist', title: 'Surveys'});
     });
+  },
+
+  initializeUserServices() {
+    this.checkNotificationPermissions();
+    initializeGeolocationService();
   },
 
   logoutHandler() {
     logout();
     this.setState({
       isAuthenticated: false,
-    }, function() {
-      navigator.resetTo({path:'login',title:''});
+    }, () => {
+      navigator.resetTo({path: 'login', title: ''});
     });
   },
 
   closeControlPanel() {
-    this._drawer.close()
+    this._drawer.close();
   },
 
   openControlPanel() {
-    this._controlPanel.navigating = false
-    this._drawer.open()
+    this._controlPanel.navigating = false;
+    this._drawer.open();
   },
 
   changeRouteViaControlPanel() {
     if (this._controlPanel && this._controlPanel.navigating) {
-      let path = this._controlPanel.nextPath
-      let title = this._controlPanel.nextTitle
-      if (navigator) {
-        let routeStack = navigator.getCurrentRoutes()
-        let currentRoutePath = routeStack[routeStack.length-1].path
-        if (path !== currentRoutePath) {
-          if (path === 'surveylist') {
-            // Reset route stack when viewing map to avoid multiple map components from being loaded at the same time.
-            navigator.resetTo({path: path, title: title})
-          } else {
-            if (navigator.getCurrentRoutes().length == 1) {
-              navigator.push({path: path, title: title})
-            } else {
-              navigator.replaceAtIndex({path: path, title: title}, 1, () => {
-                navigator.popToRoute(navigator.getCurrentRoutes()[1])
-              })
-            }
-          }
+      const path = this._controlPanel.nextPath;
+      const title = this._controlPanel.nextTitle;
+      if (!navigator) {
+        return;
+      }
+
+      const routeStack = navigator.getCurrentRoutes();
+      const currentRoutePath = routeStack[routeStack.length - 1].path;
+      if (path !== currentRoutePath) {
+        if (path === 'surveylist') {
+          // Reset route stack when viewing map to avoid multiple map components from being loaded at the same time.
+          navigator.resetTo({path: path, title: title});
+        } else if (navigator.getCurrentRoutes().length === 1) {
+            navigator.push({path: path, title: title});
+        } else {
+          navigator.replaceAtIndex({path: path, title: title}, 1, () => {
+            navigator.popToRoute(navigator.getCurrentRoutes()[1]);
+          });
         }
       }
     }
   },
 
   setSceneConfig(route) {
-    let config = route.sceneConfig
-    let SceneConfigs = Navigator.SceneConfigs
-    if (config){
-      return SceneConfigs[config]
-    } else {
-      // Default animation
-      return SceneConfigs.FadeAndroid
+    const config = route.sceneConfig;
+    const SceneConfigs = Navigator.SceneConfigs;
+    if (config) {
+      return SceneConfigs[config];
     }
+    // Default animation
+    return SceneConfigs.FadeAndroid;
   },
 
   routeMapper(route, nav) {
-    let viewComponent
+    let viewComponent = null;
+    let wrapperStyles = null;
+
     const sharedProps = {
       navigator: nav,
       logout: this.logoutHandler,
     };
 
     if (!this.state.isAuthenticated && !route.unsecured) {
-      route.path = 'login'
-      route.title = ''
+      route.path = 'login';
+      route.title = '';
     }
 
     switch (route.path) {
-      case 'login': viewComponent = <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />; break;
-      case 'surveylist': viewComponent = <SurveyListPage {...sharedProps} />; break;
-      case 'notifications': viewComponent = <NotificationsPage {...sharedProps} />; break;
-      case 'map': viewComponent = <MapPage {...sharedProps} />; break;
-      case 'calendar': viewComponent = <CalendarPage {...sharedProps} />; break;
-      case 'terms': viewComponent = <TermsOfServicePage {...sharedProps} />; break;
-      case 'registration': viewComponent = <RegistrationPages {...sharedProps} index={route.index} />; break;
-      case 'profile': viewComponent = <ProfilePage {...sharedProps} />; break;
-      case 'form': viewComponent = <FormPage {...sharedProps} form={route.form} survey={route.survey} index={route.index} type={route.type} />; break;
-      case 'survey-details': viewComponent = <SurveyDetailsPage {...sharedProps} survey={route.survey} formCount={route.formCount} questionCount={route.questionCount} />; break;
-      default: viewComponent = <SurveyListPage {...sharedProps} />; break;
+      case 'login':
+        viewComponent = <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />;
+        break;
+      case 'surveylist':
+        viewComponent = <SurveyListPage {...sharedProps} />;
+        break;
+      case 'notifications':
+        viewComponent = <NotificationsPage {...sharedProps} />;
+        break;
+      case 'map':
+        viewComponent = <MapPage {...sharedProps} />;
+        break;
+      case 'calendar':
+        viewComponent = <CalendarPage {...sharedProps} />;
+        break;
+      case 'terms':
+        viewComponent = <TermsOfServicePage {...sharedProps} />;
+        break;
+      case 'registration':
+        viewComponent = <RegistrationPages {...sharedProps} index={route.index} />;
+        break;
+      case 'profile':
+        viewComponent = <ProfilePage {...sharedProps} />;
+        break;
+      case 'form':
+        viewComponent = <FormPage {...sharedProps} form={route.form} survey={route.survey} index={route.index} type={route.type} />;
+        break;
+      case 'survey-details':
+        viewComponent = <SurveyDetailsPage {...sharedProps} survey={route.survey} formCount={route.formCount} questionCount={route.questionCount} />;
+        break;
+      default:
+        viewComponent = <SurveyListPage {...sharedProps} />;
+        break;
     }
 
     // Special wrapper styles
@@ -269,8 +320,9 @@ const SharedNavigator = React.createClass ({
       case 'registration':
         wrapperStyles = Styles.container.wrapperClearHeader;
         break;
-
-      default: wrapperStyles = Styles.container.wrapper; break;
+      default:
+        wrapperStyles = Styles.container.wrapper;
+        break;
     }
 
     return (
@@ -278,27 +330,30 @@ const SharedNavigator = React.createClass ({
         {viewComponent}
         {toaster}
       </View>
-    )
+    );
   },
 
   /* Render */
   render() {
-    const initialRoute = { path:'surveylist', title: 'Surveys' }
-    // const initialRoute = { path:'calendar', title: 'Test Calendar' }
-
     // show loading component without the navigationBar
     if (this.state.isLoading) {
-      return (<Loading/>);
+      return (
+        <Loading/>
+      );
     }
 
     if (this.state.isAuthenticated) {
       return (
         <Drawer
-          type="overlay"
-          ref={(ref) => this._drawer = ref}
+          type='overlay'
+          ref={(ref) => {
+            this._drawer = ref;
+          }}
           content={
             <ControlPanel
-            ref={(ref) => this._controlPanel = ref}
+            ref={(ref) => {
+              this._controlPanel = ref;
+            }}
             navigator={navigator}
             logout={this.logoutHandler}
             closeDrawer={this.closeControlPanel}
@@ -317,12 +372,13 @@ const SharedNavigator = React.createClass ({
           >
           <Navigator
             ref={(nav) => {
-              navigator = nav
-              Store.navigator = nav // Store globally so we can use the navigator outside components
+              navigator = nav;
+               // Store globally so we can use the navigator outside components
+              Store.navigator = nav;
             }}
             initialRoute={initialRoute}
             renderScene={this.routeMapper}
-            configureScene={(route, routeStack) => this.setSceneConfig(route)}
+            configureScene={(route) => this.setSceneConfig(route)}
             style={{flex: 1}}
             navigationBar={
               <Header
@@ -334,12 +390,14 @@ const SharedNavigator = React.createClass ({
       );
     }
 
-    return(
+    return (
       <Navigator
-        ref={(nav) => { navigator = nav }}
+        ref={(nav) => {
+          navigator = nav;
+        }}
         initialRoute={initialRoute}
         renderScene={this.routeMapper}
-        configureScene={(route, routeStack) => this.setSceneConfig(route)}
+        configureScene={(route) => this.setSceneConfig(route)}
         style={{flex: 1}}
         navigationBar={
           <Header
@@ -347,7 +405,7 @@ const SharedNavigator = React.createClass ({
         }
       />
     );
-  }
-})
+  },
+});
 
-module.exports = SharedNavigator
+module.exports = SharedNavigator;

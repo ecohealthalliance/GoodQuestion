@@ -84,8 +84,8 @@ android {
         applicationId "io.eha.goodquestion"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 9
-        versionName "0.2.8"
+        versionCode 15
+        versionName "1.0.4"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -143,7 +143,8 @@ dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
-    compile(name:'tslocationmanager', ext:'aar')
+    compile project(':react-native-background-geolocation')
+    compile(name: 'tslocationmanager', ext: 'aar')
     compile "org.slf4j:slf4j-api:1.7.10"
     compile "com.noveogroup.android:android-logger:1.3.4"
     compile project(':react-native-vector-icons')
@@ -156,9 +157,6 @@ dependencies {
     compile (project(':react-native-push-notification')) {
         // exclude version 7.8
         exclude group: 'com.google.android.gms', module: 'play-services-gcm'
-    }
-    compile (project(':RNBackgroundGeolocation')) {
-        exclude group: 'com.google.android.gms', module: 'play-services-location'
     }
     compile 'com.google.android.gms:play-services-base:9.0.1'
     compile 'com.google.android.gms:play-services-maps:9.0.1'

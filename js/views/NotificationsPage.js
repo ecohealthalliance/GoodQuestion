@@ -1,32 +1,26 @@
 import React from 'react';
 import {
-  StyleSheet,
-  TouchableHighlight,
-  Text,
-  TextInput,
   View,
   ListView,
-  Alert,
-} from 'react-native'
+} from 'react-native';
 
-import _ from 'lodash'
-import Styles from '../styles/Styles'
-import { loadNotifications } from '../api/Notifications'
-import { loadCachedFormDataById } from '../api/Forms'
-import Notification from '../components/Notification'
+import Styles from '../styles/Styles';
+import { loadNotifications } from '../api/Notifications';
+import { loadCachedFormDataById } from '../api/Forms';
+import Notification from '../components/Notification';
 
 const NotificationsPage = React.createClass({
   title: 'Notifications',
 
   getInitialState() {
-    let pendingNotifications = loadNotifications()
-    let dataSource = new ListView.DataSource({
+    const pendingNotifications = loadNotifications();
+    const dataSource = new ListView.DataSource({
       rowHasChanged: (row1, row2) => row1 !== row2,
-    })
+    });
     return {
       list: pendingNotifications,
-      dataSource: dataSource.cloneWithRows(pendingNotifications)
-    }
+      dataSource: dataSource.cloneWithRows(pendingNotifications),
+    };
   },
 
   componentDidMount() {
@@ -34,28 +28,30 @@ const NotificationsPage = React.createClass({
   },
 
   componentWillUnmount() {
-    this.cancelCallbacks = true
+    this.cancelCallbacks = true;
   },
 
   /* Methods */
-  loadList(error, response){
+  loadList(error) {
     if (error) {
-      console.warn(error)
+      console.warn(error);
     } else {
-      let pendingNotifications = loadNotifications()
+      const pendingNotifications = loadNotifications();
       if (!this.cancelCallbacks) {
         this.setState({
           list: pendingNotifications,
-          dataSource: this.state.dataSource.cloneWithRows(pendingNotifications)
-        })
+          dataSource: this.state.dataSource.cloneWithRows(pendingNotifications),
+        });
       }
     }
   },
 
   selectNotification(notification) {
-    if (this.cancelCallbacks) return
+    if (this.cancelCallbacks) {
+      return;
+    }
 
-    let data = loadCachedFormDataById(notification.formId)
+    const data = loadCachedFormDataById(notification.formId);
     if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
       return;
     }
@@ -64,27 +60,27 @@ const NotificationsPage = React.createClass({
       title: data.survey.title,
       form: data.form,
       survey: data.survey,
-    })
+    });
   },
 
   /* Render */
-  renderItem(item, sectionId, rowId) {
+  renderItem(item) {
     return (
       <Notification item={item} onPressed={this.selectNotification.bind(null, item)} />
-    )
+    );
   },
 
   render() {
     return (
-      <View style={[Styles.container.default , {flex: 1}]}>
+      <View style={[Styles.container.default, {flex: 1}]}>
         <ListView dataSource = { this.state.dataSource }
           renderRow = { this.renderItem }
           contentContainerStyle = { [Styles.container.default, Styles.survey.list, {flex: 0}] }
           enableEmptySections
         />
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = NotificationsPage
+module.exports = NotificationsPage;

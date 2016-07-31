@@ -1,16 +1,14 @@
-
 import React from 'react';
 import {
-  StyleSheet,
   Text,
   TextInput,
-  View
-} from 'react-native'
-import Styles from '../../styles/Styles'
-import Color from '../../styles/Color'
-import ViewText from '../ViewText'
+  View,
+} from 'react-native';
+import Styles from '../../styles/Styles';
+import Color from '../../styles/Color';
+import ViewText from '../ViewText';
 
-const ShortAnswer = React.createClass ({
+const ShortAnswer = React.createClass({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     text: React.PropTypes.string.isRequired,
@@ -19,31 +17,31 @@ const ShortAnswer = React.createClass ({
     onChange: React.PropTypes.func.isRequired,
   },
 
-  getDefaultProps: function () {
+  getDefaultProps() {
     return {
       value: '',
     };
   },
 
-  getInitialState: function() {
+  getInitialState() {
     return {
       value: this.props.value,
-    }
+    };
   },
 
   /* Methods */
   handleChange(value) {
     this.setState({
-      value: value
-    })
-    this.props.onChange(value)
+      value: value,
+    });
+    this.props.onChange(value);
   },
 
   /* Render */
   render() {
     return (
       <View style={Styles.question.block}>
-        <ViewText 
+        <ViewText
           style={Styles.question.header}
           textStyle={Styles.question.headerText}>
             Question #{this.props.index}
@@ -53,14 +51,14 @@ const ShortAnswer = React.createClass ({
           <TextInput
             style={{height: 40, borderColor: Color.background1, borderWidth: 1, paddingLeft: 10}}
             onChangeText={this.handleChange}
-            placeholder="Tap to type..."
             blurOnSubmit={true}
+            placeholder='Tap to type...'
             value={this.state.value}
           />
         </View>
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = ShortAnswer
+module.exports = ShortAnswer;

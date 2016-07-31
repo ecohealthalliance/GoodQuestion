@@ -1,15 +1,14 @@
-// Original styles for Caldendar componen
+// Original styles for Caldendar component
+import { StyleSheet, Dimensions } from 'react-native';
 
-import { StyleSheet, Dimensions } from 'react-native'
-
-const DEVICE_WIDTH = Dimensions.get('window').width - 60
+const DEVICE_WIDTH = Dimensions.get('window').width - 60;
 
 const CalendarStyles = StyleSheet.create({
   calendarContainer: {
     backgroundColor: '#f7f7f7',
   },
   monthContainer: {
-    width: DEVICE_WIDTH
+    width: DEVICE_WIDTH,
   },
   calendarControls: {
     flex: 1,
@@ -35,14 +34,14 @@ const CalendarStyles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     textAlign: 'center',
-    paddingVertical: 5
+    paddingVertical: 5,
   },
   weekendHeading: {
     flex: 1,
     fontSize: 15,
     textAlign: 'center',
     paddingVertical: 5,
-    color: '#cccccc'
+    color: '#cccccc',
   },
   weekRow: {
     flexDirection: 'row',
@@ -56,7 +55,7 @@ const CalendarStyles = StyleSheet.create({
   },
   dayButtonFiller: {
     padding: 5,
-    width: DEVICE_WIDTH / 7
+    width: DEVICE_WIDTH / 7,
   },
   day: {
     fontSize: 16,
@@ -70,7 +69,7 @@ const CalendarStyles = StyleSheet.create({
     borderRadius: 2,
   },
   eventIndicator: {
-    backgroundColor: '#cccccc'
+    backgroundColor: '#cccccc',
   },
   dayCircleFiller: {
     justifyContent: 'center',
@@ -100,7 +99,7 @@ const CalendarStyles = StyleSheet.create({
   },
   weekendDayText: {
     color: '#cccccc',
-  }
-})
+  },
+});
 
-module.exports = CalendarStyles
+module.exports = CalendarStyles;

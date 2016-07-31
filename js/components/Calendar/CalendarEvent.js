@@ -1,18 +1,16 @@
 import React from 'react';
 import {
-  StyleSheet,
   TouchableOpacity,
   Text,
-  TextInput,
-  View
-} from 'react-native'
-import Styles from '../../styles/Styles'
-import Color from '../../styles/Color'
-import ViewText from '../ViewText'
+  View,
+} from 'react-native';
+import Styles from '../../styles/Styles';
+import Color from '../../styles/Color';
+import ViewText from '../ViewText';
 
-import Icon from 'react-native-vector-icons/FontAwesome'
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-const CalendarEvent = React.createClass ({
+const CalendarEvent = React.createClass({
   propTypes: {
     id: React.PropTypes.string.isRequired,
     type: React.PropTypes.string.isRequired,
@@ -22,7 +20,7 @@ const CalendarEvent = React.createClass ({
     onPress: React.PropTypes.func,
   },
 
-  getDefaultProps: function () {
+  getDefaultProps() {
     return {
       title: 'Form',
     };
@@ -37,7 +35,7 @@ const CalendarEvent = React.createClass ({
       availability: this.props.availability,
       triggered: false,
       onPress: this.props.onPress,
-    }
+    };
   },
 
   componentWillReceiveProps(nextProps) {
@@ -49,7 +47,7 @@ const CalendarEvent = React.createClass ({
       availability: nextProps.availability,
       triggered: false,
       onPress: nextProps.onPress,
-    })
+    });
   },
 
   /* Methods */
@@ -63,7 +61,7 @@ const CalendarEvent = React.createClass ({
     if (this.state.type === 'datetime') {
       return (
         <Text style={Styles.calendar.eventCategoryRowText}>
-          <Icon name="clock-o" size={20} color={Color.warning} /> Date & Time
+          <Icon name='clock-o' size={20} color={Color.warning} /> Date & Time
         </Text>
       );
     }
@@ -73,7 +71,7 @@ const CalendarEvent = React.createClass ({
   render() {
     return (
       <View style={Styles.calendar.eventBlock}>
-        <ViewText 
+        <ViewText
           style={Styles.calendar.eventHeader}
           textStyle={Styles.calendar.eventHeaderText}>
             {this.state.title}
@@ -87,10 +85,9 @@ const CalendarEvent = React.createClass ({
             <Text style={[Styles.type.h3, Styles.calendar.eventText]}>{this.state.availability}</Text>
           </View>
         </TouchableOpacity>
-        
       </View>
-    )
-  }
-})
+    );
+  },
+});
 
-module.exports = CalendarEvent
+module.exports = CalendarEvent;
