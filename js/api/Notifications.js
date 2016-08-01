@@ -32,8 +32,11 @@ export function initializeNotifications() {
   }
 
   // Cache count of new notifications in the Store
-  const newNotifications = loadNotifications({newOnly: true});
-  Store.newNotifications = newNotifications.length;
+  loadUserNotifications({newOnly: true}, (err, notifications) => {
+    if (err || !notifications) {
+      return;
+    }
+  });
 }
 
 function handleNewNotification(notification) {
@@ -97,6 +100,10 @@ function handleNewNotification(notification) {
   });
 }
 
+/**
+ * Event fired on initialization of the notification service.
+ * @param  {object} registration Object containing data returned by the user's phone.
+ */
 function _onRegister(registration) {
   const token = registration.token;
   const platform = registration.os;
@@ -173,9 +180,14 @@ export function markNotificationsAsViewed(notifications) {
  * Deletes all current notifications from the Realm database
  */
 export function clearNotifications() {
-  const notifications = loadNotifications();
-  realm.write(() => {
-    realm.delete(notifications);
+  loadUserNotifications({}, (err, notifications) => {
+    if (err) {
+      console.warn(err);
+      return;
+    }
+    realm.write(() => {
+      realm.delete(notifications);
+    });
   });
 }
 
