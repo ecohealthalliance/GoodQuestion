@@ -10,6 +10,7 @@ import React, {
 
 import Variables from '../styles/Variables';
 import Styles from '../styles/Styles';
+import Footer from '../components/Footer';
 import Button from '../components/Button';
 
 import { authenticate } from '../api/Account';
@@ -140,12 +141,14 @@ const LoginPage = React.createClass({
             </Button>
           </View>
         </ScrollView>
-        <Button
-          action={this.handleRegistration}
-          style={Styles.form.footerButton}
-          textStyle={[Styles.form.registerText, Styles.form.registerTextActive]}>
-          Register an Account
-        </Button>
+        <Footer>
+          <Button
+            action={this.handleRegistration}
+            style={Styles.form.footerButton}
+            textStyle={[Styles.form.registerText, Styles.form.registerTextActive]}>
+            Register an Account
+          </Button>
+        </Footer>
       </View>
     );
   },

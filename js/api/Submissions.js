@@ -21,7 +21,7 @@ Submission.create = function create(uniqueId, formId, answers, user, role) {
   submission.set('uniqueId', uniqueId);
   submission.set('formId', formId);
   submission.set('answers', answers);
-  submission.set('userId', user.id);
+  submission.set('userId', user);
   const acl = new Parse.ACL();
   acl.setReadAccess(user, true);
   acl.setWriteAccess(user, true);

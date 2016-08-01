@@ -36,6 +36,7 @@ export function initializeNotifications() {
     if (err || !notifications) {
       return;
     }
+    Store.newNotifications = notifications.length;
   });
 }
 

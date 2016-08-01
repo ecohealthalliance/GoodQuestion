@@ -7,6 +7,7 @@ import React, {
 
 import _ from 'lodash';
 import Button from '../components/Button';
+import Footer from '../components/Footer';
 import Styles from '../styles/Styles';
 
 import Checkbox from 'react-native-checkbox';
@@ -111,12 +112,14 @@ const RegistrationPagePart2 = React.createClass({
             </View>
           </View>
         </ScrollView>
-        <Button
-          action={this.goToNextPage}
-          style={this.buttonStyles}
-          textStyle={this.buttonTextStyles}>
-          {this.state.buttonText}
-        </Button>
+        <Footer>
+          <Button
+            action={this.goToNextPage}
+            style={this.buttonStyles}
+            textStyle={this.buttonTextStyles}>
+            {this.state.buttonText}
+          </Button>
+        </Footer>
       </View>
     );
   },
