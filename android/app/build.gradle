@@ -158,10 +158,10 @@ dependencies {
         // exclude version 7.8
         exclude group: 'com.google.android.gms', module: 'play-services-gcm'
     }
-    compile 'com.google.android.gms:play-services-base:9.0.1'
-    compile 'com.google.android.gms:play-services-maps:9.0.1'
-    compile 'com.google.android.gms:play-services-location:9.0.1'
-    compile 'com.google.android.gms:play-services-gcm:9.0.1'
+    compile 'com.google.android.gms:play-services-base:9.4.0'
+    compile 'com.google.android.gms:play-services-maps:9.4.0'
+    compile 'com.google.android.gms:play-services-location:9.4.0'
+    compile 'com.google.android.gms:play-services-gcm:9.4.0'
 }
 
 // Run this once to be able to run the application with BUCK
