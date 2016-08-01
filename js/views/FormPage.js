@@ -5,6 +5,7 @@ import React, {
   Text,
   TouchableWithoutFeedback,
   View,
+  ScrollView,
   Platform,
   Alert,
 } from 'react-native';
@@ -26,6 +27,7 @@ import DatetimeQuestionAndroid from '../components/QuestionTypes/DatetimeQuestio
 import CompleteForm from '../components/QuestionTypes/CompleteForm';
 
 import Footer from '../components/Footer';
+import KeyboardSpacer from '../components/KeyboardSpacer';
 import Loading from '../components/Loading';
 import Color from '../styles/Color';
 import TypeStyles from '../styles/_TypeStyles';
@@ -374,7 +376,15 @@ const FormPage = React.createClass({
 
     return (
       <View style={{flex: 1}}>
-        <View style={{flex: 1, paddingHorizontal: 20, overflow: 'hidden'}}>
+        <ScrollView
+          bounces={false}
+          decelerationRate="fast"
+          style={{flex: 1, paddingHorizontal: 20, overflow: 'hidden'}}
+          ref="_scrollview"
+          onContentSizeChange={(newSize) => {
+            this.refs._scrollview.scrollTo({y: newSize});
+          }}
+          >
           <View style={Styles.form.titleHeading}>
             <Text style={Styles.form.titleText}> {this.form.title} </Text>
           </View>
@@ -391,7 +401,8 @@ const FormPage = React.createClass({
             children={this.renderQuestions()}
             threshold={50}>
           </Swiper>
-        </View>
+          <KeyboardSpacer topSpacing={-70} />
+        </ScrollView>
         <Footer style={{height: 50}}>
           <SurveyFormNavigator
             ref={(nav) => {
