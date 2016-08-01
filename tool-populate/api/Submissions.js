@@ -1,15 +1,28 @@
-var _            = require('lodash')
-var Parse        = require('parse/node')
-var DemoData     = require('../data/DemoData')
-var Users        = require('./Users')
-var Helpers      = require('./Helpers')
-var Forms        = require('./Forms')
-var Questions    = require('./Questions')
-var Chance       = require('chance')
+var _               = require('lodash')
+var Parse           = require('parse/node')
+var DemoData        = require('../data/DemoData')
+var Users           = require('./Users')
+var Helpers         = require('./Helpers')
+var Forms           = require('./Forms')
+var Questions       = require('./Questions')
+var Chance          = require('chance')
+var crypto          = require('crypto-js')
 
-var chance       = new Chance()
-var Submission   = Parse.Object.extend("Submission")
-var useMasterKey = {useMasterKey: true}
+var chance          = new Chance()
+var Submission      = Parse.Object.extend("Submission")
+var useMasterKey    = {useMasterKey: true}
+
+/**
+ * user may only have one submission for each formId
+ *
+ * @param {string} formId, the unique id for the parse form record
+ * @param {object} user, the current parse user saved to AsyncStorage
+ */
+function genSubmissionId(formId, user, done) {
+  const str = `${user.id}${formId}`;
+  const id = crypto.MD5(str).toString();
+  done(null, id);
+}
 
 function loadSubmissions(options, callback) {
   Helpers.fetchObjects(Submission, callback)
@@ -61,10 +74,13 @@ function createAnswer(question) {
 
 function createSubmission(answers, form, user) {
   submission = new Submission()
-  submission.set('answers', answers)
-  submission.set('formId', form.id)
-  submission.set('userId', user)
-  submission.save(null, useMasterKey)
+  genSubmissionId(form.id, user, function(err, id){
+    submission.set('answers', answers)
+    submission.set('formId', form.id)
+    submission.set('userId', user)
+    submission.set('uniqueId', id)
+    submission.save(null, useMasterKey)
+  })
 }
 
 function createSubmissions() {
@@ -81,7 +97,6 @@ function createSubmissions() {
                 })
                 createSubmission(answers, form, user)
               })
-              .fail(function(err){console.log(err);})
           })
         })
       })
