@@ -44,7 +44,8 @@ import { loadCachedFormDataById } from '../api/Forms';
 connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 
 let navigator = null;
-let initialRoute = { path: 'surveylist', title: 'Surveys' };
+let initialRoute = { path: 'profile', title: 'Profile' };
+//let initialRoute = { path: 'surveylist', title: 'Surveys' };
 const toaster = <Toaster key='toaster' />;
 
 // Binds the hardware "back button" from Android devices
