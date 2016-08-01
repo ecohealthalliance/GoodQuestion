@@ -5,27 +5,28 @@ import React, {
 } from 'react-native';
 
 import Styles from '../styles/Styles';
-import { loadNotifications, markNotificationsAsViewed, clearNotifications, clearNotification } from '../api/Notifications';
+import { loadUserNotifications, markNotificationsAsViewed, clearNotifications, clearNotification } from '../api/Notifications';
 import { loadCachedFormDataById } from '../api/Forms';
 import Button from '../components/Button';
 import Notification from '../components/Notification';
+import Loading from '../components/Loading';
 
 const NotificationsPage = React.createClass({
   title: 'Notifications',
 
   getInitialState() {
-    const pendingNotifications = loadNotifications();
     const dataSource = new ListView.DataSource({
       rowHasChanged: (row1, row2) => row1 !== row2,
     });
     return {
-      list: pendingNotifications,
-      dataSource: dataSource.cloneWithRows(pendingNotifications),
+      loading: true,
+      list: [],
+      dataSource: dataSource.cloneWithRows([]),
     };
   },
 
   componentDidMount() {
-    markNotificationsAsViewed(this.state.list);
+    this.loadList();
   },
 
   componentWillUnmount() {
@@ -33,18 +34,22 @@ const NotificationsPage = React.createClass({
   },
 
   /* Methods */
-  loadList(error) {
-    if (error) {
-      console.warn(error);
-    } else {
-      const pendingNotifications = loadNotifications();
+  loadList() {
+    loadUserNotifications({}, (err, notifications) => {
+      if (err) {
+        console.warn(err);
+        this.setState({ loading: false });
+        return;
+      }
       if (!this.cancelCallbacks) {
         this.setState({
-          list: pendingNotifications,
-          dataSource: this.state.dataSource.cloneWithRows(pendingNotifications),
+          loading: false,
+          list: notifications,
+          dataSource: this.state.dataSource.cloneWithRows(notifications),
         });
+        markNotificationsAsViewed(notifications);
       }
-    }
+    });
   },
 
   selectNotification(notification) {
@@ -89,6 +94,9 @@ const NotificationsPage = React.createClass({
   },
 
   render() {
+    if (this.state.loading) {
+      return <Loading/>;
+    }
     return (
       <View style={[Styles.container.default, {flex: 1}]}>
         <View style={{flex: 1, paddingBottom: 60}}>

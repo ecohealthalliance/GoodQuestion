@@ -5,6 +5,7 @@ Notification.schema = {
   properties: {
     id: 'string',
     formId: 'string',
+    userId: 'string',
     surveyId: 'string',
     title: 'string',
     description: 'string',
