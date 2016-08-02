@@ -1,4 +1,5 @@
 **/node_modules/**/*.*
 js/lib/**
 js/settings.js
+js/components/KeyboardAvoidingView.js
 tool-populate/**
