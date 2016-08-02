@@ -377,12 +377,17 @@ const FormPage = React.createClass({
     return (
       <View style={{flex: 1}}>
         <ScrollView
+          automaticallyAdjustContentInsets={false}
           bounces={false}
           decelerationRate="fast"
-          style={{flex: 1, paddingHorizontal: 20, overflow: 'hidden'}}
+          scrollsToTop={false}
+          contentContainerStyle={{ flex: Platform.OS === 'ios' ? 1 : 0 }}
+          style={{ flex: 1, paddingHorizontal: 20, overflow: 'hidden' }}
           ref="_scrollview"
           onContentSizeChange={(newSize) => {
-            this.refs._scrollview.scrollTo({y: newSize});
+            if (Platform.OS === 'android') {
+              this.refs._scrollview.scrollTo({y: newSize});
+            }
           }}
           >
           <View style={Styles.form.titleHeading}>
