@@ -3,9 +3,12 @@ import React from 'react';
 import {
   TouchableWithoutFeedback,
   View,
+  KeyboardAvoidingView,
+  ScrollView,
   Text,
   Platform,
   Alert,
+  Dimensions,
 } from 'react-native';
 
 // Libraries
@@ -44,6 +47,8 @@ import { validateUser } from '../api/Account';
 import { loadCachedForms, loadActiveGeofenceFormsInRange } from '../api/Forms';
 import { loadCachedSubmissions, saveSubmission} from '../api/Submissions';
 import { loadCachedQuestions } from '../api/Questions';
+
+const CONTENT_HEIGHT = Dimensions.get('window').height - 140;
 
 const FormPage = React.createClass({
   form: null,
@@ -404,28 +409,33 @@ const FormPage = React.createClass({
 
     return (
       <View style={{flex: 1}}>
-        <View style={{
-          flex: 1,
-          paddingHorizontal: Platform.OS === 'ios' ? 20 : 0,
-          overflow: 'hidden',
-        }}>
-          <View style={Styles.form.titleHeading}>
-            <Text style={Styles.form.titleText}> {this.form.title} </Text>
-          </View>
-          <Swiper
-            ref={(swiper) => {
-              this._swiper = swiper;
-            }}
-            style={{flex: 1}}
-            containerStyle={{overflow: 'visible'}}
-            pager={false}
-            index={this._questionIndex}
-            beforePageChange={this.beforePageChange}
-            onPageChange={this.onPageChange}
-            children={this.renderQuestions()}
-            threshold={30}>
-          </Swiper>
-        </View>
+        <KeyboardAvoidingView behavior='position' style={{flex: 1, justifyContent: 'center', alignItems: 'stretch'}}>
+          <ScrollView
+            automaticallyAdjustContentInsets={false}
+            bounces={false}
+            decelerationRate='fast'
+            scrollsToTop={false}
+            contentContainerStyle={{height: CONTENT_HEIGHT}}
+            style={{ flex: 1, paddingHorizontal: 20, overflow: 'hidden', backgroundColor: 'red' }}
+            >
+            <View style={Styles.form.titleHeading}>
+              <Text style={Styles.form.titleText}> {this.form.title} </Text>
+            </View>
+            <Swiper
+              ref={(swiper) => {
+                this._swiper = swiper;
+              }}
+              style={{flex: 1}}
+              containerStyle={{overflow: 'visible'}}
+              pager={false}
+              index={this._questionIndex}
+              beforePageChange={this.beforePageChange}
+              onPageChange={this.onPageChange}
+              children={this.renderQuestions()}
+              threshold={25}>
+            </Swiper>
+          </ScrollView>
+        </KeyboardAvoidingView>
 
         <Footer style={{height: 50}}>
           <SurveyFormNavigator
