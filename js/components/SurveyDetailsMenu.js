@@ -41,6 +41,13 @@ const SurveyDetailsMenu = React.createClass({
           Survey
         </SurveyListFilterButton>
         <SurveyListFilterButton
+          active={this.state.activeButton === 'forms'}
+          onPress={this.handlePress.bind(null, 'forms')}
+          icon='list-ul'
+          >
+          Forms
+        </SurveyListFilterButton>
+        <SurveyListFilterButton
           active={this.state.activeButton === 'scheduled'}
           onPress={this.handlePress.bind(null, 'scheduled')}
           icon='clock-o'
@@ -67,7 +74,7 @@ const SurveyListFilterButton = React.createClass({
   },
   render() {
     const buttonContainerStyle = {opacity: 0.5};
-    let buttonViewStyle = {flex: 1, paddingHorizontal: 20, paddingVertical: 12, justifyContent: 'center', alignItems: 'center'};
+    let buttonViewStyle = {flex: 1, width: 70, paddingVertical: 12, justifyContent: 'center', alignItems: 'center'};
     if (this.props.active) {
       buttonContainerStyle.opacity = 1;
     }

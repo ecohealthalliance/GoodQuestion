@@ -16,6 +16,7 @@ import Color from '../styles/Color';
 import SurveyDetailsMenu from '../components/SurveyDetailsMenu';
 import Loading from '../components/Loading';
 import Button from '../components/Button';
+import FormListPage from './FormListPage';
 import MapPage from './MapPage';
 import CalendarPage from './CalendarPage';
 
@@ -327,6 +328,9 @@ const SurveyDetailsPage = React.createClass({
 
     let tab = null;
     switch (this.state.activeTab) {
+      case 'forms':
+        tab = <FormListPage navigator={this.props.navigator} survey={this.props.survey} forms={this.state.forms} />;
+        break;
       case 'geofence':
         tab = <MapPage navigator={this.props.navigator} survey={this.props.survey} />;
         break;

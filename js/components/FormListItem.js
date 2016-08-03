@@ -12,7 +12,7 @@ import ViewText from './ViewText';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { getFormAvailability } from '../api/Forms';
 
-const SurveyListItem = React.createClass({
+const FormListItem = React.createClass({
   propTypes: {
     title: React.PropTypes.string.isRequired,
     surveyId: React.PropTypes.string.isRequired,
@@ -21,6 +21,7 @@ const SurveyListItem = React.createClass({
 
   getInitialState() {
     return {
+      loading: true,
       state: null,
       availability: {
         availableTimeTriggers: 0,
@@ -36,12 +37,12 @@ const SurveyListItem = React.createClass({
     }
 
     if (this.state.status !== nextProps.status) {
-      this.update(nextProps.status);
+      // this.update(nextProps.status);
     }
   },
 
   componentDidMount() {
-    this.update(this.props.status);
+    // this.update(this.props.status);
   },
 
   /* Methods */
@@ -71,15 +72,9 @@ const SurveyListItem = React.createClass({
   /* Render */
   renderIcon() {
     let icon = null;
-    switch (this.state.status) {
-      case 'accepted':
-        icon = <Icon name='check-circle' size={24} color={Color.fadedGreen} />;
-        break;
-      case 'declined':
-        icon = <Icon name='times-circle' size={24} color={Color.fadedRed} />;
-        break;
+    switch (this.props.type) {
       default:
-        icon = <Icon name='circle-o' size={24} color={Color.fadedRed} />;
+        icon = <Icon name='circle-o' size={24} color={Color.secondary} />;
     }
     return (
       <View style={{paddingTop: 4}}>
@@ -114,6 +109,10 @@ const SurveyListItem = React.createClass({
   },
 
   render() {
+    if (this.state.loading) {
+      return <Loading />;
+    }
+
     return (
       <View style={Styles.survey.listitem}>
         <View style={Styles.container.col75}>
@@ -128,4 +127,4 @@ const SurveyListItem = React.createClass({
   },
 });
 
-module.exports = SurveyListItem;
+module.exports = FormListItem;

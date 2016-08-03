@@ -6,6 +6,7 @@ import { InvitationStatus, loadCachedInvitation } from './Invitations';
 import { loadQuestions } from './Questions';
 import { loadTriggers } from './Triggers';
 
+
 // Saves a Form object from Parse into our Realm.io local database
 export function cacheParseForm(form, surveyId) {
   try {
@@ -118,6 +119,9 @@ export function getFormAvailability(surveyId, done) {
 
     currentTrigger: null,
     currentTriggerType: '',
+
+    timeTriggers: [],
+    geofenceTriggers: [],
   };
   loadCachedInvitation(surveyId, (err, invitation) => {
     if (err) {
@@ -129,6 +133,7 @@ export function getFormAvailability(surveyId, done) {
       try {
         // Check for availability on pending time triggers.
         const timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId="${surveyId}"`);
+        result.timeTriggers = timeTriggers;
         const availableTimeTriggers = timeTriggers.filtered('triggered == true AND completed == false').sorted('datetime');
         if (availableTimeTriggers && availableTimeTriggers.length > 0) {
           result.availableTimeTriggers = availableTimeTriggers.length;
@@ -144,6 +149,7 @@ export function getFormAvailability(surveyId, done) {
 
         // Check for active geofence triggers.
         const geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`);
+        result.geofenceTriggers = geofenceTriggers;
         if (geofenceTriggers && geofenceTriggers.length > 0) {
           const geofenceTriggersInRange = geofenceTriggers.filtered('triggered == true AND completed == false AND inRange == true OR sticky == true');
           result.geofenceTriggersInRange = geofenceTriggersInRange.length;
