@@ -27,8 +27,8 @@ const FormListPage = React.createClass({
     });
     return {
       loding: true,
-      list: forms,
       triggers: [],
+      forms: forms,
       dataSource: dataSource.cloneWithRows(forms),
     };
   },
@@ -53,16 +53,28 @@ const FormListPage = React.createClass({
       const timeTriggers = Array.from(results.timeTriggers);
       const geofenceTriggers = Array.from(results.geofenceTriggers);
       const triggers = _.union(timeTriggers, geofenceTriggers);
-      console.log('triggers.length')
-      console.log(triggers.length)
-      console.log(triggers.length)
-      console.log(triggers.length)
-      console.log(results)
+      const forms = this.sortForms();
       this.setState({
         loading: false,
         triggers: triggers,
+        forms: forms,
+        dataSource: this.state.dataSource.cloneWithRows(forms),
       });
     });
+  },
+  
+  /**
+   * Sorts forms in the following order:
+   *   1 - Geofence Forms in-range
+   *   2 - TimeTrigger Forms available
+   *   3 - TimeTrigger Forms pending
+   *   4 - Geofence Forms out-of-range
+   *   5 - Completed Forms
+   * @return {array}    Sorted array of 'Form' objects.
+   */
+  sortForms() {
+    const formList = this.state.forms;
+    return formList;
   },
 
   selectForm(form) {
@@ -72,7 +84,8 @@ const FormListPage = React.createClass({
   renderItem(item) {
     const trigger = this.state.triggers.filter((trigger) => {
       return trigger.formId === item.id;
-    });
+    })[0];
+    console.log(trigger)
     return (
       <FormListItem {...item} trigger={trigger} onPressed={this.selectForm.bind(null, item)} />
     );

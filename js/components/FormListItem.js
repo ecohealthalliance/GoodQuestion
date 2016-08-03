@@ -16,11 +16,11 @@ const FormListItem = React.createClass({
   propTypes: {
     title: React.PropTypes.string.isRequired,
     surveyId: React.PropTypes.string.isRequired,
-    status: React.PropTypes.string.isRequired,
+    trigger: React.PropTypes.object,
   },
 
   getInitialState() {
-    // console.log(this.props.trigger)
+    console.log(this.props.trigger)
     return {
       state: null,
       availability: {
@@ -46,28 +46,6 @@ const FormListItem = React.createClass({
   },
 
   /* Methods */
-  update(status) {
-    getFormAvailability(this.props.surveyId, (err, availability) => {
-      if (err) {
-        console.warn(err);
-        return;
-      }
-      if (
-        availability.availableTimeTriggers !== this.state.availability.availableTimeTriggers ||
-        availability.nextTimeTrigger !== this.state.availability.nextTimeTrigger ||
-        availability.geofenceTriggersInRange !== this.state.availability.geofenceTriggersInRange
-      ) {
-        this.setState({
-          status: status,
-          availability: availability,
-        });
-      } else {
-        this.setState({
-          status: status,
-        });
-      }
-    });
-  },
 
   /* Render */
   renderIcon() {
@@ -83,28 +61,29 @@ const FormListItem = React.createClass({
     );
   },
 
-  renderAvailabilityText() {
-    const { geofenceTriggersInRange, availableTimeTriggers, nextTimeTrigger } = this.state.availability;
-
-    if (geofenceTriggersInRange > 0) {
-      return (
-        <ViewText textStyle={Styles.survey.itemDescription}>
-          {geofenceTriggersInRange} geofence {geofenceTriggersInRange > 1 ? 'forms' : 'form'} available.
-        </ViewText>
-      );
-    } else if (availableTimeTriggers > 0) {
-      return (
-        <ViewText textStyle={Styles.survey.itemDescription}>
-          {availableTimeTriggers} scheduled {availableTimeTriggers > 1 ? 'forms' : 'form'} available.
-        </ViewText>
-      );
-    } else if (nextTimeTrigger && nextTimeTrigger > Date.now()) {
-      return (
-        <ViewText textStyle={Styles.survey.itemDescription}>
-          Next form: {moment(nextTimeTrigger).fromNow()}
-        </ViewText>
-      );
+  renderStatusText() {
+    const trigger = this.props.trigger;
+    if (!trigger) {
+      console.warn(`No trigger found`);
+      return null;
     }
+
+    if (trigger.completed) {
+      return <ViewText textStyle={Styles.survey.itemDescription}>Completed.</ViewText>;
+    } else if (trigger.datetime) {
+      if (trigger.datetime < Date.now()) {
+        return <ViewText textStyle={Styles.survey.itemDescription}>Form available.</ViewText>;
+      } else {
+        return <ViewText textStyle={Styles.survey.itemDescription}>Scheduled: {moment(trigger.datetime).fromNow()}.</ViewText>;
+      }
+    } else if (trigger.latitude && trigger.longitude) {
+      if (trigger.inRange) {
+        return <ViewText textStyle={Styles.survey.itemDescription}>Form in range.</ViewText>;
+      } else {
+        return <ViewText textStyle={Styles.survey.itemDescription}>Form out of range.</ViewText>;
+      }
+    }
+
     return null;
   },
 
@@ -113,7 +92,7 @@ const FormListItem = React.createClass({
       <View style={Styles.survey.listitem}>
         <View style={Styles.container.col75}>
           <Text style={Styles.survey.title}>{this.props.title}</Text>
-          {this.renderAvailabilityText()}
+          {this.renderStatusText()}
         </View>
         <View style={[Styles.container.col25, {alignItems: 'flex-end'}]}>
           {this.renderIcon()}
