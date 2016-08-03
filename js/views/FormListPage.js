@@ -26,7 +26,7 @@ const FormListPage = React.createClass({
       rowHasChanged: (row1, row2) => row1 !== row2,
     });
     return {
-      loding: true,
+      loading: true,
       triggers: [],
       forms: forms,
       dataSource: dataSource.cloneWithRows(forms),
@@ -53,7 +53,7 @@ const FormListPage = React.createClass({
       const timeTriggers = Array.from(results.timeTriggers);
       const geofenceTriggers = Array.from(results.geofenceTriggers);
       const triggers = _.union(timeTriggers, geofenceTriggers);
-      const forms = this.sortForms();
+      const forms = this.sortForms(this.state.forms, triggers);
       this.setState({
         loading: false,
         triggers: triggers,
@@ -66,28 +66,74 @@ const FormListPage = React.createClass({
   /**
    * Sorts forms in the following order:
    *   1 - Geofence Forms in-range
-   *   2 - TimeTrigger Forms available
-   *   3 - TimeTrigger Forms pending
-   *   4 - Geofence Forms out-of-range
-   *   5 - Completed Forms
+   *   2 - TimeTrigger Forms, ordered by trigger datetime values.
+   *   3 - Geofence Forms out-of-range
+   *   4 - Completed Forms
    * @return {array}    Sorted array of 'Form' objects.
    */
-  sortForms() {
-    const formList = this.state.forms;
-    return formList;
+  sortForms(forms, triggers) {
+    const sortedForms = Array.from(forms);
+    sortedForms.forEach((form) => {
+      const formTrigger = triggers.filter((trigger) => {
+        return trigger.formId === form.id;
+      })[0];
+      if (formTrigger) {
+        form.trigger = formTrigger;
+      }
+    });
+    
+    sortedForms.sort((a, b) => {
+      // Check for missing triggers
+      if (!a.trigger) {
+        return -1;
+      } else if (!b.trigger) {
+        return 1;
+      }
+      
+      // Check completion status
+      if (a.trigger.completed && !b.trigger.completed) {
+        return 1;
+      } else if (!a.trigger.completed && b.trigger.completed) {
+        return -1;
+      }
+      
+      // Handle geofence triggers
+      if (a.trigger.latitude || a.trigger.longitude) {
+        // Triggers types mismatch
+        if (b.trigger.datetime) {
+          return a.trigger.inRange ? 1 : -1;
+        } else {
+          return 0;
+        }
+      }
+      
+      // Handle datetime triggers
+      if (a.trigger.datetime) {
+        // Triggers types mismatch
+        if (a.trigger.latitude || a.trigger.longitude) {
+          return b.trigger.inRange ? -1 : 1;
+        } else if (b.trigger.datetime) {
+          return a.trigger.datetime < b.trigger.datetime ? 1 : -1;
+        }
+      }
+
+      return 0;
+    });
+    return sortedForms;
   },
 
   selectForm(form) {
   },
 
   /* Render */
-  renderItem(item) {
-    const trigger = this.state.triggers.filter((trigger) => {
-      return trigger.formId === item.id;
-    })[0];
-    console.log(trigger)
+  renderFormItem(form) {
+    if (!form.trigger) {
+      form.trigger = this.state.triggers.filter((trigger) => {
+        return trigger.formId === form.id;
+      })[0];
+    }
     return (
-      <FormListItem {...item} trigger={trigger} onPressed={this.selectForm.bind(null, item)} />
+      <FormListItem {...form} trigger={form.trigger} onPressed={this.selectForm.bind(null, form)} />
     );
   },
 
@@ -99,7 +145,7 @@ const FormListPage = React.createClass({
     return (
       <View style={[Styles.container.default, {flex: 1}]}>
         <ListView dataSource = { this.state.dataSource }
-          renderRow = { this.renderItem }
+          renderRow = { this.renderFormItem }
           contentContainerStyle = { [Styles.container.default, Styles.survey.list, {flex: 0}] }
           enableEmptySections
         />
