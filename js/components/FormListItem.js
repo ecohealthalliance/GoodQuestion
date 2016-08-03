@@ -20,8 +20,8 @@ const FormListItem = React.createClass({
   },
 
   getInitialState() {
+    // console.log(this.props.trigger)
     return {
-      loading: true,
       state: null,
       availability: {
         availableTimeTriggers: 0,
@@ -109,10 +109,6 @@ const FormListItem = React.createClass({
   },
 
   render() {
-    if (this.state.loading) {
-      return <Loading />;
-    }
-
     return (
       <View style={Styles.survey.listitem}>
         <View style={Styles.container.col75}>

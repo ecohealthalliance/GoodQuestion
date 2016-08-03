@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import async from 'async';
 import Parse from 'parse/react-native';
 import realm from '../data/Realm';
 import { loadAcceptedInvitations } from '../api/Invitations';
@@ -214,6 +215,35 @@ export function loadCachedGeofenceTriggers(options = {}, callback) {
     }
 
     callback(null, triggers);
+  });
+}
+
+// Fetches the cached triggers related to a specific survey.
+export function loadSurveyTriggers(options = {}, done) {
+  if (!options.surveyId) {
+    done(`Required options parameter "surveyId" not found.`);
+    return;
+  }
+
+  console.log(options)
+
+  async.auto({
+    timeTriggers: (cb) => {
+      loadCachedTimeTriggers(options, cb);
+    },
+    geofenceTriggers: (cb) => {
+      loadCachedGeofenceTriggers(options, cb);
+    },
+  }, (err, results) => {
+    if (err) {
+      if (done) {
+        done(err);
+      }
+      return;
+    }
+    if (done) {
+      done(null, results);
+    }
   });
 }
 
