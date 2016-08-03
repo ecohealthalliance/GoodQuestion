@@ -49,11 +49,30 @@ const FormListItem = React.createClass({
 
   /* Render */
   renderIcon() {
+    const trigger = this.props.trigger;
     let icon = null;
-    switch (this.props.type) {
-      default:
-        icon = <Icon name='circle-o' size={24} color={Color.secondary} />;
+    let color = Color.secondary;
+
+    if (!trigger) {
+      return (
+        <View style={{paddingTop: 4}}>
+          <Icon name='circle-o' size={24} color={Color.secondary} />
+        </View>
+      );
+    } else if (trigger.completed) {
+      icon = <Icon name='check-circle' size={24} color={Color.positive} />;
+    } else if (trigger.datetime) {
+      if (trigger.datetime < Date.now()) {
+        color = Color.positive;
+      }
+      icon = <Icon name='clock-o' size={24} color={color} />;
+    } else if (trigger.latitude && trigger.longitude) {
+      if (trigger.inRange) {
+        color = Color.positive;
+      }
+      icon = <Icon name='map-marker' size={24} color={color} />;
     }
+
     return (
       <View style={{paddingTop: 4}}>
         {icon}
