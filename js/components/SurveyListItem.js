@@ -22,6 +22,7 @@ const SurveyListItem = React.createClass({
 
   getInitialState() {
     let incompleteCount = this.props.incompleteForms ? this.props.incompleteForms.length : 0;
+    console.log(this.props.incompleteForms)
     return {
       state: null,
       incompleteCount: incompleteCount,

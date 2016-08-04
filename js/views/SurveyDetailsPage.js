@@ -21,17 +21,23 @@ import MapPage from './MapPage';
 import CalendarPage from './CalendarPage';
 
 import { acceptSurvey, declineSurvey } from '../api/Surveys';
-import { getFormAvailability, loadCachedForms, loadCachedFormDataByTriggerId } from '../api/Forms';
+import { getFormAvailability, loadCachedForms, loadCachedFormDataById, loadCachedFormDataByTriggerId } from '../api/Forms';
 import { loadCachedQuestionsFromForms } from '../api/Questions';
 import { InvitationStatus, markInvitationStatus, loadCachedInvitationById } from '../api/Invitations';
+import { cachedSubmissions } from '../api/Submissions';
 
 const SurveyDetailsPage = React.createClass({
+  _incompleteSubmissions: null,
+
   propTypes: {
     survey: React.PropTypes.object.isRequired,
     activeTab: React.PropTypes.string,
   },
 
   getInitialState() {
+    if (this.props.currentUser) {
+      this._incompleteSubmissions = cachedSubmissions.filtered(`userId == "${this.props.currentUser.id}" AND surveyId == "${this.props.survey.id}" AND inProgress == true`);
+    }
     return {
       loading: true,
       status: InvitationStatus.PENDING,
@@ -172,11 +178,21 @@ const SurveyDetailsPage = React.createClass({
   },
 
   navigateToForms(type) {
-    const triggerId = this.state.availability.currentTrigger.id;
-    let form = {};
-    if (triggerId) {
-      const data = loadCachedFormDataByTriggerId(triggerId, type);
+    let form = null;
+    if (type === 'incomplete') {
+      const formId = this._incompleteSubmissions[0].formId;
+      const data = loadCachedFormDataById(formId);
       form = data.form;
+    } else {
+      const triggerId = this.state.availability.currentTrigger.id;
+      if (triggerId) {
+        const data = loadCachedFormDataByTriggerId(triggerId, type);
+        form = data.form;
+      }
+    }
+
+    if (!form) {
+      return;
     }
 
     this.props.navigator.push({
@@ -237,6 +253,21 @@ const SurveyDetailsPage = React.createClass({
   renderFormAvailability() {
     const { geofenceTriggersInRange, availableTimeTriggers, nextTimeTrigger } = this.state.availability;
 
+    // Incomplete form pending submission
+    if (this._incompleteSubmissions.length > 0) {
+      return (
+        <View style={Styles.survey.surveyNotes}>
+          <Text style={[Styles.type.h2, {marginTop: 0, color: Color.secondary}]}>
+            <Icon name='question-circle' size={20} color={Color.faded} /> You have an incomplete form to finish.
+          </Text>
+          <Button style={[Styles.survey.answerButton]} textStyle={{color: Color.primary}} action={this.navigateToForms.bind(null, 'incomplete')}>
+            Answer Form
+          </Button>
+        </View>
+      );
+    }
+
+    // Forms available via triggers
     if (geofenceTriggersInRange > 0) {
       return (
         <View style={Styles.survey.surveyNotes}>

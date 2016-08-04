@@ -213,7 +213,7 @@ const SurveyListPage = React.createClass({
   },
 
   getIncompleteForms(surveyId) {
-    if (this.state.isLoading || this.state.isRefreshing || !this._incompleteSubmissions) {
+    if (this.state.isLoading || !this._incompleteSubmissions) {
       return;
     }
     return this._incompleteSubmissions.filtered(`surveyId == "${surveyId}"`);;
