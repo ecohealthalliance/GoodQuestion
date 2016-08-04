@@ -257,8 +257,8 @@ const FormPage = React.createClass({
   saveIncompleteSubmission() {
     if (!this._formComplete) {
       const answers = this.state.answers;
-      const formId = this.form.id;
-      saveIncompleteSubmission(formId, answers, (err) => {
+      const form = this.form;
+      saveIncompleteSubmission(form, answers, (err) => {
         if (err) {
           if (err === 'Invalid User') {
             this.props.logout();
@@ -275,10 +275,10 @@ const FormPage = React.createClass({
     }
 
     const answers = this.state.answers;
-    const formId = this.form.id;
+    const formId = this.form;
     const index = this.state.index;
     const survey = this.props.survey;
-    saveSubmission(formId, answers, (err) => {
+    saveSubmission(form, answers, (err) => {
       if (err) {
         if (err === 'Invalid User') {
           this.props.logout();

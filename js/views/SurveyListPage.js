@@ -212,6 +212,13 @@ const SurveyListPage = React.createClass({
     return status;
   },
 
+  getIncompleteForms(surveyId) {
+    if (this.state.isLoading || this.state.isRefreshing || !this._incompleteSubmissions) {
+      return;
+    }
+    return this._incompleteSubmissions.filtered(`surveyId == "${surveyId}"`);;
+  },
+
   /* Render */
   renderItem(survey) {
     if (!survey) {
@@ -227,6 +234,7 @@ const SurveyListPage = React.createClass({
             key={`survey-item-${survey.id}`}
             surveyId={survey.id}
             status={this.getInvitationStatus(survey.id)}
+            incompleteForms={this.getIncompleteForms(survey.id)}
             isRefreshing={this.state.isRefreshing}
             />
         </View>
