@@ -3,9 +3,11 @@ import {
   Alert,
   View,
   ListView,
+  TouchableHighlight,
 } from 'react-native';
 import _ from 'lodash';
 
+import Color from '../styles/Color';
 import Styles from '../styles/Styles';
 import { loadCachedFormDataByTriggerId } from '../api/Forms';
 import { loadSurveyTriggers } from '../api/Triggers';
@@ -130,6 +132,17 @@ const FormListPage = React.createClass({
       return;
     }
 
+    if (!trigger.completed) {
+      if (trigger.datetime && trigger.datetime > Date.now()) {
+        return; // Return if datetime hasn't been reached.
+      }
+      if (trigger.latitude || trigger.longitude) {
+        if (!trigger.inRange) {
+          return; // Return if geofence is not in range.
+        }
+      }
+    }
+
     const data = loadCachedFormDataByTriggerId(trigger.id, trigger.datetime ? 'datetime' : 'geofence');
     if (!data || !data.survey || !data.form) {
       Alert('There was an error trying to load this form. Please try again later.');
@@ -153,7 +166,13 @@ const FormListPage = React.createClass({
       })[0];
     }
     return (
-      <FormListItem {...form} trigger={form.trigger} onPressed={this.selectForm.bind(null, form.trigger)} />
+      <TouchableHighlight
+        onPress={() => this.selectForm(form.trigger)}
+        underlayColor={Color.background3}>
+        <View>
+          <FormListItem {...form} trigger={form.trigger} />
+        </View>
+      </TouchableHighlight>
     );
   },
 

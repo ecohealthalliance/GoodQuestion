@@ -65,7 +65,7 @@ const FormListItem = React.createClass({
         return <ViewText textStyle={Styles.survey.itemDescription}>Form available.</ViewText>;
       }
       return <ViewText textStyle={Styles.survey.itemDescription}>Scheduled: {moment(trigger.datetime).fromNow()}.</ViewText>;
-    } else if (trigger.latitude && trigger.longitude) {
+    } else if (trigger.latitude || trigger.longitude) {
       if (trigger.inRange) {
         return <ViewText textStyle={Styles.survey.itemDescription}>Form in range.</ViewText>;
       }
