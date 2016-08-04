@@ -52,6 +52,7 @@ import { initializeGeolocationService, handleAppStateChange } from '../api/Backg
 connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 
 let navigator = null;
+let currentUser = null;
 let initialRoute = { path: 'surveylist', title: 'Surveys' };
 const toaster = <Toaster key='toaster' />;
 
@@ -95,8 +96,9 @@ const SharedNavigator = React.createClass({
       });
     }
     // see if we have an authenticated user
-    isAuthenticated((authenticated) => {
+    isAuthenticated((authenticated, user) => {
       if (authenticated) {
+        currentUser = user;
         checkTimeTriggers();
         checkDirtyObjects((err, res) => {
           if (err) {
@@ -112,6 +114,7 @@ const SharedNavigator = React.createClass({
           });
         });
       } else {
+        currentUser = null;
         this.setState({
           isAuthenticated: authenticated,
           isLoading: false,
@@ -270,6 +273,7 @@ const SharedNavigator = React.createClass({
 
     const sharedProps = {
       navigator: nav,
+      currentUser: currentUser,
       logout: this.logoutHandler,
     };
 

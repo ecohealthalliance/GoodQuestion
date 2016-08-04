@@ -12,6 +12,7 @@ import _ from 'lodash';
 import Styles from '../styles/Styles';
 import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys';
 import { InvitationStatus, loadCachedInvitations } from '../api/Invitations';
+import { cachedSubmissions } from '../api/Submissions';
 import SurveyListItem from '../components/SurveyListItem';
 import SurveyListFilter from '../components/SurveyListFilter';
 import Loading from '../components/Loading';
@@ -22,8 +23,12 @@ const SurveyListPage = React.createClass({
   title: 'Surveys',
   _invitations: [],
   _surveys: [],
+  _incompleteSubmissions: null,
 
   getInitialState() {
+    if (this.props.currentUser) {
+      this._incompleteSubmissions = cachedSubmissions.filtered(`userId == "${this.props.currentUser.id}" AND inProgress == true`);
+    }
     return {
       isLoading: true,
       isRefreshing: false,

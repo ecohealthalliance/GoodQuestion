@@ -42,12 +42,14 @@ import { ToastAddresses, ToastMessage } from '../models/ToastMessage';
 import { loadCachedTriggers } from '../api/Triggers';
 import { validateUser } from '../api/Account';
 import { loadCachedForms, loadActiveGeofenceFormsInRange } from '../api/Forms';
-import { loadCachedSubmissions, saveSubmission} from '../api/Submissions';
+import { loadCachedSubmissions, saveSubmission, saveIncompleteSubmission } from '../api/Submissions';
 import { loadCachedQuestions } from '../api/Questions';
 
 const FormPage = React.createClass({
   form: null,
   nextForm: null,
+  _appStateListener: null,
+  _formComplete: false,
   _questionIndex: 0,
   propTypes: {
     survey: React.PropTypes.object.isRequired,
@@ -195,6 +197,7 @@ const FormPage = React.createClass({
 
   componentWillUnmount() {
     this.cancelCallbacks = true;
+    this.saveIncompleteSubmission();
   },
 
   componentDidMount() {
@@ -251,6 +254,21 @@ const FormPage = React.createClass({
     }
   },
 
+  saveIncompleteSubmission() {
+    if (!this._formComplete) {
+      const answers = this.state.answers;
+      const formId = this.form.id;
+      saveIncompleteSubmission(formId, answers, (err) => {
+        if (err) {
+          if (err === 'Invalid User') {
+            this.props.logout();
+            return;
+          }
+        }
+      });
+    }
+  },
+
   submit() {
     if (this.state.isSubmitting) {
       return;
@@ -268,7 +286,6 @@ const FormPage = React.createClass({
         }
         Alert.alert('Error', err);
         this.setState({ isSubmitting: false });
-
         return;
       }
 
@@ -282,6 +299,8 @@ const FormPage = React.createClass({
         iconColor: Color.fadedGreen,
       });
       pubsub.publish(ToastAddresses.SHOW, toastMessage);
+
+      this._formComplete = true;
 
       // If there is another form continue onto that
       if (this.nextForm) {
@@ -312,6 +331,7 @@ const FormPage = React.createClass({
     this._questionIndex = page;
     if (this._nav) {
       this._nav.update(this._questionIndex, this.state.questions.length);
+      this.saveIncompleteSubmission();
     }
   },
 
