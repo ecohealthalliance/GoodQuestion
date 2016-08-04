@@ -10,7 +10,6 @@ import Color from '../styles/Color';
 
 import ViewText from './ViewText';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { getFormAvailability } from '../api/Forms';
 
 const FormListItem = React.createClass({
   propTypes: {
@@ -18,34 +17,6 @@ const FormListItem = React.createClass({
     surveyId: React.PropTypes.string.isRequired,
     trigger: React.PropTypes.object,
   },
-
-  getInitialState() {
-    console.log(this.props.trigger)
-    return {
-      state: null,
-      availability: {
-        availableTimeTriggers: 0,
-        nextTimeTrigger: false,
-        geofenceTriggersInRange: 0,
-      },
-    };
-  },
-
-  componentWillReceiveProps(nextProps) {
-    if (!nextProps.status) {
-      return;
-    }
-
-    if (this.state.status !== nextProps.status) {
-      // this.update(nextProps.status);
-    }
-  },
-
-  componentDidMount() {
-    // this.update(this.props.status);
-  },
-
-  /* Methods */
 
   /* Render */
   renderIcon() {
@@ -83,7 +54,7 @@ const FormListItem = React.createClass({
   renderStatusText() {
     const trigger = this.props.trigger;
     if (!trigger) {
-      console.warn(`No trigger found`);
+      console.warn('No trigger found');
       return null;
     }
 
@@ -92,15 +63,13 @@ const FormListItem = React.createClass({
     } else if (trigger.datetime) {
       if (trigger.datetime < Date.now()) {
         return <ViewText textStyle={Styles.survey.itemDescription}>Form available.</ViewText>;
-      } else {
-        return <ViewText textStyle={Styles.survey.itemDescription}>Scheduled: {moment(trigger.datetime).fromNow()}.</ViewText>;
       }
+      return <ViewText textStyle={Styles.survey.itemDescription}>Scheduled: {moment(trigger.datetime).fromNow()}.</ViewText>;
     } else if (trigger.latitude && trigger.longitude) {
       if (trigger.inRange) {
         return <ViewText textStyle={Styles.survey.itemDescription}>Form in range.</ViewText>;
-      } else {
-        return <ViewText textStyle={Styles.survey.itemDescription}>Form out of range.</ViewText>;
       }
+      return <ViewText textStyle={Styles.survey.itemDescription}>Form out of range.</ViewText>;
     }
 
     return null;

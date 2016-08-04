@@ -1,12 +1,13 @@
 import React from 'react';
 import {
+  Alert,
   View,
   ListView,
 } from 'react-native';
+import _ from 'lodash';
 
 import Styles from '../styles/Styles';
-import { loadNotifications } from '../api/Notifications';
-import { loadCachedFormDataById } from '../api/Forms';
+import { loadCachedFormDataByTriggerId } from '../api/Forms';
 import { loadSurveyTriggers } from '../api/Triggers';
 
 import Loading from '../components/Loading';
@@ -43,8 +44,10 @@ const FormListPage = React.createClass({
 
   /* Methods */
   update() {
-    console.log(this.props.survey)
     loadSurveyTriggers({surveyId: this.props.survey.id}, (err, results) => {
+      if (this.cancelCallbacks) {
+        return;
+      }
       if (err) {
         console.warn(err);
         this.setState({loading: false});
@@ -62,7 +65,7 @@ const FormListPage = React.createClass({
       });
     });
   },
-  
+
   /**
    * Sorts forms in the following order:
    *   1 - Geofence Forms in-range
@@ -81,7 +84,7 @@ const FormListPage = React.createClass({
         form.trigger = formTrigger;
       }
     });
-    
+
     sortedForms.sort((a, b) => {
       // Check for missing triggers
       if (!a.trigger) {
@@ -89,24 +92,23 @@ const FormListPage = React.createClass({
       } else if (!b.trigger) {
         return 1;
       }
-      
+
       // Check completion status
       if (a.trigger.completed && !b.trigger.completed) {
         return 1;
       } else if (!a.trigger.completed && b.trigger.completed) {
         return -1;
       }
-      
+
       // Handle geofence triggers
       if (a.trigger.latitude || a.trigger.longitude) {
         // Triggers types mismatch
         if (b.trigger.datetime) {
           return a.trigger.inRange ? 1 : -1;
-        } else {
-          return 0;
         }
+        return 0;
       }
-      
+
       // Handle datetime triggers
       if (a.trigger.datetime) {
         // Triggers types mismatch
@@ -122,7 +124,25 @@ const FormListPage = React.createClass({
     return sortedForms;
   },
 
-  selectForm(form) {
+  selectForm(trigger) {
+    if (!trigger) {
+      Alert('There was an error trying to load this form. Please try again later.');
+      return;
+    }
+
+    const data = loadCachedFormDataByTriggerId(trigger.id, trigger.datetime ? 'datetime' : 'geofence');
+    if (!data || !data.survey || !data.form) {
+      Alert('There was an error trying to load this form. Please try again later.');
+      return;
+    }
+
+    this.props.navigator.push({
+      path: 'form',
+      title: data.survey.title,
+      survey: data.survey,
+      form: data.form,
+      type: 'geofence',
+    });
   },
 
   /* Render */
@@ -133,7 +153,7 @@ const FormListPage = React.createClass({
       })[0];
     }
     return (
-      <FormListItem {...form} trigger={form.trigger} onPressed={this.selectForm.bind(null, form)} />
+      <FormListItem {...form} trigger={form.trigger} onPressed={this.selectForm.bind(null, form.trigger)} />
     );
   },
 

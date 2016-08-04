@@ -221,11 +221,9 @@ export function loadCachedGeofenceTriggers(options = {}, callback) {
 // Fetches the cached triggers related to a specific survey.
 export function loadSurveyTriggers(options = {}, done) {
   if (!options.surveyId) {
-    done(`Required options parameter "surveyId" not found.`);
+    done('Required options parameter "surveyId" not found.');
     return;
   }
-
-  console.log(options)
 
   async.auto({
     timeTriggers: (cb) => {
