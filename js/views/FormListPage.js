@@ -26,6 +26,7 @@ const FormListPage = React.createClass({
 
   getInitialState() {
     const forms = this.props.forms;
+    console.log(this.props.incompleteSubmissions)
     const dataSource = new ListView.DataSource({
       rowHasChanged: (row1, row2) => row1 !== row2,
     });

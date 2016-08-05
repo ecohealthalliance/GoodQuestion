@@ -85,10 +85,7 @@ export function loadForms(survey, callback) {
         for (let i = 0; i < numResults; i++) {
           const form = results[i];
           const submission = realm.objects('Submission').filtered(`formId = "${form.id}"`);
-          // Only include the current form if there have been no submissions to it yet.
-          if (submission.length === 0) {
-            cacheParseForm(form, survey.id);
-          }
+          cacheParseForm(form, survey.id);
         }
         if (callback) {
           callback(null, results, survey);
@@ -188,15 +185,11 @@ export function loadParseFormDataBySurveyId(surveyId, callback) {
               clearCachedForms(surveyId);
               for (let i = 0; i < forms.length; i++) {
                 const form = forms[i];
-                const submission = realm.objects('Submission').filtered(`formId = "${form.id}"`);
-                // Only include the current form if there have been no submissions to it yet.
-                if (submission.length === 0) {
-                  cacheParseForm(form, survey.id);
-                  loadTriggers(form, survey);
-                  loadQuestions(form, (err, questions) => {
-                    callback(null, forms, survey, questions);
-                  });
-                }
+                cacheParseForm(form, survey.id);
+                loadTriggers(form, survey);
+                loadQuestions(form, (err, questions) => {
+                  callback(null, forms, survey, questions);
+                });
               }
             },
             error: (error, forms) => {
