@@ -21,11 +21,9 @@ const SurveyListItem = React.createClass({
   },
 
   getInitialState() {
-    let incompleteCount = this.props.incompleteForms ? this.props.incompleteForms.length : 0;
-    console.log(this.props.incompleteForms)
     return {
       state: null,
-      incompleteCount: incompleteCount,
+      incompleteCount: this.props.incompleteForms ? this.props.incompleteForms.length : 0,
       availability: {
         availableTimeTriggers: 0,
         nextTimeTrigger: false,
@@ -97,9 +95,11 @@ const SurveyListItem = React.createClass({
     const incompleteCount = this.state.incompleteCount;
 
     if (incompleteCount > 0) {
-      return <ViewText textStyle={Styles.survey.itemDescription}>
-        {incompleteCount} incomplete {incompleteCount > 1 ? 'forms' : 'form'} pending.
-      </ViewText>
+      return (
+        <ViewText textStyle={Styles.survey.itemDescription}>
+          {incompleteCount} incomplete {incompleteCount > 1 ? 'forms' : 'form'} pending.
+        </ViewText>
+      );
     }
 
     if (geofenceTriggersInRange > 0) {

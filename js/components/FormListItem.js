@@ -16,6 +16,7 @@ const FormListItem = React.createClass({
     title: React.PropTypes.string.isRequired,
     surveyId: React.PropTypes.string.isRequired,
     trigger: React.PropTypes.object,
+    incomplete: React.PropTypes.bool,
   },
 
   /* Render */
@@ -23,6 +24,14 @@ const FormListItem = React.createClass({
     const trigger = this.props.trigger;
     let icon = null;
     let color = Color.secondary;
+
+    if (this.props.incomplete) {
+      return (
+        <View style={{paddingTop: 4}}>
+          <Icon name='question-circle' size={24} color={Color.positive} />
+        </View>
+      );
+    }
 
     if (!trigger) {
       return (
@@ -56,6 +65,10 @@ const FormListItem = React.createClass({
     if (!trigger) {
       console.warn('No trigger found');
       return null;
+    }
+
+    if (this.props.incomplete) {
+      return <ViewText textStyle={Styles.survey.itemDescription}>Form available: Incomplete.</ViewText>;
     }
 
     if (trigger.completed) {

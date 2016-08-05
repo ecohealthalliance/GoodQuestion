@@ -216,7 +216,7 @@ const SurveyListPage = React.createClass({
     if (this.state.isLoading || !this._incompleteSubmissions) {
       return;
     }
-    return this._incompleteSubmissions.filtered(`surveyId == "${surveyId}"`);;
+    return this._incompleteSubmissions.filtered(`surveyId == "${surveyId}"`);
   },
 
   /* Render */

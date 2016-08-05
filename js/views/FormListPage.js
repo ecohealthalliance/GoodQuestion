@@ -21,6 +21,7 @@ const FormListPage = React.createClass({
   propTypes: {
     survey: React.PropTypes.object.isRequired,
     forms: React.PropTypes.object.isRequired,
+    incompleteSubmissions: React.PropTypes.object,
   },
 
   getInitialState() {
@@ -70,10 +71,11 @@ const FormListPage = React.createClass({
 
   /**
    * Sorts forms in the following order:
-   *   1 - Geofence Forms in-range
-   *   2 - TimeTrigger Forms, ordered by trigger datetime values.
-   *   3 - Geofence Forms out-of-range
-   *   4 - Completed Forms
+   *   1 - Forms left incomplete
+   *   2 - Geofence Forms in-range
+   *   3 - TimeTrigger Forms, ordered by trigger datetime values.
+   *   4 - Geofence Forms out-of-range
+   *   5 - Completed Forms
    * @return {array}    Sorted array of 'Form' objects.
    */
   sortForms(forms, triggers) {
@@ -87,12 +89,27 @@ const FormListPage = React.createClass({
       }
     });
 
+    if (this.props.incompleteSubmissions && this.props.incompleteSubmissions.length > 0) {
+      sortedForms.forEach((form) => {
+        if (this.props.incompleteSubmissions.filtered(`formId == "${form.id}"`)[0]) {
+          form.incomplete = true;
+        } else {
+          form.incomplete = false;
+        }
+      });
+    }
+
     sortedForms.sort((a, b) => {
       // Check for missing triggers
       if (!a.trigger) {
         return -1;
       } else if (!b.trigger) {
         return 1;
+      }
+
+      // Check for incomplete forms
+      if (a.incomplete && !b.incomplete) {
+        return -1;
       }
 
       // Check completion status
@@ -106,7 +123,7 @@ const FormListPage = React.createClass({
       if (a.trigger.latitude || a.trigger.longitude) {
         // Triggers types mismatch
         if (b.trigger.datetime) {
-          return a.trigger.inRange ? 1 : -1;
+          return a.trigger.inRange ? -1 : 1;
         }
         return 0;
       }
@@ -115,9 +132,9 @@ const FormListPage = React.createClass({
       if (a.trigger.datetime) {
         // Triggers types mismatch
         if (a.trigger.latitude || a.trigger.longitude) {
-          return b.trigger.inRange ? -1 : 1;
+          return b.trigger.inRange ? 1 : -1;
         } else if (b.trigger.datetime) {
-          return a.trigger.datetime < b.trigger.datetime ? 1 : -1;
+          return a.trigger.datetime < b.trigger.datetime ? -1 : 1;
         }
       }
 
@@ -170,7 +187,7 @@ const FormListPage = React.createClass({
         onPress={() => this.selectForm(form.trigger)}
         underlayColor={Color.background3}>
         <View>
-          <FormListItem {...form} trigger={form.trigger} />
+          <FormListItem {...form} trigger={form.trigger} incomplete={form.incomplete} />
         </View>
       </TouchableHighlight>
     );

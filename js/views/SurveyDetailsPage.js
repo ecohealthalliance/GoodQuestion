@@ -360,7 +360,7 @@ const SurveyDetailsPage = React.createClass({
     let tab = null;
     switch (this.state.activeTab) {
       case 'forms':
-        tab = <FormListPage navigator={this.props.navigator} survey={this.props.survey} forms={this.state.forms} />;
+        tab = <FormListPage navigator={this.props.navigator} survey={this.props.survey} forms={this.state.forms} incompleteSubmissions={this._incompleteSubmissions} />;
         break;
       case 'geofence':
         tab = <MapPage navigator={this.props.navigator} survey={this.props.survey} />;

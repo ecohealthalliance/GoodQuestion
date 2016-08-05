@@ -275,7 +275,7 @@ const FormPage = React.createClass({
     }
 
     const answers = this.state.answers;
-    const formId = this.form;
+    const form = this.form;
     const index = this.state.index;
     const survey = this.props.survey;
     saveSubmission(form, answers, (err) => {
