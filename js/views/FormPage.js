@@ -380,12 +380,17 @@ const FormPage = React.createClass({
           break;
       }
       return (
-        <TouchableWithoutFeedback
-          onPress={this.dismiss}>
-          <View style={{flex: 1}}>
+        <ScrollView
+          bounces={false}
+          decelerationRate='fast'
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{flex: 0}}
+          style={{ overflow: 'hidden' }}
+          >
+          <View style={{paddingBottom: 90}}>
             {questionComponent}
           </View>
-        </TouchableWithoutFeedback>
+        </ScrollView>
       );
     });
 
@@ -409,32 +414,27 @@ const FormPage = React.createClass({
 
     return (
       <View style={{flex: 1}}>
-        <KeyboardAvoidingView behavior='position' style={{flex: 1, justifyContent: 'center', alignItems: 'stretch'}}>
-          <ScrollView
-            automaticallyAdjustContentInsets={false}
-            bounces={false}
-            decelerationRate='fast'
-            scrollsToTop={false}
-            contentContainerStyle={{height: CONTENT_HEIGHT}}
-            style={{ flex: 1, paddingHorizontal: 20, overflow: 'hidden', backgroundColor: 'red' }}
-            >
-            <View style={Styles.form.titleHeading}>
-              <Text style={Styles.form.titleText}> {this.form.title} </Text>
-            </View>
-            <Swiper
-              ref={(swiper) => {
-                this._swiper = swiper;
-              }}
-              style={{flex: 1}}
-              containerStyle={{overflow: 'visible'}}
-              pager={false}
-              index={this._questionIndex}
-              beforePageChange={this.beforePageChange}
-              onPageChange={this.onPageChange}
-              children={this.renderQuestions()}
-              threshold={25}>
-            </Swiper>
-          </ScrollView>
+        <KeyboardAvoidingView behavior='position' style={{flex: 1}}>
+          <View style={Styles.form.titleHeading}>
+            <Text style={Styles.form.titleText}> {this.form.title} </Text>
+          </View>
+          <Swiper
+            ref={(swiper) => {
+              this._swiper = swiper;
+            }}
+            style={{flex: 1}}
+            containerStyle={{
+              height: CONTENT_HEIGHT,
+              marginHorizontal: Platform.OS === 'ios' ? 20 : 0,
+              overflow: 'visible',
+            }}
+            pager={false}
+            index={this._questionIndex}
+            beforePageChange={this.beforePageChange}
+            onPageChange={this.onPageChange}
+            children={this.renderQuestions()}
+            threshold={25}>
+          </Swiper>
         </KeyboardAvoidingView>
 
         <Footer style={{height: 50}}>

@@ -70,7 +70,7 @@ const LongAnswerQuestion = React.createClass({
           textStyle={Styles.question.headerText}>
             Question #{this.props.index}
         </ViewText>
-        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}{this.props.text}{this.props.text}{this.props.text}{this.props.text}{this.props.text}</Text>
+        <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         <View style={wrapperStyle}>
           <TextInput
             style={[inputStyle]}
