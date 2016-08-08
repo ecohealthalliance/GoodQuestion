@@ -1,4 +1,5 @@
-import React, {
+import React from 'react';
+import {
   Animated,
   Dimensions,
   PanResponder,
@@ -81,6 +82,11 @@ const Swiper = React.createClass({
     this._panResponder = PanResponder.create({
       onMoveShouldSetPanResponder: (e, gestureState) => {
         const {threshold} = this.props;
+
+        // Only if it exceeds the threshold
+        if (threshold - Math.abs(gestureState.dx) > 0) {
+          return false;
+        }
 
         // Only if it exceeds the threshold
         if (threshold - Math.abs(gestureState.dx) > 0) {

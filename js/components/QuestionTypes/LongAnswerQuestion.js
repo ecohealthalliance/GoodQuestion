@@ -1,7 +1,9 @@
-import React, {
+import React from 'react';
+import {
   Text,
   TextInput,
   View,
+  Platform,
 } from 'react-native';
 
 import Styles from '../../styles/Styles';
@@ -17,12 +19,18 @@ const wrapperStyle = {
 };
 
 const inputStyle = {
-  height: 180,
   borderWidth: 0,
   paddingHorizontal: 15,
-  paddingVertical: 10,
+  textAlignVertical: 'top',
+  paddingTop: 10,
+  paddingBottom: 0,
   fontSize: 14,
 };
+
+if (Platform.OS === 'ios') {
+  inputStyle.height = 180;
+  inputStyle.paddingVertical = 10;
+}
 
 const LongAnswerQuestion = React.createClass({
   propTypes: {
@@ -65,10 +73,11 @@ const LongAnswerQuestion = React.createClass({
         <Text style={[Styles.type.h3, Styles.question.text]}>{this.props.text}</Text>
         <View style={wrapperStyle}>
           <TextInput
-            style={inputStyle}
+            style={[inputStyle]}
             onChangeText={this.handleChange}
-            numberOfLines={7}
+            numberOfLines={8}
             multiline={true}
+            blurOnSubmit={true}
             placeholder='Tap to type...'
             underlineColorAndroid='transparent'
             value={this.state.value}

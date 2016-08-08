@@ -1,5 +1,5 @@
-
-import React, {
+import React from 'react';
+import {
   Alert,
   Text,
   TextInput,
@@ -103,9 +103,9 @@ const LoginPage = React.createClass({
               <TextInput
                 ref='email'
                 style={Styles.form.input}
-                onChangeText={this.textFieldChangeHandler.bind(this, 'email')}
-                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'emailView', Variables.LOGIN_HEIGHT)}
-                onBlur={this.trimText.bind(this, 'email')}
+                onChangeText={this.textFieldChangeHandler.bind(null, 'email')}
+                onFocus={this.scrollToViewWrapper.bind(null, 'scrollView', 'emailView', Variables.LOGIN_HEIGHT)}
+                onBlur={this.trimText.bind(null, 'email')}
                 value={this.state.email}
                 autoCapitalize='none'
                 autoCorrect={false}
@@ -121,9 +121,9 @@ const LoginPage = React.createClass({
                 ref='password'
                 secureTextEntry={true}
                 style={Styles.form.input}
-                onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
-                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'passwordView', Variables.LOGIN_HEIGHT)}
-                onBlur={this.trimText.bind(this, 'password')}
+                onChangeText={this.textFieldChangeHandler.bind(null, 'password')}
+                onFocus={this.scrollToViewWrapper.bind(null, 'scrollView', 'passwordView', Variables.LOGIN_HEIGHT)}
+                onBlur={this.trimText.bind(null, 'password')}
                 value={this.state.password}
                 autoCapitalize='none'
                 autoCorrect={false}

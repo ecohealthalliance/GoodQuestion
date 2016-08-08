@@ -11,18 +11,20 @@ import DrawerStyles from './_DrawerStyles';
 import ControlPanelStyles from './_ControlPanelStyles';
 import ProfileStyles from './_ProfileStyles';
 import ToastStyles from './_ToastStyles';
+import CalendarStyles from './_CalendarStyles';
 
 const Styles = {
   container: ContainerStyles,
   type: TypeStyles,
   form: FormStyles,
   header: HeaderStyles,
+  toast: ToastStyles,
   drawer: DrawerStyles,
   survey: SurveyStyles,
   controlPanel: ControlPanelStyles,
   question: QuestionStyles,
   profile: ProfileStyles,
-  toast: ToastStyles,
+  calendar: CalendarStyles,
 };
 
 module.exports = Styles;

@@ -122,11 +122,11 @@ export function currentUser(done) {
  * @returns {undefined}
  */
 export function isAuthenticated(isValidCb) {
-  currentUser((err) => {
+  currentUser((err, user) => {
     if (err) {
       isValidCb(false);
     } else {
-      isValidCb(true);
+      isValidCb(true, user);
     }
   });
 }

@@ -1,31 +1,34 @@
-import React, {
+import React from 'react';
+import {
   TouchableHighlight,
   TouchableOpacity,
   Text,
   View,
   ListView,
-  Alert,
   RefreshControl,
 } from 'react-native';
 
 import _ from 'lodash';
 import Styles from '../styles/Styles';
 import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys';
-import { loadCachedQuestionsFromForms } from '../api/Questions';
 import { InvitationStatus, loadCachedInvitations } from '../api/Invitations';
+import { cachedSubmissions } from '../api/Submissions';
 import SurveyListItem from '../components/SurveyListItem';
 import SurveyListFilter from '../components/SurveyListFilter';
 import Loading from '../components/Loading';
 import Color from '../styles/Color';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-
 const SurveyListPage = React.createClass({
   title: 'Surveys',
   _invitations: [],
   _surveys: [],
+  _incompleteSubmissions: null,
 
   getInitialState() {
+    if (this.props.currentUser) {
+      this._incompleteSubmissions = cachedSubmissions.filtered(`userId == "${this.props.currentUser.id}" AND inProgress == true`);
+    }
     return {
       isLoading: true,
       isRefreshing: false,
@@ -39,7 +42,7 @@ const SurveyListPage = React.createClass({
   componentDidMount() {
     this._surveys = loadCachedSurveyList().slice();
     if (this._surveys.length === 0) {
-      loadSurveyList(this.loadList);
+      loadSurveyList({forceRefresh: true}, this.loadList);
     } else {
       this.loadList();
     }
@@ -149,30 +152,11 @@ const SurveyListPage = React.createClass({
       return;
     }
 
-    const forms = survey.getForms();
-    if (survey.getForms().length === 0) {
-      return Alert.alert('Survey has no active forms.');
-    }
-
-    const invitation = _.find(this._invitations, (inv) => {
-      return inv.surveyId === survey.id;
+    this.props.navigator.push({
+      path: 'survey-details',
+      title: survey.title,
+      survey: survey,
     });
-    if (invitation && invitation.status === 'accepted') {
-      this.props.navigator.push({
-        path: 'form',
-        title: survey.title,
-        survey: survey,
-      });
-    } else {
-      const questions = loadCachedQuestionsFromForms(forms);
-      this.props.navigator.push({
-        path: 'survey-details',
-        title: survey.title,
-        survey: survey,
-        formCount: forms.length,
-        questionCount: questions.length,
-      });
-    }
   },
 
   showList() {
@@ -228,6 +212,13 @@ const SurveyListPage = React.createClass({
     return status;
   },
 
+  getIncompleteForms(surveyId) {
+    if (this.state.isLoading || !this._incompleteSubmissions) {
+      return;
+    }
+    return this._incompleteSubmissions.filtered(`surveyId == "${surveyId}"`);
+  },
+
   /* Render */
   renderItem(survey) {
     if (!survey) {
@@ -238,18 +229,25 @@ const SurveyListPage = React.createClass({
         onPress={() => this.selectSurvey(survey)}
         underlayColor={Color.background3}>
         <View>
-          <SurveyListItem title={survey.title} key={`survey-item-${survey.id}`} surveyId={survey.id} status={this.getInvitationStatus(survey.id)} />
+          <SurveyListItem
+            title={survey.title}
+            key={`survey-item-${survey.id}`}
+            surveyId={survey.id}
+            status={this.getInvitationStatus(survey.id)}
+            incompleteForms={this.getIncompleteForms(survey.id)}
+            isRefreshing={this.state.isRefreshing}
+            />
         </View>
       </TouchableHighlight>
     );
   },
   reloadEmpty() {
     this.setState({isLoading: true});
-    loadSurveyList(this.loadList);
+    loadSurveyList({}, this.loadList);
   },
   _onRefresh() {
     this.setState({isRefreshing: true});
-    loadSurveyList(this.loadList);
+    loadSurveyList({}, this.loadList);
   },
   render() {
     if (this.state.isLoading) {
