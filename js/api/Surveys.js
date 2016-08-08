@@ -183,7 +183,7 @@ export function cacheParseSurveys(survey) {
 }
 
 // Queries the connected Parse server for a list of Surveys.
-export function loadSurveys(callback) {
+export function loadSurveys(options = {}, callback) {
   const Survey = Parse.Object.extend('Survey');
   const query = new Parse.Query(Survey);
   query.equalTo('active', true);
@@ -195,7 +195,7 @@ export function loadSurveys(callback) {
         const cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0];
         if (!cachedSurvey) {
           loadForms(results[i]);
-        } else if (cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime()) {
+        } else if (options.forceRefresh || cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime()) {
           refreshAcceptedSurveyData(results[i].id);
         }
         cacheParseSurveys(results[i]);
@@ -216,12 +216,13 @@ export function loadSurveys(callback) {
 /**
  * fetches remote data for surveys and invitations
  *
+ * @param {object}   options, options object to be passed to loadSurveys
  * @param {function} done, the callback for when the async operations are done
  */
-export function loadSurveyList(done) {
+export function loadSurveyList(options = {}, done) {
   async.auto({
     surveys: (cb) => {
-      loadSurveys(cb);
+      loadSurveys(options, cb);
     },
     invitations: (cb) => {
       loadInvitations(cb);

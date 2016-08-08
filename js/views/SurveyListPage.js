@@ -42,7 +42,7 @@ const SurveyListPage = React.createClass({
   componentDidMount() {
     this._surveys = loadCachedSurveyList().slice();
     if (this._surveys.length === 0) {
-      loadSurveyList(this.loadList);
+      loadSurveyList({forceRefresh: true}, this.loadList);
     } else {
       this.loadList();
     }
@@ -243,11 +243,11 @@ const SurveyListPage = React.createClass({
   },
   reloadEmpty() {
     this.setState({isLoading: true});
-    loadSurveyList(this.loadList);
+    loadSurveyList({}, this.loadList);
   },
   _onRefresh() {
     this.setState({isRefreshing: true});
-    loadSurveyList(this.loadList);
+    loadSurveyList({}, this.loadList);
   },
   render() {
     if (this.state.isLoading) {
