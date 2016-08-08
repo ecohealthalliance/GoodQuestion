@@ -84,7 +84,6 @@ export function loadForms(survey, callback) {
         const numResults = results.length;
         for (let i = 0; i < numResults; i++) {
           const form = results[i];
-          const submission = realm.objects('Submission').filtered(`formId = "${form.id}"`);
           cacheParseForm(form, survey.id);
         }
         if (callback) {
