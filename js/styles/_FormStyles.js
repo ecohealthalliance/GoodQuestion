@@ -3,7 +3,6 @@ import Color from './Color';
 
 const FormStyles = StyleSheet.create({
   titleHeading: {
-    textAlign: 'center',
     marginTop: 20,
     marginHorizontal: Platform.OS === 'ios' ? 28 : 20,
     padding: 10,
