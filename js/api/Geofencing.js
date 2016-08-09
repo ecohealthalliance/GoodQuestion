@@ -49,7 +49,7 @@ export function crossGeofence(params) {
       // Update Geofence Trigger
       realm.write(() => {
         trigger.triggered = true;
-        trigger.inRange = _.lowerCase(params.action) === 'exit';
+        trigger.inRange = _.lowerCase(params.action) !== 'exit';
         trigger.updateTimestamp = Date.now();
       });
     } else {

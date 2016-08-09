@@ -191,7 +191,7 @@ const SharedNavigator = React.createClass({
     }
     upsertInstallation(token, platform, (err) => {
       if (err) {
-        console.error(err);
+        console.warn(err);
         return;
       }
     });
