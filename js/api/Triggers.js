@@ -1,6 +1,7 @@
 import Parse from 'parse/react-native';
 import realm from '../data/Realm';
 import { loadAcceptedInvitations } from '../api/Invitations';
+import { addAppNotification } from '../api/Notifications';
 
 // Saves a Form object from Parse into our Realm.io local database
 function cacheTimeTrigger(trigger, form, survey) {
@@ -70,27 +71,27 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
   past = past.setDate(past.getDate() - 90);
 
   // Record the new trigger
+  let activeTrigger = null;
   realm.write(() => {
     for (let i = 0; i < triggers.length; i++) {
       if (triggers[i].datetime < now && triggers[i].datetime > past) {
-        const activeTrigger = realm.create('TimeTrigger', {
+        activeTrigger = realm.create('TimeTrigger', {
           id: triggers[i].id,
           triggered: true,
         }, true);
-
-        if (!omitNotifications) {
-          // TODO Replace with more descriptive messages in the future.
-          realm.create('Notification', {
-            surveyId: activeTrigger.surveyId,
-            formId: activeTrigger.formId,
-            title: activeTrigger.title,
-            description: 'A scheduled survey form is available.',
-            datetime: activeTrigger.datetime,
-          }, true);
-        }
       }
     }
   });
+  if (activeTrigger && !omitNotifications) {
+    addAppNotification({
+      id: activeTrigger.formId,
+      surveyId: activeTrigger.surveyId,
+      formId: activeTrigger.formId,
+      title: activeTrigger.title,
+      description: 'A new scheduled survey form is available.',
+      time: activeTrigger.datetime,
+    });
+  }
 }
 
 /**
