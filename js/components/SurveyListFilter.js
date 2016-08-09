@@ -60,6 +60,13 @@ const SurveyListFilter = React.createClass({
           >
           Declined
         </SurveyListFilterButton>
+        <SurveyListFilterButton
+          active={this.state.activeButton === 'expired'}
+          onPress={this.handlePress.bind(this, 'expired')}
+          icon='stop-circle-o'
+          >
+          Expired
+        </SurveyListFilterButton>
       </View>
     );
   },
@@ -73,7 +80,7 @@ const SurveyListFilterButton = React.createClass({
   },
   render() {
     const buttonContainerStyle = {opacity: 0.5};
-    let buttonViewStyle = {flex: 1, paddingHorizontal: 20, paddingVertical: 16, justifyContent: 'center', alignItems: 'center'};
+    let buttonViewStyle = {flex: 1, paddingHorizontal: 12, paddingVertical: 16, justifyContent: 'center', alignItems: 'center'};
     if (this.props.active) {
       buttonContainerStyle.opacity = 1;
     }

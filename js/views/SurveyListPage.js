@@ -10,7 +10,7 @@ import React, {
 
 import _ from 'lodash';
 import Styles from '../styles/Styles';
-import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys';
+import { loadSurveyList, loadCachedSurveyList, loadExpiredSurveyList } from '../api/Surveys';
 import { loadCachedQuestionsFromForms } from '../api/Questions';
 import { InvitationStatus, loadCachedInvitations } from '../api/Invitations';
 import SurveyListItem from '../components/SurveyListItem';
@@ -28,6 +28,7 @@ const SurveyListPage = React.createClass({
   getInitialState() {
     return {
       isLoading: true,
+      tab: 'all',
       isRefreshing: false,
       hasInvitationChanged: false,
       dataSource: new ListView.DataSource({
@@ -100,12 +101,13 @@ const SurveyListPage = React.createClass({
     // loadCachedInvitations is async due to needing the current user
     loadCachedInvitations(this._surveys, (err2, invitations) => {
       if (err2) {
+        console.warn(err2);
         this._invitations = [];
       } else {
         this._invitations = invitations.slice();
       }
       if (!this.cancelCallbacks) {
-        this.filterList('all');
+        this.filterList(this.state.tab);
       }
     });
   },
@@ -115,8 +117,23 @@ const SurveyListPage = React.createClass({
 
     // Filter the survey by category
     if (query === 'all') {
-      filteredList = this._surveys.slice();
+      // Return all active surveys
+      filteredList = _.filter(this._surveys, (survey) => {
+        return survey.active;
+      });
+    } else if (query === 'expired') {
+      // Return accepted surveys that have been deactivated
+      const invitations = _.filter(this._invitations, (invitation) => {
+        return invitation.status === 'accepted';
+      });
+      const surveyIds = _.map(invitations, (invitation) => {
+        return invitation.surveyId;
+      });
+      filteredList = _.filter(this._surveys, (survey) => {
+        return surveyIds.indexOf(survey.id) >= 0 && !survey.active;
+      });
     } else {
+      // Returns active surveys filtered by their status
       const invitations = _.filter(this._invitations, (invitation) => {
         return invitation.status === query;
       });
@@ -124,7 +141,7 @@ const SurveyListPage = React.createClass({
         return invitation.surveyId;
       });
       filteredList = _.filter(this._surveys, (survey) => {
-        return surveyIds.indexOf(survey.id) >= 0;
+        return surveyIds.indexOf(survey.id) >= 0 && survey.active;
       });
     }
 
@@ -132,9 +149,9 @@ const SurveyListPage = React.createClass({
       isLoading: false,
       isRefreshing: false,
       filterType: query === 'all' ? '' : `${query}`,
+      tab: query,
       dataSource: this.state.dataSource.cloneWithRows(filteredList),
     });
-
   },
 
   updateListFilter(query) {
@@ -249,7 +266,11 @@ const SurveyListPage = React.createClass({
   },
   _onRefresh() {
     this.setState({isRefreshing: true});
-    loadSurveyList(this.loadList);
+    if (this.state.tab === 'expired') {
+      loadExpiredSurveyList(this.loadList);
+    } else {
+      loadSurveyList(this.loadList);
+    }
   },
   render() {
     if (this.state.isLoading) {
