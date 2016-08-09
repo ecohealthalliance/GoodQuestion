@@ -1,11 +1,13 @@
 // React
 import React from 'react';
 import {
-  TouchableWithoutFeedback,
   View,
+  KeyboardAvoidingView,
+  ScrollView,
   Text,
   Platform,
   Alert,
+  Dimensions,
 } from 'react-native';
 
 // Libraries
@@ -44,6 +46,8 @@ import { validateUser } from '../api/Account';
 import { loadCachedForms, loadActiveGeofenceFormsInRange } from '../api/Forms';
 import { loadCachedSubmissions, saveSubmission} from '../api/Submissions';
 import { loadCachedQuestions } from '../api/Questions';
+
+const CONTENT_HEIGHT = Dimensions.get('window').height - 140;
 
 const FormPage = React.createClass({
   form: null,
@@ -375,12 +379,17 @@ const FormPage = React.createClass({
           break;
       }
       return (
-        <TouchableWithoutFeedback
-          onPress={this.dismiss}>
-          <View style={{flex: 1}}>
+        <ScrollView
+          bounces={false}
+          decelerationRate='fast'
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{flex: 0}}
+          style={{ overflow: 'hidden' }}
+          >
+          <View style={{paddingBottom: 90}}>
             {questionComponent}
           </View>
-        </TouchableWithoutFeedback>
+        </ScrollView>
       );
     });
 
@@ -404,11 +413,7 @@ const FormPage = React.createClass({
 
     return (
       <View style={{flex: 1}}>
-        <View style={{
-          flex: 1,
-          paddingHorizontal: Platform.OS === 'ios' ? 20 : 0,
-          overflow: 'hidden',
-        }}>
+        <KeyboardAvoidingView behavior='position' style={{flex: 1}}>
           <View style={Styles.form.titleHeading}>
             <Text style={Styles.form.titleText}> {this.form.title} </Text>
           </View>
@@ -417,15 +422,19 @@ const FormPage = React.createClass({
               this._swiper = swiper;
             }}
             style={{flex: 1}}
-            containerStyle={{overflow: 'visible'}}
+            containerStyle={{
+              height: CONTENT_HEIGHT,
+              marginHorizontal: Platform.OS === 'ios' ? 20 : 0,
+              overflow: 'visible',
+            }}
             pager={false}
             index={this._questionIndex}
             beforePageChange={this.beforePageChange}
             onPageChange={this.onPageChange}
             children={this.renderQuestions()}
-            threshold={30}>
+            threshold={25}>
           </Swiper>
-        </View>
+        </KeyboardAvoidingView>
 
         <Footer style={{height: 50}}>
           <SurveyFormNavigator
