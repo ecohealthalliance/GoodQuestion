@@ -1,17 +1,18 @@
 #! /usr/bin/env node
 
-var _ = require('lodash')
-var Parse = require('parse/node')
-var program = require('commander')
-var colors = require('colors')
-var DemoData = require('./data/DemoData')
-var Surveys = require('./api/Surveys')
-var Forms = require('./api/Forms')
-var Questions = require('./api/Questions')
-var Triggers = require('./api/Triggers')
-var Roles = require('./api/Roles')
-var Users = require('./api/Users')
-var Settings = require('./../js/settings.js')
+var _           = require('lodash')
+var Parse       = require('parse/node')
+var program     = require('commander')
+var colors      = require('colors')
+var DemoData    = require('./data/DemoData')
+var Surveys     = require('./api/Surveys')
+var Forms       = require('./api/Forms')
+var Questions   = require('./api/Questions')
+var Triggers    = require('./api/Triggers')
+var Roles       = require('./api/Roles')
+var Users       = require('./api/Users')
+var Submissions = require('./api/Submissions')
+var Settings    = require('./../js/settings.js')
 
 var useMasterKey = {useMasterKey: true}
 
@@ -20,6 +21,8 @@ program
   .option('-d, --demo', 'Populate local Parse server with demo data.')
   .option('-r, --reset', 'Erase local Parse data.')
   .option('-p, --publicRead', 'Sets all surveys, forms, questions as public readable')
+  .option('-s, --submissions', 'Creates dummy submissions for each dummy user')
+  .option('-c, --clearSubmissions', 'Clears submissions')
   .parse(process.argv)
 
 Parse.initialize(Settings.parse.appId, null, Settings.parse.masterKey)
@@ -35,6 +38,10 @@ if (program.reset) {
   Surveys.loadSurveys()
 } else if (program.publicRead) {
   publicRead()
+} else if (program.submissions) {
+  createSubmissions()
+} else if (program.clearSubmissions) {
+  clearSubmissions()
 } else {
   program.outputHelp()
 }
@@ -70,6 +77,7 @@ function resetServer() {
   Forms.destroyAll()
   Triggers.destroyAll()
   Questions.destroyAll()
+  Submissions.destroyAll()
 }
 
 function destroyObjects(objects) {
@@ -134,7 +142,7 @@ function initRoles() {
 function publicRead() {
   console.log('NOTE: This only works up to 1000 objects'.bold);
   Surveys.loadSurveys(null, function(err, results) {
-    console.log('setting publicReadAccess(true) to ' + results.length + ' surveys'.green);
+    console.log('Setting publicReadAccess(true) to ' + results.length + ' surveys'.green);
     if (results) {
       results.forEach(function(obj) {
         var acl = obj.getACL();
@@ -145,7 +153,7 @@ function publicRead() {
     }
   });
   Forms.loadForms(null, function(err, results) {
-    console.log('setting publicReadAccess(true) to ' + results.length + ' forms'.green);
+    console.log('Setting publicReadAccess(true) to ' + results.length + ' forms'.green);
     if (results) {
       results.forEach(function(obj) {
         var acl = obj.getACL();
@@ -156,7 +164,7 @@ function publicRead() {
     }
   });
   Triggers.loadTriggers(null, function(err, results) {
-    console.log('setting publicReadAccess(true) to ' + results.length + ' triggers'.green);
+    console.log('Setting publicReadAccess(true) to ' + results.length + ' triggers'.green);
     if (results) {
       results.forEach(function(obj) {
         var acl = obj.getACL();
@@ -167,7 +175,7 @@ function publicRead() {
     }
   });
   Questions.loadQuestions(null, function(err, results) {
-    console.log('setting publicReadAccess(true) to ' + results.length + ' questions'.green);
+    console.log('Setting publicReadAccess(true) to ' + results.length + ' questions'.green);
     if (results) {
       results.forEach(function(obj) {
         var acl = obj.getACL();
@@ -177,4 +185,14 @@ function publicRead() {
       });
     }
   });
+}
+
+function createSubmissions(){
+  console.log('Creating submissions...'.bold)
+  Submissions.createSubmissions()
+}
+
+function clearSubmissions(){
+  console.log('\nClearing submissions...'.bold)
+  Submissions.destroyAll()
 }

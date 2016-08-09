@@ -10,6 +10,15 @@ function loadQuestions (options, callback) {
   Helpers.fetchObjects(Question, callback)
 }
 
+function loadFormQuestions (form) {
+  var query;
+  query = form.relation('questions').query();
+  return query.find(useMasterKey)
+    .then(function(questions) {
+      return questions
+    })
+}
+
 function createDemoQuestions(parentForm) {
   var questions = []
   var limit = DemoData.questions.length < 10 ? DemoData.questions.length : 10
@@ -57,4 +66,4 @@ function destroyAll() {
   })
 }
 
-module.exports = { Question, loadQuestions, createDemoQuestions, destroyAll }
+module.exports = { Question, loadQuestions, loadFormQuestions, createDemoQuestions, destroyAll }

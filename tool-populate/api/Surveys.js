@@ -42,7 +42,7 @@ function createDemoSurvey (surveyData, startDate, endDate) {
       newSurvey.save(null, useMasterKey)
         .then(function(newSurvey){
           for (var i = 0; i < numberOfDays; i++) {
-            Forms.createDemoForm(newSurvey, startDateTimestamp + i * 86400000)
+            Forms.createDemoForm(newSurvey, startDateTimestamp + i * 86400000, i)
           }
         })
         .then(function(){
