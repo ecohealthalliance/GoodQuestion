@@ -127,8 +127,8 @@ export function initializeGeolocationService() {
     });
 
     // Create initial geofence hooks.
-    setupGeofences(() => {
-      BackgroundGeolocation.start(() => {
+    BackgroundGeolocation.start(() => {
+      setupGeofences(() => {
         Store.backgroundServiceState = 'started';
         console.info('Geolocation tracking started.');
       });
@@ -148,7 +148,6 @@ export function handleAppStateChange(state) {
       if (Platform.OS === 'android' && Store.backgroundServiceState !== 'started') {
         BackgroundGeolocation.stop(() => {
           BackgroundGeolocation.start((newState) => {
-            console.log(newState);
             Store.backgroundServiceState = 'started';
             console.info('Geolocation tracking started.');
           });
@@ -161,7 +160,6 @@ export function handleAppStateChange(state) {
       if (Platform.OS === 'android' && Store.backgroundServiceState !== 'geofence-only') {
         BackgroundGeolocation.stop(() => {
           BackgroundGeolocation.startGeofences((newState) => {
-            console.log(newState);
             Store.backgroundServiceState = 'geofence-only';
             console.info('Geolocation tracking started in geofence-only mode.');
           });
