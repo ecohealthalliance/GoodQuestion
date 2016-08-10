@@ -78,6 +78,7 @@ const SharedNavigator = React.createClass({
       title: '',
       isLoading: true,
       isAuthenticated: false,
+      newLogin: false,
     };
   },
 
@@ -201,6 +202,7 @@ const SharedNavigator = React.createClass({
   setAuthenticated(authenticated) {
     this.setState({
       isAuthenticated: authenticated,
+      newLogin: true,
     }, () => {
       navigator.resetTo({path: 'surveylist', title: 'Surveys'});
     });
@@ -283,7 +285,7 @@ const SharedNavigator = React.createClass({
         viewComponent = <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />;
         break;
       case 'surveylist':
-        viewComponent = <SurveyListPage {...sharedProps} />;
+        viewComponent = <SurveyListPage {...sharedProps} newLogin={this.state.newLogin} />;
         break;
       case 'notifications':
         viewComponent = <NotificationsPage {...sharedProps} />;

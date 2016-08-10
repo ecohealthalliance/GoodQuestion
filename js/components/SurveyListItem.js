@@ -4,6 +4,7 @@ import {
   Text,
 } from 'react-native';
 import moment from 'moment';
+import pubsub from 'pubsub-js';
 
 import Styles from '../styles/Styles';
 import Color from '../styles/Color';
@@ -31,13 +32,10 @@ const SurveyListItem = React.createClass({
   },
 
   componentWillReceiveProps(nextProps) {
-    if (!nextProps.status) {
+    if (!nextProps.status || nextProps.isRefreshing) {
       return;
     }
-
-    if (this.state.status !== nextProps.status) {
-      this.update(nextProps.status);
-    }
+    this.update(nextProps.status);
   },
 
   componentDidMount() {
@@ -60,7 +58,7 @@ const SurveyListItem = React.createClass({
           status: status,
           availability: availability,
         });
-      } else {
+      } else if (status !== this.state.status) {
         this.setState({
           status: status,
         });

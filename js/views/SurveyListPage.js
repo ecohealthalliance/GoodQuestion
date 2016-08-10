@@ -11,7 +11,9 @@ import {
 import _ from 'lodash';
 import Styles from '../styles/Styles';
 import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys';
+import { checkTimeTriggers } from '../api/Triggers';
 import { InvitationStatus, loadCachedInvitations } from '../api/Invitations';
+import { cachedSubmissions } from '../api/Submissions';
 import SurveyListItem from '../components/SurveyListItem';
 import SurveyListFilter from '../components/SurveyListFilter';
 import Loading from '../components/Loading';
@@ -35,11 +37,12 @@ const SurveyListPage = React.createClass({
   },
 
   componentDidMount() {
-    this._surveys = loadCachedSurveyList().slice();
-    if (this._surveys.length === 0) {
-      loadSurveyList(this.loadList);
+    if (this.props.newLogin) {
+      loadSurveyList({forceRefresh: true}, () => {
+        checkTimeTriggers(true, this.loadList);
+      });
     } else {
-      this.loadList();
+      loadSurveyList({}, this.loadList);
     }
   },
 
@@ -54,7 +57,7 @@ const SurveyListPage = React.createClass({
         const routeStack = nextProps.navigator.state.routeStack;
         const newPath = routeStack[routeStack.length - 1].path;
         if (newPath === 'surveylist') {
-          this.loadList();
+          checkTimeTriggers(false, this.loadList);
         }
       }
     } catch (e) {
@@ -230,13 +233,16 @@ const SurveyListPage = React.createClass({
   },
   reloadEmpty() {
     this.setState({isLoading: true});
-    loadSurveyList(this.loadList);
+    loadSurveyList({}, this.loadList);
   },
   _onRefresh() {
     this.setState({isRefreshing: true});
-    loadSurveyList(this.loadList);
+    loadSurveyList({}, () => {
+      checkTimeTriggers(true, this.loadList);
+    });
   },
   render() {
+    console.log('render survey list page')
     if (this.state.isLoading) {
       return <Loading/>;
     }

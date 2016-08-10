@@ -5,6 +5,10 @@ import { loadAcceptedInvitations } from '../api/Invitations';
 import { loadAllAcceptedSurveys } from './Surveys';
 import { removeGeofenceById, addGeofence } from '../api/Geofencing';
 
+
+export const cachedTimeTriggers = realm.objects('TimeTrigger');
+export const cachedGeofenceTriggers = realm.objects('GeofenceTrigger');
+
 /**
  * Checks the time triggers of a single survey.
  * @param  {ibject} survey            Realm 'Survey' object to be checked
@@ -14,15 +18,11 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
   const triggers = realm.objects('TimeTrigger').filtered(`surveyId="${survey.id}" AND triggered == false`);
   const now = new Date();
 
-  // Make the expiration date 90 days
-  let past = new Date();
-  past = past.setDate(past.getDate() - 90);
-
   // Record the new trigger
   const triggerLength = triggers.length;
   realm.write(() => {
     for (let i = 0; i < triggerLength; i++) {
-      if (triggers[i] && triggers[i].datetime < now && triggers[i].datetime > past) {
+      if (triggers[i] && triggers[i].triggered === false && triggers[i].datetime < now) {
         const activeTrigger = realm.create('TimeTrigger', {
           id: triggers[i].id,
           triggered: true,
@@ -47,10 +47,11 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
  * Checks the time triggers of all accepted surveys
  * @param  {bool} omitNotifications   Set to true to prevent Notifications from being generated when the triggers become active
  */
-export function checkTimeTriggers(omitNotifications) {
+export function checkTimeTriggers(omitNotifications, callback) {
   loadAcceptedInvitations((err, invitations) => {
     if (err) {
       console.warn(err);
+      callback && callback(err);
       return;
     }
     if (invitations && invitations.length > 0) {
@@ -60,6 +61,7 @@ export function checkTimeTriggers(omitNotifications) {
         checkSurveyTimeTriggers(surveys[i], omitNotifications);
       }
     }
+    callback && callback(null);
   });
 }
 
@@ -122,6 +124,7 @@ export function loadTriggers(cachedForm, survey, callback) {
           for (let i = 0; i < results.length; i++) {
             if (results[i].get('type') === 'datetime') {
               cacheTimeTrigger(results[i], form, survey);
+              checkSurveyTimeTriggers(survey.id, true);
             } else if (results[i].get('type') === 'geofence') {
               cacheGeofenceTrigger(results[i], form, survey);
             }
@@ -203,12 +206,12 @@ export function loadCachedGeofenceTriggers(options = {}, callback) {
 
     if (options.surveyId) {
       filter = `surveyId = "${options.surveyId}"${filterOptions}`;
-      triggers = Array.from(realm.objects('GeofenceTrigger').filtered(filter));
+      triggers = Array.from(cachedGeofenceTriggers.filtered(filter));
     } else {
       const responseLength = response.length;
       for (let i = 0; i < responseLength; i++) {
         filter = `surveyId = "${response[i].id}"${filterOptions}`;
-        const surveyTriggers = Array.from(realm.objects('GeofenceTrigger').filtered(filter));
+        const surveyTriggers = Array.from(cachedGeofenceTriggers.filtered(filter));
         triggers = _.unionBy(triggers, surveyTriggers, 'id');
       }
     }
@@ -223,7 +226,7 @@ export function loadCachedGeofenceTriggers(options = {}, callback) {
  */
 export function removeTriggers(surveyId) {
   const timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId="${surveyId}"`);
-  const geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`);
+  const geofenceTriggers = cachedGeofenceTriggers.filtered(`surveyId="${surveyId}"`);
   const geofenceTriggersLength = geofenceTriggers.length;
 
   for (let i = geofenceTriggersLength - 1; i >= 0; i--) {
