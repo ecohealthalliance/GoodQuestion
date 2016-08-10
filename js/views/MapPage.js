@@ -11,7 +11,7 @@ import MapView from 'react-native-maps';
 
 import { loadCachedGeofenceTriggers } from '../api/Triggers';
 import { loadCachedFormDataByTriggerId } from '../api/Forms';
-import { setActiveMap, clearActiveMap } from '../api/Geofencing';
+import { setActiveMap, clearActiveMap, getUserLocationData } from '../api/Geofencing';
 
 import Loading from '../components/Loading';
 
@@ -55,12 +55,18 @@ const MapPage = React.createClass({
       setActiveMap(this);
       this.active = true;
       this.generateTriggerMarkers(response);
-
-      setTimeout(() => {
-        if (!this.cancelCallbacks) {
-          this.setState({stage: 'ready'});
-        }
-      }, 300);
+      getUserLocationData((location) => {
+        setTimeout(() => {
+          if (!this.cancelCallbacks) {
+            this.setState({
+              latitude: location.latitude || 40.782786,
+              longitude: location.longitude || -73.965850,
+              stage: 'ready',
+            });
+          }
+        }, 200);
+      });
+      
     });
   },
 
@@ -148,7 +154,7 @@ const MapPage = React.createClass({
           }}
           key='gmap'
           style={Platform.OS === 'ios' ? _styles.iosMap : _styles.androidMap}
-          initialRegion={{
+          region={{
             latitude: this.state.latitude,
             longitude: this.state.longitude,
             latitudeDelta: this.state.zoom,
