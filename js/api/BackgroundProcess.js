@@ -147,7 +147,7 @@ export function handleAppStateChange(state) {
       // Switch to active tracking on Android devices
       if (Platform.OS === 'android' && Store.backgroundServiceState !== 'started') {
         BackgroundGeolocation.stop(() => {
-          BackgroundGeolocation.start((newState) => {
+          BackgroundGeolocation.start(() => {
             Store.backgroundServiceState = 'started';
             console.info('Geolocation tracking started.');
           });
@@ -159,7 +159,7 @@ export function handleAppStateChange(state) {
       // Switch to geofence tracking only on Android devices.
       if (Platform.OS === 'android' && Store.backgroundServiceState !== 'geofence-only') {
         BackgroundGeolocation.stop(() => {
-          BackgroundGeolocation.startGeofences((newState) => {
+          BackgroundGeolocation.startGeofences(() => {
             Store.backgroundServiceState = 'geofence-only';
             console.info('Geolocation tracking started in geofence-only mode.');
           });

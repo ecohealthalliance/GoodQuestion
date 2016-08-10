@@ -55,6 +55,7 @@ const MapPage = React.createClass({
       setActiveMap(this);
       this.active = true;
       this.generateTriggerMarkers(response);
+
       getUserLocationData((location) => {
         setTimeout(() => {
           if (!this.cancelCallbacks) {
@@ -66,7 +67,7 @@ const MapPage = React.createClass({
           }
         }, 200);
       });
-      
+
     });
   },
 
