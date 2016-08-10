@@ -133,9 +133,12 @@ export function getSurveyForms(surveyId, callback) {
  * Refreshes all of the data of accepted surveys, including Questions and Triggers
  * @return {[type]} [description]
  */
-export function refreshAcceptedSurveyData(surveyId) {
+export function refreshAcceptedSurveyData(surveyId, callback) {
   loadAllAcceptedSurveys((err, results) => {
     if (err) {
+      if (callback) {
+        callback(err);
+      }
       return;
     }
     if (surveyId) {
@@ -147,6 +150,9 @@ export function refreshAcceptedSurveyData(surveyId) {
       if (survey) {
         loadParseFormDataBySurveyId(survey.id);
       }
+      if (callback) {
+        callback(null);
+      }
     } else {
       const resultLength = results.length;
       try {
@@ -155,6 +161,9 @@ export function refreshAcceptedSurveyData(surveyId) {
         }
       } catch (e) {
         console.warn(e);
+      }
+      if (callback) {
+        callback(null);
       }
     }
   });
@@ -183,7 +192,7 @@ export function cacheParseSurveys(survey) {
 }
 
 // Queries the connected Parse server for a list of Surveys.
-export function loadSurveys(callback) {
+export function loadSurveys(options = {}, callback) {
   const Survey = Parse.Object.extend('Survey');
   const query = new Parse.Query(Survey);
   query.equalTo('active', true);
@@ -195,10 +204,11 @@ export function loadSurveys(callback) {
         const cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0];
         if (!cachedSurvey) {
           loadForms(results[i]);
-        } else if (cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime()) {
-          refreshAcceptedSurveyData(results[i].id);
         }
         cacheParseSurveys(results[i]);
+        if (options.forceRefresh || cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime()) {
+          refreshAcceptedSurveyData(results[i].id);
+        }
       }
       Store.lastParseUpdate = Date.now();
       if (callback) {
@@ -216,16 +226,17 @@ export function loadSurveys(callback) {
 /**
  * fetches remote data for surveys and invitations
  *
+ * @param {object}   options, options object to be passed to loadSurveys
  * @param {function} done, the callback for when the async operations are done
  */
-export function loadSurveyList(done) {
+export function loadSurveyList(options = {}, done) {
   async.auto({
-    surveys: (cb) => {
-      loadSurveys(cb);
-    },
     invitations: (cb) => {
       loadInvitations(cb);
     },
+    surveys: ['invitations', (cb) => {
+      loadSurveys(options, cb);
+    }],
   }, (err, results) => {
     if (err) {
       if (done) {

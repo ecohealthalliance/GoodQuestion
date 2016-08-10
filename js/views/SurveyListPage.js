@@ -6,11 +6,13 @@ import {
   View,
   ListView,
   RefreshControl,
+  NetInfo,
 } from 'react-native';
 
 import _ from 'lodash';
 import Styles from '../styles/Styles';
 import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys';
+import { checkTimeTriggers } from '../api/Triggers';
 import { InvitationStatus, loadCachedInvitations } from '../api/Invitations';
 import SurveyListItem from '../components/SurveyListItem';
 import SurveyListFilter from '../components/SurveyListFilter';
@@ -26,7 +28,7 @@ const SurveyListPage = React.createClass({
   getInitialState() {
     return {
       isLoading: true,
-      isRefreshing: false,
+      isRefreshing: this.props.newLogin,
       hasInvitationChanged: false,
       dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
@@ -35,11 +37,22 @@ const SurveyListPage = React.createClass({
   },
 
   componentDidMount() {
-    this._surveys = loadCachedSurveyList().slice();
-    if (this._surveys.length === 0) {
-      loadSurveyList(this.loadList);
+    NetInfo.fetch().done((reach) => {
+      // Cancel loading animations when offline
+      if (reach === 'NONE' || reach === 'none') {
+        this.setState({
+          isLoading: false,
+          isRefreshing: false,
+        });
+      }
+    });
+
+    if (this.props.newLogin) {
+      loadSurveyList({forceRefresh: true}, () => {
+        checkTimeTriggers(true, this.loadList);
+      });
     } else {
-      this.loadList();
+      loadSurveyList({}, this.loadList);
     }
   },
 
@@ -51,10 +64,8 @@ const SurveyListPage = React.createClass({
   componentWillReceiveProps(nextProps) {
     try {
       if (nextProps.navigator) {
-        const routeStack = nextProps.navigator.state.routeStack;
-        const newPath = routeStack[routeStack.length - 1].path;
-        if (newPath === 'surveylist') {
-          this.loadList();
+        if (nextProps.path === 'surveylist' && nextProps.previousPath !== 'surveylist') {
+          checkTimeTriggers(false, this.loadList);
         }
       }
     } catch (e) {
@@ -92,6 +103,10 @@ const SurveyListPage = React.createClass({
     if (err) {
       // continue processing as we always load from the cache even if the
       // user is 'offline'
+      this.setState({
+        isLoading: false,
+        isRefreshing: false,
+      });
       console.warn(err);
     }
     this._surveys = loadCachedSurveyList().slice();
@@ -132,7 +147,6 @@ const SurveyListPage = React.createClass({
       filterType: query === 'all' ? '' : `${query}`,
       dataSource: this.state.dataSource.cloneWithRows(filteredList),
     });
-
   },
 
   updateListFilter(query) {
@@ -230,15 +244,19 @@ const SurveyListPage = React.createClass({
   },
   reloadEmpty() {
     this.setState({isLoading: true});
-    loadSurveyList(this.loadList);
+    loadSurveyList({}, this.loadList);
   },
   _onRefresh() {
     this.setState({isRefreshing: true});
-    loadSurveyList(this.loadList);
+    loadSurveyList({}, () => {
+      checkTimeTriggers(true, this.loadList);
+    });
   },
   render() {
     if (this.state.isLoading) {
-      return <Loading/>;
+      return <Loading
+                text='Loading Surveys...'
+                key='navigator-loading-icon'/>;
     }
     return (
       <View style={[Styles.container.default]}>

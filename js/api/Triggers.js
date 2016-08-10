@@ -14,15 +14,11 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
   const triggers = realm.objects('TimeTrigger').filtered(`surveyId="${survey.id}" AND triggered == false`);
   const now = new Date();
 
-  // Make the expiration date 90 days
-  let past = new Date();
-  past = past.setDate(past.getDate() - 90);
-
   // Record the new trigger
   const triggerLength = triggers.length;
   realm.write(() => {
     for (let i = 0; i < triggerLength; i++) {
-      if (triggers[i] && triggers[i].datetime < now && triggers[i].datetime > past) {
+      if (triggers[i] && triggers[i].triggered === false && triggers[i].datetime < now) {
         const activeTrigger = realm.create('TimeTrigger', {
           id: triggers[i].id,
           triggered: true,
@@ -47,10 +43,13 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
  * Checks the time triggers of all accepted surveys
  * @param  {bool} omitNotifications   Set to true to prevent Notifications from being generated when the triggers become active
  */
-export function checkTimeTriggers(omitNotifications) {
+export function checkTimeTriggers(omitNotifications, callback) {
   loadAcceptedInvitations((err, invitations) => {
     if (err) {
       console.warn(err);
+      if (callback) {
+        callback(err);
+      }
       return;
     }
     if (invitations && invitations.length > 0) {
@@ -59,6 +58,9 @@ export function checkTimeTriggers(omitNotifications) {
       for (let i = 0; i < surveys.length; i++) {
         checkSurveyTimeTriggers(surveys[i], omitNotifications);
       }
+    }
+    if (callback) {
+      callback(null);
     }
   });
 }
@@ -122,6 +124,7 @@ export function loadTriggers(cachedForm, survey, callback) {
           for (let i = 0; i < results.length; i++) {
             if (results[i].get('type') === 'datetime') {
               cacheTimeTrigger(results[i], form, survey);
+              checkSurveyTimeTriggers(survey.id, true);
             } else if (results[i].get('type') === 'geofence') {
               cacheGeofenceTrigger(results[i], form, survey);
             }
