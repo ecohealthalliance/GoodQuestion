@@ -4,7 +4,6 @@ import {
   Text,
 } from 'react-native';
 import moment from 'moment';
-import pubsub from 'pubsub-js';
 
 import Styles from '../styles/Styles';
 import Color from '../styles/Color';

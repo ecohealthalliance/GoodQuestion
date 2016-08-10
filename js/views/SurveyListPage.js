@@ -6,6 +6,7 @@ import {
   View,
   ListView,
   RefreshControl,
+  NetInfo,
 } from 'react-native';
 
 import _ from 'lodash';
@@ -13,7 +14,6 @@ import Styles from '../styles/Styles';
 import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys';
 import { checkTimeTriggers } from '../api/Triggers';
 import { InvitationStatus, loadCachedInvitations } from '../api/Invitations';
-import { cachedSubmissions } from '../api/Submissions';
 import SurveyListItem from '../components/SurveyListItem';
 import SurveyListFilter from '../components/SurveyListFilter';
 import Loading from '../components/Loading';
@@ -28,7 +28,7 @@ const SurveyListPage = React.createClass({
   getInitialState() {
     return {
       isLoading: true,
-      isRefreshing: false,
+      isRefreshing: this.props.newLogin,
       hasInvitationChanged: false,
       dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
@@ -37,6 +37,16 @@ const SurveyListPage = React.createClass({
   },
 
   componentDidMount() {
+    NetInfo.fetch().done((reach) => {
+      // Cancel loading animations when offline
+      if (reach === 'NONE' || reach === 'none') {
+        this.setState({
+          isLoading: false,
+          isRefreshing: false,
+        });
+      }
+    });
+
     if (this.props.newLogin) {
       loadSurveyList({forceRefresh: true}, () => {
         checkTimeTriggers(true, this.loadList);
@@ -54,9 +64,7 @@ const SurveyListPage = React.createClass({
   componentWillReceiveProps(nextProps) {
     try {
       if (nextProps.navigator) {
-        const routeStack = nextProps.navigator.state.routeStack;
-        const newPath = routeStack[routeStack.length - 1].path;
-        if (newPath === 'surveylist') {
+        if (nextProps.path === 'surveylist' && nextProps.previousPath !== 'surveylist') {
           checkTimeTriggers(false, this.loadList);
         }
       }
@@ -95,6 +103,10 @@ const SurveyListPage = React.createClass({
     if (err) {
       // continue processing as we always load from the cache even if the
       // user is 'offline'
+      this.setState({
+        isLoading: false,
+        isRefreshing: false,
+      });
       console.warn(err);
     }
     this._surveys = loadCachedSurveyList().slice();
@@ -135,7 +147,6 @@ const SurveyListPage = React.createClass({
       filterType: query === 'all' ? '' : `${query}`,
       dataSource: this.state.dataSource.cloneWithRows(filteredList),
     });
-
   },
 
   updateListFilter(query) {
@@ -242,9 +253,10 @@ const SurveyListPage = React.createClass({
     });
   },
   render() {
-    console.log('render survey list page')
     if (this.state.isLoading) {
-      return <Loading/>;
+      return <Loading
+                text='Loading Surveys...'
+                key='navigator-loading-icon'/>;
     }
     return (
       <View style={[Styles.container.default]}>

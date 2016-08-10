@@ -53,6 +53,7 @@ connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 
 let navigator = null;
 let initialRoute = { path: 'surveylist', title: 'Surveys' };
+let currentRoute = initialRoute;
 const toaster = <Toaster key='toaster' />;
 
 // Binds the hardware "back button" from Android devices
@@ -270,22 +271,27 @@ const SharedNavigator = React.createClass({
     let viewComponent = null;
     let wrapperStyles = null;
 
-    const sharedProps = {
-      navigator: nav,
-      logout: this.logoutHandler,
-    };
-
     if (!this.state.isAuthenticated && !route.unsecured) {
       route.path = 'login';
       route.title = '';
     }
+
+    const sharedProps = {
+      navigator: nav,
+      path: route.path,
+      previousPath: currentRoute.path,
+      logout: this.logoutHandler,
+      newLogin: this.state.newLogin,
+    };
+
+    currentRoute = route;
 
     switch (route.path) {
       case 'login':
         viewComponent = <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />;
         break;
       case 'surveylist':
-        viewComponent = <SurveyListPage {...sharedProps} newLogin={this.state.newLogin} />;
+        viewComponent = <SurveyListPage {...sharedProps} />;
         break;
       case 'notifications':
         viewComponent = <NotificationsPage {...sharedProps} />;
@@ -340,7 +346,7 @@ const SharedNavigator = React.createClass({
     // show loading component without the navigationBar
     if (this.state.isLoading) {
       return (
-        <Loading/>
+        <Loading key='navigator-loading-icon' />
       );
     }
 

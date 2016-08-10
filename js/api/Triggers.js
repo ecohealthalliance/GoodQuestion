@@ -51,7 +51,9 @@ export function checkTimeTriggers(omitNotifications, callback) {
   loadAcceptedInvitations((err, invitations) => {
     if (err) {
       console.warn(err);
-      callback && callback(err);
+      if (callback) {
+        callback(err);
+      }
       return;
     }
     if (invitations && invitations.length > 0) {
@@ -61,7 +63,9 @@ export function checkTimeTriggers(omitNotifications, callback) {
         checkSurveyTimeTriggers(surveys[i], omitNotifications);
       }
     }
-    callback && callback(null);
+    if (callback) {
+      callback(null);
+    }
   });
 }
 
