@@ -202,6 +202,7 @@ const SharedNavigator = React.createClass({
     this.setState({
       isAuthenticated: authenticated,
     }, () => {
+      this.initializeUserServices();
       navigator.resetTo({path: 'surveylist', title: 'Surveys'});
     });
   },

@@ -44,6 +44,9 @@ export function crossGeofence(params) {
               type: 'geofence',
             });
           });
+
+          // Supress local notifications in case the API receives multiple geofence crossing events in rapid succession.
+          supressNotificationsTimestamp = Date.now() + 500;
         }
       }
 
@@ -130,12 +133,6 @@ export function setupGeofences(callback) {
       supressNotificationsTimestamp = Date.now() + 5000;
       BackgroundGeolocation.addGeofences(triggerGeofences, () => {
         console.log('Successfully added geofences.');
-
-        // Restarts the service on Android devices.
-        // This redundancy is a patch to force geofences to be rechecked in some devices.
-        if (Platform.OS === 'android') {
-          BackgroundGeolocation.start();
-        }
       }, (err3) => {
         console.warn('Failed to add geofences.', err3);
       });

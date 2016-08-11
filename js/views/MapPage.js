@@ -156,7 +156,7 @@ const MapPage = React.createClass({
           }}
           key='gmap'
           style={Platform.OS === 'ios' ? _styles.iosMap : _styles.androidMap}
-          region={{
+          initialRegion={{
             latitude: this.state.latitude,
             longitude: this.state.longitude,
             latitudeDelta: this.state.zoom,
