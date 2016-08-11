@@ -5,11 +5,9 @@ import {
   Animated,
   Easing,
   ActivityIndicator,
-  Platform,
 } from 'react-native';
 
 import Color from '../styles/Color';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
 /**
  * provides for an animted loading component
