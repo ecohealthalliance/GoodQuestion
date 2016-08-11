@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Platform,
   View,
+  InteractionManager,
 } from 'react-native';
 import _ from 'lodash';
 
@@ -57,7 +58,7 @@ const MapPage = React.createClass({
       this.generateTriggerMarkers(response);
 
       getUserLocationData((location) => {
-        setTimeout(() => {
+        InteractionManager.runAfterInteractions(() => {
           if (!this.cancelCallbacks) {
             this.setState({
               latitude: location.latitude || 40.782786,
@@ -65,7 +66,7 @@ const MapPage = React.createClass({
               stage: 'ready',
             });
           }
-        }, 200);
+        });
       });
 
     });
