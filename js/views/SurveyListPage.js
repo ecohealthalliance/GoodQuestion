@@ -41,14 +41,15 @@ const SurveyListPage = React.createClass({
       // Do not perform initial Parse request if the user is offline.
       if (reach === 'NONE' || reach === 'none') {
         checkTimeTriggers(true, this.loadList);
+        return;
+      }
+
+      if (this.props.newLogin) {
+        loadSurveyList({forceRefresh: true}, () => {
+          checkTimeTriggers(true, this.loadList);
+        });
       } else {
-        if (this.props.newLogin) {
-          loadSurveyList({forceRefresh: true}, () => {
-            checkTimeTriggers(true, this.loadList);
-          });
-        } else {
-          loadSurveyList({}, this.loadList);
-        }
+        loadSurveyList({}, this.loadList);
       }
     });
   },
