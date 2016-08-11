@@ -34,12 +34,6 @@ const Loading = React.createClass({
     }).start(this._animate);
   },
 
-  componentDidMount() {
-    if (Platform.OS === 'ios') {
-      this._animate();
-    }
-  },
-
   render() {
     const container = {
       flex: 1,
@@ -52,28 +46,6 @@ const Loading = React.createClass({
       color: this.props.color || Color.primary,
       textAlign: 'center',
     };
-
-    if (Platform.OS === 'ios') {
-      const animation = {transform: [
-        {rotate: this.state.angle.interpolate({
-          inputRange: [0, 360],
-          outputRange: ['0deg', '360deg'],
-        })},
-      ]};
-
-      return (
-        <View style={container}>
-          <Animated.View style={animation}>
-            <Icon name='spinner' size={120} color={this.props.color || Color.faded}/>
-          </Animated.View>
-          {this.props.text
-            ? <Text style={textStyle}>
-                {this.props.text}
-              </Text>
-            : null}
-        </View>
-      );
-    }
 
     // Use a default loading animation for Android until RN gets native custom animation support.
     const animation = {
