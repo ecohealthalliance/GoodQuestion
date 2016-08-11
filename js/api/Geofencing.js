@@ -1,4 +1,3 @@
-import { Platform } from 'react-native';
 import _ from 'lodash';
 import Store from '../data/Store';
 import realm from '../data/Realm';

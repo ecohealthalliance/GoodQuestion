@@ -67,7 +67,7 @@ export function notifyOnBackground(message, vibrate) {
     if (Store.userSettings.notifyOnGeofence) {
       PushNotification.localNotification({
         message: message,
-        collapse_key: 'goodquestion',
+        collapse_key: 'goodquestion', // eslint-disable-line camelcase
       });
     }
 
