@@ -77,9 +77,9 @@ const SharedNavigator = React.createClass({
   getInitialState() {
     return {
       title: '',
-      isLoading: true,
-      isAuthenticated: false,
-      newLogin: false,
+      isLoading: true,        // Temporarily prevents the main component from rendering while loading authentication data.
+      isAuthenticated: false, // Indicates if the user is currently logged in.
+      newLogin: false,        // Indicates if the user has performed a login in this session.
     };
   },
 

@@ -45,6 +45,7 @@ const SurveyListPage = React.createClass({
       }
 
       if (this.props.newLogin) {
+        // On login: Sync cached form data with Invitations accepted in other installations/devices.
         loadSurveyList({forceRefresh: true}, () => {
           checkTimeTriggers(true, this.loadList);
         });
