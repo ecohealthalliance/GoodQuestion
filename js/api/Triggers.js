@@ -60,7 +60,7 @@ export function checkTimeTriggers(omitNotifications, callback) {
       }
     }
     if (callback) {
-      callback(null);
+      callback();
     }
   });
 }

@@ -151,7 +151,7 @@ export function refreshAcceptedSurveyData(surveyId, callback) {
         loadParseFormDataBySurveyId(survey.id);
       }
       if (callback) {
-        callback(null);
+        callback();
       }
     } else {
       const resultLength = results.length;
@@ -163,7 +163,7 @@ export function refreshAcceptedSurveyData(surveyId, callback) {
         console.warn(e);
       }
       if (callback) {
-        callback(null);
+        callback();
       }
     }
   });

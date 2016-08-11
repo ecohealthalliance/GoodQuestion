@@ -38,22 +38,19 @@ const SurveyListPage = React.createClass({
 
   componentDidMount() {
     NetInfo.fetch().done((reach) => {
-      // Cancel loading animations when offline
+      // Do not perform initial Parse request if the user is offline.
       if (reach === 'NONE' || reach === 'none') {
-        this.setState({
-          isLoading: false,
-          isRefreshing: false,
-        });
+        checkTimeTriggers(true, this.loadList);
+      } else {
+        if (this.props.newLogin) {
+          loadSurveyList({forceRefresh: true}, () => {
+            checkTimeTriggers(true, this.loadList);
+          });
+        } else {
+          loadSurveyList({}, this.loadList);
+        }
       }
     });
-
-    if (this.props.newLogin) {
-      loadSurveyList({forceRefresh: true}, () => {
-        checkTimeTriggers(true, this.loadList);
-      });
-    } else {
-      loadSurveyList({}, this.loadList);
-    }
   },
 
   componentWillUnmount() {
