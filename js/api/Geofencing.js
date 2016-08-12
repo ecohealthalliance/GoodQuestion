@@ -91,7 +91,7 @@ export function resetGeofences(callback) {
   supressNotificationsTimestamp = Date.now() + 5000;
   BackgroundGeolocation.removeGeofences(() => {
       console.log('Cleared current geofencing settings.');
-      callback(null);
+      callback();
     }, (err) => {
       console.warn('Error resetting geofencing settings.');
       console.warn(err);
