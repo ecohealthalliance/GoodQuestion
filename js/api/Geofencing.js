@@ -128,14 +128,15 @@ export function setupGeofences(callback) {
         };
       });
 
-      console.log(`Adding ${triggerGeofences.length} geofences...`);
       if (triggerGeofences.length === 0) {
-        console.log(`Unable to add geofences: No triggers found.`);
+        console.log('Unable to add geofences: No triggers found.');
         if (callback) {
           callback();
         }
         return;
       }
+
+      console.log(`Adding ${triggerGeofences.length} geofences...`);
 
       supressNotificationsTimestamp = Date.now() + 5000;
       BackgroundGeolocation.addGeofences(triggerGeofences, () => {
