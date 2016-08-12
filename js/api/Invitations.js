@@ -82,7 +82,7 @@ function upsertRealmInvitation(id, surveyId, userId, status, dirty, done) {
         surveyId: surveyId,
         dirty: true,
         status: status,
-      });
+      }, true);
       done(null, invitation);
     } catch (e) {
       done(`Error saving realm invitation ${id}`);
@@ -285,6 +285,14 @@ export function loadCachedInvitation(surveyId, done) {
     }
     done(null, results.invitation);
   });
+}
+
+/**
+ * Loads a single cached invitation synchronously
+ * @return {object} Realm object of the type 'Invitation'
+ */
+export function loadCachedInvitationById(surveyId) {
+  return realm.objects('Invitation').filtered(`surveyId="${surveyId}"`)[0];
 }
 
 /**

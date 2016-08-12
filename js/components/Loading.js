@@ -1,10 +1,13 @@
-import React, {
+import React from 'react';
+import {
   View,
+  Text,
   Animated,
   Easing,
+  ActivityIndicator,
 } from 'react-native';
 
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Color from '../styles/Color';
 
 /**
  * provides for an animted loading component
@@ -29,27 +32,37 @@ const Loading = React.createClass({
     }).start(this._animate);
   },
 
-  componentDidMount() {
-    this._animate();
-  },
-
   render() {
     const container = {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
     };
-    const animation = {transform: [
-      {rotate: this.state.angle.interpolate({
-        inputRange: [0, 360],
-        outputRange: ['0deg', '360deg'],
-      })},
-    ]};
+    const textStyle = {
+      marginTop: 30,
+      fontSize: 20,
+      color: this.props.color || Color.primary,
+      textAlign: 'center',
+    };
+
+    // Use a default loading animation for Android until RN gets native custom animation support.
+    const animation = {
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 8,
+    };
     return (
       <View style={container}>
-        <Animated.View style={animation}>
-          <Icon name='spinner' size={120} color='#eee'/>
-        </Animated.View>
+        <ActivityIndicator
+          style={animation}
+          size='large'
+          color={ this.props.color || Color.primary }
+        />
+        {this.props.text
+          ? <Text style={textStyle}>
+              {this.props.text}
+            </Text>
+          : null}
       </View>
     );
   },

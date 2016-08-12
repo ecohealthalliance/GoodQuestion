@@ -30,6 +30,7 @@ function createDemoSurvey (surveyData, startDate, endDate) {
   var endDateTimestamp = parseDate(endDate)
   var numberOfDays = dayDiff(startDateTimestamp, endDateTimestamp)
   var newSurvey = new Survey()
+
   var query = new Parse.Query('Survey')
   query.count(useMasterKey)
     .then(function(surveyCount){
@@ -61,5 +62,25 @@ function destroyAll() {
   })
 }
 
+function createDemoGeofenceSurvey (surveyData) {
+  var newSurvey = new Survey()
+  newSurvey.set('title', surveyData.title)
+  newSurvey.set('description', surveyData.description)
+  newSurvey.set('user', surveyData.user)
+  newSurvey.set('createdAt', surveyData.created)
+  newSurvey.set('active', true)
+  newSurvey.set('deleted', false)
 
-module.exports = { Survey, loadSurveys, createDemoSurvey, destroyAll }
+  newSurvey.save(null, useMasterKey)
+    .then(function(newSurvey){
+      Forms.createDemoGeofenceForms(newSurvey)
+    })
+    .then(function(){
+      return Users.setUserRights(newSurvey)
+    })
+    .fail(function(error){
+      console.warn('Failed to create demo geofence Survey, error code: ' + error.message)
+    })
+}
+
+module.exports = { Survey, loadSurveys, createDemoSurvey, destroyAll, createDemoGeofenceSurvey }

@@ -1,10 +1,4 @@
-import realm from '../data/Realm';
-
-export default class Survey {
-  getForms() {
-    return Array.from(realm.objects('Form').filtered(`surveyId="${this.id}"`));
-  }
-}
+export default class Survey {}
 
 Survey.schema = {
   name: 'Survey',
