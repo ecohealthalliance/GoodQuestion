@@ -1,5 +1,5 @@
 import pubsub from 'pubsub-js';
-import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
+import {ToastAddresses, ToastMessage} from '../models/messages/ToastMessage';
 
 import React, {
   Text,

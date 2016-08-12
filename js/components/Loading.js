@@ -34,11 +34,8 @@ const Loading = React.createClass({
   },
 
   render() {
-    const container = {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    };
+    const container = this.props.style ? this.props.style : {flex: 1, justifyContent: 'center', alignItems: 'center'};
+    const size = this.props.size ? this.props.size : 120;
     const animation = {transform: [
       {rotate: this.state.angle.interpolate({
         inputRange: [0, 360],
@@ -48,7 +45,7 @@ const Loading = React.createClass({
     return (
       <View style={container}>
         <Animated.View style={animation}>
-          <Icon name='spinner' size={120} color='#eee'/>
+          <Icon name='spinner' size={size} color='#eee'/>
         </Animated.View>
       </View>
     );
