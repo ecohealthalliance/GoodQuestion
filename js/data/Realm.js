@@ -8,16 +8,18 @@ import Form from '../models/Form';
 import Question from '../models/Question';
 import Notification from '../models/Notification';
 import TimeTrigger from '../models/TimeTrigger';
+import GeofenceTrigger from '../models/GeofenceTrigger';
 import Test from '../models/Test';
 
 const realmInstance = new Realm({
-  schemaVersion: 43,
+  schemaVersion: 54,
   schema: [
     Survey,
     Form,
     Question,
     Notification,
     TimeTrigger,
+    GeofenceTrigger,
     Submission,
     Invitation,
     Test,

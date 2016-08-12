@@ -1,12 +1,10 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import Color from './Color';
 
 const FormStyles = StyleSheet.create({
   titleHeading: {
-    textAlign: 'center',
     marginTop: 20,
-    marginLeft: 8,
-    marginRight: 8,
+    marginHorizontal: Platform.OS === 'ios' ? 28 : 20,
     padding: 10,
     borderRadius: 5,
     backgroundColor: Color.background1,
