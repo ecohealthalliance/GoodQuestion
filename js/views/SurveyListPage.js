@@ -1,24 +1,22 @@
-import React, {
+import React from 'react';
+import {
   TouchableHighlight,
   TouchableOpacity,
   Text,
   View,
   ListView,
-  Alert,
   RefreshControl,
 } from 'react-native';
 
 import _ from 'lodash';
 import Styles from '../styles/Styles';
 import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys';
-import { loadCachedQuestionsFromForms } from '../api/Questions';
 import { InvitationStatus, loadCachedInvitations } from '../api/Invitations';
 import SurveyListItem from '../components/SurveyListItem';
 import SurveyListFilter from '../components/SurveyListFilter';
 import Loading from '../components/Loading';
 import Color from '../styles/Color';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
 
 const SurveyListPage = React.createClass({
   title: 'Surveys',
@@ -149,30 +147,11 @@ const SurveyListPage = React.createClass({
       return;
     }
 
-    const forms = survey.getForms();
-    if (survey.getForms().length === 0) {
-      return Alert.alert('Survey has no active forms.');
-    }
-
-    const invitation = _.find(this._invitations, (inv) => {
-      return inv.surveyId === survey.id;
+    this.props.navigator.push({
+      path: 'survey-details',
+      title: survey.title,
+      survey: survey,
     });
-    if (invitation && invitation.status === 'accepted') {
-      this.props.navigator.push({
-        path: 'form',
-        title: survey.title,
-        survey: survey,
-      });
-    } else {
-      const questions = loadCachedQuestionsFromForms(forms);
-      this.props.navigator.push({
-        path: 'survey-details',
-        title: survey.title,
-        survey: survey,
-        formCount: forms.length,
-        questionCount: questions.length,
-      });
-    }
   },
 
   showList() {
@@ -238,7 +217,13 @@ const SurveyListPage = React.createClass({
         onPress={() => this.selectSurvey(survey)}
         underlayColor={Color.background3}>
         <View>
-          <SurveyListItem title={survey.title} key={`survey-item-${survey.id}`} surveyId={survey.id} status={this.getInvitationStatus(survey.id)} />
+          <SurveyListItem
+            title={survey.title}
+            key={`survey-item-${survey.id}`}
+            surveyId={survey.id}
+            status={this.getInvitationStatus(survey.id)}
+            isRefreshing={this.state.isRefreshing}
+            />
         </View>
       </TouchableHighlight>
     );

@@ -1,4 +1,4 @@
-import { Platform, AppState } from 'react-native';
+import { Platform, AppState, Vibration } from 'react-native';
 import PushNotification from 'react-native-push-notification';
 import pubsub from 'pubsub-js';
 import async from 'async';
@@ -6,6 +6,8 @@ import async from 'async';
 import Settings from '../settings';
 import realm from '../data/Realm';
 import Store from '../data/Store';
+import Color from '../styles/Color';
+import { ToastAddresses, ToastMessage } from '../models/ToastMessage';
 
 import { currentUser } from './Account';
 import { loadCachedFormDataById } from './Forms';
@@ -101,6 +103,28 @@ function handleNewNotification(notification) {
   });
 }
 
+function checkNotificationPermissions() {
+  if (Platform.OS === 'ios') {
+    PushNotification.checkPermissions((result) => {
+      if (
+        PushNotification.isLoaded &&
+        !result.alert ||
+        !result.badge ||
+        !result.sound
+      ) {
+        console.log('Requesting new PushNotification permissions.');
+        PushNotification.requestPermissions().then((permissions) => {
+          if (!permissions.alert || !permissions.badge || !permissions.sound) {
+            // TODO: Notify of missing permissions and how to fix them.
+            // Settings -> GoodQuestion -> Notifications
+            // Notify only once.
+          }
+        });
+      }
+    });
+  }
+}
+
 /**
  * Event fired on initialization of the notification service.
  * @param  {object} registration Object containing data returned by the user's phone.
@@ -109,11 +133,12 @@ function _onRegister(registration) {
   const token = registration.token;
   const platform = registration.os;
   if (platform === 'ios') {
+    checkNotificationPermissions();
     PushNotification.setApplicationIconBadgeNumber(0);
   }
   upsertInstallation(token, platform, (err) => {
     if (err) {
-      console.error(err);
+      console.warn(err);
       return;
     }
   });
@@ -241,5 +266,49 @@ export function addAppNotification(notification) {
   } catch (e) {
     console.error(e);
     return null;
+  }
+}
+
+/**
+ * Shows a toast at the bottom of the screen.
+ * @param  {string} title    Title text to be displayed on the toast
+ * @param  {string} message  Description text to be displayed on the toast
+ * @param  {string} icon     FA icon to be shown on the toast
+ * @param  {number} duration Time to keep the toast up
+ * @param  {function} action Callback function to be executed when tapping the toast
+ */
+export function showToast(title, message, icon, duration, action) {
+  const toastMessage = ToastMessage.createFromObject({
+    title: title,
+    message: message,
+    icon: icon,
+    iconColor: Color.faded,
+    duration: duration,
+    action: action,
+  });
+  pubsub.publish(ToastAddresses.SHOW, toastMessage);
+}
+
+
+/**
+ * Sends a local notification to the user. Triggers only when the phone is in a background state.
+ * @param  {string} message Message to appear in the local push notificaiton.
+ * @param  {bool}   vibrate If set to true, the notification will also vibrate the user's device.
+ */
+export function notifyOnBackground(message, vibrate) {
+  if (AppState.currentState !== 'active') {
+    if (Store.userSettings.notifyOnGeofence) {
+      PushNotification.localNotification({
+        message: message,
+      });
+    }
+
+    if (vibrate && Store.userSettings.vibrateOnGeofence) {
+      if (Platform.OS === 'android') {
+        Vibration.vibrate([0, 500, 200, 500]);
+      } else {
+        Vibration.vibrate();
+      }
+    }
   }
 }

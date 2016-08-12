@@ -1,5 +1,5 @@
-
-import React, {
+import React from 'react';
+import {
   Text,
   View,
   ScrollView,
@@ -10,7 +10,7 @@ import Button from '../components/Button';
 import Footer from '../components/Footer';
 import Styles from '../styles/Styles';
 
-import Checkbox from 'react-native-checkbox';
+import Checkbox from '../components/Checkbox';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 let uncheckedComponent = <Icon name='square-o' size={30} />;
@@ -107,7 +107,7 @@ const RegistrationPagePart2 = React.createClass({
                 checked={this.state.allowLocationServices}
                 uncheckedComponent={uncheckedComponent}
                 checkedComponent={checkedComponent}
-                onChange={this.checkboxChangeHandler.bind(this, 'allowLocationServices')}
+                onChange={this.checkboxChangeHandler.bind(null, 'allowLocationServices')}
               />
             </View>
           </View>

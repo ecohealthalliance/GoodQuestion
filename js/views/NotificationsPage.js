@@ -1,4 +1,5 @@
-import React, {
+import React from 'react';
+import {
   Alert,
   View,
   ListView,
@@ -89,7 +90,7 @@ const NotificationsPage = React.createClass({
   /* Render */
   renderItem(item) {
     return (
-      <Notification item={item} onPressed={this.selectNotification.bind(this, item)} />
+      <Notification item={item} onPressed={this.selectNotification.bind(null, item)} />
     );
   },
 

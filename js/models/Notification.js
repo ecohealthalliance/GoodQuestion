@@ -14,7 +14,7 @@ Notification.schema = {
       type: 'bool',
       default: false,
     },
-    complete: {
+    completed: {
       type: 'bool',
       default: false,
     },
