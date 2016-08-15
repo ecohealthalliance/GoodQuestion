@@ -43,6 +43,9 @@ export function crossGeofence(params) {
               type: 'geofence',
             });
           });
+
+          // Supress local notifications in case the API receives multiple geofence crossing events in rapid succession.
+          supressNotificationsTimestamp = Date.now() + 500;
         }
       }
 
@@ -125,7 +128,16 @@ export function setupGeofences(callback) {
         };
       });
 
+      if (triggerGeofences.length === 0) {
+        console.log('Unable to add geofences: No triggers found.');
+        if (callback) {
+          callback();
+        }
+        return;
+      }
+
       console.log(`Adding ${triggerGeofences.length} geofences...`);
+
       supressNotificationsTimestamp = Date.now() + 5000;
       BackgroundGeolocation.addGeofences(triggerGeofences, () => {
         console.log('Successfully added geofences.');
