@@ -100,12 +100,9 @@ const SharedNavigator = React.createClass({
     isAuthenticated((authenticated) => {
       if (authenticated) {
         checkTimeTriggers();
-        checkDirtyObjects((err, res) => {
+        checkDirtyObjects((err) => {
           if (err) {
             console.warn(err);
-          }
-          if (res) {
-            console.log(res);
           }
           // set state after the check is complete
           this.setState({

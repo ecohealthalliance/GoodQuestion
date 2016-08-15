@@ -21,6 +21,7 @@ import com.transistorsoft.rnbackgroundgeolocation.RNBackgroundGeolocation;
 import com.AirMaps.AirPackage;
 
 // Libraries
+import com.imagepicker.ImagePickerPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,7 @@ public class GoodQuestionApplication extends Application implements ReactApplica
 
       return Arrays.<ReactPackage>asList(
         new RNBackgroundGeolocation(),
+        new ImagePickerPackage(),
         new MainReactPackage(),
         new VectorIconsPackage(),
         new AirPackage(),
