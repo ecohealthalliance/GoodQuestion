@@ -1,24 +1,25 @@
-import React, {
+import React from 'react';
+import {
   TouchableHighlight,
   TouchableOpacity,
   Text,
   View,
   ListView,
-  Alert,
   RefreshControl,
+  NetInfo,
 } from 'react-native';
 
 import _ from 'lodash';
 import Styles from '../styles/Styles';
+
 import { loadSurveyList, loadCachedSurveyList, loadExpiredSurveyList } from '../api/Surveys';
-import { loadCachedQuestionsFromForms } from '../api/Questions';
+import { checkTimeTriggers } from '../api/Triggers';
 import { InvitationStatus, loadCachedInvitations } from '../api/Invitations';
 import SurveyListItem from '../components/SurveyListItem';
 import SurveyListFilter from '../components/SurveyListFilter';
 import Loading from '../components/Loading';
 import Color from '../styles/Color';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
 
 const SurveyListPage = React.createClass({
   title: 'Surveys',
@@ -29,7 +30,7 @@ const SurveyListPage = React.createClass({
     return {
       isLoading: true,
       tab: 'all',
-      isRefreshing: false,
+      isRefreshing: this.props.newLogin,
       hasInvitationChanged: false,
       dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
@@ -38,12 +39,22 @@ const SurveyListPage = React.createClass({
   },
 
   componentDidMount() {
-    this._surveys = loadCachedSurveyList().slice();
-    if (this._surveys.length === 0) {
-      loadSurveyList(this.loadList);
-    } else {
-      this.loadList();
-    }
+    NetInfo.fetch().done((reach) => {
+      // Do not perform initial Parse request if the user is offline.
+      if (reach === 'NONE' || reach === 'none') {
+        checkTimeTriggers(true, this.loadList);
+        return;
+      }
+
+      if (this.props.newLogin) {
+        // On login: Sync cached form data with Invitations accepted in other installations/devices.
+        loadSurveyList({forceRefresh: true}, () => {
+          checkTimeTriggers(true, this.loadList);
+        });
+      } else {
+        loadSurveyList({}, this.loadList);
+      }
+    });
   },
 
   componentWillUnmount() {
@@ -54,10 +65,8 @@ const SurveyListPage = React.createClass({
   componentWillReceiveProps(nextProps) {
     try {
       if (nextProps.navigator) {
-        const routeStack = nextProps.navigator.state.routeStack;
-        const newPath = routeStack[routeStack.length - 1].path;
-        if (newPath === 'surveylist') {
-          this.loadList();
+        if (nextProps.path === 'surveylist' && nextProps.previousPath !== 'surveylist') {
+          checkTimeTriggers(false, this.loadList);
         }
       }
     } catch (e) {
@@ -95,6 +104,10 @@ const SurveyListPage = React.createClass({
     if (err) {
       // continue processing as we always load from the cache even if the
       // user is 'offline'
+      this.setState({
+        isLoading: false,
+        isRefreshing: false,
+      });
       console.warn(err);
     }
     this._surveys = loadCachedSurveyList().slice();
@@ -166,30 +179,11 @@ const SurveyListPage = React.createClass({
       return;
     }
 
-    const forms = survey.getForms();
-    if (survey.getForms().length === 0) {
-      return Alert.alert('Survey has no active forms.');
-    }
-
-    const invitation = _.find(this._invitations, (inv) => {
-      return inv.surveyId === survey.id;
+    this.props.navigator.push({
+      path: 'survey-details',
+      title: survey.title,
+      survey: survey,
     });
-    if (invitation && invitation.status === 'accepted') {
-      this.props.navigator.push({
-        path: 'form',
-        title: survey.title,
-        survey: survey,
-      });
-    } else {
-      const questions = loadCachedQuestionsFromForms(forms);
-      this.props.navigator.push({
-        path: 'survey-details',
-        title: survey.title,
-        survey: survey,
-        formCount: forms.length,
-        questionCount: questions.length,
-      });
-    }
   },
 
   showList() {
@@ -255,26 +249,36 @@ const SurveyListPage = React.createClass({
         onPress={() => this.selectSurvey(survey)}
         underlayColor={Color.background3}>
         <View>
-          <SurveyListItem title={survey.title} key={`survey-item-${survey.id}`} surveyId={survey.id} status={this.getInvitationStatus(survey.id)} />
+          <SurveyListItem
+            title={survey.title}
+            key={`survey-item-${survey.id}`}
+            surveyId={survey.id}
+            status={this.getInvitationStatus(survey.id)}
+            isRefreshing={this.state.isRefreshing}
+            />
         </View>
       </TouchableHighlight>
     );
   },
   reloadEmpty() {
     this.setState({isLoading: true});
-    loadSurveyList(this.loadList);
+    loadSurveyList({}, this.loadList);
   },
   _onRefresh() {
     this.setState({isRefreshing: true});
     if (this.state.tab === 'expired') {
       loadExpiredSurveyList(this.loadList);
     } else {
-      loadSurveyList(this.loadList);
+      loadSurveyList({}, () => {
+        checkTimeTriggers(true, this.loadList);
+      });
     }
   },
   render() {
     if (this.state.isLoading) {
-      return <Loading/>;
+      return <Loading
+                text='Loading Surveys...'
+                key='navigator-loading-icon'/>;
     }
     return (
       <View style={[Styles.container.default]}>

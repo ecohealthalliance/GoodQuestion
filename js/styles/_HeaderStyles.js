@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import Color from './Color';
 import Variables from './Variables';
 
@@ -43,7 +43,7 @@ const HeaderStyles = StyleSheet.create({
 
   banner: {
     // flex: 1,
-    height: 160,
+    height: Variables.REGISTRATION_HEIGHT,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Color.background1,
@@ -57,14 +57,14 @@ const HeaderStyles = StyleSheet.create({
 
   navBarLeftButton: {
     flex: 0.1,
-    padding: 20,
-    paddingRight: 16,
+    padding: Platform.OS === 'ios' ? 14 : 18,
+    paddingRight: Platform.OS === 'ios' ? 14 : 16,
     marginRight: 2,
   },
   navBarRightButton: {
     flex: 0.1,
-    padding: 20,
-    paddingRight: 14,
+    padding: Platform.OS === 'ios' ? 14 : 18,
+    paddingRight: Platform.OS === 'ios' ? 10 : 14,
   },
 });
 
