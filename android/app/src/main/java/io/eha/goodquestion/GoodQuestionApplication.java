@@ -30,7 +30,7 @@ import io.realm.react.RealmReactPackage;
 
 
 public class GoodQuestionApplication extends Application implements ReactApplication {
-  private static final Logger logger = LoggerFactory.getLogger(MainActivity.class);
+  private static final Logger logger = LoggerFactory.getLogger(GoodQuestionApplication.class);
   private ReactNativePushNotificationPackage mReactNativePushNotificationPackage;
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
@@ -55,6 +55,7 @@ public class GoodQuestionApplication extends Application implements ReactApplica
     @Override
     protected List<ReactPackage> getPackages() {
       mReactNativePushNotificationPackage = new ReactNativePushNotificationPackage();
+      String codePushKey = GoodQuestionApplication.this.getResources().getString(R.string.CODE_PUSH_KEY);
 
       return Arrays.<ReactPackage>asList(
         new RNBackgroundGeolocation(),
@@ -63,7 +64,7 @@ public class GoodQuestionApplication extends Application implements ReactApplica
         new VectorIconsPackage(),
         new AirPackage(),
         new RealmReactPackage(),
-        new CodePush(this.getResources().getString(R.string.CODE_PUSH_KEY), this, BuildConfig.DEBUG),
+        new CodePush(codePushKey, GoodQuestionApplication.this, BuildConfig.DEBUG),
         mReactNativePushNotificationPackage
       );
     }
