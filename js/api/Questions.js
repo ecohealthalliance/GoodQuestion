@@ -5,15 +5,16 @@ import realm from '../data/Realm';
 // Saves a Question object from Parse into our Realm.io local database
 export function cacheParseQuestions(questions, formId) {
   try {
+    const questionsLength = questions.length;
     realm.write(() => {
-      for (let i = 0; i < questions.length; i++) {
+      for (let i = 0; i < questionsLength; i++) {
         realm.create('Question', {
           id: questions[i].id,
           formId: formId,
           order: questions[i].get('order'),
           text: questions[i].get('text'),
           type: questions[i].get('type'),
-          required: questions[i].get('required') || false,
+          required: questions[i].get('required') === true,
           properties: JSON.stringify(questions[i].get('properties')),
         }, true);
       }
@@ -48,9 +49,20 @@ export function loadQuestions(cachedForm, callback) {
       const formQuestionRelations = form.get('questions');
       formQuestionRelations.query().find(
         (results) => {
-          cacheParseQuestions(results, form.id);
+          // decided to filter the results client-side a) the number of
+          // question relations is realtively small b) the schema may or
+          // may not have the key 'deleted'
+          const filtered = results.filter((result) => {
+            if (typeof result.get('deleted') === 'undefined') {
+              return result;
+            }
+            if (result.get('deleted') === false) {
+              return result;
+            }
+          });
+          cacheParseQuestions(filtered, form.id);
           if (callback) {
-            callback(null, results);
+            callback(null, filtered);
           }
         },
         (error, results) => {

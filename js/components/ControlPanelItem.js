@@ -1,4 +1,5 @@
-import React, {
+import React from 'react';
+import {
   View,
   Text,
   TouchableWithoutFeedback,
@@ -10,14 +11,16 @@ export default React.createClass({
   render() {
     const icon = this.props.icon || null;
     return (
-      <TouchableWithoutFeedback onPress={this.props.onPress}>
-        <View style={Styles.controlPanel.itemContainer}>
-          <View style={[Styles.controlPanel.item]}>
-            <Text style={Styles.controlPanel.itemText}>{this.props.text}</Text>
+      <View>
+        <TouchableWithoutFeedback onPress={this.props.onPress}>
+          <View style={Styles.controlPanel.itemContainer}>
+            <View style={[Styles.controlPanel.item, this.props.style]}>
+              <Text style={Styles.controlPanel.itemText}>{this.props.text}</Text>
+            </View>
+            {icon}
           </View>
-          {icon}
-        </View>
-      </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+      </View>
     );
   },
 });

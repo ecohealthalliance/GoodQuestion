@@ -1,6 +1,3 @@
-import pubsub from 'pubsub-js';
-import {ToastAddresses, ToastMessage} from '../models/messages/ToastMessage';
-
 import React from 'react';
 import {
   View,
@@ -10,12 +7,15 @@ import {
   Easing,
 } from 'react-native';
 
+import pubsub from 'pubsub-js';
+import {ToastAddresses, ToastMessage} from '../models/messages/ToastMessage';
+
 import Styles from '../styles/Styles';
 import Color from '../styles/Color';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-
 const Toaster = React.createClass({
+  inUse: false,
   propTypes: {
     navigator: React.PropTypes.object,
   },
@@ -32,6 +32,7 @@ const Toaster = React.createClass({
       title: '',
       text: '',
       icon: 'check',
+      duration: 0,
       iconColor: Color.fadedGreen,
       fadeAnim: new Animated.Value(0.0),
       translateAnim: new Animated.Value(300),
@@ -41,6 +42,7 @@ const Toaster = React.createClass({
   /* Methods */
   handlePress() {
     this.closeToast();
+    this.state.action();
   },
 
   /**
@@ -49,6 +51,11 @@ const Toaster = React.createClass({
    * @param {object} toastMessage, an instanceof ToastMessage from pubsub
    */
   showToast(toastMessage) {
+    if (this.inUse) {
+      return;
+    }
+
+    this.inUse = true;
     this.state.fadeAnim.setValue(0);
     this.state.translateAnim.setValue(150);
 
@@ -66,19 +73,27 @@ const Toaster = React.createClass({
       text: toastMessage.message,
       icon: toastMessage.icon,
       iconColor: toastMessage.iconColor,
-      duration: toastMessage.duration,
+      duration: toastMessage.duration || 4,
+      action: toastMessage.action,
     });
+
+    // Prevent toast from being re-used in quick sucession.
+    if (toastMessage.duration && toastMessage.duration >= 2) {
+      setTimeout(() => {
+        this.inUse = false;
+      }, 2000);
+    }
 
     this.closeTimeout = setTimeout(() => {
       this.closeToast();
     }, toastMessage.duration * 1000);
-
   },
 
   closeToast() {
+    this.inUse = false;
     Animated.timing(
       this.state.fadeAnim,
-      {toValue: 0, duration: 400, easing: Easing.out(Easing.quad)}
+      {toValue: 0.1, duration: 400, easing: Easing.out(Easing.quad)}
     ).start();
     Animated.timing(
       this.state.translateAnim,

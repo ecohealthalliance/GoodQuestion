@@ -1,4 +1,5 @@
-import React, {
+import React from 'react';
+import {
   Alert,
   View,
   Text,
@@ -96,6 +97,14 @@ export default React.createClass({
             text='Notifications'
           />
           <ControlPanelItem
+            onPress={() => this.navigateToView('map', 'Map')}
+            text='Map'
+          />
+          <ControlPanelItem
+            onPress={() => this.navigateToView('calendar', 'Calendar')}
+            text='Calendar'
+          />
+          <ControlPanelItem
             onPress={() => this.navigateToView('profile', 'Profile')}
             text='Profile'
             icon={<View style={Styles.controlPanel.iconView}><Image source={this.state.avatar} style={Styles.controlPanel.avatar}/></View>}
@@ -115,6 +124,7 @@ export default React.createClass({
           />
           <ControlPanelItem
             onPress={this.handleLogout}
+            style={{borderBottomWidth: 0}}
             text='Logout'
           />
         </View>

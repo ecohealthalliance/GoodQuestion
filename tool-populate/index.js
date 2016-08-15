@@ -1,24 +1,26 @@
 #! /usr/bin/env node
 
-var _           = require('lodash')
-var Parse       = require('parse/node')
-var program     = require('commander')
-var colors      = require('colors')
-var DemoData    = require('./data/DemoData')
-var Surveys     = require('./api/Surveys')
-var Forms       = require('./api/Forms')
-var Questions   = require('./api/Questions')
-var Triggers    = require('./api/Triggers')
-var Roles       = require('./api/Roles')
-var Users       = require('./api/Users')
+var _ = require('lodash')
+var Parse = require('parse/node')
+var program = require('commander')
+var colors = require('colors')
+var DemoData = require('./data/DemoData')
+var DemoGeofenceData = require('./data/DemoGeofenceData')
+var Surveys = require('./api/Surveys')
+var Forms = require('./api/Forms')
+var Questions = require('./api/Questions')
+var Triggers = require('./api/Triggers')
+var Roles = require('./api/Roles')
+var Users = require('./api/Users')
 var Submissions = require('./api/Submissions')
-var Settings    = require('./../js/settings.js')
+var Settings = require('./../js/settings.js')
 
 var useMasterKey = {useMasterKey: true}
 
 program
   .option('-i, --init', 'Create inital role and user classes.')
   .option('-d, --demo', 'Populate local Parse server with demo data.')
+  .option('-g, --demoGeofence', 'Populate local Parse server with geofence demo data.')
   .option('-r, --reset', 'Erase local Parse data.')
   .option('-p, --publicRead', 'Sets all surveys, forms, questions as public readable')
   .option('-s, --submissions', 'Creates dummy submissions for each dummy user')
@@ -34,6 +36,8 @@ if (program.reset) {
   initDatabase()
 } else if (program.demo) {
   checkUsers().then(createDemoData)
+} else if (program.demoGeofence) {
+  checkUsers().then(createDemoGeofenceData)
 } else if (program.print) {
   Surveys.loadSurveys()
 } else if (program.publicRead) {
@@ -60,6 +64,8 @@ function exitHandler(options, err) {
     console.log('Parse server populated.'.bold.green)
   } else if (program.demo) {
     console.log('Parse server populated with demo data.'.bold.green)
+  } else if (program.demoGeofence) {
+    console.log('Parse server populated with demo geofence data.'.bold.green)
   }
   process.exit()
 }
@@ -68,6 +74,14 @@ function createDemoData() {
   console.log('\nCreating Parse server data...'.bold)
   for (var i = 0, ilen = DemoData.surveys.length; i < ilen; i++)
     Surveys.createDemoSurvey(DemoData.surveys[i], DemoData.startDate, DemoData.endDate)
+}
+
+function createDemoGeofenceData() {
+  // create the demo Survey for geofence triggers
+  console.log('Creating Parse server data...')
+  for (var i = 0; i < DemoGeofenceData.surveys.length; i++) {
+    Surveys.createDemoGeofenceSurvey(DemoGeofenceData.surveys[i])
+  }
 }
 
 function resetServer() {

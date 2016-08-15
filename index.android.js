@@ -2,7 +2,8 @@
  * Good Question
  */
 
-import React, { AppRegistry } from 'react-native';
+import React from 'react';
+import { AppRegistry } from 'react-native';
 
 // Model
 import Store from './js/data/Store';
