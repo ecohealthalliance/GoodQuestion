@@ -269,7 +269,7 @@ export function addAppNotification(notification) {
           surveyId: notification.surveyId || '',
           formId: notification.formId || '',
           triggerId: notification.triggerId || '',
-          userId: user.id,
+          userId: notification. userId || user.id,
           title: notification.title,
           message: notification.message,
           createdAt: notification.time || new Date(),

@@ -10,7 +10,7 @@ import { showToast, notifyOnBackground, addAppNotification } from './Notificatio
 // Cache a MapPage component for to update when geofencing triggers are crossed.
 let activeMap = null;
 // Timer to suppress repeated notifications when geofences get updated.
-let supressNotificationsTimestamp = 0;
+let suppressNotificationsTimestamp = 0;
 
 /**
  * Event function for when geofences are entered, exited, or dwelled on.
@@ -28,7 +28,11 @@ export function crossGeofence(params) {
     const trigger = realm.objects('GeofenceTrigger').filtered(`id = "${params.identifier}"`)[0];
     if (trigger) {
       // Notify on entry
-      if (_.lowerCase(params.action) === 'enter' && supressNotificationsTimestamp < Date.now()) {
+      if (_.lowerCase(params.action) === 'enter' && suppressNotificationsTimestamp < Date.now()) {
+        // Suppress local notifications in case the API receives multiple geofence crossing events in rapid succession.
+        console.log(`${suppressNotificationsTimestamp} - ${Date.now()}`)
+        suppressNotificationsTimestamp = Date.now() + 2000;
+
         const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0];
         const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0];
 
@@ -55,9 +59,6 @@ export function crossGeofence(params) {
               });
             });
           }
-
-          // Supress local notifications in case the API receives multiple geofence crossing events in rapid succession.
-          supressNotificationsTimestamp = Date.now() + 2000;
         }
       }
 
@@ -100,7 +101,7 @@ export function clearActiveMap(component) {
  * @param  {Function} callback Callback function to execute afterwards.
  */
 export function resetGeofences(callback) {
-  supressNotificationsTimestamp = Date.now() + 5000;
+  suppressNotificationsTimestamp = Date.now() + 5000;
   BackgroundGeolocation.removeGeofences(() => {
       console.log('Cleared current geofencing settings.');
       callback();
@@ -150,7 +151,7 @@ export function setupGeofences(callback) {
 
       console.log(`Adding ${triggerGeofences.length} geofences...`);
 
-      supressNotificationsTimestamp = Date.now() + 5000;
+      suppressNotificationsTimestamp = Date.now() + 5000;
       BackgroundGeolocation.addGeofences(triggerGeofences, () => {
         console.log('Successfully added geofences.');
       }, (err3) => {
@@ -181,7 +182,7 @@ export function addGeofence(trigger) {
     loiteringDelay: 60000,
   };
 
-  supressNotificationsTimestamp = Date.now() + 5000;
+  suppressNotificationsTimestamp = Date.now() + 5000;
   BackgroundGeolocation.addGeofence(geofence, () => {
     console.log('Successfully added geofence.');
     BackgroundGeolocation.on('geofence', crossGeofence);
@@ -195,7 +196,7 @@ export function addGeofence(trigger) {
  * @param  {string} id Geofence indentifier
  */
 export function removeGeofenceById(id) {
-  supressNotificationsTimestamp = Date.now() + 5000;
+  suppressNotificationsTimestamp = Date.now() + 5000;
   BackgroundGeolocation.removeGeofence(id, () => {
     console.log(`Removed geofence: ${id}`);
   });
