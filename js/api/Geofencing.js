@@ -1,10 +1,11 @@
+import { AppState } from 'react-native';
 import _ from 'lodash';
 import Store from '../data/Store';
 import realm from '../data/Realm';
 
 import { BackgroundGeolocation } from './BackgroundProcess';
 import { loadCachedGeofenceTriggers } from './Triggers';
-import { showToast, notifyOnBackground } from './Notifications';
+import { showToast, notifyOnBackground, addAppNotification } from './Notifications';
 
 // Cache a MapPage component for to update when geofencing triggers are crossed.
 let activeMap = null;
@@ -32,17 +33,28 @@ export function crossGeofence(params) {
         const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0];
 
         if (form && survey) {
-          notifyOnBackground(`${form.title} - New geofence form available.`, true);
-
-          showToast(form.title, 'New geofence form available.', 'globe', 8, () => {
-            Store.navigator.push({
-              path: 'form',
-              title: survey.title,
-              forms: form,
-              survey: survey,
-              type: 'geofence',
+          if (AppState.currentState === 'active') {
+            addAppNotification({
+              id: form.id,
+              surveyId: survey.id,
+              formId: form.id,
+              title: form.title,
+              description: 'New geofence form available.',
+              time: Date.now(),
             });
-          });
+
+            showToast(form.title, 'New geofence form available.', 'globe', 8, () => {
+              Store.navigator.push({
+                path: 'form',
+                title: survey.title,
+                forms: form,
+                survey: survey,
+                type: 'geofence',
+              });
+            });
+          } else {
+            notifyOnBackground(`${form.title} - New geofence form available.`, true);
+          }
 
           // Supress local notifications in case the API receives multiple geofence crossing events in rapid succession.
           supressNotificationsTimestamp = Date.now() + 500;

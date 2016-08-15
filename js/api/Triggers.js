@@ -17,6 +17,7 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
 
   // Record the new trigger
   const triggerLength = triggers.length;
+  const activeTriggers = [];
   realm.write(() => {
     for (let i = 0; i < triggerLength; i++) {
       if (triggers[i] && triggers[i].triggered === false && triggers[i].datetime < now) {
@@ -24,20 +25,23 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
           id: triggers[i].id,
           triggered: true,
         }, true);
-
-        if (activeTrigger && !omitNotifications) {
-          addAppNotification({
-            id: activeTrigger.formId,
-            surveyId: activeTrigger.surveyId,
-            formId: activeTrigger.formId,
-            title: activeTrigger.title,
-            description: 'A new scheduled survey form is available.',
-            time: activeTrigger.datetime,
-          });
-        }
+        activeTriggers.push(activeTrigger);
       }
     }
   });
+
+  if (!omitNotifications) {
+    for (let i = activeTriggers.length - 1; i >= 0; i--) {
+      addAppNotification({
+        id: activeTriggers[i].formId,
+        surveyId: activeTriggers[i].surveyId,
+        formId: activeTriggers[i].formId,
+        title: activeTriggers[i].title,
+        description: 'A new scheduled survey form is available.',
+        time: activeTriggers[i].datetime,
+      });
+    }
+  }
 }
 
 /**

@@ -10,7 +10,7 @@ import Color from '../styles/Color';
 import { ToastAddresses, ToastMessage } from '../models/ToastMessage';
 
 import { currentUser } from './Account';
-import { loadCachedFormDataById } from './Forms';
+import { loadCachedFormDataById, loadCachedFormDataByTriggerId } from './Forms';
 import { upsertInstallation } from './Installations';
 
 
@@ -48,7 +48,13 @@ function handleNewNotification(notification) {
       currentUser(cb);
     },
     data: (cb) => {
-      const data = loadCachedFormDataById(notification.data.formId);
+      let data = null;
+      if (notification.data.formId) {
+        data = loadCachedFormDataById(notification.data.formId);
+      } else if (notification.data.triggerId) {
+        data = loadCachedFormDataByTriggerId(notification.data.triggerId, 'datetime');
+      }
+
       if (data) {
         cb(null, data);
       } else {
@@ -68,12 +74,12 @@ function handleNewNotification(notification) {
       }
 
       const newNotification = addAppNotification({
-        id: notification.push_id,
+        id: notification.id || notification.push_id,
         userId: userId,
         surveyId: data.survey.id,
         formId: data.form.id,
         title: data.form.title,
-        description: notification.message,
+        message: notification.message,
         time: new Date(),
       });
 
@@ -166,7 +172,7 @@ function _onNotification(notification) {
  * @return {object}                   Realm object conatining a list of 'Notification' objects.
  */
 export function loadNotifications(options = {}) {
-  let filter = 'complete == false';
+  let filter = 'completed == false';
   filter += options.newOnly ? ' AND viewed == false' : '';
 
   return realm.objects('Notification')
@@ -239,7 +245,7 @@ export function clearNotification(notification) {
  * @param {string} notification.surveyId    Unique ID for the Notification's target Survey
  * @param {string} notification.formId      Unique ID of the Notification's target Form
  * @param {string} notification.title       Title of the notification
- * @param {string} notification.description Description of the notification
+ * @param {string} notification.message message of the notification
  * @param {object} notification.time        Date object of when the notification was posted
  * @return {object}                         New Realm object of the type 'Notification'
  */
@@ -256,8 +262,8 @@ export function addAppNotification(notification) {
         formId: notification.formId,
         userId: notification.userId,
         title: notification.title,
-        description: notification.description,
-        datetime: notification.time,
+        message: notification.message,
+        createdAt: notification.time,
       }, true);
     });
     Store.newNotifications++;
