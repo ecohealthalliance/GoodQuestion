@@ -37,7 +37,7 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
         surveyId: activeTriggers[i].surveyId,
         formId: activeTriggers[i].formId,
         title: activeTriggers[i].title,
-        description: 'A new scheduled survey form is available.',
+        message: 'A new scheduled survey form is available.',
         time: activeTriggers[i].datetime,
       });
     }

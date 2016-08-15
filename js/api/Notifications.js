@@ -73,12 +73,12 @@ function handleNewNotification(notification) {
         return;
       }
 
-      const newNotification = addAppNotification({
+      addAppNotification({
         id: notification.id || notification.push_id,
         userId: userId,
         surveyId: data.survey.id,
         formId: data.form.id,
-        title: data.form.title,
+        title: data.survey.title,
         message: notification.message,
         time: new Date(),
       });
@@ -98,7 +98,7 @@ function handleNewNotification(notification) {
         }
       }
 
-      cb(null, newNotification);
+      cb();
     }],
   }, (err, results) => {
     if (err) {
@@ -177,7 +177,7 @@ export function loadNotifications(options = {}) {
 
   return realm.objects('Notification')
                 .filtered(filter)
-                .sorted('datetime', true);
+                .sorted('createdAt', true);
 }
 
 /**
@@ -244,8 +244,9 @@ export function clearNotification(notification) {
  * @param {string} notification             Object data to be recorded in Realm
  * @param {string} notification.surveyId    Unique ID for the Notification's target Survey
  * @param {string} notification.formId      Unique ID of the Notification's target Form
+ * @param {string} notification.formId      Unique ID of the Notification's related Trigger object
  * @param {string} notification.title       Title of the notification
- * @param {string} notification.message message of the notification
+ * @param {string} notification.message     Message of the notification
  * @param {object} notification.time        Date object of when the notification was posted
  * @return {object}                         New Realm object of the type 'Notification'
  */
@@ -255,20 +256,29 @@ export function addAppNotification(notification) {
   }
   try {
     let newNotification = null;
-    realm.write(() => {
-      newNotification = realm.create('Notification', {
-        id: notification.id,
-        surveyId: notification.surveyId,
-        formId: notification.formId,
-        userId: notification.userId,
-        title: notification.title,
-        message: notification.message,
-        createdAt: notification.time,
-      }, true);
+    console.log(notification)
+    currentUser((err, user) => {
+      if (err) {
+        console.warn('Unable to add notification: User not found.');
+        return;
+      }
+
+      realm.write(() => {
+        newNotification = realm.create('Notification', {
+          id: notification.id,
+          surveyId: notification.surveyId || '',
+          formId: notification.formId || '',
+          triggerId: notification.triggerId || '',
+          userId: user.id,
+          title: notification.title,
+          message: notification.message,
+          createdAt: notification.time || new Date(),
+        }, true);
+      });
+
+      Store.newNotifications++;
+      pubsub.publish('onNotification', newNotification);
     });
-    Store.newNotifications++;
-    pubsub.publish('onNotification', newNotification);
-    return newNotification;
   } catch (e) {
     console.error(e);
     return null;
@@ -298,14 +308,17 @@ export function showToast(title, message, icon, duration, action) {
 
 /**
  * Sends a local notification to the user. Triggers only when the phone is in a background state.
- * @param  {string} message Message to appear in the local push notificaiton.
- * @param  {bool}   vibrate If set to true, the notification will also vibrate the user's device.
+ * @param  {string} message   Message to appear in the local push notificaiton.
+ * @param  {string} formId    formId for the Form related to this notification object, if any.
+ * @param  {bool}   vibrate   If set to true, the notification will also vibrate the user's device.
  */
-export function notifyOnBackground(message, vibrate) {
+export function notifyOnBackground(message, formId, vibrate) {
   if (AppState.currentState !== 'active') {
     if (Store.userSettings.notifyOnGeofence) {
+      alert(formId)
       PushNotification.localNotification({
         message: message,
+        formId: formId || '',
         collapse_key: 'goodquestion', // eslint-disable-line camelcase
       });
     }
