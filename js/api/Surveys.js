@@ -247,7 +247,13 @@ function resolveMissingSurveys(currentSurveys, callback) {
     surveyIds.push(survey.id);
   });
 
-  loadSurveys({surveyIds: surveyIds}, (results) => {
+  loadSurveys({surveyIds: surveyIds}, (err, results) => {
+    if (err) {
+      if (callback) {
+        callback(err);
+      }
+      return;
+    }
     const newIds = [];
     results.forEach((survey) => {
       newIds.push(survey.id);
@@ -280,6 +286,7 @@ export function loadSurveyList(options = {}, done) {
     }],
   }, (err, results) => {
     if (err) {
+      console.warn(err);
       if (done) {
         done(err);
       }
