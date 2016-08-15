@@ -256,7 +256,6 @@ export function addAppNotification(notification) {
   }
   try {
     let newNotification = null;
-    console.log(notification)
     currentUser((err, user) => {
       if (err) {
         console.warn('Unable to add notification: User not found.');
@@ -269,7 +268,7 @@ export function addAppNotification(notification) {
           surveyId: notification.surveyId || '',
           formId: notification.formId || '',
           triggerId: notification.triggerId || '',
-          userId: notification. userId || user.id,
+          userId: notification.userId || user.id,
           title: notification.title,
           message: notification.message,
           createdAt: notification.time || new Date(),
@@ -315,7 +314,6 @@ export function showToast(title, message, icon, duration, action) {
 export function notifyOnBackground(message, formId, vibrate) {
   if (AppState.currentState !== 'active') {
     if (Store.userSettings.notifyOnGeofence) {
-      alert(formId)
       PushNotification.localNotification({
         message: message,
         formId: formId || '',

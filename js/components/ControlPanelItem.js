@@ -12,10 +12,10 @@ import Styles from '../styles/Styles';
 const _styles = StyleSheet.create({
   counter: {
     position: 'absolute',
-    top: 17,
+    top: 13,
     right: 10,
-    width: 30,
-    height: 30,
+    width: 26,
+    height: 26,
     backgroundColor: Color.warning,
     borderRadius: 30,
     justifyContent: 'center',

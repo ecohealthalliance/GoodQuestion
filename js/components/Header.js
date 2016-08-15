@@ -39,8 +39,8 @@ const Header = React.createClass({
   getInitialState() {
     const routeStack = this.props.navState.routeStack;
     const position = routeStack.length - 1;
-    const title = routeStack[position].title;
-    const path = routeStack[position].path;
+    const title = routeStack && routeStack[position] ? routeStack[position].title : '';
+    const path = routeStack && routeStack[position] ? routeStack[position].path : '';
     return {
       index: 0,
       title: title,

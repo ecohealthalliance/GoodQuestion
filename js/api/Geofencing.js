@@ -30,16 +30,13 @@ export function crossGeofence(params) {
       // Notify on entry
       if (_.lowerCase(params.action) === 'enter' && suppressNotificationsTimestamp < Date.now()) {
         // Suppress local notifications in case the API receives multiple geofence crossing events in rapid succession.
-        console.log(`${suppressNotificationsTimestamp} - ${Date.now()}`)
         suppressNotificationsTimestamp = Date.now() + 2000;
 
         const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0];
         const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0];
 
         if (form && survey) {
-          if (AppState.currentState !== 'active') {
-            notifyOnBackground(`${form.title} - New geofence form available.`, form.id, true);
-          } else {
+          if (AppState.currentState === 'active') {
             addAppNotification({
               id: form.id,
               surveyId: survey.id,
@@ -58,6 +55,8 @@ export function crossGeofence(params) {
                 type: 'geofence',
               });
             });
+          } else {
+            notifyOnBackground(`${form.title} - New geofence form available.`, form.id, true);
           }
         }
       }
