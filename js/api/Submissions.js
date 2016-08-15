@@ -1,7 +1,9 @@
 import Parse from 'parse/react-native';
 import realm from '../data/Realm';
-import {currentUser} from '../api/Account';
+import { currentUser } from '../api/Account';
+import { getUserLocationData } from './Geofencing';
 import { adminRole } from '../api/Roles';
+import { completeForm } from './Forms';
 import crypto from 'crypto-js';
 import async from 'async';
 import _ from 'lodash';
@@ -16,12 +18,13 @@ const Submission = Parse.Object.extend('Submission');
  * @param {object} user, the current parse user saved to AsyncStorage
  * @param {object} role, the adminRole to be assigned to the object
  */
-Submission.create = function create(uniqueId, formId, answers, user, role) {
+Submission.create = function create(uniqueId, formId, answers, user, geolocation, role) {
   const submission = new Submission();
   submission.set('uniqueId', uniqueId);
   submission.set('formId', formId);
   submission.set('answers', answers);
   submission.set('userId', user);
+  submission.set('geolocation', JSON.stringify(geolocation));
   const acl = new Parse.ACL();
   acl.setReadAccess(user, true);
   acl.setWriteAccess(user, true);
@@ -62,15 +65,17 @@ function createParseSubmission(id, formId, answers, user, done) {
       done('Invalid role.');
       return;
     }
-    const submission = Submission.create(id, formId, answers, user, role);
-    submission.save(null).then(
-      (s) => {
-        done(null, s);
-      },
-      () => {
-        done('Network Error');
-      }
-    );
+    getUserLocationData((geolocation) => {
+      const submission = Submission.create(id, formId, answers, user, geolocation, role);
+      submission.save(null).then(
+        (s) => {
+          done(null, s);
+        },
+        () => {
+          done('Network Error');
+        }
+      );
+    });
   });
 }
 
@@ -152,8 +157,6 @@ function findParseSubmissions(uniqueIds, done) {
 function upsertRealmSubmission(id, formId, userId, answers, dirty, done) {
   const submissions = realm.objects('Submission').filtered(
     `uniqueId = "${id}"`).sorted('created');
-  const notification = realm.objects('Notification').filtered(`formId = "${formId}"`);
-  const timeTrigger = realm.objects('TimeTrigger').filtered(`formId = "${formId}"`);
   if (submissions.length > 0) {
     const submission = submissions[0];
     try {
@@ -161,11 +164,13 @@ function upsertRealmSubmission(id, formId, userId, answers, dirty, done) {
         submission.dirty = true;
         submission.answers = JSON.stringify(answers);
       });
+      completeForm(formId);
       done(null, submission);
     } catch (e) {
       done(`Error updating realm submission ${id}`);
     }
   } else {
+    completeForm(formId);
     realm.write(() => {
       try {
         const submission = realm.create('Submission', {
@@ -176,12 +181,6 @@ function upsertRealmSubmission(id, formId, userId, answers, dirty, done) {
           created: new Date(),
           answers: JSON.stringify(answers),
         });
-        if (notification) {
-          notification.complete = true;
-        }
-        if (timeTrigger) {
-          timeTrigger.complete = true;
-        }
         done(null, submission);
       } catch (e) {
         done(`Error saving realm submission ${id}`);
@@ -325,7 +324,7 @@ export function propagateSubmissions(submissions, done) {
           // create the missing remote objects and add to an array
           const missing = [];
           filtered.forEach((d) => {
-            missing.push(Submission.create(d.uniqueId, d.formId, JSON.parse(d.answers), results.currentUser, results.adminRole));
+            missing.push(Submission.create(d.uniqueId, d.formId, JSON.parse(d.answers), results.currentUser, d.geolocation, results.adminRole));
           });
           // update the existing answers
           res.forEach((e) => {

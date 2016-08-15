@@ -5,15 +5,16 @@ import realm from '../data/Realm';
 // Saves a Question object from Parse into our Realm.io local database
 export function cacheParseQuestions(questions, formId) {
   try {
+    const questionsLength = questions.length;
     realm.write(() => {
-      for (let i = 0; i < questions.length; i++) {
+      for (let i = 0; i < questionsLength; i++) {
         realm.create('Question', {
           id: questions[i].id,
           formId: formId,
           order: questions[i].get('order'),
           text: questions[i].get('text'),
           type: questions[i].get('type'),
-          required: questions[i].get('required') || false,
+          required: questions[i].get('required') === true,
           properties: JSON.stringify(questions[i].get('properties')),
         }, true);
       }
