@@ -23,6 +23,7 @@
 		1496FD3BCD4D4627A014F015 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A56C1DA7C8C14B5BB81D1995 /* Ionicons.ttf */; };
 		1F77A24B54E74698BAC5297C /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 12DCACC28A8244A786D5ABA0 /* EvilIcons.ttf */; };
 		34A45F561CF87DB70019BEA9 /* libRealmJS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 59027C1D1CE4ED4200110480 /* libRealmJS.a */; };
+		3747C1091CD93D11001D3CF1 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3747C1081CD93D11001D3CF1 /* FontAwesome.ttf */; };
 		376AE00E1CF63AD3007ADFDC /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 376AE0051CF63ABE007ADFDC /* libRCTPushNotification.a */; };
 		514E3173C6B148F98D08F978 /* libRNImagePicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 35B0DECF93AF4403B054B804 /* libRNImagePicker.a */; };
 		3B9401033DD44522B5321FA3 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 468BE9B8A59C4CE5A8037900 /* Foundation.ttf */; };
