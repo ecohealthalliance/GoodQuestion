@@ -2,6 +2,7 @@ var _ = require('lodash')
 var Parse = require('parse/node')
 var Questions = require('./Questions')
 var Triggers = require('./Triggers')
+var DemoGeofenceData = require('../data/DemoGeofenceData')
 var Form = Parse.Object.extend("Form")
 var Helpers = require('./Helpers')
 var useMasterKey = {useMasterKey: true}
@@ -24,10 +25,10 @@ function randomHour(dayTimestamp) {
   return date;
 }
 
-function createDemoForm(parentSurvey, dayStartTimestamp) {
+function createDemoForm(parentSurvey, dayStartTimestamp, formNumber) {
   var newForm = new Form()
   var acl = new Parse.ACL()
-  newForm.set('title', 'Form ' + Date.now())
+  newForm.set('title', 'Form #' + formNumber)
   newForm.set('order', 1)
   newForm.set('deleted', false)
   newForm.save(null, useMasterKey)
@@ -56,4 +57,41 @@ function destroyAll() {
   })
 }
 
-module.exports = { Form, loadForms, createDemoForm, destroyAll }
+function createDemoGeofenceForms(parentSurvey) {
+  var data = DemoGeofenceData.forms
+  for (var i = 0; i < data.length; i++) {
+    createDemoGeofenceForm(parentSurvey, data[i])
+  }
+}
+
+function createDemoGeofenceForm(parentSurvey, formData) {
+  var newForm = new Form()
+  var acl = new Parse.ACL()
+  newForm.set('title', formData.title)
+  newForm.set('order', formData.order)
+  newForm.set('deleted', false)
+
+  newForm.save(null, useMasterKey)
+    .then(function(newForm){
+      return parentSurvey.fetch(useMasterKey)
+    })
+    .then(function(survey){
+      var relation = survey.relation('forms')
+      relation.add(newForm)
+      survey.save(null, useMasterKey)
+    })
+    .then(function(){
+      return Users.setUserRights(newForm)
+    })
+    .then(function(){
+      Questions.createDemoGeofenceQuestions(newForm)
+      Triggers.createDemoGeofenceTrigger(newForm)
+    })
+    .fail(function(e){console.log(e);})
+}
+
+<<<<<<< HEAD
+module.exports = { Form, loadForms, createDemoForm, destroyAll, createDemoGeofenceForms }
+=======
+module.exports = { Form, loadForms, createDemoForm, destroyAll, createDemoGeofenceForms }
+>>>>>>> refs/remotes/origin/master

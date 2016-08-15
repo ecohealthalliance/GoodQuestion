@@ -1,4 +1,5 @@
-import React, {
+import React from 'react';
+import {
   View,
   Platform,
   Navigator,
@@ -34,6 +35,8 @@ import SurveyListPage from '../views/SurveyListPage';
 import TermsOfServicePage from '../views/TermsOfServicePage';
 import SurveyDetailsPage from '../views/SurveyDetailsPage';
 import NotificationsPage from '../views/NotificationsPage';
+import MapPage from '../views/MapPage';
+import CalendarPage from '../views/CalendarPage';
 import RegistrationPages from '../views/RegistrationPages';
 import FormPage from '../views/FormPage';
 import ControlPanel from '../views/ControlPanel';
@@ -42,11 +45,16 @@ import ProfilePage from '../views/ProfilePage';
 import { upsertInstallation } from '../api/Installations';
 import { checkTimeTriggers } from '../api/Triggers';
 import { loadCachedFormDataById } from '../api/Forms';
+// import { addTimeTriggerNotification } from '../api/Notifications';
+
+// Background
+import { initializeGeolocationService, handleAppStateChange } from '../api/BackgroundProcess';
 
 connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 
 let navigator = null;
 let initialRoute = { path: 'surveylist', title: 'Surveys' };
+let currentRoute = initialRoute;
 const toaster = <Toaster key='toaster' />;
 
 // Binds the hardware "back button" from Android devices
@@ -70,8 +78,9 @@ const SharedNavigator = React.createClass({
   getInitialState() {
     return {
       title: '',
-      isLoading: true,
-      isAuthenticated: false,
+      isLoading: true,        // Temporarily prevents the main component from rendering while loading authentication data.
+      isAuthenticated: false, // Indicates if the user is currently logged in.
+      newLogin: false,        // Indicates if the user has performed a login in this session.
     };
   },
 
@@ -92,12 +101,9 @@ const SharedNavigator = React.createClass({
     isAuthenticated((authenticated) => {
       if (authenticated) {
         checkTimeTriggers();
-        checkDirtyObjects((err, res) => {
+        checkDirtyObjects((err) => {
           if (err) {
             console.warn(err);
-          }
-          if (res) {
-            console.log(res);
           }
           // set state after the check is complete
           this.setState({
@@ -122,9 +128,40 @@ const SharedNavigator = React.createClass({
         CodePush.sync();
       }
     });
-    // ask for permissions to push notifications
+
+    isAuthenticated((authenticated) => {
+      if (authenticated) {
+        this.initializeUserServices();
+      }
+      this.setState({
+        isAuthenticated: authenticated,
+        isLoading: false,
+      });
+    });
+
+    // Handle changes on AppState to minimize impact on batery life.
+    AppState.addEventListener('change', handleAppStateChange);
+  },
+
+  checkNotificationPermissions() {
     if (Platform.OS === 'ios') {
-      PushNotification.requestPermissions();
+      PushNotification.checkPermissions((result) => {
+        if (
+          PushNotification.isLoaded &&
+          !result.alert ||
+          !result.badge ||
+          !result.sound
+        ) {
+          console.log('Requesting new PushNotification permissions.');
+          PushNotification.requestPermissions().then((permissions) => {
+            if (!permissions.alert || !permissions.badge || !permissions.sound) {
+              // TODO: Notify of missing permissions and how to fix them.
+              // Settings -> GoodQuestion -> Notifications
+              // Notify only once.
+            }
+          });
+        }
+      });
     }
   },
 
@@ -155,12 +192,14 @@ const SharedNavigator = React.createClass({
   _onRegister(registration) {
     const token = registration.token;
     const platform = registration.os;
+
+    this.checkNotificationPermissions();
     if (platform === 'ios') {
       PushNotification.setApplicationIconBadgeNumber(0);
     }
     upsertInstallation(token, platform, (err) => {
       if (err) {
-        console.error(err);
+        console.warn(err);
         return;
       }
     });
@@ -170,9 +209,16 @@ const SharedNavigator = React.createClass({
   setAuthenticated(authenticated) {
     this.setState({
       isAuthenticated: authenticated,
+      newLogin: true,
     }, () => {
+      this.initializeUserServices();
       navigator.resetTo({path: 'surveylist', title: 'Surveys'});
     });
+  },
+
+  initializeUserServices() {
+    this.checkNotificationPermissions();
+    initializeGeolocationService();
   },
 
   logoutHandler() {
@@ -197,11 +243,22 @@ const SharedNavigator = React.createClass({
     if (this._controlPanel && this._controlPanel.navigating) {
       const path = this._controlPanel.nextPath;
       const title = this._controlPanel.nextTitle;
-      if (navigator) {
-        const routeStack = navigator.getCurrentRoutes();
-        const currentRoutePath = routeStack[routeStack.length - 1].path;
-        if (path !== currentRoutePath) {
-          navigator.push({path: path, title: title});
+      if (!navigator) {
+        return;
+      }
+
+      const routeStack = navigator.getCurrentRoutes();
+      const currentRoutePath = routeStack[routeStack.length - 1].path;
+      if (path !== currentRoutePath) {
+        if (path === 'surveylist') {
+          // Reset route stack when viewing map to avoid multiple map components from being loaded at the same time.
+          navigator.resetTo({path: path, title: title});
+        } else if (navigator.getCurrentRoutes().length === 1) {
+            navigator.push({path: path, title: title});
+        } else {
+          navigator.replaceAtIndex({path: path, title: title}, 1, () => {
+            navigator.popToRoute(navigator.getCurrentRoutes()[1]);
+          });
         }
       }
     }
@@ -221,15 +278,20 @@ const SharedNavigator = React.createClass({
     let viewComponent = null;
     let wrapperStyles = null;
 
-    const sharedProps = {
-      navigator: nav,
-      logout: this.logoutHandler,
-    };
-
     if (!this.state.isAuthenticated && !route.unsecured) {
       route.path = 'login';
       route.title = '';
     }
+
+    const sharedProps = {
+      navigator: nav,
+      path: route.path,
+      previousPath: currentRoute.path,
+      logout: this.logoutHandler,
+      newLogin: this.state.newLogin,
+    };
+
+    currentRoute = route;
 
     switch (route.path) {
       case 'login':
@@ -241,6 +303,12 @@ const SharedNavigator = React.createClass({
       case 'notifications':
         viewComponent = <NotificationsPage {...sharedProps} />;
         break;
+      case 'map':
+        viewComponent = <MapPage {...sharedProps} />;
+        break;
+      case 'calendar':
+        viewComponent = <CalendarPage {...sharedProps} />;
+        break;
       case 'terms':
         viewComponent = <TermsOfServicePage {...sharedProps} />;
         break;
@@ -251,7 +319,7 @@ const SharedNavigator = React.createClass({
         viewComponent = <ProfilePage {...sharedProps} />;
         break;
       case 'form':
-        viewComponent = <FormPage {...sharedProps} form={route.form} survey={route.survey} index={route.index} />;
+        viewComponent = <FormPage {...sharedProps} form={route.form} survey={route.survey} index={route.index} type={route.type} />;
         break;
       case 'survey-details':
         viewComponent = <SurveyDetailsPage {...sharedProps} survey={route.survey} formCount={route.formCount} questionCount={route.questionCount} />;
@@ -282,11 +350,10 @@ const SharedNavigator = React.createClass({
 
   /* Render */
   render() {
-
     // show loading component without the navigationBar
     if (this.state.isLoading) {
       return (
-        <Loading/>
+        <Loading key='navigator-loading-icon' />
       );
     }
 
@@ -313,6 +380,7 @@ const SharedNavigator = React.createClass({
           panCloseMask={0.25}
           closedDrawerOffset={-3}
           styles={Styles.drawer}
+          elevation={10}
           onClose={this.changeRouteViaControlPanel}
           tweenDuration={200}
           tweenEasing='easeOutCubic'

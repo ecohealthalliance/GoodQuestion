@@ -1,5 +1,5 @@
-
-import React, {
+import React from 'react';
+import {
   Alert,
   Text,
   TextInput,
@@ -10,6 +10,7 @@ import React, {
 
 import Variables from '../styles/Variables';
 import Styles from '../styles/Styles';
+import Footer from '../components/Footer';
 import Button from '../components/Button';
 
 import { authenticate } from '../api/Account';
@@ -102,9 +103,9 @@ const LoginPage = React.createClass({
               <TextInput
                 ref='email'
                 style={Styles.form.input}
-                onChangeText={this.textFieldChangeHandler.bind(this, 'email')}
-                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'emailView', Variables.LOGIN_HEIGHT)}
-                onBlur={this.trimText.bind(this, 'email')}
+                onChangeText={this.textFieldChangeHandler.bind(null, 'email')}
+                onFocus={this.scrollToViewWrapper.bind(null, 'scrollView', 'emailView', Variables.LOGIN_HEIGHT)}
+                onBlur={this.trimText.bind(null, 'email')}
                 value={this.state.email}
                 autoCapitalize='none'
                 autoCorrect={false}
@@ -120,9 +121,9 @@ const LoginPage = React.createClass({
                 ref='password'
                 secureTextEntry={true}
                 style={Styles.form.input}
-                onChangeText={this.textFieldChangeHandler.bind(this, 'password')}
-                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'passwordView', Variables.LOGIN_HEIGHT)}
-                onBlur={this.trimText.bind(this, 'password')}
+                onChangeText={this.textFieldChangeHandler.bind(null, 'password')}
+                onFocus={this.scrollToViewWrapper.bind(null, 'scrollView', 'passwordView', Variables.LOGIN_HEIGHT)}
+                onBlur={this.trimText.bind(null, 'password')}
                 value={this.state.password}
                 autoCapitalize='none'
                 autoCorrect={false}
@@ -140,12 +141,14 @@ const LoginPage = React.createClass({
             </Button>
           </View>
         </ScrollView>
-        <Button
-          action={this.handleRegistration}
-          style={Styles.form.footerButton}
-          textStyle={[Styles.form.registerText, Styles.form.registerTextActive]}>
-          Register an Account
-        </Button>
+        <Footer>
+          <Button
+            action={this.handleRegistration}
+            style={Styles.form.footerButton}
+            textStyle={[Styles.form.registerText, Styles.form.registerTextActive]}>
+            Register an Account
+          </Button>
+        </Footer>
       </View>
     );
   },

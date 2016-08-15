@@ -1,5 +1,5 @@
-
-import React, {
+import React from 'react';
+import {
   Text,
   TextInput,
   View,
@@ -8,6 +8,7 @@ import React, {
 
 import Variables from '../styles/Variables';
 import Button from '../components/Button';
+import Footer from '../components/Footer';
 import Styles from '../styles/Styles';
 
 import Joi from '../lib/joi-browser.min';
@@ -94,9 +95,9 @@ const RegistrationPagePart3 = React.createClass({
               <TextInput
                 ref='name'
                 style={Styles.form.input}
-                onChangeText={this.textFieldChangeHandler.bind(this, 'name')}
-                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'nameView', Variables.REGISTRATION_HEIGHT)}
-                onBlur={this.trimText.bind(this, 'name')}
+                onChangeText={this.textFieldChangeHandler.bind(null, 'name')}
+                onFocus={this.scrollToViewWrapper.bind(null, 'scrollView', 'nameView', Variables.REGISTRATION_HEIGHT)}
+                onBlur={this.trimText.bind(null, 'name')}
                 value={this.state.name}
                 autoCapitalize='none'
                 autoCorrect={false}
@@ -111,9 +112,9 @@ const RegistrationPagePart3 = React.createClass({
               <TextInput
                 ref='phone'
                 style={Styles.form.input}
-                onChangeText={this.textFieldChangeHandler.bind(this, 'phone')}
-                onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'phoneView', Variables.REGISTRATION_HEIGHT)}
-                onBlur={this.trimText.bind(this, 'phone')}
+                onChangeText={this.textFieldChangeHandler.bind(null, 'phone')}
+                onFocus={this.scrollToViewWrapper.bind(null, 'scrollView', 'phoneView', Variables.REGISTRATION_HEIGHT)}
+                onBlur={this.trimText.bind(null, 'phone')}
                 value={this.state.phone}
                 autoCapitalize='none'
                 autoCorrect={false}
@@ -123,9 +124,11 @@ const RegistrationPagePart3 = React.createClass({
             </View>
           </View>
         </ScrollView>
-        <Button action={this.finish} style={this.buttonStyles} textStyle={this.buttonTextStyles}>
-          {this.state.buttonText}
-        </Button>
+        <Footer>
+          <Button action={this.finish} style={this.buttonStyles} textStyle={this.buttonTextStyles}>
+            {this.state.buttonText}
+          </Button>
+        </Footer>
       </View>
     );
   },
