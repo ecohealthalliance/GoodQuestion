@@ -11,6 +11,15 @@ function loadQuestions (options, callback) {
   Helpers.fetchObjects(Question, callback)
 }
 
+function loadFormQuestions (form) {
+  var query;
+  query = form.relation('questions').query();
+  return query.find(useMasterKey)
+    .then(function(questions) {
+      return questions
+    })
+}
+
 function createDemoQuestions(parentForm) {
   var questions = []
   var limit = DemoData.questions.length < 10 ? DemoData.questions.length : 10
@@ -58,7 +67,7 @@ function createDemoGeofenceQuestions(parentForm) {
 
   for (var i = 0; i < data.length; i++) {
     var newQuestion = new Question()
-    
+
     newQuestion.set('text', data[i].text)
     newQuestion.set('type', data[i].type)
     newQuestion.set('properties', data[i].properties)
@@ -93,4 +102,4 @@ function destroyAll() {
   })
 }
 
-module.exports = { Question, loadQuestions, createDemoQuestions, destroyAll, createDemoGeofenceQuestions }
+module.exports = { Question, loadQuestions, loadFormQuestions, createDemoQuestions, destroyAll, createDemoGeofenceQuestions }

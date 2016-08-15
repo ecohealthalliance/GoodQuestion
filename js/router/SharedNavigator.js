@@ -50,6 +50,7 @@ connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 
 let navigator = null;
 let initialRouteStack = Store.initialRouteStack;
+let currentRoute = initialRouteStack[0];
 const toaster = <Toaster key='toaster' />;
 
 // Binds the hardware "back button" from Android devices
@@ -73,8 +74,9 @@ const SharedNavigator = React.createClass({
   getInitialState() {
     return {
       title: '',
-      isLoading: true,
-      isAuthenticated: false,
+      isLoading: true,        // Temporarily prevents the main component from rendering while loading authentication data.
+      isAuthenticated: false, // Indicates if the user is currently logged in.
+      newLogin: false,        // Indicates if the user has performed a login in this session.
     };
   },
 
@@ -124,7 +126,9 @@ const SharedNavigator = React.createClass({
   setAuthenticated(authenticated) {
     this.setState({
       isAuthenticated: authenticated,
+      newLogin: true,
     }, () => {
+      this.initializeUserServices();
       navigator.resetTo({path: 'surveylist', title: 'Surveys'});
     });
   },
@@ -191,15 +195,20 @@ const SharedNavigator = React.createClass({
     let viewComponent = null;
     let wrapperStyles = null;
 
-    const sharedProps = {
-      navigator: nav,
-      logout: this.logoutHandler,
-    };
-
     if (!this.state.isAuthenticated && !route.unsecured) {
       route.path = 'login';
       route.title = '';
     }
+
+    const sharedProps = {
+      navigator: nav,
+      path: route.path,
+      previousPath: currentRoute.path,
+      logout: this.logoutHandler,
+      newLogin: this.state.newLogin,
+    };
+
+    currentRoute = route;
 
     switch (route.path) {
       case 'login':
@@ -261,7 +270,7 @@ const SharedNavigator = React.createClass({
     // show loading component without the navigationBar
     if (this.state.isLoading) {
       return (
-        <Loading/>
+        <Loading key='navigator-loading-icon' />
       );
     }
 
