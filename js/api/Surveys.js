@@ -70,7 +70,7 @@ export function loadAllAcceptedSurveys(callback) {
     const surveys = [];
     const invitationsLength = invitations.length;
     for (let i = 0; i < invitationsLength; i++) {
-      const acceptedSurvey = realm.objects('Survey').filtered(`id = "${invitations[i].surveyId}"`)[0];
+      const acceptedSurvey = realm.objects('Survey').filtered(`id = "${invitations[i].surveyId}" AND active == true`)[0];
       if (acceptedSurvey) {
         surveys.push(acceptedSurvey);
       }
@@ -173,11 +173,19 @@ export function loadSurveys(options = {}, callback) {
               loadForms(results[i]);
             }
           }
+          // Cache new results
           cacheParseSurveys(results[i]);
+
+          // Refresh triggers and form data for active surveys
           if (options.forceRefresh || results[i].active && !cachedSurveyTriggers || cachedSurveyTriggers.length === 0) {
             if (cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime()) {
               refreshAcceptedSurveyData(results[i].id);
             }
+          }
+
+          // Disable triggers for deactivated surveys
+          if (results[i].active === false || results[i].deleted === true) {
+            disableTriggers(results[i].id);
           }
         }
       }

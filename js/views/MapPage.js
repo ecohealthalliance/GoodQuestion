@@ -51,6 +51,7 @@ const MapPage = React.createClass({
   componentDidMount() {
     loadCachedGeofenceTriggers({
       surveyId: this.props.survey ? this.props.survey.id : false,
+      excludeExpired: true,
       excludeCompleted: true,
     }, (err, response) => {
       setActiveMap(this);

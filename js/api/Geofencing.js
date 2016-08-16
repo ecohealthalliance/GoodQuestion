@@ -107,7 +107,7 @@ export function resetGeofences(callback) {
 export function setupGeofences(callback) {
   // BackgroundGeolocation.stop()
 
-  loadCachedGeofenceTriggers({excludeCompleted: true}, (err, response) => {
+  loadCachedGeofenceTriggers({excludeCompleted: true, excludeExpired: true}, (err, response) => {
     resetGeofences((err2) => {
       if (err2) {
         console.warn('Unable to load geofence triggers');
