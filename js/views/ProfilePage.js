@@ -1,28 +1,32 @@
-
-import React, {
+import React from 'react';
+import {
   Text,
   TextInput,
   View,
   Alert,
   Image,
   ScrollView,
+  TouchableHighlight,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Styles from '../styles/Styles';
 import Color from '../styles/Color';
-import {currentUser, updateProfile} from '../api/Account';
+
+import ProfileItem from '../components/ProfileItem';
+
+import {updateProfile, getAvatarImage, changeAvatarImage} from '../api/Account';
 
 import Button from '../components/Button';
-import ProfileItem from '../components/ProfileItem';
+import Loading from '../components/Loading';
 
 import Joi from '../lib/joi-browser.min';
 import JoiMixins from '../mixins/joi-mixins';
 import EventMixins from '../mixins/event-mixins';
 
 
-const logo = require('../images/profile_logo.png');
+const defaultAvatar = require('../images/profile_logo.png');
 
 const ProfilePage = React.createClass({
   propTypes: {
@@ -41,28 +45,38 @@ const ProfilePage = React.createClass({
 
   getInitialState() {
     return {
+      isLoading: true,
       buttonText: 'Save',
-      username: null,
+      email: null,
       name: null,
       phone: null,
       currentPassword: null,
       newPassword: null,
       repeatNewPassword: null,
+      avatar: defaultAvatar,
       errors: [],
     };
   },
 
   componentWillMount() {
-    currentUser((err, user) => {
+    getAvatarImage((err, result) => {
       if (err) {
-        Alert.alert('Please Login');
-        this.props.navigator.resetTo({path: 'login', title: ''});
+        if (err && err === 'Invalid User') {
+          Alert.alert('Please Login');
+          this.props.navigator.resetTo({path: 'login', title: ''});
+          return;
+        }
+        this.setState({isLoading: false});
+        console.warn(err);
         return;
       }
+      const avatar = result.source;
       this.setState({
-        username: user.get('username'),
-        name: user.get('name'),
-        phone: user.get('phone'),
+        isLoading: false,
+        avatar: avatar,
+        email: result.user.get('username'),
+        name: result.user.get('name'),
+        phone: result.user.get('phone'),
       });
     });
   },
@@ -195,40 +209,73 @@ const ProfilePage = React.createClass({
             />
           </View>
         </View>
-        <View style={Styles.form.bottomForm}>
-          <Button action={this.submit} color='primary' wide>
-            {this.state.buttonText}
-          </Button>
-        </View>
       </View>
     );
   },
 
+  handleImagePicker() {
+    changeAvatarImage(this, (err, result) => {
+      if (err) {
+        this.setState({isLoading: false});
+        if (err === 'Canceled') {
+          return;
+        }
+        Alert.alert('Error', 'There was an error saving the image.');
+        return console.warn(err);
+      }
+      const avatar = {uri: result.save};
+      this.setState({
+        isLoading: false,
+        avatar: avatar,
+      });
+    });
+  },
+
   /* Render */
   render() {
+    let loading = null;
+    if (this.state.isLoading) {
+      loading = <Loading style={Styles.profile.loading} size={60} />;
+    }
     return (
-      <ScrollView ref='scrollView' horizontal={false} style={{flex: 1, backgroundColor: '#fff'}} >
-        <View style={Styles.profile.header}>
-          <Image source={logo} style={Styles.profile.picture}></Image>
-          <Text style={Styles.profile.username}> {this.state.username} </Text>
-        </View>
-        <View>
-          <View style={Styles.profile.itemList}>
-            <ProfileItem
-              text='Your Information'
-              icon={<View style={Styles.profile.iconView}><Icon name='user' size={28} color={Color.primary} /></View>}
-              collapsed={false}>
-              {this.renderYourInformation()}
-            </ProfileItem>
-            <ProfileItem
-              text='Change Password'
-              icon={<View style={Styles.profile.iconView}><Icon name='key' size={28} color={Color.primary} /></View>}
-              collapsed={true}>
-              {this.renderChangePassword()}
-            </ProfileItem>
+      <View style={{flex: 1, backgroundColor: '#fff'}}>
+        <ScrollView ref='scrollView' horizontal={false} style={{flex: 1, backgroundColor: '#fff'}} >
+          <View style={Styles.profile.header}>
+            <View style={Styles.profile.avatarView}>
+              <View style={{borderRadius: 90, borderWidth: 2, borderColor: '#fff'}}>
+                <Image source={this.state.avatar} style={Styles.profile.picture} >
+                  {loading}
+                </Image>
+              </View>
+              <TouchableHighlight onPress={this.handleImagePicker} underlayColor='#C4F5FF' style={Styles.profile.avatarTouchable}>
+                <View style={Styles.profile.changeProfileImageView}>
+                  <Icon name='camera' size={28} color={Color.primary} />
+                </View>
+              </TouchableHighlight>
+            </View>
+            <View style={Styles.profile.basicInfoView} >
+              <Text style={Styles.profile.name}> {this.state.name} </Text>
+              <Text style={Styles.profile.phone}> {this.state.phone} </Text>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+          <View>
+            <View style={Styles.profile.itemList}>
+              <ProfileItem
+                text='Your Information'
+                icon={<View style={Styles.profile.iconView}><Icon name='user' size={28} color={Color.primary} /></View>}
+                collapsed={false}>
+                {this.renderYourInformation()}
+              </ProfileItem>
+              <ProfileItem
+                text='Change Password'
+                icon={<View style={Styles.profile.iconView}><Icon name='key' size={28} color={Color.primary} /></View>}
+                collapsed={true}>
+                {this.renderChangePassword()}
+              </ProfileItem>
+            </View>
+          </View>
+        </ScrollView>
+      </View>
     );
   },
 });

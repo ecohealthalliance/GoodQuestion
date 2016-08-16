@@ -1,19 +1,23 @@
-import pubsub from 'pubsub-js';
-import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
-
-import React, {
-  Text,
-  TouchableWithoutFeedback,
+// React
+import React from 'react';
+import {
   View,
+  KeyboardAvoidingView,
+  ScrollView,
+  Text,
   Platform,
   Alert,
+  Dimensions,
 } from 'react-native';
 
+// Libraries
 import _ from 'lodash';
+import pubsub from 'pubsub-js';
+import moment from 'moment';
 import dismissKeyboard from 'dismissKeyboard';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-import Styles from '../styles/Styles';
-
+// Question Types
 import ShortAnswer from '../components/QuestionTypes/ShortAnswer';
 import Checkboxes from '../components/QuestionTypes/Checkboxes';
 import MultipleChoice from '../components/QuestionTypes/MultipleChoice';
@@ -25,20 +29,25 @@ import DateQuestionAndroid from '../components/QuestionTypes/DateQuestionAndroid
 import DatetimeQuestionAndroid from '../components/QuestionTypes/DatetimeQuestionAndroid';
 import CompleteForm from '../components/QuestionTypes/CompleteForm';
 
+// Components
 import Footer from '../components/Footer';
 import Loading from '../components/Loading';
+import Overlay from '../components/Overlay';
+import Styles from '../styles/Styles';
 import Color from '../styles/Color';
 import TypeStyles from '../styles/_TypeStyles';
 import Swiper from '../components/Swiper/Swiper';
 import SurveyFormNavigator from '../components/SurveyFormNavigator';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import moment from 'moment';
 
-import { loadCachedTrigger } from '../api/Triggers';
+// API
+import { ToastAddresses, ToastMessage } from '../models/messages/ToastMessage';
+import { loadCachedTriggers } from '../api/Triggers';
 import { validateUser } from '../api/Account';
-import { loadCachedForms } from '../api/Forms';
+import { loadCachedForms, loadActiveGeofenceFormsInRange } from '../api/Forms';
 import { loadCachedSubmissions, saveSubmission} from '../api/Submissions';
 import { loadCachedQuestions } from '../api/Questions';
+
+const CONTENT_HEIGHT = Dimensions.get('window').height - 140;
 
 const FormPage = React.createClass({
   form: null,
@@ -46,21 +55,26 @@ const FormPage = React.createClass({
   _questionIndex: 0,
   propTypes: {
     survey: React.PropTypes.object.isRequired,
+    type: React.PropTypes.string,
+    form: React.PropTypes.object,
     index: React.PropTypes.number,
   },
 
+  getDefaultProps() {
+    return {
+      type: 'datetime',
+      index: 0,
+    };
+  },
+
   getInitialState() {
-    const forms = loadCachedForms(this.props.survey.id);
-    let index = 0;
-    if (this.props.index) {
-      index = this.props.index;
-    }
+    const forms = this.props.form ? [this.props.form] : loadCachedForms(this.props.survey.id);
 
     return {
       forms: forms,
       isLoading: true,
-      index: index,
-      buttonText: 'Submit',
+      isSubmitting: false,
+      index: this.props.index,
       formsInQueue: false,
     };
   },
@@ -113,20 +127,30 @@ const FormPage = React.createClass({
   },
 
   componentWillMount() {
-
     const index = this.state.index;
-    let forms = this.formsWithTriggers();
-    const allForms = forms;
+    const type = this.props.type;
     let answers = {};
-    forms = this.filterForms(forms);
-    if (forms.length === 0) {
+    let forms = this.state.forms;
+    let allForms = [];
+
+    if (!forms || forms.length === 0) {
+      if (type === 'geofence') {
+        forms = loadActiveGeofenceFormsInRange(this.props.survey.id);
+      } else if (type === 'datetime') {
+        forms = this.formsWithTriggers();
+        allForms = forms;
+        forms = this.filterForms(forms);
+        forms = this.sortForms(forms);
+      }
+    }
+
+    if (!forms || forms.length === 0) {
       const futureForms = _.filter(allForms, (form) => {
         return form.trigger > new Date();
       });
       this.setState({isLoading: false, futureForms: futureForms, futureFormCount: futureForms.length});
       return;
     }
-    forms = this.sortForms(forms);
 
     this.form = forms[index];
     this.nextForm = forms[index + 1];
@@ -162,6 +186,7 @@ const FormPage = React.createClass({
         })();
       });
     }
+
     this.setState({
       questions: questions,
       answers: answers,
@@ -197,7 +222,7 @@ const FormPage = React.createClass({
 
   formsWithTriggers() {
     return _.map(this.state.forms, (form) => {
-      loadCachedTrigger(form.id).forEach((trigger) => {
+      loadCachedTriggers(form.id).forEach((trigger) => {
         form.trigger = trigger.datetime;
       });
       return form;
@@ -231,6 +256,10 @@ const FormPage = React.createClass({
   },
 
   submit() {
+    if (this.state.isSubmitting) {
+      return;
+    }
+
     const answers = this.state.answers;
     const formId = this.form.id;
     const index = this.state.index;
@@ -242,11 +271,20 @@ const FormPage = React.createClass({
           return;
         }
         Alert.alert('Error', err);
+        this.setState({ isSubmitting: false });
+
         return;
       }
 
+      this.setState({ isSubmitting: false });
       // Publish a ToastMessage to our Toaster via pubsub
-      const toastMessage = ToastMessage.createFromObject({title: 'Success', message: 'The form has been submitted.', icon: 'check', iconColor: Color.fadedGreen});
+      const toastMessage = ToastMessage.createFromObject({
+        title: 'Success',
+        duration: 2,
+        message: 'The form has been submitted.',
+        icon: 'check',
+        iconColor: Color.fadedGreen,
+      });
       pubsub.publish(ToastAddresses.SHOW, toastMessage);
 
       // If there is another form continue onto that
@@ -341,12 +379,17 @@ const FormPage = React.createClass({
           break;
       }
       return (
-        <TouchableWithoutFeedback
-          onPress={this.dismiss}>
-          <View style={{flex: 1}}>
+        <ScrollView
+          bounces={false}
+          decelerationRate='fast'
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{flex: 0}}
+          style={{ overflow: 'hidden' }}
+          >
+          <View style={{paddingBottom: 90}}>
             {questionComponent}
           </View>
-        </TouchableWithoutFeedback>
+        </ScrollView>
       );
     });
 
@@ -357,12 +400,8 @@ const FormPage = React.createClass({
 
   render() {
     if (this.state.isLoading) {
-      return (
-        <Loading/>
-      );
-    }
-
-    if (!this.state.formsInQueue) {
+      return <Loading/>;
+    } else if (!this.state.formsInQueue) {
       return (
         <View style={TypeStyles.statusMessageContainer}>
           <Icon name='clock-o' size={100} color={Color.fadedRed} />
@@ -374,7 +413,7 @@ const FormPage = React.createClass({
 
     return (
       <View style={{flex: 1}}>
-        <View style={{flex: 1, paddingHorizontal: 20, overflow: 'hidden'}}>
+        <KeyboardAvoidingView behavior='position' style={{flex: 1}}>
           <View style={Styles.form.titleHeading}>
             <Text style={Styles.form.titleText}> {this.form.title} </Text>
           </View>
@@ -383,15 +422,20 @@ const FormPage = React.createClass({
               this._swiper = swiper;
             }}
             style={{flex: 1}}
-            containerStyle={{overflow: 'visible'}}
+            containerStyle={{
+              height: CONTENT_HEIGHT,
+              marginHorizontal: Platform.OS === 'ios' ? 20 : 0,
+              overflow: 'visible',
+            }}
             pager={false}
             index={this._questionIndex}
             beforePageChange={this.beforePageChange}
             onPageChange={this.onPageChange}
             children={this.renderQuestions()}
-            threshold={50}>
+            threshold={25}>
           </Swiper>
-        </View>
+        </KeyboardAvoidingView>
+
         <Footer style={{height: 50}}>
           <SurveyFormNavigator
             ref={(nav) => {
@@ -402,6 +446,12 @@ const FormPage = React.createClass({
             onPressed={this.changePage}
            />
         </Footer>
+
+        {this.state.isSubmitting
+        ? <Overlay>
+            <Loading color='white' text='Submitting Form...' />
+          </Overlay>
+        : null}
       </View>
     );
   },
