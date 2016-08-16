@@ -12,8 +12,8 @@ import Styles from '../styles/Styles';
 const _styles = StyleSheet.create({
   counter: {
     position: 'absolute',
-    top: 13,
-    right: 10,
+    top: 19,
+    right: 3,
     width: 26,
     height: 26,
     backgroundColor: Color.warning,
