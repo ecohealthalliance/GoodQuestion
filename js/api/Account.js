@@ -3,11 +3,19 @@ import Parse from 'parse/react-native';
 import Store from '../data/Store';
 import async from 'async';
 import Settings from '../settings';
+
 import { addUserToInstallation } from '../api/Installations';
+import ImagePicker from 'react-native-image-picker';
+
+import pubsub from 'pubsub-js';
+import {ProfileAddresses, ProfileMessage} from '../models/messages/ProfileMessage';
+
+import { PixelRatio } from 'react-native';
 
 let _currentUser = null;
-const _networkTimeout = Settings.networkTimeout || 10000;
 let _timer = null;
+const _networkTimeout = Settings.networkTimeout || 10000;
+const defaultAvatar = require('../images/profile_logo.png');
 
 /**
  * Callback 'done' is stanard node.js style (err, res)
@@ -362,4 +370,84 @@ export function validateUser() {
       Store.navigator.resetTo({path: 'login', title: ''});
     }
   });
+}
+
+/**
+ * Gets the avatar of the current user
+ *
+ * @param {done} done, the function to execute when done
+ * @returns {undefined}
+ */
+export function getAvatarImage(done) {
+  async.auto({
+    user: (cb) => {
+      currentUser(cb);
+    },
+    source: ['user', (cb, result) => {
+      const avatarBase64 = result.user.get('avatarBase64');
+      if (typeof avatarBase64 === 'string' && avatarBase64.substring(0, 23) === 'data:image/jpeg;base64,') {
+        return cb(null, {uri: avatarBase64});
+      }
+      return cb(null, defaultAvatar);
+    }],
+  }, done);
+}
+
+ /**
+  * Changes the avatar of the current user
+  *
+  * @param {object} component, the component ref to set the loading state upon async network request
+  * @param {done} done, the function to execute when done
+  * @returns {undefined}
+  */
+export function changeAvatarImage(component, done) {
+  const options = {
+    title: 'Select your Profile Image',
+    maxWidth: PixelRatio.getPixelSizeForLayoutSize(180),
+    maxHeight: PixelRatio.getPixelSizeForLayoutSize(180),
+    allowsEditing: true,
+  };
+  async.auto({
+    user: (cb) => {
+      currentUser(cb);
+    },
+    image: ['user', (cb) => {
+      ImagePicker.showImagePicker(options, (response) => {
+        if (response.didCancel) {
+          return cb('Canceled');
+        }
+        if (response.error) {
+          return cb(response.error);
+        }
+        component.setState({isLoading: true});
+        const data = `data:image/jpeg;base64,${response.data}`;
+        cb(null, data);
+      });
+    }],
+    save: ['image', (cb, result) => {
+      let previousAvatar = null;
+      if (result.user.get('avatarBase64')) {
+        previousAvatar = result.user.get('avatarBase64');
+      } else {
+        previousAvatar = defaultAvatar;
+      }
+      result.user.set('avatarBase64', result.image);
+      result.user.save().then(
+        () => {
+          cb(null, result.image);
+        },
+        (err) => {
+          // an error occured, notify the user
+          result.user.set('avatarBase64', previousAvatar);
+          cb(err);
+        }
+      );
+    }],
+    pub: ['save', (cb, result) => {
+      // Publish a Profile change message via pubsub
+      const profileMessage = ProfileMessage.createFromObject({uri: result.save});
+      pubsub.publish(ProfileAddresses.CHANGE, profileMessage);
+      cb(null, true);
+    }],
+  }, done);
 }

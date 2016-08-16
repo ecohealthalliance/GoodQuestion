@@ -123,15 +123,14 @@ export function initializeGeolocationService() {
 
     BackgroundGeolocation.on('error', (error) => {
       printTimelog('error');
-      console.log(`${error.type} Error: ${error.code}`);
+      console.warn(`${error.type} Error: ${error.code}`);
     });
 
     // Create initial geofence hooks.
-    setupGeofences(() => {
-      BackgroundGeolocation.start(() => {
-        Store.backgroundServiceState = 'started';
-        console.info('Geolocation tracking started.');
-      });
+    BackgroundGeolocation.start(() => {
+      Store.backgroundServiceState = 'started';
+      console.info('Geolocation tracking started.');
+      setupGeofences();
     });
   });
 }
@@ -146,12 +145,9 @@ export function handleAppStateChange(state) {
     configureGeolocationService({energySaving: false}, () => {
       // Switch to active tracking on Android devices
       if (Platform.OS === 'android' && Store.backgroundServiceState !== 'started') {
-        BackgroundGeolocation.stop(() => {
-          BackgroundGeolocation.start((newState) => {
-            console.log(newState);
-            Store.backgroundServiceState = 'started';
-            console.info('Geolocation tracking started.');
-          });
+        BackgroundGeolocation.start(() => {
+          Store.backgroundServiceState = 'started';
+          console.info('Geolocation tracking started.');
         });
       }
     });
@@ -159,12 +155,9 @@ export function handleAppStateChange(state) {
     configureGeolocationService({energySaving: true}, () => {
       // Switch to geofence tracking only on Android devices.
       if (Platform.OS === 'android' && Store.backgroundServiceState !== 'geofence-only') {
-        BackgroundGeolocation.stop(() => {
-          BackgroundGeolocation.startGeofences((newState) => {
-            console.log(newState);
-            Store.backgroundServiceState = 'geofence-only';
-            console.info('Geolocation tracking started in geofence-only mode.');
-          });
+        BackgroundGeolocation.startGeofences(() => {
+          Store.backgroundServiceState = 'geofence-only';
+          console.info('Geolocation tracking started in geofence-only mode.');
         });
       }
     });

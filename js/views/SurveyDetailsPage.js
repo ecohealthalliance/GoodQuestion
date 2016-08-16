@@ -23,6 +23,7 @@ import CalendarPage from './CalendarPage';
 import { acceptSurvey, declineSurvey } from '../api/Surveys';
 import { getFormAvailability, loadCachedForms, loadCachedFormDataById, loadCachedFormDataByTriggerId } from '../api/Forms';
 import { loadCachedQuestionsFromForms } from '../api/Questions';
+import { checkSurveyTimeTriggers } from '../api/Triggers';
 import { InvitationStatus, markInvitationStatus, loadCachedInvitationById } from '../api/Invitations';
 import { cachedSubmissions } from '../api/Submissions';
 
@@ -72,8 +73,8 @@ const SurveyDetailsPage = React.createClass({
           },
         });
 
-
         if (this.state.status === 'accepted') {
+          checkSurveyTimeTriggers(this.props.survey, true);
           this.getSurveyData();
         }
       }

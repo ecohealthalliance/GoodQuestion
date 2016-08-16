@@ -133,9 +133,12 @@ export function getSurveyForms(surveyId, callback) {
  * Refreshes all of the data of accepted surveys, including Questions and Triggers
  * @return {[type]} [description]
  */
-export function refreshAcceptedSurveyData(surveyId) {
+export function refreshAcceptedSurveyData(surveyId, callback) {
   loadAllAcceptedSurveys((err, results) => {
     if (err) {
+      if (callback) {
+        callback(err);
+      }
       return;
     }
     if (surveyId) {
@@ -147,6 +150,9 @@ export function refreshAcceptedSurveyData(surveyId) {
       if (survey) {
         loadParseFormDataBySurveyId(survey.id);
       }
+      if (callback) {
+        callback();
+      }
     } else {
       const resultLength = results.length;
       try {
@@ -155,6 +161,9 @@ export function refreshAcceptedSurveyData(surveyId) {
         }
       } catch (e) {
         console.warn(e);
+      }
+      if (callback) {
+        callback();
       }
     }
   });
@@ -195,10 +204,11 @@ export function loadSurveys(options = {}, callback) {
         const cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0];
         if (!cachedSurvey) {
           loadForms(results[i]);
-        } else if (options.forceRefresh || cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime()) {
-          refreshAcceptedSurveyData(results[i].id);
         }
         cacheParseSurveys(results[i]);
+        if (options.forceRefresh || cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime()) {
+          refreshAcceptedSurveyData(results[i].id);
+        }
       }
       Store.lastParseUpdate = Date.now();
       if (callback) {
@@ -221,12 +231,12 @@ export function loadSurveys(options = {}, callback) {
  */
 export function loadSurveyList(options = {}, done) {
   async.auto({
-    surveys: (cb) => {
-      loadSurveys(options, cb);
-    },
     invitations: (cb) => {
       loadInvitations(cb);
     },
+    surveys: ['invitations', (cb) => {
+      loadSurveys(options, cb);
+    }],
   }, (err, results) => {
     if (err) {
       if (done) {

@@ -49,9 +49,20 @@ export function loadQuestions(cachedForm, callback) {
       const formQuestionRelations = form.get('questions');
       formQuestionRelations.query().find(
         (results) => {
-          cacheParseQuestions(results, form.id);
+          // decided to filter the results client-side a) the number of
+          // question relations is realtively small b) the schema may or
+          // may not have the key 'deleted'
+          const filtered = results.filter((result) => {
+            if (typeof result.get('deleted') === 'undefined') {
+              return result;
+            }
+            if (result.get('deleted') === false) {
+              return result;
+            }
+          });
+          cacheParseQuestions(filtered, form.id);
           if (callback) {
-            callback(null, results);
+            callback(null, filtered);
           }
         },
         (error, results) => {

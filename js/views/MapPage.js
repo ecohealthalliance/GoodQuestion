@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Platform,
   View,
+  InteractionManager,
 } from 'react-native';
 import _ from 'lodash';
 
@@ -11,7 +12,7 @@ import MapView from 'react-native-maps';
 
 import { loadCachedGeofenceTriggers } from '../api/Triggers';
 import { loadCachedFormDataByTriggerId } from '../api/Forms';
-import { setActiveMap, clearActiveMap } from '../api/Geofencing';
+import { setActiveMap, clearActiveMap, getUserLocationData } from '../api/Geofencing';
 
 import Loading from '../components/Loading';
 
@@ -56,11 +57,18 @@ const MapPage = React.createClass({
       this.active = true;
       this.generateTriggerMarkers(response);
 
-      setTimeout(() => {
-        if (!this.cancelCallbacks) {
-          this.setState({stage: 'ready'});
-        }
-      }, 300);
+      getUserLocationData((location) => {
+        InteractionManager.runAfterInteractions(() => {
+          if (!this.cancelCallbacks) {
+            this.setState({
+              latitude: location.latitude || 40.782786,
+              longitude: location.longitude || -73.965850,
+              stage: 'ready',
+            });
+          }
+        });
+      });
+
     });
   },
 
