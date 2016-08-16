@@ -1,5 +1,5 @@
-import Joi from '../lib/joi-browser.min';
-import ValidObject from './ValidObject';
+import Joi from '../../lib/joi-browser.min';
+import ValidObject from '../ValidObject';
 
 /**
  * validation schema for ToastMessage class

@@ -40,7 +40,7 @@ import Swiper from '../components/Swiper/Swiper';
 import SurveyFormNavigator from '../components/SurveyFormNavigator';
 
 // API
-import { ToastAddresses, ToastMessage } from '../models/ToastMessage';
+import { ToastAddresses, ToastMessage } from '../models/messages/ToastMessage';
 import { loadCachedTriggers } from '../api/Triggers';
 import { validateUser } from '../api/Account';
 import { loadCachedForms, loadActiveGeofenceFormsInRange } from '../api/Forms';

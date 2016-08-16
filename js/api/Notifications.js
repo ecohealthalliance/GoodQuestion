@@ -7,12 +7,11 @@ import Settings from '../settings';
 import realm from '../data/Realm';
 import Store from '../data/Store';
 import Color from '../styles/Color';
-import { ToastAddresses, ToastMessage } from '../models/ToastMessage';
 
+import { ToastAddresses, ToastMessage } from '../models/messages/ToastMessage';
 import { currentUser } from './Account';
 import { loadCachedFormDataById, loadCachedFormDataByTriggerId } from './Forms';
 import { upsertInstallation } from './Installations';
-
 
 /**
  * Configures and initializes the background notification service.
