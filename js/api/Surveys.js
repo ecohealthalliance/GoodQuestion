@@ -5,7 +5,7 @@ import Store from '../data/Store';
 import realm from '../data/Realm';
 
 import { loadForms, loadParseFormDataBySurveyId } from './Forms';
-import { checkSurveyTimeTriggers, removeTriggers } from './Triggers';
+import { checkSurveyTimeTriggers, removeTriggers, disableTriggers } from './Triggers';
 import { loadInvitations, loadAcceptedInvitations } from '../api/Invitations';
 
 // Live realm.io object containing all cached 'Survey' entries.
