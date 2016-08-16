@@ -33,6 +33,7 @@ export default React.createClass({
     return {
       avatar: defaultAvatar,
       username: null,
+      notificationCount: Store.newNotifications,
     };
   },
 
@@ -40,12 +41,6 @@ export default React.createClass({
     this.navigating = false;
     this.nextPath = '';
     this.nextTitle = '';
-  },
-
-  getInitialState() {
-    return {
-      notificationCount: Store.newNotifications,
-    };
   },
 
   componentDidMount() {
