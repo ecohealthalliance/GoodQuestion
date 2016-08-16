@@ -111,7 +111,6 @@ const SurveyListItem = React.createClass({
   },
 
   render() {
-    console.log(`render survey item: ${this.props.title}`)
     return (
       <View style={Styles.survey.listitem}>
         <View style={Styles.container.col75}>

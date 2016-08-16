@@ -130,8 +130,6 @@ const SurveyListPage = React.createClass({
   filterList(query) {
     let filteredList = [];
 
-    const time = Date.now();
-
     // Filter the survey by category
     if (query === 'all') {
       // Return all active surveys
@@ -162,8 +160,6 @@ const SurveyListPage = React.createClass({
       });
     }
 
-    console.log(`${Date.now() - time}ms`)
-
     this.setState({
       isLoading: false,
       isRefreshing: false,
@@ -171,8 +167,6 @@ const SurveyListPage = React.createClass({
       filterType: query === 'all' ? '' : `${query}`,
       tab: query,
       dataSource: this.state.dataSource.cloneWithRows(filteredList),
-    }, () => {
-      console.log(`${Date.now() - time}ms`)
     });
   },
 
