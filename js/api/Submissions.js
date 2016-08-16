@@ -9,7 +9,6 @@ import async from 'async';
 import _ from 'lodash';
 
 const Submission = Parse.Object.extend('Submission');
-export const cachedSubmissions = realm.objects('Submission');
 
 /**
  * create a submission Object with acl assigned
@@ -36,9 +35,26 @@ Submission.create = function create(uniqueId, formId, answers, user, geolocation
   return submission;
 };
 
-// Fetches the cached submissions related to a specific form
-export function loadCachedSubmissions(formId) {
-  return realm.objects('Submission').filtered(`formId = "${formId}"`).sorted('created');
+/**
+ * Loads the user's cached submissions. Filtered by options object.
+ *
+ * @param {object} options          Object containing unique ids to filter with.
+ * @param {object} options.userId   Required. The id of the user to load Submissions from.
+ * @param {object} options.formId   Optional. The id form related to the submission.
+ * @param {object} options.surveyId   Optional. The id survey related to the submission.
+ * @param {object} user             The current parse user saved to AsyncStorage
+ */
+export function loadCachedSubmissions(options = {}) {
+  if (!options.userId) {
+    console.warn('Unable to load Submissions: No userId found.');
+    return;
+  }
+
+  let filter = `userId == "${options.userId}"`;
+  filter += options.formId ? ` AND formId == "${options.formId}"` : '';
+  filter += options.surveyId ? ` AND surveyId == "${options.surveyId}"` : '';
+
+  return realm.objects('Submission').filtered(filter).sorted('created');
 }
 
 /**

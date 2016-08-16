@@ -156,9 +156,9 @@ const FormPage = React.createClass({
 
     this.form = forms[index];
     this.nextForm = forms[index + 1];
-    const submissions = loadCachedSubmissions(this.form.id);
+    const submissions = loadCachedSubmissions({userId: this.props.currentUser.id, formId: this.form.id});
     const questions = loadCachedQuestions(this.form.id);
-    if (submissions.length > 0) {
+    if (submissions && submissions.length > 0) {
       answers = JSON.parse(submissions.slice(-1)[0].answers);
     } else {
       // Set default values

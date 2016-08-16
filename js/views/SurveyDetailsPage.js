@@ -25,10 +25,10 @@ import { getFormAvailability, loadCachedForms, loadCachedFormDataById, loadCache
 import { loadCachedQuestionsFromForms } from '../api/Questions';
 import { checkSurveyTimeTriggers } from '../api/Triggers';
 import { InvitationStatus, markInvitationStatus, loadCachedInvitationById } from '../api/Invitations';
-import { cachedSubmissions } from '../api/Submissions';
+import { loadCachedSubmissions } from '../api/Submissions';
 
 const SurveyDetailsPage = React.createClass({
-  _incompleteSubmissions: null,
+  _incompleteSubmissions: [],
 
   propTypes: {
     survey: React.PropTypes.object.isRequired,
@@ -37,7 +37,10 @@ const SurveyDetailsPage = React.createClass({
 
   getInitialState() {
     if (this.props.currentUser) {
-      this._incompleteSubmissions = cachedSubmissions.filtered(`userId == "${this.props.currentUser.id}" AND surveyId == "${this.props.survey.id}" AND inProgress == true`);
+      const cachedSubmissions = loadCachedSubmissions({userId: this.props.currentUser.id, surveyId: this.props.survey.id});
+      if (cachedSubmissions && cachedSubmissions.length > 0) {
+        this._incompleteSubmissions = cachedSubmissions.filtered('inProgress == true');
+      }
     }
     return {
       loading: true,

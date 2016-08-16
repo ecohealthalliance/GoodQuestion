@@ -14,7 +14,7 @@ import Styles from '../styles/Styles';
 import { loadSurveyList, loadCachedSurveyList } from '../api/Surveys';
 import { checkTimeTriggers } from '../api/Triggers';
 import { InvitationStatus, loadCachedInvitations } from '../api/Invitations';
-import { cachedSubmissions } from '../api/Submissions';
+import { loadCachedSubmissions } from '../api/Submissions';
 import SurveyListItem from '../components/SurveyListItem';
 import SurveyListFilter from '../components/SurveyListFilter';
 import Loading from '../components/Loading';
@@ -25,11 +25,14 @@ const SurveyListPage = React.createClass({
   title: 'Surveys',
   _invitations: [],
   _surveys: [],
-  _incompleteSubmissions: null,
+  _incompleteSubmissions: [],
 
   getInitialState() {
     if (this.props.currentUser) {
-      this._incompleteSubmissions = cachedSubmissions.filtered(`userId == "${this.props.currentUser.id}" AND inProgress == true`);
+      const cachedSubmissions = loadCachedSubmissions({userId: this.props.currentUser.id});
+      if (cachedSubmissions && cachedSubmissions.length > 0) {
+        this._incompleteSubmissions = cachedSubmissions.filtered('inProgress == true');
+      }
     }
     return {
       isLoading: true,
@@ -226,7 +229,7 @@ const SurveyListPage = React.createClass({
   },
 
   getIncompleteForms(surveyId) {
-    if (this.state.isLoading || !this._incompleteSubmissions) {
+    if (this.state.isLoading || !this._incompleteSubmissions || this._incompleteSubmissions.length === 0) {
       return;
     }
     return this._incompleteSubmissions.filtered(`surveyId == "${surveyId}"`);
@@ -260,13 +263,9 @@ const SurveyListPage = React.createClass({
   },
   _onRefresh() {
     this.setState({isRefreshing: true});
-<<<<<<< HEAD
-    loadSurveyList({}, this.loadList);
-=======
     loadSurveyList({}, () => {
       checkTimeTriggers(true, this.loadList);
     });
->>>>>>> master
   },
   render() {
     if (this.state.isLoading) {

@@ -53,7 +53,6 @@ import { initializeGeolocationService, handleAppStateChange } from '../api/Backg
 connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 
 let navigator = null;
-let currentUser = null;
 let initialRoute = { path: 'surveylist', title: 'Surveys' };
 let currentRoute = initialRoute;
 const toaster = <Toaster key='toaster' />;
@@ -82,6 +81,7 @@ const SharedNavigator = React.createClass({
       isLoading: true,        // Temporarily prevents the main component from rendering while loading authentication data.
       isAuthenticated: false, // Indicates if the user is currently logged in.
       newLogin: false,        // Indicates if the user has performed a login in this session.
+      currentUser: null,     // User object to be passed to views
     };
   },
 
@@ -101,7 +101,7 @@ const SharedNavigator = React.createClass({
     // see if we have an authenticated user
     isAuthenticated((authenticated, user) => {
       if (authenticated) {
-        currentUser = user;
+
         checkTimeTriggers();
         checkDirtyObjects((err) => {
           if (err) {
@@ -111,13 +111,14 @@ const SharedNavigator = React.createClass({
           this.setState({
             isAuthenticated: authenticated,
             isLoading: false,
+            currentUser: user,
           });
         });
       } else {
-        currentUser = null;
         this.setState({
           isAuthenticated: authenticated,
           isLoading: false,
+          currentUser: null,
         });
       }
     });
@@ -132,13 +133,14 @@ const SharedNavigator = React.createClass({
       }
     });
 
-    isAuthenticated((authenticated) => {
+    isAuthenticated((authenticated, user) => {
       if (authenticated) {
         this.initializeUserServices();
       }
       this.setState({
         isAuthenticated: authenticated,
         isLoading: false,
+        currentUser: user,
       });
     });
 
@@ -209,10 +211,11 @@ const SharedNavigator = React.createClass({
   },
 
   /* Methods */
-  setAuthenticated(authenticated) {
+  setAuthenticated(authenticated, user) {
     this.setState({
       isAuthenticated: authenticated,
       newLogin: true,
+      currentUser: user,
     }, () => {
       this.initializeUserServices();
       navigator.resetTo({path: 'surveylist', title: 'Surveys'});
@@ -228,6 +231,7 @@ const SharedNavigator = React.createClass({
     logout();
     this.setState({
       isAuthenticated: false,
+      currentUser: null,
     }, () => {
       navigator.resetTo({path: 'login', title: ''});
     });
@@ -288,11 +292,11 @@ const SharedNavigator = React.createClass({
 
     const sharedProps = {
       navigator: nav,
-      currentUser: currentUser,
       path: route.path,
       previousPath: currentRoute.path,
       logout: this.logoutHandler,
       newLogin: this.state.newLogin,
+      currentUser: this.state.currentUser,
     };
 
     currentRoute = route;
