@@ -31,7 +31,7 @@ const SurveyListItem = React.createClass({
   },
 
   componentWillReceiveProps(nextProps) {
-    if (!nextProps.status || nextProps.isRefreshing) {
+    if (!nextProps.status || nextProps.isRefreshing || nextProps.skipUpdate) {
       return;
     }
     this.update(nextProps.status);
@@ -111,12 +111,13 @@ const SurveyListItem = React.createClass({
   },
 
   render() {
+    console.log(`render survey item: ${this.props.title}`)
     return (
-        <View style={Styles.survey.listitem}>
-          <View style={Styles.container.col75}>
-            <Text style={Styles.survey.title}>{this.props.title}</Text>
-            {this.renderAvailabilityText()}
-          </View>
+      <View style={Styles.survey.listitem}>
+        <View style={Styles.container.col75}>
+          <Text style={Styles.survey.title}>{this.props.title}</Text>
+          {this.renderAvailabilityText()}
+        </View>
         <View style={[Styles.container.col25, {alignItems: 'flex-end'}]}>
           {this.renderIcon()}
         </View>

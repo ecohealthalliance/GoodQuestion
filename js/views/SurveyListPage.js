@@ -28,9 +28,10 @@ const SurveyListPage = React.createClass({
 
   getInitialState() {
     return {
-      isLoading: true,
-      tab: 'all',
-      isRefreshing: this.props.newLogin,
+      isLoading: true,                        // Indicates if the component is ready to be rendered
+      tab: 'all',                             // Current filter tab
+      isRefreshing: this.props.newLogin,      // Refresh state for the List component
+      skipUpdate: false,                      // Prevent items from updating for the next refresh cycle
       hasInvitationChanged: false,
       dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
@@ -107,6 +108,7 @@ const SurveyListPage = React.createClass({
       this.setState({
         isLoading: false,
         isRefreshing: false,
+        skipUpdate: false,
       });
       console.warn(err);
     }
@@ -127,6 +129,8 @@ const SurveyListPage = React.createClass({
 
   filterList(query) {
     let filteredList = [];
+
+    const time = Date.now();
 
     // Filter the survey by category
     if (query === 'all') {
@@ -158,12 +162,17 @@ const SurveyListPage = React.createClass({
       });
     }
 
+    console.log(`${Date.now() - time}ms`)
+
     this.setState({
       isLoading: false,
       isRefreshing: false,
+      skipUpdate: true,
       filterType: query === 'all' ? '' : `${query}`,
       tab: query,
       dataSource: this.state.dataSource.cloneWithRows(filteredList),
+    }, () => {
+      console.log(`${Date.now() - time}ms`)
     });
   },
 
@@ -255,6 +264,7 @@ const SurveyListPage = React.createClass({
             surveyId={survey.id}
             status={this.getInvitationStatus(survey.id)}
             isRefreshing={this.state.isRefreshing}
+            skipUpdate={this.state.skipUpdate}
             />
         </View>
       </TouchableHighlight>

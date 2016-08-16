@@ -122,7 +122,7 @@ export function getFormAvailability(surveyId, done) {
   loadCachedInvitation(surveyId, (err, invitation) => {
     if (err) {
       console.warn(err);
-      done(null, result);
+      done(err, result);
       return;
     }
     if (invitation && invitation.status === InvitationStatus.ACCEPTED) {

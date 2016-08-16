@@ -133,6 +133,7 @@ export function cacheParseSurveys(survey) {
         // TODO: Get Organization's name.
         user: 'N/A',
         forms: [],
+        deleted: survey.get('deleted'),
       }, true);
       getSurveyOwner(survey);
     });
@@ -167,20 +168,23 @@ export function loadSurveys(options = {}, callback) {
           const cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0];
           const cachedSurveyTriggers = realm.objects('TimeTrigger').filtered(`surveyId = "${results[i].id}"`);
 
+          const cacheIsOutdated = cachedSurvey && cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime();
+          const cacheHasNoTriggers = results[i].active && !cachedSurveyTriggers || cachedSurveyTriggers.length === 0;
+          const cacheWasDeleted = results[i].active && cachedSurvey && cachedSurvey.deleted && !results[i].deleted;
+
           // Fetch basic form data if there is no Survey or Trigger data cached, or if the Survey data is outdated.
-          if (!cachedSurvey || cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime()) {
+          if (!cachedSurvey || cacheIsOutdated) {
             if (results[i].active) {
               loadForms(results[i]);
             }
           }
+
           // Cache new results
           cacheParseSurveys(results[i]);
 
           // Refresh triggers and form data for active surveys
-          if (options.forceRefresh || results[i].active && !cachedSurveyTriggers || cachedSurveyTriggers.length === 0) {
-            if (cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime()) {
-              refreshAcceptedSurveyData(results[i].id);
-            }
+          if (options.forceRefresh || cacheIsOutdated || cacheHasNoTriggers || cacheWasDeleted) {
+            refreshAcceptedSurveyData(results[i].id);
           }
 
           // Disable triggers for deactivated surveys
@@ -212,22 +216,19 @@ function pruneDeletedSurveys(deletedIds) {
     surveyFilter += ` OR id == "${id}"`;
   });
   const deletedSurveys = realmSurveys.filtered(surveyFilter);
-  realm.write(() => {
-    for (let i = deletedSurveys.length - 1; i >= 0; i--) {
-      const forms = realm.objects('Form').filtered(`surveyId= "${deletedSurveys[i].surveyId}"`);
-      const timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId= "${deletedSurveys[i].surveyId}"`);
-      const geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId= "${deletedSurveys[i].surveyId}"`);
 
-      for (let j = forms.length - 1; j >= 0; j--) {
+  deletedSurveys.forEach((survey) => {
+    removeTriggers(survey.id);
+    realm.write(() => {
+      const forms = realm.objects('Form').filtered(`surveyId= "${survey.id}"`);
+      for (let i = forms.length - 1; i >= 0; i--) {
         const questions = realm.objects('Question').filtered(`formId= "${forms[i].id}"`);
         realm.delete(questions);
       }
-
       realm.delete(forms);
-      realm.delete(timeTriggers);
-      realm.delete(geofenceTriggers);
-    }
-
+    });
+  });
+  realm.write(() => {
     realm.delete(deletedSurveys);
   });
 }
