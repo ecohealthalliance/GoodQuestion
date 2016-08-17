@@ -16,7 +16,7 @@ import Color from '../styles/Color';
 
 import ProfileItem from '../components/ProfileItem';
 
-import {updateProfile, getAvatarImage, changeAvatarImage} from '../api/Account';
+import {updateInformation, getAvatarImage, changeAvatarImage} from '../api/Account';
 
 import Button from '../components/Button';
 import Loading from '../components/Loading';
@@ -41,6 +41,12 @@ const ProfilePage = React.createClass({
   schema: {
     name: Joi.string().min(3).required().options({language: {any: {allowOnly: 'must not be empty'}}}).label('Full Name'),
     phone: Joi.string().optional().label('Phone Number'),
+    currentPassword: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().options(
+      {language: {string: {regex: {base: 'must be between 8 and 15 alphanumeric characters'}}}}).label('Current Password'),
+    newPassword: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().options(
+      {language: {string: {regex: {base: 'must be between 8 and 15 alphanumeric characters'}}}}).label('New Password'),
+    confirmNewPassword: Joi.string().regex(/^([a-zA-Z0-9@*#]{8,15})$/).required().options(
+      {language: {string: {regex: {base: 'must be between 8 and 15 alphanumeric characters'}}}}).label('Confirm New Password'),
   },
 
   getInitialState() {
@@ -83,6 +89,14 @@ const ProfilePage = React.createClass({
 
   updateInformation() {
     this.setState({buttonText: 'Saving...'});
+    const ignore = ['currentPassword', 'newPassword', 'confirmNewPassword'];
+    const errors = this.joiValidate(ignore);
+    if (Object.keys(errors).length > 0) {
+      Alert.alert('Error', 'Fix the form errors before saving.');
+      this.setState({errors: errors});
+      return;
+    }
+
     updateInformation(this.state.name, this.state.phone, (err) => {
       this.setState({buttonText: 'Submit'});
       if (err) {
@@ -93,9 +107,32 @@ const ProfilePage = React.createClass({
     });
   },
 
+  confirmNewPasswordHandler(name, value) {
+    const password = this.state.newPassword;
+    const errors = Object.assign({}, this.state.errors);
+    const state = {
+      errors: errors,
+    };
+    if (password !== value) {
+      state.errors[name] = '"Confirm New Password" does not match new password';
+      state[name] = value;
+      this.setState(state);
+      return;
+    }
+    // continue with mixin handler
+    this.textFieldChangeHandler(name, value);
+  },
+
   updatePassword() {
     this.setState({buttonText: 'Saving...'});
-    updatePassword(this.state.name, this.state.phone, (err) => {
+    const ignore = ['name', 'phone'];
+    const errors = this.joiValidate(ignore);
+    if (Object.keys(errors).length > 0) {
+      Alert.alert('Error', 'Fix the form errors before saving.');
+      this.setState({errors: errors});
+      return;
+    }
+    updatePassword(this.state.currentPassword, this.state.newPassword, (err) => {
       this.setState({buttonText: 'Submit'});
       if (err) {
         Alert.alert('Error', 'There was an error saving.');
@@ -145,7 +182,7 @@ const ProfilePage = React.createClass({
           </View>
         </View>
         <View style={Styles.form.bottomForm}>
-          <Button action={this.submit} color='primary' wide>
+          <Button action={this.updateInformation} color='primary' wide>
             {this.state.buttonText}
           </Button>
         </View>
@@ -192,22 +229,27 @@ const ProfilePage = React.createClass({
             />
           </View>
           <Text style={Styles.form.errorText}>
-            {this.decodeText(this.state.errors.repeatNewPassword)}
+            {this.decodeText(this.state.errors.confirmNewPassword)}
           </Text>
-          <View ref='repeatNewPasswordView'>
+          <View ref='confirmNewPasswordView'>
             <TextInput
-              ref='repeatNewPassword'
+              ref='confirmNewPassword'
               style={Styles.form.input}
-              onChangeText={this.textFieldChangeHandler.bind(this, 'repeatNewPassword')}
-              onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'repeatNewPasswordView')}
-              onBlur={this.trimText.bind(this, 'repeatNewPassword')}
-              value={this.state.repeatNewPassword}
+              onChangeText={this.confirmNewPasswordHandler.bind(this, 'confirmNewPassword')}
+              onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'confirmNewPasswordView')}
+              onBlur={this.trimText.bind(this, 'confirmNewPassword')}
+              value={this.state.confirmNewPassword}
               autoCapitalize='none'
               autoCorrect={false}
               returnKeyType='done'
               placeholder='Repeat New Password'
             />
           </View>
+        </View>
+        <View style={Styles.form.bottomForm}>
+          <Button action={this.updatePassword} color='primary' wide>
+            {this.state.buttonText}
+          </Button>
         </View>
       </View>
     );
