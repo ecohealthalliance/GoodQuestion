@@ -339,7 +339,7 @@ export function register(email, password, props, done) {
  * @param {done} done, the function to execute when done
  * @returns {undefined}
  */
-export function updateProfile(name, phone, done) {
+export function updateInformation(name, phone, done) {
   currentUser((err1, user) => {
     if (err1) {
       done(false);
@@ -358,6 +358,32 @@ export function updateProfile(name, phone, done) {
     );
   });
 }
+
+/**
+ * update the users password
+ *
+ * @param {string} currentPassword, the users current password
+ * @param {string} newPassword, the users new password
+ * @param {done} done, the function to execute when done
+ * @returns {undefined}
+ */
+export function updatePassword(currentPassword, newPassword, done) {
+  currentUser((err1, user) => {
+    if (err1) {
+      done(false);
+      return;
+    }
+    user.setPassword(newPassword).then(
+      (res) => {
+        done(null, res);
+      },
+      (err2) => {
+        done(err2);
+      }
+    );
+  });
+}
+
 
 /**
  * Checks for the current logged in user, navigates back to the login page if verification fails.
