@@ -16,6 +16,12 @@ let _currentUser = null;
 let _timer = null;
 const _networkTimeout = Settings.networkTimeout || 10000;
 const defaultAvatar = require('../images/profile_logo.png');
+const openam = {
+  baseUrl: Settings.openam.baseUrl,
+  authPath: '/openam/json/authenticate?Content-Type=application/json',
+  regPath: '/openam/json/users/?_action=create',
+  changePasswordPath: (username) => `/openam/json/users/${username}?_action=changePassword`,
+};
 
 /**
  * Callback 'done' is stanard node.js style (err, res)
@@ -61,7 +67,7 @@ export function authenticate(username, password, done) {
           'X-OpenAM-Password': password,
         },
       };
-      const url = Settings.openam.baseUrl + Settings.openam.authPath;
+      const url = openam.baseUrl + openam.authPath;
       fetch(url, authConfig).then((res) => {
         if (!res.ok) {
           cb('Unauthorized');
@@ -147,26 +153,28 @@ export function isAuthenticated(isValidCb) {
  * @param {done} done, the function to execute when done
  * @returns {undefined}
  */
-function openamAuth(done) {
-  const openAmEmail = Settings.openam.email;
-  const openAmPassword = Settings.openam.password;
+function openamAuth(username, password, done) {
   const authConfig = {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-      'X-OpenAM-Username': openAmEmail,
-      'X-OpenAM-Password': openAmPassword,
+      'X-OpenAM-Username': username,
+      'X-OpenAM-Password': password,
     },
   };
-  const url = Settings.openam.baseUrl + Settings.openam.authPath;
+  const url = openam.baseUrl + openam.authPath;
   fetch(url, authConfig).then((res) => {
     return res.text();
   }).then((responseText) => {
     const jsonData = JSON.parse(responseText);
+    console.log('openamAuth:jsonData: ', jsonData);
     if (!jsonData.hasOwnProperty('tokenId')) {
-      done('Invalid tokenId');
-      return;
+      if (jsonData.hasOwnProperty('message')) {
+        done(jsonData.message);
+        return;
+      }
+      done('Unauthorized');
     }
     done(null, jsonData.tokenId);
   }).catch(() => {
@@ -200,7 +208,7 @@ function openamRegister(user, tokenId, done) {
     },
     body: userString,
   };
-  const url = Settings.openam.baseUrl + Settings.openam.regPath;
+  const url = openam.baseUrl + openam.regPath;
   fetch(url, config).then((res) => {
     return res.text();
   }).then((responseText) => {
@@ -218,6 +226,48 @@ function openamRegister(user, tokenId, done) {
     done(null, responseText);
   }).catch((err) => {
     done(err);
+  });
+}
+
+/**
+ *
+ * OpenAm change a users password
+ *
+ * @param {done} done, the function to execute when done
+ * @returns {undefined}
+ */
+function openamChangePassword(tokenId, username, currentPassword, newPassword, done) {
+  const authConfig = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'iPlanetDirectoryPro': tokenId,
+    },
+    body: JSON.stringify({
+      'currentpassword': currentPassword,
+      'userpassword': newPassword,
+    }),
+  };
+  const url = openam.baseUrl + encodeURI(openam.changePasswordPath(username));
+  fetch(url, authConfig).then((res) => {
+    if (typeof res === 'undefined') {
+      throw new Error('Bad Request.');
+    }
+    return res.text();
+  }).then((responseText) => {
+    const jsonData = JSON.parse(responseText);
+    // Forgerock does not provide descriptive errors for authorized requests
+    // that failed changePassword, such as meeting minimum complexity requirements
+    // or other password policies.
+    // https://bugster.forgerock.org/jira/browse/OPENAM-6867
+    if (jsonData.hasOwnProperty('code') && jsonData.code !== 200) {
+      done(jsonData.message);
+      return;
+    }
+    done(null, true);
+  }).catch(() => {
+    done('Unauthorized');
   });
 }
 
@@ -302,7 +352,7 @@ export function register(email, password, props, done) {
       if (results.registered) {
         return cb('The email is already registered.');
       }
-      openamAuth(cb);
+      openamAuth(openam.email, openam.password, cb);
     }],
     // register a user with openAm
     openamRegister: ['openamAuth', (cb, results) => {
@@ -368,20 +418,62 @@ export function updateInformation(name, phone, done) {
  * @returns {undefined}
  */
 export function updatePassword(currentPassword, newPassword, done) {
-  currentUser((err1, user) => {
-    if (err1) {
-      done(false);
-      return;
-    }
-    user.setPassword(newPassword).then(
-      (res) => {
-        done(null, res);
-      },
-      (err2) => {
-        done(err2);
+  async.auto({
+    // determine the currentUser
+    currentUser: (cb) => {
+      currentUser(cb);
+    },
+    // authenticates against openam as current user
+    openamAuth: ['currentUser', (cb, results) => {
+      if (Settings.dev) {
+        return cb(null, true);
       }
-    );
-  });
+      const username = results.currentUser.get('username');
+      openamAuth(username, currentPassword, cb);
+    }],
+    // change password against openam
+    openamChangePassword: ['openamAuth', (cb, results) => {
+      if (Settings.dev) {
+        return cb(null, true);
+      }
+      const tokenId = results.openamAuth;
+      const username = results.currentUser.get('username');
+      openamChangePassword(tokenId, username, currentPassword, newPassword, cb);
+    }],
+    // register a user with parse
+    parseChangePassword: ['openamChangePassword', (cb, results) => {
+      const user = results.currentUser;
+      user.set('password', newPassword);
+      user.save().then(
+        (res) => {
+          cb(null, res);
+        },
+        () => {
+          // if saving to parse fails we must rollback the password on Forgerock
+          const tokenId = results.openamAuth;
+          const username = user.get('username');
+          openamChangePassword(tokenId, username, newPassword, currentPassword, (err) => {
+            // if the rollback fails the user will need to contact an
+            // administrator to get their passwords to match in both Forgerock
+            // and Parse Server.
+            if (err) {
+              cb({
+                logout: true,
+                message: 'Your account has been locked. Please email: \ngoodquestion@ecohealthalliance.org',
+              });
+              return;
+            }
+            // Otherwise, the user has an invalid parse session. Force a logout
+            // and redirect to the login screen.
+            cb({
+              logout: true,
+              message: 'Your session is no longer valid. Please login.',
+            });
+          });
+        }
+      );
+    }],
+  }, done);
 }
 
 
