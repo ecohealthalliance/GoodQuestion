@@ -144,8 +144,7 @@ const ProfilePage = React.createClass({
           // A special error object with property logout should force the user
           // to logout
           Alert.alert('Error', err.message);
-          logout();
-          this.props.navigator.resetTo({path: 'login', title: 'Login'});
+          this.props.logout();
           return;
         }
         Alert.alert('Error', err);
@@ -154,8 +153,7 @@ const ProfilePage = React.createClass({
       Alert.alert('Success', 'Please login with your new password.');
       // The users session is invalidated upon changing their password and
       // they must re-authenticate at the login screen
-      logout();
-      this.props.navigator.resetTo({path: 'login', title: 'Login'});
+      this.props.logout();
     });
   },
 
