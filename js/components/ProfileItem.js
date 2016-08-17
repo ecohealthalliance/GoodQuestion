@@ -14,7 +14,7 @@ import Color from '../styles/Color';
 export default React.createClass({
   carets: [
     <View style={Styles.profile.caretView}><Icon name='caret-up' size={24} color={Color.primary} /></View>,
-    <View style={Styles.profile.caretView}><Icon name='caret-down' size={24} color={Color.primary} /></View>
+    <View style={Styles.profile.caretView}><Icon name='caret-down' size={24} color={Color.primary} /></View>,
   ],
   getInitialState() {
     return {
@@ -30,7 +30,9 @@ export default React.createClass({
     }
     return (
       <View>
-        <TouchableWithoutFeedback onPress={() => { this.setState({collapsed: !this.state.collapsed}) }}>
+        <TouchableWithoutFeedback onPress={() => {
+          this.setState({collapsed: !this.state.collapsed});
+        }}>
           <View style={Styles.profile.itemContainer}>
             {icon}
             <View style={[Styles.profile.item]}>

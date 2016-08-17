@@ -24,7 +24,7 @@ export default {
     }
     return err;
   },
-  joiValidate(ignore=[]) {
+  joiValidate(ignore = []) {
     const errors = {};
     Object.keys(this.schema).forEach((key) => {
       if (ignore.indexOf(key) >= 0) {
