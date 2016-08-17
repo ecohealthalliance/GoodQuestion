@@ -62,11 +62,13 @@ const RegistrationPagePart2 = React.createClass({
 
   /* Methods */
   goToNextPage() {
-    const shouldContinue = this.props.validatePage(1);
-    if (shouldContinue) {
+    const errors = this.props.validatePage(1);
+    if (Object.keys(errors).length <= 0) {
       this.props.setIndex(2);
+      return;
     }
   },
+
 
   /* Methods */
   buttonStyles() {
