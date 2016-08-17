@@ -16,7 +16,7 @@ import Color from '../styles/Color';
 
 import ProfileItem from '../components/ProfileItem';
 
-import {updateInformation, getAvatarImage, changeAvatarImage} from '../api/Account';
+import {updateInformation, updatePassword, getAvatarImage, changeAvatarImage, logout} from '../api/Account';
 
 import Button from '../components/Button';
 import Loading from '../components/Loading';
@@ -58,7 +58,7 @@ const ProfilePage = React.createClass({
       phone: null,
       currentPassword: null,
       newPassword: null,
-      repeatNewPassword: null,
+      confirmNewPassword: null,
       avatar: defaultAvatar,
       errors: [],
     };
@@ -133,12 +133,29 @@ const ProfilePage = React.createClass({
       return;
     }
     updatePassword(this.state.currentPassword, this.state.newPassword, (err) => {
-      this.setState({buttonText: 'Submit'});
+      this.setState({
+        buttonText: 'Submit',
+        currentPassword: null,
+        newPassword: null,
+        confirmNewPassword: null,
+      });
       if (err) {
-        Alert.alert('Error', 'There was an error saving.');
+        if (err.hasOwnProperty('logout') && err.logout) {
+          // A special error object with property logout should force the user
+          // to logout
+          Alert.alert('Error', err.message);
+          logout();
+          this.props.navigator.resetTo({path: 'login', title: 'Login'});
+          return;
+        }
+        Alert.alert('Error', err);
         return;
       }
-      Alert.alert('Success', 'Your profile has been updated.');
+      Alert.alert('Success', 'Please login with your new password.');
+      // The users session is invalidated upon changing their password and
+      // they must re-authenticate at the login screen
+      logout();
+      this.props.navigator.resetTo({path: 'login', title: 'Login'});
     });
   },
 
@@ -201,6 +218,7 @@ const ProfilePage = React.createClass({
             <TextInput
               ref='currentPassword'
               style={Styles.form.input}
+              secureTextEntry={true}
               onChangeText={this.textFieldChangeHandler.bind(this, 'currentPassword')}
               onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'currentPasswordView')}
               onBlur={this.trimText.bind(this, 'currentPassword')}
@@ -218,6 +236,7 @@ const ProfilePage = React.createClass({
             <TextInput
               ref='newPassword'
               style={Styles.form.input}
+              secureTextEntry={true}
               onChangeText={this.textFieldChangeHandler.bind(this, 'newPassword')}
               onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'newPasswordView')}
               onBlur={this.trimText.bind(this, 'newPassword')}
@@ -235,6 +254,7 @@ const ProfilePage = React.createClass({
             <TextInput
               ref='confirmNewPassword'
               style={Styles.form.input}
+              secureTextEntry={true}
               onChangeText={this.confirmNewPasswordHandler.bind(this, 'confirmNewPassword')}
               onFocus={this.scrollToViewWrapper.bind(this, 'scrollView', 'confirmNewPasswordView')}
               onBlur={this.trimText.bind(this, 'confirmNewPassword')}
@@ -242,7 +262,7 @@ const ProfilePage = React.createClass({
               autoCapitalize='none'
               autoCorrect={false}
               returnKeyType='done'
-              placeholder='Repeat New Password'
+              placeholder='Confirm New Password'
             />
           </View>
         </View>
@@ -305,7 +325,7 @@ const ProfilePage = React.createClass({
               <ProfileItem
                 text='Your Information'
                 icon={<View style={Styles.profile.iconView}><Icon name='user' size={28} color={Color.primary} /></View>}
-                collapsed={false}>
+                collapsed={true}>
                 {this.renderYourInformation()}
               </ProfileItem>
               <ProfileItem
