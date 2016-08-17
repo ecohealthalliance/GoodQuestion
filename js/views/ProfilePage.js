@@ -16,7 +16,7 @@ import Color from '../styles/Color';
 
 import ProfileItem from '../components/ProfileItem';
 
-import {updateInformation, updatePassword, getAvatarImage, changeAvatarImage, logout} from '../api/Account';
+import {updateInformation, updatePassword, getAvatarImage, changeAvatarImage} from '../api/Account';
 
 import Button from '../components/Button';
 import Loading from '../components/Loading';
