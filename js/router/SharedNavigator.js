@@ -53,8 +53,7 @@ import { initializeGeolocationService, handleAppStateChange } from '../api/Backg
 connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 
 let navigator = null;
-let initialRoute = { path: 'profile', title: 'Profile' };
-//let initialRoute = { path: 'surveylist', title: 'Surveys' };
+let initialRoute = { path: 'surveylist', title: 'Surveys' };
 let currentRoute = initialRoute;
 const toaster = <Toaster key='toaster' />;
 
