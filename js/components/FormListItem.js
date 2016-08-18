@@ -21,11 +21,11 @@ const FormListItem = React.createClass({
 
   /* Render */
   renderIcon() {
-    const trigger = this.props.trigger;
+    const { trigger, waiting, incomplete } = this.props;
     let icon = null;
     let color = Color.secondary;
 
-    if (this.props.incomplete) {
+    if (incomplete) {
       return (
         <View style={{paddingTop: 4}}>
           <Icon name='question-circle' size={24} color={Color.positive} />
@@ -42,7 +42,7 @@ const FormListItem = React.createClass({
     } else if (trigger.completed) {
       icon = <Icon name='check-circle' size={24} color={Color.positive} />;
     } else if (trigger.datetime) {
-      if (trigger.datetime < Date.now()) {
+      if (trigger.datetime < Date.now() && !waiting) {
         color = Color.positive;
       }
       icon = <Icon name='clock-o' size={24} color={color} />;
@@ -61,14 +61,18 @@ const FormListItem = React.createClass({
   },
 
   renderStatusText() {
-    const trigger = this.props.trigger;
+    const { trigger, waiting, incomplete } = this.props;
     if (!trigger) {
       console.warn('No trigger found');
       return null;
     }
 
-    if (this.props.incomplete) {
+    if (incomplete) {
       return <ViewText textStyle={Styles.survey.itemDescription}>Form available: Incomplete.</ViewText>;
+    }
+
+    if (waiting) {
+      return <ViewText textStyle={Styles.survey.itemDescription}>Available after form: {waiting}.</ViewText>;
     }
 
     if (trigger.completed) {

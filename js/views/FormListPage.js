@@ -140,18 +140,32 @@ const FormListPage = React.createClass({
 
       return 0;
     });
+
+    // FIFO - Only allow the first active time-triggered form to be completed.
+    let firstActiveForm = null;
+    sortedForms.forEach((form) => {
+      if (form.trigger && form.trigger.datetime && form.trigger.triggered) {
+        if (firstActiveForm) {
+          form.waiting = form.title;
+        } else {
+          firstActiveForm = form;
+        }
+        return;
+      }
+    });
+
     return sortedForms;
   },
 
-  selectForm(trigger) {
+  selectForm(trigger, waiting) {
     if (!trigger) {
       Alert('There was an error trying to load this form. Please try again later.');
       return;
     }
 
     if (!trigger.completed) {
-      if (trigger.datetime && trigger.datetime > Date.now()) {
-        return; // Return if datetime hasn't been reached.
+      if (trigger.datetime && trigger.datetime > Date.now() || waiting) {
+        return; // Return if datetime hasn't been reached, or if form is waiting on another scheduled form.
       }
       if (trigger.latitude || trigger.longitude) {
         if (!trigger.inRange) {
@@ -184,7 +198,7 @@ const FormListPage = React.createClass({
     }
     return (
       <TouchableHighlight
-        onPress={() => this.selectForm(form.trigger)}
+        onPress={() => this.selectForm(form.trigger, form.waiting)}
         underlayColor={Color.background3}>
         <View>
           <FormListItem {...form} trigger={form.trigger} incomplete={form.incomplete} />
