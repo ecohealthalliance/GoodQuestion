@@ -2,6 +2,7 @@ import _ from 'lodash';
 import Parse from 'parse/react-native';
 import realm from '../data/Realm';
 import { loadAcceptedInvitations } from '../api/Invitations';
+import { addAppNotification } from '../api/Notifications';
 import { loadAllAcceptedSurveys } from './Surveys';
 import { removeGeofenceById, addGeofence } from '../api/Geofencing';
 
@@ -16,6 +17,7 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
 
   // Record the new trigger
   const triggerLength = triggers.length;
+  const activeTriggers = [];
   realm.write(() => {
     for (let i = 0; i < triggerLength; i++) {
       if (triggers[i] && triggers[i].triggered === false && triggers[i].datetime < now) {
@@ -23,20 +25,23 @@ export function checkSurveyTimeTriggers(survey, omitNotifications) {
           id: triggers[i].id,
           triggered: true,
         }, true);
-
-        if (!omitNotifications) {
-          // TODO Replace with more descriptive messages in the future.
-          realm.create('Notification', {
-            surveyId: activeTrigger.surveyId,
-            formId: activeTrigger.formId,
-            title: activeTrigger.title,
-            description: 'A scheduled survey form is available.',
-            datetime: activeTrigger.datetime,
-          }, true);
-        }
+        activeTriggers.push(activeTrigger);
       }
     }
   });
+
+  if (!omitNotifications) {
+    for (let i = activeTriggers.length - 1; i >= 0; i--) {
+      addAppNotification({
+        id: activeTriggers[i].formId,
+        surveyId: activeTriggers[i].surveyId,
+        formId: activeTriggers[i].formId,
+        title: activeTriggers[i].title,
+        message: 'A new scheduled survey form is available.',
+        time: activeTriggers[i].datetime,
+      });
+    }
+  }
 }
 
 /**

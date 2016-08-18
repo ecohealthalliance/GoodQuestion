@@ -14,11 +14,15 @@ const Store = {
     long: 0,
   },
 
-  // Globally cached objects
-
-  // Timestamp
-  lastParseUpdate: 0,
+  // Global component refs
   navigator: false,
+
+  // Shared variables
+  initialRouteStack: [
+    { path: 'surveylist', title: 'Surveys' },
+  ],
+  newNotifications: 0,
+  lastParseUpdate: 0,
 };
 
 module.exports = Store;
