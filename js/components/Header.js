@@ -7,11 +7,29 @@ import {
   Platform,
   Animated,
   Easing,
+  StyleSheet,
 } from 'react-native';
+import pubsub from 'pubsub-js';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Styles from '../styles/Styles';
 import Color from '../styles/Color';
-import Icon from 'react-native-vector-icons/FontAwesome';
+
+import Store from '../data/Store';
+
+const _styles = StyleSheet.create({
+  notificationIcon: {
+    position: 'absolute',
+    top: 20,
+    right: 16,
+    backgroundColor: Color.warning,
+    width: 12,
+    height: 12,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: Color.background1,
+  },
+});
 
 const Header = React.createClass({
   propTypes: {
@@ -21,8 +39,8 @@ const Header = React.createClass({
   getInitialState() {
     const routeStack = this.props.navState.routeStack;
     const position = routeStack.length - 1;
-    const title = routeStack[position].title;
-    const path = routeStack[position].path;
+    const title = routeStack && routeStack[position] ? routeStack[position].title : '';
+    const path = routeStack && routeStack[position] ? routeStack[position].path : '';
     return {
       index: 0,
       title: title,
@@ -30,6 +48,7 @@ const Header = React.createClass({
       bounceValue: new Animated.Value(0),
       fadeAnim: new Animated.Value(0),
       translateAnim: new Animated.Value(0),
+      hasNewNotifications: Store.newNotifications > 0,
     };
   },
 
@@ -37,8 +56,8 @@ const Header = React.createClass({
     // NoOp https://github.com/facebook/react-native/issues/6205
   },
 
-  componentWillReceiveProps(nextProps) {
-    this.updateTitle(nextProps.navigator);
+  componentWillReceiveProps() {
+    this.updateTitle();
   },
 
   componentDidMount() {
@@ -46,12 +65,16 @@ const Header = React.createClass({
       this.state.fadeAnim,
       {toValue: 1}
     ).start();
+
+    pubsub.subscribe('onNotification', () => {
+      this.updateTitle();
+    });
   },
 
   /* Methods */
-  updateTitle(navigator, indexOffset = 0) {
-    try {
-      const routeStack = navigator.getCurrentRoutes();
+  updateTitle(indexOffset = 0) {
+    if (Store.navigator) {
+      const routeStack = Store.navigator.getCurrentRoutes();
       const position = routeStack.length - 1 - indexOffset;
       let title = this.state.title;
       let path = this.state.path;
@@ -77,10 +100,13 @@ const Header = React.createClass({
         title: title,
         index: position,
         path: path,
+        hasNewNotifications: Store.newNotifications,
       });
-    } catch (e) {
-      console.warn(e);
     }
+  },
+
+  updateNotifications() {
+    this.setState({hasNewNotifications: Store.newNotifications > 0});
   },
 
   backToLogin() {
@@ -99,7 +125,7 @@ const Header = React.createClass({
         ]
       );
     } else {
-      this.updateTitle(this.props.navigator, 1);
+      this.updateTitle(1);
       this.props.navigator.pop();
     }
   },
@@ -115,6 +141,11 @@ const Header = React.createClass({
       <TouchableWithoutFeedback onPress={this.props.openDrawer}>
         <View style={Styles.header.navBarRightButton}>
           <Icon name='bars' size={25} color='#FFFFFF' />
+          {
+            this.state.hasNewNotifications
+            ? <View style={_styles.notificationIcon} />
+            : null
+          }
         </View>
       </TouchableWithoutFeedback>
     );
@@ -145,13 +176,13 @@ const Header = React.createClass({
     return (
       <View style={navbarStyles}>
         {this.renderIOSPadding()}
-          <TouchableWithoutFeedback onPress={this.navigateBack}>
-            {
-            this.state.index > 0
-              ? <View style={Styles.header.navBarLeftButton}><Icon name='chevron-left' size={25} color='#FFFFFF' /></View>
-              : <View style={Styles.header.navBarLeftButton}><Icon name='chevron-left' size={25} color={Color.background1} /></View>
-            }
-          </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback onPress={this.navigateBack}>
+          {
+          this.state.index > 0
+            ? <View style={Styles.header.navBarLeftButton}><Icon name='chevron-left' size={25} color='#FFFFFF' /></View>
+            : <View style={Styles.header.navBarLeftButton}><Icon name='chevron-left' size={25} color={Color.background1} /></View>
+          }
+        </TouchableWithoutFeedback>
         <View style={Styles.header.navBarTitle}>
           <Animated.Text
             source={{uri: 'http://i.imgur.com/XMKOH81.jpg'}}

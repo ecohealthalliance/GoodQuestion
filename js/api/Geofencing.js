@@ -1,15 +1,16 @@
+import { AppState } from 'react-native';
 import _ from 'lodash';
 import Store from '../data/Store';
 import realm from '../data/Realm';
 
 import { BackgroundGeolocation } from './BackgroundProcess';
 import { loadCachedGeofenceTriggers } from './Triggers';
-import { showToast, notifyOnBackground } from './Notifications';
+import { showToast, notifyOnBackground, addAppNotification } from './Notifications';
 
 // Cache a MapPage component for to update when geofencing triggers are crossed.
 let activeMap = null;
 // Timer to suppress repeated notifications when geofences get updated.
-let supressNotificationsTimestamp = 0;
+let suppressNotificationsTimestamp = 0;
 
 /**
  * Event function for when geofences are entered, exited, or dwelled on.
@@ -27,25 +28,36 @@ export function crossGeofence(params) {
     const trigger = realm.objects('GeofenceTrigger').filtered(`id = "${params.identifier}"`)[0];
     if (trigger) {
       // Notify on entry
-      if (_.lowerCase(params.action) === 'enter' && supressNotificationsTimestamp < Date.now()) {
+      if (_.lowerCase(params.action) === 'enter' && suppressNotificationsTimestamp < Date.now()) {
+        // Suppress local notifications in case the API receives multiple geofence crossing events in rapid succession.
+        suppressNotificationsTimestamp = Date.now() + 2000;
+
         const form = realm.objects('Form').filtered(`id = "${trigger.formId}"`)[0];
         const survey = realm.objects('Survey').filtered(`id = "${trigger.surveyId}"`)[0];
 
         if (form && survey) {
-          notifyOnBackground(`${form.title} - New geofence form available.`, true);
-
-          showToast(form.title, 'New geofence form available.', 'globe', 8, () => {
-            Store.navigator.push({
-              path: 'form',
-              title: survey.title,
-              forms: form,
-              survey: survey,
-              type: 'geofence',
+          if (AppState.currentState === 'active') {
+            addAppNotification({
+              id: form.id,
+              surveyId: survey.id,
+              formId: form.id,
+              title: form.title,
+              message: 'New geofence form available.',
+              time: new Date(),
             });
-          });
 
-          // Supress local notifications in case the API receives multiple geofence crossing events in rapid succession.
-          supressNotificationsTimestamp = Date.now() + 500;
+            showToast(form.title, 'New geofence form available.', 'globe', 8, () => {
+              Store.navigator.push({
+                path: 'form',
+                title: survey.title,
+                forms: form,
+                survey: survey,
+                type: 'geofence',
+              });
+            });
+          } else {
+            notifyOnBackground(`${form.title} - New geofence form available.`, form.id, true);
+          }
         }
       }
 
@@ -88,7 +100,7 @@ export function clearActiveMap(component) {
  * @param  {Function} callback Callback function to execute afterwards.
  */
 export function resetGeofences(callback) {
-  supressNotificationsTimestamp = Date.now() + 5000;
+  suppressNotificationsTimestamp = Date.now() + 5000;
   BackgroundGeolocation.removeGeofences(() => {
       console.log('Cleared current geofencing settings.');
       callback();
@@ -138,7 +150,7 @@ export function setupGeofences(callback) {
 
       console.log(`Adding ${triggerGeofences.length} geofences...`);
 
-      supressNotificationsTimestamp = Date.now() + 5000;
+      suppressNotificationsTimestamp = Date.now() + 5000;
       BackgroundGeolocation.addGeofences(triggerGeofences, () => {
         console.log('Successfully added geofences.');
       }, (err3) => {
@@ -169,7 +181,7 @@ export function addGeofence(trigger) {
     loiteringDelay: 60000,
   };
 
-  supressNotificationsTimestamp = Date.now() + 5000;
+  suppressNotificationsTimestamp = Date.now() + 5000;
   BackgroundGeolocation.addGeofence(geofence, () => {
     console.log('Successfully added geofence.');
     BackgroundGeolocation.on('geofence', crossGeofence);
@@ -183,7 +195,7 @@ export function addGeofence(trigger) {
  * @param  {string} id Geofence indentifier
  */
 export function removeGeofenceById(id) {
-  supressNotificationsTimestamp = Date.now() + 5000;
+  suppressNotificationsTimestamp = Date.now() + 5000;
   BackgroundGeolocation.removeGeofence(id, () => {
     console.log(`Removed geofence: ${id}`);
   });

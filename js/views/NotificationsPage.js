@@ -1,30 +1,33 @@
 import React from 'react';
 import {
+  Alert,
   View,
   ListView,
 } from 'react-native';
 
 import Styles from '../styles/Styles';
-import { loadNotifications } from '../api/Notifications';
+import { loadUserNotifications, markNotificationsAsViewed, clearNotifications, clearNotification } from '../api/Notifications';
 import { loadCachedFormDataById } from '../api/Forms';
+import Button from '../components/Button';
 import Notification from '../components/Notification';
+import Loading from '../components/Loading';
 
 const NotificationsPage = React.createClass({
   title: 'Notifications',
 
   getInitialState() {
-    const pendingNotifications = loadNotifications();
     const dataSource = new ListView.DataSource({
       rowHasChanged: (row1, row2) => row1 !== row2,
     });
     return {
-      list: pendingNotifications,
-      dataSource: dataSource.cloneWithRows(pendingNotifications),
+      loading: true,
+      list: [],
+      dataSource: dataSource.cloneWithRows([]),
     };
   },
 
   componentDidMount() {
-    // this.loadList()
+    this.loadList();
   },
 
   componentWillUnmount() {
@@ -32,18 +35,22 @@ const NotificationsPage = React.createClass({
   },
 
   /* Methods */
-  loadList(error) {
-    if (error) {
-      console.warn(error);
-    } else {
-      const pendingNotifications = loadNotifications();
+  loadList() {
+    loadUserNotifications({}, (err, notifications) => {
+      if (err) {
+        console.warn(err);
+        this.setState({ loading: false });
+        return;
+      }
       if (!this.cancelCallbacks) {
         this.setState({
-          list: pendingNotifications,
-          dataSource: this.state.dataSource.cloneWithRows(pendingNotifications),
+          loading: false,
+          list: notifications,
+          dataSource: this.state.dataSource.cloneWithRows(notifications),
         });
+        markNotificationsAsViewed(notifications);
       }
-    }
+    });
   },
 
   selectNotification(notification) {
@@ -55,12 +62,29 @@ const NotificationsPage = React.createClass({
     if (typeof data === 'undefined' || typeof data.survey === 'undefined' || typeof data.form === 'undefined') {
       return;
     }
+
+    clearNotification(notification);
     this.props.navigator.push({
       path: 'form',
       title: data.survey.title,
       form: data.form,
       survey: data.survey,
     });
+  },
+
+  handleClear() {
+    Alert.alert('Confirm', 'Are you sure you would like to clear ALL notifications?', [
+      {text: 'Cancel', onPress: () => { }, style: 'cancel' },
+      {text: 'OK', onPress: () => {
+        const currentNotifications = this.state.list;
+        this.setState({
+          list: [],
+          dataSource: this.state.dataSource.cloneWithRows([]),
+        }, () => {
+          clearNotifications(currentNotifications);
+        });
+      }},
+    ]);
   },
 
   /* Render */
@@ -71,13 +95,24 @@ const NotificationsPage = React.createClass({
   },
 
   render() {
+    if (this.state.loading) {
+      return <Loading/>;
+    }
     return (
       <View style={[Styles.container.default, {flex: 1}]}>
-        <ListView dataSource = { this.state.dataSource }
-          renderRow = { this.renderItem }
-          contentContainerStyle = { [Styles.container.default, Styles.survey.list, {flex: 0}] }
-          enableEmptySections
-        />
+        <View style={{flex: 1, paddingBottom: 60}}>
+          <ListView dataSource = { this.state.dataSource }
+            renderRow = { this.renderItem }
+            contentContainerStyle = { [Styles.container.default, Styles.survey.list, {flex: 0}] }
+            enableEmptySections
+          />
+        </View>
+        <Button
+          action={this.handleClear}
+          style={Styles.form.footerButton}
+          textStyle={[Styles.form.registerText, Styles.form.registerTextActive]}>
+          Clear
+        </Button>
       </View>
     );
   },
