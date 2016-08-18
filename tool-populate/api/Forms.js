@@ -90,8 +90,4 @@ function createDemoGeofenceForm(parentSurvey, formData) {
     .fail(function(e){console.log(e);})
 }
 
-<<<<<<< HEAD
 module.exports = { Form, loadForms, createDemoForm, destroyAll, createDemoGeofenceForms }
-=======
-module.exports = { Form, loadForms, createDemoForm, destroyAll, createDemoGeofenceForms }
->>>>>>> refs/remotes/origin/master
