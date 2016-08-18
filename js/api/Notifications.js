@@ -9,7 +9,7 @@ import pubsub from 'pubsub-js';
 
 import Store from '../data/Store';
 import Color from '../styles/Color';
-import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
+import {ToastAddresses, ToastMessage} from '../models/messages/ToastMessage';
 import PushNotification from 'react-native-push-notification';
 
 // Finds and returns a list of pending Notifications from Realm

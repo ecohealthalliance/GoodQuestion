@@ -10,6 +10,7 @@ import {
 
 import Drawer from 'react-native-drawer';
 import PushNotification from 'react-native-push-notification';
+import CodePush from 'react-native-code-push';
 
 import Settings from '../settings';
 
@@ -100,12 +101,9 @@ const SharedNavigator = React.createClass({
     isAuthenticated((authenticated) => {
       if (authenticated) {
         checkTimeTriggers();
-        checkDirtyObjects((err, res) => {
+        checkDirtyObjects((err) => {
           if (err) {
             console.warn(err);
-          }
-          if (res) {
-            console.log(res);
           }
           // set state after the check is complete
           this.setState({
@@ -123,6 +121,14 @@ const SharedNavigator = React.createClass({
   },
 
   componentDidMount() {
+    // check for hot code push updates
+    CodePush.sync();
+    AppState.addEventListener('change', (newState) => {
+      if (newState === 'active') {
+        CodePush.sync();
+      }
+    });
+
     isAuthenticated((authenticated) => {
       if (authenticated) {
         this.initializeUserServices();

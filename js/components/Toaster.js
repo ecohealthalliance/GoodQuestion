@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import pubsub from 'pubsub-js';
-import {ToastAddresses, ToastMessage} from '../models/ToastMessage';
+import {ToastAddresses, ToastMessage} from '../models/messages/ToastMessage';
 
 import Styles from '../styles/Styles';
 import Color from '../styles/Color';
@@ -130,4 +130,3 @@ const Toaster = React.createClass({
 });
 
 module.exports = Toaster;
-
