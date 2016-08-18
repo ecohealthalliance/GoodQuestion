@@ -1,16 +1,20 @@
 export default class Notification {}
 Notification.schema = {
   name: 'Notification',
-  primaryKey: 'formId',
+  primaryKey: 'id',
   properties: {
-    formId: 'string',
-    surveyId: 'string',
+    id: 'string',
+    userId: 'string',
+
+    surveyId: { type: 'string', default: '' },
+    formId: { type: 'string', default: '' },
+    triggerId: { type: 'string', default: '' },
+
     title: 'string',
-    description: 'string',
-    datetime: 'date',
-    completed: {
-      type: 'bool',
-      default: false,
-    },
+    message: 'string',
+    createdAt: 'date',
+
+    viewed: { type: 'bool', default: false },
+    completed: { type: 'bool', default: false },
   },
 };

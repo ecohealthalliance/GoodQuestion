@@ -8,12 +8,15 @@ import {
 } from 'react-native';
 
 import pubsub from 'pubsub-js';
-import {ProfileAddresses, ProfileMessage} from '../models/messages/ProfileMessage';
-
-import {getAvatarImage} from '../api/Account';
+import Store from '../data/Store';
 import Styles from '../styles/Styles';
-import ControlPanelItem from '../components/ControlPanelItem';
+
+import { ProfileAddresses, ProfileMessage } from '../models/messages/ProfileMessage';
+import { getAvatarImage } from '../api/Account';
+import { loadNotifications } from '../api/Notifications';
 import { version } from '../../package';
+
+import ControlPanelItem from '../components/ControlPanelItem';
 
 const defaultAvatar = require('../images/profile_logo.png');
 
@@ -30,6 +33,7 @@ export default React.createClass({
     return {
       avatar: defaultAvatar,
       username: null,
+      notificationCount: Store.newNotifications,
     };
   },
 
@@ -40,6 +44,10 @@ export default React.createClass({
   },
 
   componentDidMount() {
+    pubsub.subscribe('onNotification', () => {
+      this.updateNotifications();
+    });
+
     getAvatarImage((err, result) => {
       if (err) {
         if (err && err === 'Invalid User') {
@@ -59,12 +67,21 @@ export default React.createClass({
     });
   },
 
+  /* Methods */
   navigateToView(path, title) {
     this.navigating = true;
     this.nextPath = path;
     this.nextTitle = title;
-    // this.props.changeRoute()
     this.props.closeDrawer();
+  },
+
+  navigateToNotificationsView() {
+    Store.newNotifications = 0;
+    this.setState({
+      notificationCount: 0,
+    }, () => {
+      this.navigateToView('notifications', 'Notifications');
+    });
   },
 
   handleLogout() {
@@ -84,6 +101,16 @@ export default React.createClass({
     );
   },
 
+  updateNotifications() {
+    const notifications = loadNotifications();
+    let count = notifications.length;
+    if (count > 99) {
+      count = 99;
+    }
+    this.setState({notificationCount: count});
+  },
+
+  /* Render */
   render() {
     return (
       <View style={Styles.controlPanel.container}>
@@ -93,8 +120,9 @@ export default React.createClass({
             text='Surveys'
           />
           <ControlPanelItem
-            onPress={() => this.navigateToView('notifications', 'Notifications')}
+            onPress={this.navigateToNotificationsView}
             text='Notifications'
+            counter={this.state.notificationCount}
           />
           <ControlPanelItem
             onPress={() => this.navigateToView('map', 'Map')}

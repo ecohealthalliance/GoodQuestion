@@ -26,6 +26,10 @@ export function cacheParseForm(form, surveyId) {
 // Returns an object containing a form and its parent survey
 export function loadCachedFormDataById(formId) {
   const form = realm.objects('Form').filtered(`id = "${formId}"`)[0];
+  if (!form) {
+    console.warn(`Error: No form data found with the id: ${formId}`);
+    return;
+  }
   const forms = realm.objects('Form').filtered(`surveyId = "${form.surveyId}"`).sorted('order');
   const index = forms.findIndex((f) => {
     return f.id === form.id;
@@ -229,7 +233,7 @@ export function completeForm(formId) {
 
     realm.write(() => {
       if (notification) {
-        notification.completed = true;
+        realm.delete(notification);
       }
       if (timeTrigger) {
         timeTrigger.completed = true;

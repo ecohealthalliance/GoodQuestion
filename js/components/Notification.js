@@ -20,7 +20,7 @@ const Notification = React.createClass({
         <View style={Styles.survey.listitem}>
           <View>
             <Text style={Styles.survey.title}>{this.props.item.title}</Text>
-            <Text style={Styles.survey.subtitle}>{this.props.item.description}</Text>
+            <Text style={Styles.survey.subtitle}>{this.props.item.message}</Text>
           </View>
         </View>
       </TouchableOpacity>
