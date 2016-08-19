@@ -12,7 +12,7 @@ function createInitialAdmin(){
   adminUser.set("username", Settings.users[0].user)
   adminUser.set("password", Settings.users[0].pass)
   adminUser.set("email", Settings.users[0].user)
-  return adminUser.signUp(null)
+  return adminUser.signUp(null, useMasterKey)
     .then(setAdminACL)
     .then(function(adminUser){
       return Roles.getRole('admin')
