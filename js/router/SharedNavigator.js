@@ -62,7 +62,6 @@ if (Platform.OS === 'android') {
       drawer.close();
       return true;
     }
-    
     if (navigator && navigator.getCurrentRoutes().length > 1) {
       navigator.pop();
       return true;
