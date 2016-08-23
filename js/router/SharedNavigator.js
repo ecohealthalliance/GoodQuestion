@@ -52,11 +52,17 @@ connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 let navigator = null;
 let initialRouteStack = Store.initialRouteStack;
 let currentRoute = initialRouteStack[0];
+let drawer = null;
 const toaster = <Toaster key='toaster' />;
 
 // Binds the hardware "back button" from Android devices
 if (Platform.OS === 'android') {
   BackAndroid.addEventListener('hardwareBackPress', () => {
+    if (drawer && drawer._open) {
+      drawer.close();
+      return true;
+    }
+    
     if (navigator && navigator.getCurrentRoutes().length > 1) {
       navigator.pop();
       return true;
@@ -154,12 +160,12 @@ const SharedNavigator = React.createClass({
   },
 
   closeControlPanel() {
-    this._drawer.close();
+    drawer.close();
   },
 
   openControlPanel() {
     this._controlPanel.navigating = false;
-    this._drawer.open();
+    drawer.open();
   },
 
   changeRouteViaControlPanel() {
@@ -285,7 +291,7 @@ const SharedNavigator = React.createClass({
         <Drawer
           type='overlay'
           ref={(ref) => {
-            this._drawer = ref;
+            drawer = ref;
           }}
           content={
             <ControlPanel
