@@ -14,6 +14,7 @@ var Roles = require('./api/Roles')
 var Users = require('./api/Users')
 var Submissions = require('./api/Submissions')
 var Settings = require('./../js/settings.js')
+var async = require('async')
 
 var useMasterKey = {useMasterKey: true}
 
@@ -155,49 +156,90 @@ function initRoles() {
  */
 function publicRead() {
   console.log('NOTE: This only works up to 1000 objects'.bold);
-  Surveys.loadSurveys(null, function(err, results) {
-    console.log('Setting publicReadAccess(true) to ' + results.length + ' surveys'.green);
-    if (results) {
-      results.forEach(function(obj) {
-        var acl = obj.getACL();
-        acl.setPublicReadAccess(true);
-        obj.setACL(acl);
-        obj.save(null, useMasterKey);
+  async.auto({
+    'loadSurveys': function(cb) {
+      Surveys.loadSurveys(null, function(err, results) {
+        console.log('Setting publicReadAccess(true) to ' + results.length + ' surveys'.green);
+        if (results) {
+          var count = 0;
+          results.forEach(function(obj) {
+            count++;
+            var acl = obj.getACL();
+            acl.setPublicReadAccess(true);
+            obj.setACL(acl);
+            obj.save(null, useMasterKey);
+            if (results.length === count) {
+              cb(null);
+            }
+          });
+        } else {
+          cb(null);
+        }
       });
-    }
-  });
-  Forms.loadForms(null, function(err, results) {
-    console.log('Setting publicReadAccess(true) to ' + results.length + ' forms'.green);
-    if (results) {
-      results.forEach(function(obj) {
-        var acl = obj.getACL();
-        acl.setPublicReadAccess(true);
-        obj.setACL(acl);
-        obj.save(null, useMasterKey);
+    },
+    'loadForms': function(cb) {
+      Forms.loadForms(null, function(err, results) {
+        console.log('Setting publicReadAccess(true) to ' + results.length + ' forms'.green);
+        if (results) {
+          var count = 0;
+          results.forEach(function(obj) {
+            count++;
+            var acl = obj.getACL();
+            acl.setPublicReadAccess(true);
+            obj.setACL(acl);
+            obj.save(null, useMasterKey);
+            if (results.length === count) {
+              cb(null);
+            }
+          });
+        } else {
+          cb(null);
+        }
       });
-    }
-  });
-  Triggers.loadTriggers(null, function(err, results) {
-    console.log('Setting publicReadAccess(true) to ' + results.length + ' triggers'.green);
-    if (results) {
-      results.forEach(function(obj) {
-        var acl = obj.getACL();
-        acl.setPublicReadAccess(true);
-        obj.setACL(acl);
-        obj.save(null, useMasterKey);
+    },
+    'loadTriggers': function(cb) {
+      Triggers.loadTriggers(null, function(err, results) {
+        console.log('Setting publicReadAccess(true) to ' + results.length + ' triggers'.green);
+        if (results) {
+          var count = 0;
+          results.forEach(function(obj) {
+            count++;
+            var acl = obj.getACL();
+            acl.setPublicReadAccess(true);
+            obj.setACL(acl);
+            obj.save(null, useMasterKey);
+            if (results.length === count) {
+              cb(null);
+            }
+          });
+        } else {
+          cb(null);
+        }
       });
-    }
-  });
-  Questions.loadQuestions(null, function(err, results) {
-    console.log('Setting publicReadAccess(true) to ' + results.length + ' questions'.green);
-    if (results) {
-      results.forEach(function(obj) {
-        var acl = obj.getACL();
-        acl.setPublicReadAccess(true);
-        obj.setACL(acl);
-        obj.save(null, useMasterKey);
+    },
+    'loadQuestions': function(cb) {
+      Questions.loadQuestions(null, function(err, results) {
+        console.log('Setting publicReadAccess(true) to ' + results.length + ' questions'.green);
+        if (results) {
+          var count = 0;
+          results.forEach(function(obj) {
+            count++;
+            var acl = obj.getACL();
+            acl.setPublicReadAccess(true);
+            obj.setACL(acl);
+            obj.save(null, useMasterKey);
+            if (results.length === count) {
+              cb(null);
+            }
+          });
+        } else {
+          cb(null);
+        }
       });
-    }
+    },
+  }, function() {
+    console.log('Done'.bold);
+    process.exit();
   });
 }
 
