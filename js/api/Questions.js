@@ -38,7 +38,7 @@ export function loadCachedQuestions(formId) {
  */
 export function loadCachedQuestionsFromForms(forms) {
   if (!forms || forms.length === 0) {
-    console.warn('Unable to load questions: No forms found.')
+    console.warn('Unable to load questions: No forms found.');
     return [];
   }
 
