@@ -223,7 +223,7 @@ const SharedNavigator = React.createClass({
 
     switch (route.path) {
       case 'login':
-        viewComponent = <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />;
+        viewComponent = <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} email={route.email} password={route.password} />;
         break;
       case 'surveylist':
         viewComponent = <SurveyListPage {...sharedProps} />;

@@ -151,7 +151,13 @@ const RegistrationPages = React.createClass({
       } else {
         Alert.alert('Success', 'You have successfully registered to Good Question');
         // go to the default route
-        this.props.navigator.resetTo({});
+        this.props.navigator.resetTo({
+          path: 'login',
+          title: '',
+          unsecured: true,
+          email: email,
+          password: password,
+        });
       }
     });
   },
