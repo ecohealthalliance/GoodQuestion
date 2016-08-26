@@ -13,11 +13,8 @@ const Button = React.createClass({
     color: React.PropTypes.string,
     size: React.PropTypes.number,
     wide: React.PropTypes.bool,
-    style: React.PropTypes.oneOfType([
-      React.PropTypes.object,
-      React.PropTypes.array,
-    ]),
-    textStyle: React.PropTypes.object,
+    style: View.propTypes.style,
+    textStyle: Text.propTypes.style,
   },
 
   /* Methods */
