@@ -13,32 +13,76 @@ import { currentUser } from './Account';
 import { loadCachedFormDataById, loadCachedFormDataByTriggerId } from './Forms';
 import { upsertInstallation } from './Installations';
 
-/**
- * Configures and initializes the background notification service.
- */
-export function initializeNotifications() {
-  // Configure Push Notifications
-  if (Platform.OS === 'android') {
-    PushNotification.configure({
-      senderID: Settings.senderID,
-      onRegister: _onRegister,
-      onNotification: _onNotification,
-    });
-  } else {
-    PushNotification.requestPermissions();
-    PushNotification.configure({
-      onRegister: _onRegister,
-      onNotification: _onNotification,
-    });
-  }
 
-  // Cache count of new notifications in the Store
-  loadUserNotifications({newOnly: true}, (err, notifications) => {
-    if (err || !notifications) {
-      return;
+/**
+ * Creates a new notification object to be viewed in-app
+ * @param {string} notification             Object data to be recorded in Realm
+ * @param {string} notification.surveyId    Unique ID for the Notification's target Survey
+ * @param {string} notification.formId      Unique ID of the Notification's target Form
+ * @param {string} notification.formId      Unique ID of the Notification's related Trigger object
+ * @param {string} notification.title       Title of the notification
+ * @param {string} notification.message     Message of the notification
+ * @param {object} notification.time        Date object of when the notification was posted
+ * @return {object}                         New Realm object of the type 'Notification'
+ */
+export function addAppNotification(notification) {
+  if (!notification) {
+    return;
+  }
+  try {
+    let newNotification = null;
+    currentUser((err, user) => {
+      if (err) {
+        console.warn('Unable to add notification: User not found.');
+        return;
+      }
+
+      realm.write(() => {
+        newNotification = realm.create('Notification', {
+          id: notification.id,
+          surveyId: notification.surveyId || '',
+          formId: notification.formId || '',
+          triggerId: notification.triggerId || '',
+          userId: notification.userId || user.id,
+          title: notification.title,
+          message: notification.message,
+          createdAt: notification.time || new Date(),
+        }, true);
+      });
+
+      Store.newNotifications++;
+      pubsub.publish('onNotification', newNotification);
+    });
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
+/**
+ * Sends a local notification to the user. Triggers only when the phone is in a background state.
+ * @param  {string} message   Message to appear in the local push notificaiton.
+ * @param  {string} formId    formId for the Form related to this notification object, if any.
+ * @param  {bool}   vibrate   If set to true, the notification will also vibrate the user's device.
+ */
+export function notifyOnBackground(message, formId, vibrate) {
+  if (AppState.currentState !== 'active') {
+    if (Store.userSettings.notifyOnGeofence) {
+      PushNotification.localNotification({
+        message: message,
+        formId: formId || '',
+        collapse_key: 'goodquestion', // eslint-disable-line camelcase
+      });
     }
-    Store.newNotifications = notifications.length;
-  });
+
+    if (vibrate && Store.userSettings.vibrateOnGeofence) {
+      if (Platform.OS === 'android') {
+        Vibration.vibrate([0, 500, 200, 500]);
+      } else {
+        Vibration.vibrate();
+      }
+    }
+  }
 }
 
 function handleNewNotification(notification) {
@@ -195,6 +239,33 @@ export function loadUserNotifications(options = {}, callback) {
 }
 
 /**
+ * Configures and initializes the background notification service.
+ */
+export function initializeNotifications() {
+  // Configure Push Notifications
+  if (Platform.OS === 'android') {
+    PushNotification.configure({
+      senderID: Settings.senderID,
+      onRegister: _onRegister,
+      onNotification: _onNotification,
+    });
+  } else {
+    PushNotification.configure({
+      onRegister: _onRegister,
+      onNotification: _onNotification,
+    });
+  }
+
+  // Cache count of new notifications in the Store
+  loadUserNotifications({newOnly: true}, (err, notifications) => {
+    if (err || !notifications) {
+      return;
+    }
+    Store.newNotifications = notifications.length;
+  });
+}
+
+/**
  * Marks shown notifications as having been first viewed by the user
  * @param  {array} notifications Array of Realm 'Notificaion' objects
  */
@@ -239,51 +310,6 @@ export function clearNotification(notification) {
 }
 
 /**
- * Creates a new notification object to be viewed in-app
- * @param {string} notification             Object data to be recorded in Realm
- * @param {string} notification.surveyId    Unique ID for the Notification's target Survey
- * @param {string} notification.formId      Unique ID of the Notification's target Form
- * @param {string} notification.formId      Unique ID of the Notification's related Trigger object
- * @param {string} notification.title       Title of the notification
- * @param {string} notification.message     Message of the notification
- * @param {object} notification.time        Date object of when the notification was posted
- * @return {object}                         New Realm object of the type 'Notification'
- */
-export function addAppNotification(notification) {
-  if (!notification) {
-    return;
-  }
-  try {
-    let newNotification = null;
-    currentUser((err, user) => {
-      if (err) {
-        console.warn('Unable to add notification: User not found.');
-        return;
-      }
-
-      realm.write(() => {
-        newNotification = realm.create('Notification', {
-          id: notification.id,
-          surveyId: notification.surveyId || '',
-          formId: notification.formId || '',
-          triggerId: notification.triggerId || '',
-          userId: notification.userId || user.id,
-          title: notification.title,
-          message: notification.message,
-          createdAt: notification.time || new Date(),
-        }, true);
-      });
-
-      Store.newNotifications++;
-      pubsub.publish('onNotification', newNotification);
-    });
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
-}
-
-/**
  * Shows a toast at the bottom of the screen.
  * @param  {string} title    Title text to be displayed on the toast
  * @param  {string} message  Description text to be displayed on the toast
@@ -301,31 +327,4 @@ export function showToast(title, message, icon, duration, action) {
     action: action,
   });
   pubsub.publish(ToastAddresses.SHOW, toastMessage);
-}
-
-
-/**
- * Sends a local notification to the user. Triggers only when the phone is in a background state.
- * @param  {string} message   Message to appear in the local push notificaiton.
- * @param  {string} formId    formId for the Form related to this notification object, if any.
- * @param  {bool}   vibrate   If set to true, the notification will also vibrate the user's device.
- */
-export function notifyOnBackground(message, formId, vibrate) {
-  if (AppState.currentState !== 'active') {
-    if (Store.userSettings.notifyOnGeofence) {
-      PushNotification.localNotification({
-        message: message,
-        formId: formId || '',
-        collapse_key: 'goodquestion', // eslint-disable-line camelcase
-      });
-    }
-
-    if (vibrate && Store.userSettings.vibrateOnGeofence) {
-      if (Platform.OS === 'android') {
-        Vibration.vibrate([0, 500, 200, 500]);
-      } else {
-        Vibration.vibrate();
-      }
-    }
-  }
 }
