@@ -76,6 +76,10 @@ const Header = React.createClass({
     if (Store.navigator) {
       const routeStack = Store.navigator.getCurrentRoutes();
       const position = routeStack.length - 1 - indexOffset;
+      if (!routeStack[position]) {
+        return;
+      }
+
       let title = this.state.title;
       let path = this.state.path;
       const nextTitle = routeStack[position].title;
