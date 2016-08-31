@@ -34,6 +34,11 @@ const SurveyListItem = React.createClass({
     if (!nextProps.status || nextProps.isRefreshing) {
       return;
     }
+
+    if (nextProps.skipUpdate && nextProps.status === this.props.status) {
+      return;
+    }
+
     this.update(nextProps.status);
   },
 
@@ -112,11 +117,11 @@ const SurveyListItem = React.createClass({
 
   render() {
     return (
-        <View style={Styles.survey.listitem}>
-          <View style={Styles.container.col75}>
-            <Text style={Styles.survey.title}>{this.props.title}</Text>
-            {this.renderAvailabilityText()}
-          </View>
+      <View style={Styles.survey.listitem}>
+        <View style={Styles.container.col75}>
+          <Text style={Styles.survey.title}>{this.props.title}</Text>
+          {this.renderAvailabilityText()}
+        </View>
         <View style={[Styles.container.col25, {alignItems: 'flex-end'}]}>
           {this.renderIcon()}
         </View>

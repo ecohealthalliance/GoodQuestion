@@ -207,6 +207,7 @@ export function loadCachedGeofenceTriggers(options = {}, callback) {
     let triggers = [];
 
     filterOptions += options.excludeCompleted ? ' AND completed == false' : '';
+    filterOptions += options.excludeExpired ? ' AND expired == false' : '';
     filterOptions += options.includeOnlyTriggered ? ' AND triggered == true' : '';
 
     if (options.surveyId) {
@@ -232,9 +233,8 @@ export function loadCachedGeofenceTriggers(options = {}, callback) {
 export function removeTriggers(surveyId) {
   const timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId="${surveyId}"`);
   const geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`);
-  const geofenceTriggersLength = geofenceTriggers.length;
 
-  for (let i = geofenceTriggersLength - 1; i >= 0; i--) {
+  for (let i = geofenceTriggers.length - 1; i >= 0; i--) {
     if (geofenceTriggers[i]) {
       removeGeofenceById(geofenceTriggers[i].id);
     }
@@ -243,5 +243,26 @@ export function removeTriggers(surveyId) {
   realm.write(() => {
     realm.delete(timeTriggers);
     realm.delete(geofenceTriggers);
+  });
+}
+
+/**
+ * Disables triggers from a target Survey, marking them as 'expired'.
+ * This does not remove triggers from the cache, just adds another filter option to them.
+ * @param  {string} surveyId The ID of the target survey
+ */
+export function disableTriggers(surveyId) {
+  const timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId="${surveyId}"`);
+  const geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId="${surveyId}"`);
+
+  for (let i = geofenceTriggers.length - 1; i >= 0; i--) {
+    if (geofenceTriggers[i]) {
+      removeGeofenceById(geofenceTriggers[i].id);
+    }
+  }
+
+  realm.write(() => {
+    timeTriggers.expired = true;
+    geofenceTriggers.expired = true;
   });
 }
