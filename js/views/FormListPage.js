@@ -146,7 +146,7 @@ const FormListPage = React.createClass({
     sortedForms.forEach((form) => {
       if (form.trigger && form.trigger.datetime && form.trigger.triggered) {
         if (firstActiveForm) {
-          form.waiting = form.title;
+          form.waiting = firstActiveForm.title;
         } else {
           firstActiveForm = form;
         }
