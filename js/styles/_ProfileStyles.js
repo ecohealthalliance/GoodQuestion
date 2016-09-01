@@ -37,11 +37,9 @@ const ProfileStyles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: Color.background1,
   },
-  picture: {
-    width: 180,
-    height: 180,
-    borderRadius: 180 / 2,
-    resizeMode: 'cover',
+  body: {
+    flex: 1,
+    margin: 15,
   },
   name: {
     padding: 2,
@@ -52,6 +50,40 @@ const ProfileStyles = StyleSheet.create({
     padding: 2,
     fontSize: 14,
     color: '#fff',
+  },
+  itemContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: Color.background1Edge,
+  },
+  caretView: {
+    flex: 0.15,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    marginRight: 25,
+  },
+  item: {
+    flex: 0.70,
+    paddingVertical: 20,
+    paddingHorizontal: 0,
+  },
+  itemText: {
+    color: Color.primary,
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  iconView: {
+    flex: 0.15,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    marginLeft: 25,
+  },
+  picture: {
+    width: 175,
+    height: 175,
+    borderRadius: 175 / 2,
+    resizeMode: 'contain',
   },
   loading: {
     flex: 1,

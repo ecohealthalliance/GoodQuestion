@@ -35,11 +35,17 @@ const LoginPage = React.createClass({
 
   getInitialState() {
     return {
-      email: '',
-      password: '',
+      email: this.props.email || '',
+      password: this.props.password || '',
       buttonText: 'Login',
       errors: [],
     };
+  },
+
+  componentDidMount() {
+    if (this.props.email && this.props.password) {
+      this.handleVerifyLogin();
+    }
   },
 
   /* Methods */

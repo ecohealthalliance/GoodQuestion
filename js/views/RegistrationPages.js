@@ -73,7 +73,7 @@ const RegistrationPages = React.createClass({
   /**
    * validates the current page
    *
-   * @return {boolean} true if valid
+   * @return {Object} errors, the errors to the page or empty object
    */
   validatePage(pageNum) {
     let updatedPageNum = pageNum;
@@ -82,30 +82,29 @@ const RegistrationPages = React.createClass({
     } else {
       updatedPageNum = `page${pageNum}`;
     }
+    let errors = {};
     const currentPage = this.refs[updatedPageNum];
-    let errors = [];
     if (typeof currentPage !== 'undefined') {
       if (currentPage.hasOwnProperty('joiValidate')) {
         errors = currentPage.joiValidate();
-        console.log('errors: ', errors);
-        if (errors.length > 0) {
+        if (Object.keys(errors).length > 0) {
+          currentPage.setState({errors: errors});
           if (this.alerts < 1) {
             Alert.alert('Validation', 'The form errors need corrected to continue.');
           }
           this.alerts++;
-          return false;
         }
       }
     }
-    return true;
+    return errors;
   },
 
   /**
    * event handler for the swiper, return false to stop, true to continue
    */
   beforePageChange(currentPage, nextPage) {
-    const shouldContinue = this.validatePage();
-    if (shouldContinue || nextPage >= 0 && nextPage < currentPage) {
+    const errors = this.validatePage();
+    if (Object.keys(errors).length <= 0 || nextPage >= 0 && nextPage < currentPage) {
       this.setIndex(nextPage);
       return true;
     }
@@ -151,7 +150,13 @@ const RegistrationPages = React.createClass({
       } else {
         Alert.alert('Success', 'You have successfully registered to Good Question');
         // go to the default route
-        this.props.navigator.resetTo({});
+        this.props.navigator.resetTo({
+          path: 'login',
+          title: '',
+          unsecured: true,
+          email: email,
+          password: password,
+        });
       }
     });
   },

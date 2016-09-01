@@ -37,6 +37,11 @@ export function loadCachedQuestions(formId) {
  * @param {array} forms, an array of forms
  */
 export function loadCachedQuestionsFromForms(forms) {
+  if (!forms || forms.length === 0) {
+    console.warn('Unable to load questions: No forms found.');
+    return [];
+  }
+
   return realm.objects('Question').filtered(forms.map((form) => `formId == "${form.id}"`).join(' OR ')).sorted('order');
 }
 

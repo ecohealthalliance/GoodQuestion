@@ -14,9 +14,9 @@ export default {
         delete errors[name];
         this.setState({errors: errors});
       } else {
-        errors[name] = res.error.details[0].message;
+        err = res.error.details[0].message;
+        errors[name] = err;
         this.setState({errors: errors});
-        err = res.error.details[0];
       }
     } else {
       delete errors[name];
@@ -24,9 +24,12 @@ export default {
     }
     return err;
   },
-  joiValidate() {
-    const errors = [];
+  joiValidate(ignore = []) {
+    const errors = {};
     Object.keys(this.schema).forEach((key) => {
+      if (ignore.indexOf(key) >= 0) {
+        return;
+      }
       const value = this.state[key];
       const object = {};
       object[key] = value;
@@ -34,7 +37,7 @@ export default {
       schema[key] = this.schema[key];
       const error = this.joiCheckError(object, schema);
       if (error) {
-        errors.push(error);
+        errors[key] = error;
       }
     });
     return errors;

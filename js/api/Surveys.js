@@ -5,55 +5,34 @@ import Store from '../data/Store';
 import realm from '../data/Realm';
 
 import { loadForms, loadParseFormDataBySurveyId } from './Forms';
-import { checkSurveyTimeTriggers, removeTriggers } from './Triggers';
+import { checkSurveyTimeTriggers, removeTriggers, disableTriggers } from './Triggers';
 import { loadInvitations, loadAcceptedInvitations } from '../api/Invitations';
 
-// Erases the current cache of Surveys
-function clearSurveyCache(exclusions) {
-  try {
-    const surveys = realm.objects('Survey');
-    const expiredSurveys = [];
-    const excludedIds = [];
-    for (let i = 0; i < exclusions.length; i++) {
-      excludedIds.push(exclusions[i].id);
-    }
+// Live realm.io object containing all cached 'Survey' entries.
+export const realmSurveys = realm.objects('Survey');
 
-    // Standard JS array.filter doesn't work with these Realm objects, so we have to take care of this filtering manually.
-    // Current version of Realm.io does not support exclusion queries for strings.
-    const surveysLength = surveys.length;
-    for (let i = surveysLength - 1; i >= 0; i--) {
-      let expired = true;
-      for (let j = excludedIds.length - 1; j >= 0; j--) {
-        if (surveys[i].id === excludedIds[j]) {
-          expired = false;
+// Attempts to find a survey with a specified id cached in the Store
+export function loadCachedSurvey(id) {
+  return realm.objects('Survey').filtered(`id = "${id}"`)[0];
+}
+
+// Finds and returns the list of all surveys cached in Realm.io
+export function loadCachedSurveyList() {
+  return realm.objects('Survey');
+}
+
+export function getSurveyForms(surveyId, callback) {
+  const Survey = Parse.Object.extend('Survey');
+  const query = new Parse.Query(Survey);
+  query.get(surveyId,
+    (survey) => {
+      loadForms(survey, (err, forms) => {
+        if (callback) {
+          callback(null, forms);
         }
-      }
-      if (expired) {
-        expiredSurveys.push(surveys[i]);
-      }
+      });
     }
-
-    realm.write(() => {
-      const expiredSurveysLength = expiredSurveys.length;
-      for (let i = 0; i < expiredSurveysLength; i++) {
-        const forms = realm.objects('Form').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`);
-        const timeTriggers = realm.objects('TimeTrigger').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`);
-        const geofenceTriggers = realm.objects('GeofenceTrigger').filtered(`surveyId= "${expiredSurveys[i].surveyId}"`);
-
-        const formsLength = forms.length;
-        for (let j = 0; j < formsLength; j++) {
-          const questions = realm.objects('Question').filtered(`formId= "${expiredSurveys[i].surveyId}"`);
-          realm.delete(questions);
-        }
-        realm.delete(forms);
-        realm.delete(timeTriggers);
-        realm.delete(geofenceTriggers);
-      }
-      realm.delete(expiredSurveys);
-    });
-  } catch (e) {
-    console.error(e);
-  }
+  );
 }
 
 // Gets the name of the owner of a Survey and saves it to Realm database.
@@ -80,16 +59,6 @@ function getSurveyOwner(survey) {
   });
 }
 
-// Attempts to find a survey with a specified id cached in the Store
-export function loadCachedSurvey(id) {
-  return realm.objects('Survey').filtered(`id = "${id}"`)[0];
-}
-
-// Finds and returns the list of all surveys cached in Realm.io
-export function loadCachedSurveyList() {
-  return realm.objects('Survey');
-}
-
 // Finds and returns the list of all surveys cached in Realm.io
 export function loadAllAcceptedSurveys(callback) {
   loadAcceptedInvitations((err, invitations) => {
@@ -101,32 +70,13 @@ export function loadAllAcceptedSurveys(callback) {
     const surveys = [];
     const invitationsLength = invitations.length;
     for (let i = 0; i < invitationsLength; i++) {
-      const acceptedSurvey = realm.objects('Survey').filtered(`id = "${invitations[i].surveyId}"`)[0];
+      const acceptedSurvey = realm.objects('Survey').filtered(`id = "${invitations[i].surveyId}" AND active == true`)[0];
       if (acceptedSurvey) {
         surveys.push(acceptedSurvey);
       }
     }
     callback(null, surveys);
   });
-}
-
-/**
- * Gets the Forms from a specified Survey from Parse
- * @param  {string}   surveyId ID of the target survey to fetch from
- * @param  {Function} callback Callback function which returns an array of Parse 'Form' objects
- */
-export function getSurveyForms(surveyId, callback) {
-  const Survey = Parse.Object.extend('Survey');
-  const query = new Parse.Query(Survey);
-  query.get(surveyId,
-    (survey) => {
-      loadForms(survey, (err, forms) => {
-        if (callback) {
-          callback(null, forms);
-        }
-      });
-    }
-  );
 }
 
 /**
@@ -183,6 +133,7 @@ export function cacheParseSurveys(survey) {
         // TODO: Get Organization's name.
         user: 'N/A',
         forms: [],
+        deleted: survey.get('deleted'),
       }, true);
       getSurveyOwner(survey);
     });
@@ -195,19 +146,51 @@ export function cacheParseSurveys(survey) {
 export function loadSurveys(options = {}, callback) {
   const Survey = Parse.Object.extend('Survey');
   const query = new Parse.Query(Survey);
-  query.equalTo('active', true);
+  query.equalTo('deleted', false);
+
+  // Optional: Limit Parse request to fetch active or inactive surveys only.
+  if (options.active) {
+    query.equalTo('active', true);
+  } else if (options.expired) {
+    query.equalTo('active', false);
+  }
+
+  // Optional: Query objects using an array of ids.
+  if (options.surveyIds) {
+    query.containedIn('objectId', options.surveyIds);
+  }
+
   query.find({
     success: (results) => {
-      clearSurveyCache(results);
-      const cachedSurveys = realm.objects('Survey');
-      for (let i = 0; i < results.length; i++) {
-        const cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0];
-        if (!cachedSurvey) {
-          loadForms(results[i]);
-        }
-        cacheParseSurveys(results[i]);
-        if (options.forceRefresh || cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime()) {
-          refreshAcceptedSurveyData(results[i].id);
+      if (results && results.length > 0) {
+        const cachedSurveys = realm.objects('Survey');
+        for (let i = 0; i < results.length; i++) {
+          const cachedSurvey = cachedSurveys.filtered(`id = "${results[i].id}"`)[0];
+          const cachedSurveyTriggers = realm.objects('TimeTrigger').filtered(`surveyId = "${results[i].id}"`);
+
+          const cacheIsOutdated = cachedSurvey && cachedSurvey.updatedAt.getTime() !== results[i].updatedAt.getTime();
+          const cacheHasNoTriggers = results[i].active && !cachedSurveyTriggers || cachedSurveyTriggers.length === 0;
+          const cacheWasDeleted = results[i].active && cachedSurvey && cachedSurvey.deleted && !results[i].deleted;
+
+          // Fetch basic form data if there is no Survey or Trigger data cached, or if the Survey data is outdated.
+          if (!cachedSurvey || cacheIsOutdated) {
+            if (results[i].active) {
+              loadForms(results[i]);
+            }
+          }
+
+          // Cache new results
+          cacheParseSurveys(results[i]);
+
+          // Refresh triggers and form data for active surveys
+          if (options.forceRefresh || cacheIsOutdated || cacheHasNoTriggers || cacheWasDeleted) {
+            refreshAcceptedSurveyData(results[i].id);
+          }
+
+          // Disable triggers for deactivated surveys
+          if (results[i].active === false || results[i].deleted === true) {
+            disableTriggers(results[i].id);
+          }
         }
       }
       Store.lastParseUpdate = Date.now();
@@ -224,6 +207,76 @@ export function loadSurveys(options = {}, callback) {
 }
 
 /**
+ * Removes a list of Surveys from the Realm cache. Deletes associated Forms, Triggers, and Questions.
+ * @param  {array} deletedIds Array of string ids for all of the Surveys to be removed
+ */
+function pruneDeletedSurveys(deletedIds) {
+  let surveyFilter = 'id == ""';
+  deletedIds.forEach((id) => {
+    surveyFilter += ` OR id == "${id}"`;
+  });
+  const deletedSurveys = realmSurveys.filtered(surveyFilter);
+
+  deletedSurveys.forEach((survey) => {
+    removeTriggers(survey.id);
+    realm.write(() => {
+      const forms = realm.objects('Form').filtered(`surveyId= "${survey.id}"`);
+      for (let i = forms.length - 1; i >= 0; i--) {
+        const questions = realm.objects('Question').filtered(`formId= "${forms[i].id}"`);
+        realm.delete(questions);
+      }
+      realm.delete(forms);
+    });
+  });
+  realm.write(() => {
+    realm.delete(deletedSurveys);
+  });
+}
+
+/**
+ * Finds the cached surveys missing from the latest Parse query, then checks those Surveys to identify their activity or deletion status.
+ * If any active surveys are still missing from the second query, they will be pruned from the local realm database.
+ * @param  {array} currentSurveys  Array of 'Survey' Parse objects
+ */
+function resolveMissingSurveys(currentSurveys, callback) {
+  const surveyIds = [];
+  let surveyFilter = 'active == true';
+  currentSurveys.forEach((survey) => {
+    surveyFilter += ` AND id != "${survey.id}"`;
+  });
+  const missingSurveys = realmSurveys.filtered(surveyFilter);
+  if (missingSurveys.length === 0) {
+    if (callback) {
+      callback(null, []);
+    }
+    return;
+  }
+
+  missingSurveys.forEach((survey) => {
+    surveyIds.push(survey.id);
+  });
+
+  loadSurveys({surveyIds: surveyIds}, (err, results) => {
+    if (err) {
+      if (callback) {
+        callback(err);
+      }
+      return;
+    }
+    const newIds = [];
+    results.forEach((survey) => {
+      newIds.push(survey.id);
+    });
+
+    const missingIds = _.xor(surveyIds, newIds);
+    pruneDeletedSurveys(missingIds);
+    if (callback) {
+      callback(null, missingIds);
+    }
+  });
+}
+
+/**
  * fetches remote data for surveys and invitations
  *
  * @param {object}   options, options object to be passed to loadSurveys
@@ -235,7 +288,44 @@ export function loadSurveyList(options = {}, done) {
       loadInvitations(cb);
     },
     surveys: ['invitations', (cb) => {
-      loadSurveys(options, cb);
+      loadSurveys({active: true}, cb);
+    }],
+    missing: ['surveys', 'invitations', (cb, results) => {
+      resolveMissingSurveys(results.surveys, cb);
+    }],
+  }, (err, results) => {
+    if (err) {
+      console.warn(err);
+      if (done) {
+        done(err);
+      }
+      return;
+    }
+    if (done) {
+      done(null, results);
+    }
+  });
+}
+
+/**
+ * Fetches list of Invitations from remote, then acquires the expired Surveys in which the user had previously accepted.
+ * @param {function} done, the callback for when the async operations are done
+ */
+export function loadExpiredSurveyList(done) {
+  async.auto({
+    invitations: (cb) => {
+      loadInvitations(cb);
+    },
+    surveys: ['invitations', (cb, results) => {
+      const acceptedInvitations = results.invitations.filter((invitation) => {
+        return invitation.get('status') === 'accepted';
+      });
+      let surveyIds = [];
+      acceptedInvitations.forEach((invitation) => {
+        surveyIds.push(invitation.get('surveyId'));
+      });
+      surveyIds = _.uniq(surveyIds);
+      loadSurveys({expired: true, surveyIds: surveyIds}, cb);
     }],
   }, (err, results) => {
     if (err) {

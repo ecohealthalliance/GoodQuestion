@@ -90,5 +90,4 @@ function createDemoGeofenceForm(parentSurvey, formData) {
     .fail(function(e){console.log(e);})
 }
 
-
 module.exports = { Form, loadForms, createDemoForm, destroyAll, createDemoGeofenceForms }

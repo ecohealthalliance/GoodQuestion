@@ -18,5 +18,6 @@ GeofenceTrigger.schema = {
     inRange: {type: 'bool', default: false},
 
     completed: {type: 'bool', default: false},
+    expired: { type: 'bool', default: false },
   },
 };

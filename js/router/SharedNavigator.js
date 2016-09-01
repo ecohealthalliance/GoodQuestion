@@ -52,11 +52,16 @@ connectToParseServer(Settings.parse.serverUrl, Settings.parse.appId);
 let navigator = null;
 let initialRouteStack = Store.initialRouteStack;
 let currentRoute = initialRouteStack[0];
+let drawer = null;
 const toaster = <Toaster key='toaster' />;
 
 // Binds the hardware "back button" from Android devices
 if (Platform.OS === 'android') {
   BackAndroid.addEventListener('hardwareBackPress', () => {
+    if (drawer && drawer._open) {
+      drawer.close();
+      return true;
+    }
     if (navigator && navigator.getCurrentRoutes().length > 1) {
       navigator.pop();
       return true;
@@ -161,12 +166,12 @@ const SharedNavigator = React.createClass({
   },
 
   closeControlPanel() {
-    this._drawer.close();
+    drawer.close();
   },
 
   openControlPanel() {
     this._controlPanel.navigating = false;
-    this._drawer.open();
+    drawer.open();
   },
 
   changeRouteViaControlPanel() {
@@ -226,7 +231,7 @@ const SharedNavigator = React.createClass({
 
     switch (route.path) {
       case 'login':
-        viewComponent = <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} />;
+        viewComponent = <LoginPage {...sharedProps} setAuthenticated={this.setAuthenticated} email={route.email} password={route.password} />;
         break;
       case 'surveylist':
         viewComponent = <SurveyListPage {...sharedProps} />;
@@ -293,7 +298,7 @@ const SharedNavigator = React.createClass({
         <Drawer
           type='overlay'
           ref={(ref) => {
-            this._drawer = ref;
+            drawer = ref;
           }}
           content={
             <ControlPanel
@@ -320,7 +325,7 @@ const SharedNavigator = React.createClass({
             ref={(nav) => {
               navigator = nav;
                // Store globally so we can use the navigator outside components
-              Store.navigator = nav;
+              Store.navigator = navigator;
             }}
             initialRouteStack={initialRouteStack}
             renderScene={this.routeMapper}
@@ -340,6 +345,8 @@ const SharedNavigator = React.createClass({
       <Navigator
         ref={(nav) => {
           navigator = nav;
+          // Store globally so we can use the navigator outside components
+          Store.navigator = navigator;
         }}
         initialRouteStack={initialRouteStack}
         renderScene={this.routeMapper}

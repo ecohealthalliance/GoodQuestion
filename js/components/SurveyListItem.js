@@ -36,6 +36,11 @@ const SurveyListItem = React.createClass({
     if (!nextProps.status || nextProps.isRefreshing) {
       return;
     }
+
+    if (nextProps.skipUpdate && nextProps.status === this.props.status) {
+      return;
+    }
+
     this.update(nextProps.status);
   },
 
