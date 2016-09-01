@@ -76,9 +76,10 @@ const RegistrationPagePart1 = React.createClass({
   },
 
   goToNextPage() {
-    const shouldContinue = this.props.validatePage(0);
-    if (shouldContinue) {
+    const errors = this.props.validatePage(0);
+    if (Object.keys(errors).length <= 0) {
       this.props.setIndex(1);
+      return;
     }
   },
 
