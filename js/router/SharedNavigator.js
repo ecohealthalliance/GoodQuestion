@@ -317,7 +317,7 @@ const SharedNavigator = React.createClass({
             ref={(nav) => {
               navigator = nav;
                // Store globally so we can use the navigator outside components
-              Store.navigator = nav;
+              Store.navigator = navigator;
             }}
             initialRouteStack={initialRouteStack}
             renderScene={this.routeMapper}
@@ -337,6 +337,8 @@ const SharedNavigator = React.createClass({
       <Navigator
         ref={(nav) => {
           navigator = nav;
+          // Store globally so we can use the navigator outside components
+          Store.navigator = navigator;
         }}
         initialRouteStack={initialRouteStack}
         renderScene={this.routeMapper}
