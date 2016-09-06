@@ -19,7 +19,7 @@ const CalendarDay = React.createClass({
     onPress: React.PropTypes.func,
     usingEvents: React.PropTypes.bool,
     filler: React.PropTypes.bool,
-    customStyle: React.PropTypes.object,
+    customStyle: View.propTypes.style,
   },
 
   getDefaultProps () {

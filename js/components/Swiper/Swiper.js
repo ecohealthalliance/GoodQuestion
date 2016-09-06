@@ -16,9 +16,9 @@ const Swiper = React.createClass({
     pager: React.PropTypes.bool,
     beforePageChange: React.PropTypes.func.isRequired,
     onPageChange: React.PropTypes.func.isRequired,
-    dotContainerStyle: React.PropTypes.object,
-    dotStyle: React.PropTypes.object,
-    activeDotStyle: React.PropTypes.object,
+    dotContainerStyle: View.propTypes.style,
+    dotStyle: View.propTypes.style,
+    activeDotStyle: View.propTypes.style,
   },
 
   getDefaultProps() {
