@@ -318,13 +318,19 @@ export function clearNotification(notification) {
  * @param  {function} action Callback function to be executed when tapping the toast
  */
 export function showToast(title, message, icon, duration, action) {
-  const toastMessage = ToastMessage.createFromObject({
-    title: title,
-    message: message,
-    icon: icon,
-    iconColor: Color.faded,
-    duration: duration,
-    action: action,
+  // only show a toastMessage if the user is logged in
+  currentUser((err, user) => {
+    if (err || user === null) {
+      return;
+    }
+    const toastMessage = ToastMessage.createFromObject({
+      title: title,
+      message: message,
+      icon: icon,
+      iconColor: Color.faded,
+      duration: duration,
+      action: action,
+    });
+    pubsub.publish(ToastAddresses.SHOW, toastMessage);
   });
-  pubsub.publish(ToastAddresses.SHOW, toastMessage);
 }

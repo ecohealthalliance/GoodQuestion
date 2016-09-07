@@ -5,6 +5,7 @@ import async from 'async';
 import Settings from '../settings';
 
 import { addUserToInstallation } from '../api/Installations';
+import { resetGeofences } from '../api/Geofencing';
 import ImagePicker from 'react-native-image-picker';
 
 import pubsub from 'pubsub-js';
@@ -302,7 +303,10 @@ function parseRegister(email, password, props, done) {
  */
 export function logout() {
   _currentUser = null;
+  // sending id of an empty string removes the user from the installation obj
   addUserToInstallation({id: ''}, () => {});
+  // removes geofences upon logout
+  resetGeofences(() => {});
   Parse.User.logOut();
 }
 
