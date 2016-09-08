@@ -116,6 +116,8 @@ const RegistrationPagePart1 = React.createClass({
         <ScrollView
           ref='scrollView'
           horizontal={false}
+          keyboardShouldPersistTaps={true}
+          keyboardDismissMode='on-drag'
           style={Styles.form.registrationView}>
           <View style={{paddingBottom: 50}}>
             <Text style={[Styles.type.h1, {textAlign: 'center'}]} >

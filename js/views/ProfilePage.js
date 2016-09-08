@@ -299,7 +299,12 @@ const ProfilePage = React.createClass({
     }
     return (
       <View style={{flex: 1, backgroundColor: '#fff'}}>
-        <ScrollView ref='scrollView' horizontal={false} style={{flex: 1, backgroundColor: '#fff'}} >
+        <ScrollView
+          ref='scrollView'
+          horizontal={false}
+          keyboardShouldPersistTaps={true}
+          keyboardDismissMode='on-drag'
+          style={{flex: 1, backgroundColor: '#fff'}} >
           <View style={Styles.profile.header}>
             <View style={Styles.profile.avatarView}>
               <View style={{borderRadius: 90, borderWidth: 2, borderColor: '#fff'}}>

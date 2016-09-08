@@ -100,6 +100,8 @@ const LoginPage = React.createClass({
         <ScrollView
           ref='scrollView'
           horizontal={false}
+          keyboardShouldPersistTaps={true}
+          keyboardDismissMode='on-drag'
           style={Styles.form.registrationView}>
           <View style={Styles.form.inputGroup}>
             <Text style={Styles.form.errorText}>

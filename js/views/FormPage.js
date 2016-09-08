@@ -384,6 +384,8 @@ const FormPage = React.createClass({
           decelerationRate='fast'
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{flex: 0}}
+          keyboardShouldPersistTaps={true}
+          keyboardDismissMode='on-drag'
           style={{ overflow: 'hidden' }}
           >
           <View style={{paddingBottom: 90}}>

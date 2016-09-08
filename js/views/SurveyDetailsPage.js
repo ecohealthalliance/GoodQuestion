@@ -281,7 +281,10 @@ const SurveyDetailsPage = React.createClass({
   renderSurveyInfoPage() {
     return (
       <View style={Styles.container.fullView}>
-        <ScrollView>
+        <ScrollView
+          horizontal={false}
+          keyboardShouldPersistTaps={true}
+          keyboardDismissMode='on-drag'>
           <View style={Styles.survey.surveyDescription}>
             <Text style={Styles.type.h3}>{this.props.survey.description}</Text>
           </View>

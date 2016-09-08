@@ -92,7 +92,12 @@ const RegistrationPagePart2 = React.createClass({
     this.props.buttonStyles(this, this.formInputs);
     return (
       <View style={[Styles.container.defaultWhite]}>
-        <ScrollView style={Styles.form.registrationView}>
+        <ScrollView
+          ref='scrollView'
+          horizontal={false}
+          keyboardShouldPersistTaps={true}
+          keyboardDismissMode='on-drag'
+          style={Styles.form.registrationView}>
           <Text style={[Styles.type.h1, {textAlign: 'center'}]} >
             Location Services
           </Text>

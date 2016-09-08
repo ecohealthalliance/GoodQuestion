@@ -17,7 +17,11 @@ const TermsOfServicePage = React.createClass({
   render() {
     return (
       <View style={[Styles.container.default, {flex: 1}]}>
-        <ScrollView contentContainerStyle={Styles.container.informational}>
+        <ScrollView
+         contentContainerStyle={Styles.container.informational}
+         horizontal={false}
+         keyboardShouldPersistTaps={true}
+         keyboardDismissMode='on-drag'>
           <Text>
             {TermsOfService}
           </Text>
