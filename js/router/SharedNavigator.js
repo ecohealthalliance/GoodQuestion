@@ -83,13 +83,15 @@ const SharedNavigator = React.createClass({
       isLoading: true,        // Temporarily prevents the main component from rendering while loading authentication data.
       isAuthenticated: false, // Indicates if the user is currently logged in.
       newLogin: false,        // Indicates if the user has performed a login in this session.
+      currentUser: null,     // User object to be passed to views
     };
   },
 
   componentWillMount() {
     // see if we have an authenticated user
-    isAuthenticated((authenticated) => {
+    isAuthenticated((authenticated, user) => {
       if (authenticated) {
+
         checkTimeTriggers();
         checkDirtyObjects((err) => {
           if (err) {
@@ -99,12 +101,14 @@ const SharedNavigator = React.createClass({
           this.setState({
             isAuthenticated: authenticated,
             isLoading: false,
+            currentUser: user,
           });
         });
       } else {
         this.setState({
           isAuthenticated: authenticated,
           isLoading: false,
+          currentUser: null,
         });
       }
     });
@@ -119,13 +123,14 @@ const SharedNavigator = React.createClass({
       }
     });
 
-    isAuthenticated((authenticated) => {
+    isAuthenticated((authenticated, user) => {
       if (authenticated) {
         this.initializeUserServices();
       }
       this.setState({
         isAuthenticated: authenticated,
         isLoading: false,
+        currentUser: user,
       });
     });
 
@@ -134,10 +139,11 @@ const SharedNavigator = React.createClass({
   },
 
   /* Methods */
-  setAuthenticated(authenticated) {
+  setAuthenticated(authenticated, user) {
     this.setState({
       isAuthenticated: authenticated,
       newLogin: true,
+      currentUser: user,
     }, () => {
       this.initializeUserServices();
       navigator.resetTo({path: 'surveylist', title: 'Surveys'});
@@ -153,6 +159,7 @@ const SharedNavigator = React.createClass({
     logout();
     this.setState({
       isAuthenticated: false,
+      currentUser: null,
     }, () => {
       navigator.resetTo({path: 'login', title: ''});
     });
@@ -217,6 +224,7 @@ const SharedNavigator = React.createClass({
       previousPath: currentRoute.path,
       logout: this.logoutHandler,
       newLogin: this.state.newLogin,
+      currentUser: this.state.currentUser,
     };
 
     currentRoute = route;

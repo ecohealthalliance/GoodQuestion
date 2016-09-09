@@ -44,7 +44,7 @@ import { ToastAddresses, ToastMessage } from '../models/messages/ToastMessage';
 import { loadCachedTriggers } from '../api/Triggers';
 import { validateUser } from '../api/Account';
 import { loadCachedForms, loadActiveGeofenceFormsInRange } from '../api/Forms';
-import { loadCachedSubmissions, saveSubmission} from '../api/Submissions';
+import { loadCachedSubmissions, saveSubmission, saveIncompleteSubmission } from '../api/Submissions';
 import { loadCachedQuestions } from '../api/Questions';
 
 const CONTENT_HEIGHT = Dimensions.get('window').height - 140;
@@ -52,6 +52,8 @@ const CONTENT_HEIGHT = Dimensions.get('window').height - 140;
 const FormPage = React.createClass({
   form: null,
   nextForm: null,
+  _appStateListener: null,
+  _formComplete: false,
   _questionIndex: 0,
   propTypes: {
     survey: React.PropTypes.object.isRequired,
@@ -154,9 +156,9 @@ const FormPage = React.createClass({
 
     this.form = forms[index];
     this.nextForm = forms[index + 1];
-    const submissions = loadCachedSubmissions(this.form.id);
+    const submissions = loadCachedSubmissions({userId: this.props.currentUser.id, formId: this.form.id});
     const questions = loadCachedQuestions(this.form.id);
-    if (submissions.length > 0) {
+    if (submissions && submissions.length > 0) {
       answers = JSON.parse(submissions.slice(-1)[0].answers);
     } else {
       // Set default values
@@ -199,6 +201,7 @@ const FormPage = React.createClass({
 
   componentWillUnmount() {
     this.cancelCallbacks = true;
+    this.saveIncompleteSubmission();
   },
 
   componentDidMount() {
@@ -255,16 +258,31 @@ const FormPage = React.createClass({
     }
   },
 
+  saveIncompleteSubmission() {
+    if (!this._formComplete) {
+      const answers = this.state.answers;
+      const form = this.form;
+      saveIncompleteSubmission(form, answers, (err) => {
+        if (err) {
+          if (err === 'Invalid User') {
+            this.props.logout();
+            return;
+          }
+        }
+      });
+    }
+  },
+
   submit() {
     if (this.state.isSubmitting) {
       return;
     }
 
     const answers = this.state.answers;
-    const formId = this.form.id;
+    const form = this.form;
     const index = this.state.index;
     const survey = this.props.survey;
-    saveSubmission(formId, answers, (err) => {
+    saveSubmission(form, answers, (err) => {
       if (err) {
         if (err === 'Invalid User') {
           this.props.logout();
@@ -272,7 +290,6 @@ const FormPage = React.createClass({
         }
         Alert.alert('Error', err);
         this.setState({ isSubmitting: false });
-
         return;
       }
 
@@ -286,6 +303,8 @@ const FormPage = React.createClass({
         iconColor: Color.fadedGreen,
       });
       pubsub.publish(ToastAddresses.SHOW, toastMessage);
+
+      this._formComplete = true;
 
       // If there is another form continue onto that
       if (this.nextForm) {
@@ -316,6 +335,7 @@ const FormPage = React.createClass({
     this._questionIndex = page;
     if (this._nav) {
       this._nav.update(this._questionIndex, this.state.questions.length);
+      this.saveIncompleteSubmission();
     }
   },
 

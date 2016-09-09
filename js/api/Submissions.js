@@ -9,6 +9,7 @@ import async from 'async';
 import _ from 'lodash';
 
 const Submission = Parse.Object.extend('Submission');
+
 /**
  * create a submission Object with acl assigned
  *
@@ -34,9 +35,26 @@ Submission.create = function create(uniqueId, formId, answers, user, geolocation
   return submission;
 };
 
-// Fetches the cached submissions related to a specific form
-export function loadCachedSubmissions(formId) {
-  return realm.objects('Submission').filtered(`formId = "${formId}"`).sorted('created');
+/**
+ * Loads the user's cached submissions. Filtered by options object.
+ *
+ * @param {object} options          Object containing unique ids to filter with.
+ * @param {object} options.userId   Required. The id of the user to load Submissions from.
+ * @param {object} options.formId   Optional. The id form related to the submission.
+ * @param {object} options.surveyId   Optional. The id survey related to the submission.
+ * @param {object} user             The current parse user saved to AsyncStorage
+ */
+export function loadCachedSubmissions(options = {}) {
+  if (!options.userId) {
+    console.warn('Unable to load Submissions: No userId found.');
+    return;
+  }
+
+  let filter = `userId == "${options.userId}"`;
+  filter += options.formId ? ` AND formId == "${options.formId}"` : '';
+  filter += options.surveyId ? ` AND surveyId == "${options.surveyId}"` : '';
+
+  return realm.objects('Submission').filtered(filter).sorted('created');
 }
 
 /**
@@ -149,12 +167,12 @@ function findParseSubmissions(uniqueIds, done) {
  * upsert a submission to the local realm database
  *
  * @param {string} id, the unique id for the realm record
- * @param {string} formId, the unique id for the parse form record
+ * @param {object} form, the form object related to the submission
  * @param {string} userId, the unique id for the currentUser
  * @param {object} answers, the answers to the current form
  * @param {boolean} dirty, mark the submission diry
  */
-function upsertRealmSubmission(id, formId, userId, answers, dirty, done) {
+function upsertRealmSubmission(id, form, userId, answers, dirty, inProgress, done) {
   const submissions = realm.objects('Submission').filtered(
     `uniqueId = "${id}"`).sorted('created');
   if (submissions.length > 0) {
@@ -162,25 +180,32 @@ function upsertRealmSubmission(id, formId, userId, answers, dirty, done) {
     try {
       realm.write(() => {
         submission.dirty = true;
+        submission.inProgress = inProgress;
         submission.answers = JSON.stringify(answers);
       });
-      completeForm(formId);
+      if (!inProgress) {
+        completeForm(form.id);
+      }
       done(null, submission);
     } catch (e) {
       done(`Error updating realm submission ${id}`);
     }
   } else {
-    completeForm(formId);
+    if (!inProgress) {
+      completeForm(form.id);
+    }
     realm.write(() => {
       try {
         const submission = realm.create('Submission', {
           uniqueId: id,
-          formId: formId,
+          formId: form.id,
+          surveyId: form.surveyId,
           userId: userId,
           dirty: true,
+          inProgress: inProgress,
           created: new Date(),
           answers: JSON.stringify(answers),
-        });
+        }, true);
         done(null, submission);
       } catch (e) {
         done(`Error saving realm submission ${id}`);
@@ -215,20 +240,20 @@ function markRealmSubmissionClean(id, done) {
 /**
  * save a submission to realm.io and attempt to propagte to parse-server
  *
- * @param {string} formId, the unique id for the parse form record
+ * @param {object} form, data from the related form object for the parse submission record
  * @param {object} answers, the answers to the current form
  */
-export function saveSubmission(formId, answers, done) {
+export function saveSubmission(form, answers, done) {
   async.auto({
     currentUser: (cb) => {
       currentUser(cb);
     },
     id: ['currentUser', (cb, results) => {
-      genSubmissionId(formId, results.currentUser, cb);
+      genSubmissionId(form.id, results.currentUser, cb);
     }],
     // save to realm and mark dirty
     dirty: ['id', (cb, results) => {
-      upsertRealmSubmission(results.id, formId, results.currentUser.id, answers, true, cb);
+      upsertRealmSubmission(results.id, form, results.currentUser.id, answers, true, false, cb);
     }],
     // TODO use cloud code for perform upsert vs. find then save
     // https://gist.github.com/kevinzhang96/1d4680b953e33342f6ab
@@ -238,7 +263,7 @@ export function saveSubmission(formId, answers, done) {
     // save to parse, if successful mark clean
     save: ['find', (cb, results) => {
       if (results.find === null) {
-        createParseSubmission(results.id, formId, answers, results.currentUser, cb);
+        createParseSubmission(results.id, form.id, answers, results.currentUser, cb);
       } else {
         updateParseSubmission(results.find, answers, cb);
       }
@@ -259,6 +284,33 @@ export function saveSubmission(formId, answers, done) {
 }
 
 /**
+ * Save a submission to realm.io to allow resuming an incomplete form at a later time.
+ * Does not propagate to Parse.
+ *
+ * @param {object} form, data from the related form object for the future parse form record
+ * @param {object} answers, the answers to the current form
+ */
+export function saveIncompleteSubmission(form, answers, done) {
+  async.auto({
+    currentUser: (cb) => {
+      currentUser(cb);
+    },
+    id: ['currentUser', (cb, results) => {
+      genSubmissionId(form.id, results.currentUser, cb);
+    }],
+    // save to realm and mark as in-progress
+    cache: ['id', (cb, results) => {
+      upsertRealmSubmission(results.id, form, results.currentUser.id, answers, true, true, cb);
+    }],
+  }, (err) => {
+    if (err) {
+      return done(err);
+    }
+    done(null, 'The submission was saved locally.');
+  });
+}
+
+/**
  * loads all cached submissions for the currentUser that are marked dirty
  */
 export function loadDirtySubmissions(done) {
@@ -268,7 +320,9 @@ export function loadDirtySubmissions(done) {
     },
     submissions: ['currentUser', (cb, results) => {
       const userId = results.currentUser.id;
-      const submissions = realm.objects('Submission').filtered(`userId == "${userId}"`).filtered('dirty == true');
+      const submissions = realm.objects('Submission')
+                                .filtered(`userId == "${userId}"`)
+                                .filtered('dirty == true AND inProgress == false');
       cb(null, submissions);
     }],
   }, (err, results) => {

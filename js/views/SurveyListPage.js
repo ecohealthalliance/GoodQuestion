@@ -15,6 +15,7 @@ import Styles from '../styles/Styles';
 import { loadSurveyList, loadCachedSurveyList, loadExpiredSurveyList } from '../api/Surveys';
 import { checkTimeTriggers } from '../api/Triggers';
 import { InvitationStatus, loadCachedInvitations } from '../api/Invitations';
+import { loadCachedSubmissions } from '../api/Submissions';
 import SurveyListItem from '../components/SurveyListItem';
 import SurveyListFilter from '../components/SurveyListFilter';
 import Loading from '../components/Loading';
@@ -25,8 +26,15 @@ const SurveyListPage = React.createClass({
   title: 'Surveys',
   _invitations: [],
   _surveys: [],
+  _incompleteSubmissions: [],
 
   getInitialState() {
+    if (this.props.currentUser) {
+      const cachedSubmissions = loadCachedSubmissions({userId: this.props.currentUser.id});
+      if (cachedSubmissions && cachedSubmissions.length > 0) {
+        this._incompleteSubmissions = cachedSubmissions.filtered('inProgress == true');
+      }
+    }
     return {
       isLoading: true,                        // Indicates if the component is ready to be rendered
       tab: 'all',                             // Current filter tab
@@ -242,6 +250,13 @@ const SurveyListPage = React.createClass({
     return status;
   },
 
+  getIncompleteForms(surveyId) {
+    if (this.state.isLoading || !this._incompleteSubmissions || this._incompleteSubmissions.length === 0) {
+      return;
+    }
+    return this._incompleteSubmissions.filtered(`surveyId == "${surveyId}"`);
+  },
+
   /* Render */
   renderItem(survey) {
     if (!survey) {
@@ -257,6 +272,7 @@ const SurveyListPage = React.createClass({
             key={`survey-item-${survey.id}`}
             surveyId={survey.id}
             status={this.getInvitationStatus(survey.id)}
+            incompleteForms={this.getIncompleteForms(survey.id)}
             isRefreshing={this.state.isRefreshing}
             skipUpdate={this.state.skipUpdate}
             />

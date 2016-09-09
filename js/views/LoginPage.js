@@ -86,7 +86,7 @@ const LoginPage = React.createClass({
         }
       });
 
-      this.props.setAuthenticated(true);
+      this.props.setAuthenticated(true, user);
     });
   },
 
