@@ -15,7 +15,7 @@ const schema = {
 /**
  * pubsub addresses for Toaster.js
  */
-export const ToastAddresses = {
+export const ToastChannels = {
   SHOW: 'toast:show',
 };
 

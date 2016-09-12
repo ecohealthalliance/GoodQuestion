@@ -40,7 +40,7 @@ import Swiper from '../components/Swiper/Swiper';
 import SurveyFormNavigator from '../components/SurveyFormNavigator';
 
 // API
-import { ToastAddresses, ToastMessage } from '../models/messages/ToastMessage';
+import { ToastChannels, ToastMessage } from '../models/messages/Toast';
 import { loadCachedTriggers } from '../api/Triggers';
 import { validateUser } from '../api/Account';
 import { loadCachedForms, loadActiveGeofenceFormsInRange } from '../api/Forms';
@@ -302,7 +302,7 @@ const FormPage = React.createClass({
         icon: 'check',
         iconColor: Color.fadedGreen,
       });
-      pubsub.publish(ToastAddresses.SHOW, toastMessage);
+      pubsub.publish(ToastChannels.SHOW, toastMessage);
 
       this._formComplete = true;
 

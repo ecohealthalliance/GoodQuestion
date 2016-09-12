@@ -9,9 +9,11 @@ import {
   Easing,
   StyleSheet,
 } from 'react-native';
-import pubsub from 'pubsub-js';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
+import pubsub from 'pubsub-js';
+import { NotificationChannels } from '../models/messages/Notification';
+
+import Icon from 'react-native-vector-icons/FontAwesome';
 import Styles from '../styles/Styles';
 import Color from '../styles/Color';
 
@@ -32,11 +34,19 @@ const _styles = StyleSheet.create({
 });
 
 const Header = React.createClass({
+  subscriptions: {},
+
   propTypes: {
     navigator: React.PropTypes.object,
   },
 
   getInitialState() {
+    // subscript to the notification create channel
+    const subscription = pubsub.subscribe(NotificationChannels.CREATE, () => {
+      this.updateTitle();
+    });
+    this.subscriptions[NotificationChannels.CREATE] = subscription;
+
     const routeStack = this.props.navState.routeStack;
     const position = routeStack.length - 1;
     const title = routeStack && routeStack[position] ? routeStack[position].title : '';
@@ -52,6 +62,16 @@ const Header = React.createClass({
     };
   },
 
+  componentWillUnmount() {
+    const keys = Object.keys(this.subscriptions);
+    if (keys.length > 0) {
+      keys.forEach((key) => {
+        pubsub.unsubscribe(this.subscriptions[key]);
+      });
+      this.subscriptions = {};
+    }
+  },
+
   immediatelyRefresh() {
     // NoOp https://github.com/facebook/react-native/issues/6205
   },
@@ -65,10 +85,6 @@ const Header = React.createClass({
       this.state.fadeAnim,
       {toValue: 1}
     ).start();
-
-    pubsub.subscribe('onNotification', () => {
-      this.updateTitle();
-    });
   },
 
   /* Methods */
