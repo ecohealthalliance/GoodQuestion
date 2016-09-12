@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import pubsub from 'pubsub-js';
-import {ToastAddresses, ToastMessage} from '../models/messages/ToastMessage';
+import {ToastChannels, ToastMessage} from '../models/messages/Toast';
 
 import Styles from '../styles/Styles';
 import Color from '../styles/Color';
@@ -16,17 +16,20 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Toaster = React.createClass({
   inUse: false,
+  subscriptions: {},
+
   propTypes: {
     navigator: React.PropTypes.object,
   },
 
   getInitialState() {
-    // subscribe to the pubsub channel SHOW and handle valid requests
-    pubsub.subscribe(ToastAddresses.SHOW, (address, request) => {
+    // subscribe to the toast show channel and handle valid requests
+    const subscription = pubsub.subscribe(ToastChannels.SHOW, (address, request) => {
       if (request instanceof ToastMessage) {
         this.showToast(request);
       }
     });
+    this.subscriptions[ToastChannels.SHOW] = subscription;
 
     return {
       title: '',
@@ -37,6 +40,16 @@ const Toaster = React.createClass({
       fadeAnim: new Animated.Value(0.0),
       translateAnim: new Animated.Value(300),
     };
+  },
+
+  componentWillUnmount() {
+    const keys = Object.keys(this.subscriptions);
+    if (keys.length > 0) {
+      keys.forEach((key) => {
+        pubsub.unsubscribe(this.subscriptions[key]);
+      });
+      this.subscriptions = {};
+    }
   },
 
   /* Methods */
@@ -51,7 +64,7 @@ const Toaster = React.createClass({
    * @param {object} toastMessage, an instanceof ToastMessage from pubsub
    */
   showToast(toastMessage) {
-    if (this.inUse) {
+    if (this.inUse || !this.subscriptions.hasOwnProperty(ToastChannels.SHOW)) {
       return;
     }
 

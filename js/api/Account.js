@@ -9,7 +9,7 @@ import { resetGeofences } from '../api/Geofencing';
 import ImagePicker from 'react-native-image-picker';
 
 import pubsub from 'pubsub-js';
-import {ProfileAddresses, ProfileMessage} from '../models/messages/ProfileMessage';
+import {ProfileChannels, ProfileMessage} from '../models/messages/Profile';
 
 import { PixelRatio } from 'react-native';
 
@@ -568,7 +568,7 @@ export function changeAvatarImage(component, done) {
     pub: ['save', (cb, result) => {
       // Publish a Profile change message via pubsub
       const profileMessage = ProfileMessage.createFromObject({uri: result.save});
-      pubsub.publish(ProfileAddresses.CHANGE, profileMessage);
+      pubsub.publish(ProfileChannels.CHANGE, profileMessage);
       cb(null, true);
     }],
   }, done);

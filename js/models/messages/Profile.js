@@ -11,7 +11,7 @@ const schema = {
 /**
  * pubsub addresses for Toaster.js
  */
-export const ProfileAddresses = {
+export const ProfileChannels = {
   CHANGE: 'profile:change',
 };
 

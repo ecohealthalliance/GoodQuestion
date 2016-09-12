@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "./node_modules/.bin/eslint -c .eslintrc.js ."
+    "test": "./node_modules/.bin/eslint -c .eslintrc.js --quiet true ."
   },
   "dependencies": {
     "apsl-react-native-button": "2.5.0",

@@ -8,7 +8,8 @@ import realm from '../data/Realm';
 import Store from '../data/Store';
 import Color from '../styles/Color';
 
-import { ToastAddresses, ToastMessage } from '../models/messages/ToastMessage';
+import { ToastChannels, ToastMessage } from '../models/messages/Toast';
+import { NotificationChannels, NotificationMessage } from '../models/messages/Notification';
 import { currentUser } from './Account';
 import { loadCachedFormDataById, loadCachedFormDataByTriggerId } from './Forms';
 import { upsertInstallation } from './Installations';
@@ -16,13 +17,13 @@ import { upsertInstallation } from './Installations';
 
 /**
  * Creates a new notification object to be viewed in-app
- * @param {string} notification             Object data to be recorded in Realm
+ * @param {object} notification             Object data to be recorded in Realm
  * @param {string} notification.surveyId    Unique ID for the Notification's target Survey
  * @param {string} notification.formId      Unique ID of the Notification's target Form
  * @param {string} notification.formId      Unique ID of the Notification's related Trigger object
  * @param {string} notification.title       Title of the notification
  * @param {string} notification.message     Message of the notification
- * @param {object} notification.time        Date object of when the notification was posted
+ * @param {date} notification.time        Date object of when the notification was posted
  * @return {object}                         New Realm object of the type 'Notification'
  */
 export function addAppNotification(notification) {
@@ -51,7 +52,10 @@ export function addAppNotification(notification) {
       });
 
       Store.newNotifications++;
-      pubsub.publish('onNotification', newNotification);
+
+      // publish a message that a new notification was created
+      const notificationMessage = NotificationMessage.createFromObject(newNotification);
+      pubsub.publish(NotificationChannels.CREATE, notificationMessage);
     });
   } catch (e) {
     console.error(e);
@@ -331,6 +335,6 @@ export function showToast(title, message, icon, duration, action) {
       duration: duration,
       action: action,
     });
-    pubsub.publish(ToastAddresses.SHOW, toastMessage);
+    pubsub.publish(ToastChannels.SHOW, toastMessage);
   });
 }

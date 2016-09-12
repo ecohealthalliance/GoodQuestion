@@ -11,7 +11,9 @@ import pubsub from 'pubsub-js';
 import Store from '../data/Store';
 import Styles from '../styles/Styles';
 
-import { ProfileAddresses, ProfileMessage } from '../models/messages/ProfileMessage';
+import { ProfileChannels, ProfileMessage } from '../models/messages/Profile';
+import { NotificationChannels, NotificationMessage } from '../models/messages/Notification';
+
 import { getAvatarImage } from '../api/Account';
 import { loadNotifications } from '../api/Notifications';
 import { version } from '../../package';
@@ -21,20 +23,41 @@ import ControlPanelItem from '../components/ControlPanelItem';
 const defaultAvatar = require('../images/profile_logo.png');
 
 export default React.createClass({
+  subscriptions: {},
+
   getInitialState() {
-    // subscribe to the pubsub channel and handle valid requests
-    pubsub.subscribe(ProfileAddresses.CHANGE, (address, request) => {
-      console.log('controlPanel.pubsub.request: ', request);
+    // subscribe to the profile CHANGE channel and handle valid requests
+    const subscription1 = pubsub.subscribe(ProfileChannels.CHANGE, (address, request) => {
       if (request instanceof ProfileMessage) {
         this.setState(request);
       }
     });
+    // add reference to this.subscriptions
+    this.subscriptions[ProfileChannels.CHANGE] = subscription1;
+    // subscribe to the notification CREATE channel and handle valid requests
+    const subscription2 = pubsub.subscribe(NotificationChannels.CREATE, (address, request) => {
+      if (request instanceof NotificationMessage) {
+        this.updateNotifications();
+      }
+    });
+    // add reference to this.subscriptions
+    this.subscriptions[NotificationChannels.CREATE] = subscription2;
 
     return {
       avatar: defaultAvatar,
       username: null,
       notificationCount: Store.newNotifications,
     };
+  },
+
+  componentWillUnmount() {
+    const keys = Object.keys(this.subscriptions);
+    if (keys.length > 0) {
+      keys.forEach((key) => {
+        pubsub.unsubscribe(this.subscriptions[key]);
+      });
+      this.subscriptions = {};
+    }
   },
 
   componentWillMount() {
@@ -44,10 +67,6 @@ export default React.createClass({
   },
 
   componentDidMount() {
-    pubsub.subscribe('onNotification', () => {
-      this.updateNotifications();
-    });
-
     getAvatarImage((err, result) => {
       if (err) {
         if (err && err === 'Invalid User') {
