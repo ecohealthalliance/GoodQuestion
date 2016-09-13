@@ -187,6 +187,8 @@ const Header = React.createClass({
       case 'none':
       case 'login':
       case 'registration':
+      case 'forgotPassword':
+      case 'verifyForgotPassword':
         navbarStyles.push(Styles.header.navBarClear);
         title = '';
         break;
