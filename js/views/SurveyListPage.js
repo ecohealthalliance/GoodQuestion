@@ -12,6 +12,7 @@ import {
 import _ from 'lodash';
 import Styles from '../styles/Styles';
 
+import { currentUser } from '../api/Account';
 import { loadSurveyList, loadCachedSurveyList, loadExpiredSurveyList } from '../api/Surveys';
 import { checkTimeTriggers } from '../api/Triggers';
 import { InvitationStatus, loadCachedInvitations } from '../api/Invitations';
@@ -29,12 +30,6 @@ const SurveyListPage = React.createClass({
   _incompleteSubmissions: [],
 
   getInitialState() {
-    if (this.props.currentUser) {
-      const cachedSubmissions = loadCachedSubmissions({userId: this.props.currentUser.id});
-      if (cachedSubmissions && cachedSubmissions.length > 0) {
-        this._incompleteSubmissions = cachedSubmissions.filtered('inProgress == true');
-      }
-    }
     return {
       isLoading: true,                        // Indicates if the component is ready to be rendered
       tab: 'all',                             // Current filter tab
@@ -47,6 +42,19 @@ const SurveyListPage = React.createClass({
     };
   },
 
+  componentWillMount() {
+    currentUser((err, user) => {
+      if (err || typeof user === 'undefined') {
+        this.props.logout();
+        return;
+      }
+      const cachedSubmissions = loadCachedSubmissions({userId: user.id});
+      if (cachedSubmissions && cachedSubmissions.length > 0) {
+        this._incompleteSubmissions = cachedSubmissions.filtered('inProgress == true');
+      }
+    });
+  },
+
   componentDidMount() {
     NetInfo.fetch().done((reach) => {
       // Do not perform initial Parse request if the user is offline.
@@ -54,7 +62,6 @@ const SurveyListPage = React.createClass({
         checkTimeTriggers(true, this.loadList);
         return;
       }
-
       if (this.props.newLogin) {
         // On login: Sync cached form data with Invitations accepted in other installations/devices.
         loadSurveyList({forceRefresh: true}, () => {

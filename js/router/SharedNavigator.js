@@ -88,7 +88,6 @@ const SharedNavigator = React.createClass({
       isLoading: true,        // Temporarily prevents the main component from rendering while loading authentication data.
       isAuthenticated: false, // Indicates if the user is currently logged in.
       newLogin: false,        // Indicates if the user has performed a login in this session.
-      currentUser: null,     // User object to be passed to views
     };
   },
 
@@ -111,25 +110,25 @@ const SharedNavigator = React.createClass({
           cb(null, null);
         });
       },
-      isAuthenticated: (cb) => {
-        isAuthenticated((authenticated, user) => {
-          cb(null, {authenticated, user});
+      authenticated: (cb) => {
+        isAuthenticated((authenticated) => {
+          cb(null, authenticated);
         });
       },
-      initializeUserServices: ['isAuthenticated', (cb, res) => {
-        if (res.isAuthenticated.authenticated) {
+      initializeUserServices: ['authenticated', (cb, res) => {
+        if (res.authenticated) {
           this.initializeUserServices();
         }
         cb(null, true);
       }],
-      checkTriggers: ['isAuthenticated', (cb, res) => {
-        if (res.isAuthenticated.authenticated) {
+      checkTriggers: ['authenticated', (cb, res) => {
+        if (res.authenticated) {
           checkTimeTriggers();
         }
         cb(null, true);
       }],
-      checkDirty: ['isAuthenticated', (cb, res) => {
-        if (res.isAuthenticated.authenticated) {
+      checkDirty: ['authenticated', (cb, res) => {
+        if (res.authenticated) {
           checkDirtyObjects((err) => {
             if (err) {
               console.warn(err);
@@ -145,9 +144,8 @@ const SharedNavigator = React.createClass({
       // if we have deepLinking url, set the state, push the route and return
       if (res.deepLinking) {
         this.setState({
-          isAuthenticated: res.isAuthenticated.authenticated,
+          isAuthenticated: res.authenticated,
           isLoading: false,
-          currentUser: null,
         }, () => {
           navigator.push(res.deepLinking);
         });
@@ -155,9 +153,8 @@ const SharedNavigator = React.createClass({
       }
       // otherwise return
       this.setState({
-        isAuthenticated: res.isAuthenticated.authenticated,
+        isAuthenticated: res.authenticated,
         isLoading: false,
-        currentUser: res.isAuthenticated.currentUser,
       });
     });
   },
@@ -176,11 +173,10 @@ const SharedNavigator = React.createClass({
   },
 
   /* Methods */
-  setAuthenticated(authenticated, user) {
+  setAuthenticated(authenticated) {
     this.setState({
       isAuthenticated: authenticated,
       newLogin: true,
-      currentUser: user,
     }, () => {
       this.initializeUserServices();
       navigator.resetTo({path: 'surveylist', title: 'Surveys'});
@@ -196,7 +192,6 @@ const SharedNavigator = React.createClass({
     logout();
     this.setState({
       isAuthenticated: false,
-      currentUser: null,
     }, () => {
       navigator.resetTo({path: 'login', title: ''});
     });
@@ -261,7 +256,6 @@ const SharedNavigator = React.createClass({
       previousPath: currentRoute.path,
       logout: this.logoutHandler,
       newLogin: this.state.newLogin,
-      currentUser: this.state.currentUser,
     };
 
     currentRoute = route;
