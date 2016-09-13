@@ -10,7 +10,7 @@ import { currentUser } from './Account';
  * @param {string} installationId, the installation id for the record
  */
 function findInstallation(installationId, done) {
-  const errorMsg = `Count not find installation object with installationId: ${installationId}`;
+  const errorMsg = `Could not find installation object with installationId: ${installationId}`;
   const authConfig = {
     method: 'GET',
     headers: {

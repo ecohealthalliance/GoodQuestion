@@ -208,7 +208,7 @@ const RegistrationPages = React.createClass({
     return (
       <View style={{flex: 1, backgroundColor: '#fff'}}>
         <View style={[Styles.header.banner, {
-          height: Variables.REGISTRATION_HEIGHT - 40,
+          height: Variables.REGISTRATION_HEIGHT,
           paddingBottom: Platform.OS === 'android' ? 5 : 25,
         }]}>
           <Image source={logo} style={Styles.header.logo}></Image>

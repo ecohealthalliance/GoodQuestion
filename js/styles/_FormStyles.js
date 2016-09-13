@@ -143,7 +143,6 @@ const FormStyles = StyleSheet.create({
     borderLeftWidth: 1,
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
-
   },
   questionLabel: {
     color: Color.primary,

@@ -3,6 +3,7 @@ import {
   Alert,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
   Image,
   ScrollView,
@@ -10,6 +11,7 @@ import {
 
 import Variables from '../styles/Variables';
 import Styles from '../styles/Styles';
+import Color from '../styles/Color';
 import Footer from '../components/Footer';
 import Button from '../components/Button';
 
@@ -49,6 +51,10 @@ const LoginPage = React.createClass({
   },
 
   /* Methods */
+  handleForgotPassword() {
+    this.props.navigator.push({path: 'forgotPassword', unsecured: true, title: 'Forgot Password', email: this.state.email});
+  },
+
   handleRegistration() {
     this.props.navigator.push({path: 'registration', unsecured: true, title: 'Registration'});
   },
@@ -147,6 +153,11 @@ const LoginPage = React.createClass({
               style={{marginVertical: 10, marginHorizontal: 35}}>
               {this.state.buttonText}
             </Button>
+          </View>
+          <View style={{marginVertical: 10}}>
+            <TouchableOpacity onPress={this.handleForgotPassword}>
+              <Text style={{color: Color.primary, fontSize: 14, padding: 15, textAlign: 'center'}}>Forgot your password?</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
         <Footer>

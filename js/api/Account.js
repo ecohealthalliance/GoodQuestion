@@ -573,3 +573,77 @@ export function changeAvatarImage(component, done) {
     }],
   }, done);
 }
+
+
+/**
+ * do a fetch to parse-server
+ *
+ * @param {string} url, the url to fetch
+ * @param {string} authConfig, the object containing authentication headers
+ * @param {done} done, the function to execute when done
+ */
+function doFetch(url, authConfig, done) {
+  fetch(url, authConfig).then((res) => {
+    return res.json();
+  }).then((data) => {
+    if (typeof data === 'undefined') {
+      throw new Error('Invalid response.');
+    }
+    if (data.hasOwnProperty('error')) {
+      done({message: data.error});
+      return;
+    }
+    done(null, data);
+  }).catch((e) => {
+    if (e.hasOwnProperty('message')) {
+      done(e.message);
+      return;
+    }
+    done(e);
+  });
+}
+
+/**
+ * creates a forgotPassword code using cloud code REST api
+ *
+ * @param {object} params, the params to send as JSON
+ * @param {string} params.email, the (username) email address of the account
+ * @param {done} done, the function to execute when done
+ * @returns {undefined}
+ */
+export function forgotPassword(params, done) {
+  const authConfig = {
+    method: 'POST',
+    headers: {
+      'X-Parse-Application-Id': Settings.parse.appId,
+      'X-Parse-Master-Key': Settings.parse.masterKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(params),
+  };
+  const url = `${Settings.parse.serverUrl}/functions/createForgotPassword`;
+  doFetch(url, authConfig, done);
+}
+
+/**
+ * creates a forgotPassword code using cloud code REST api
+ *
+ * @param {object} params, the params to send as JSON
+ * @param {string} params.email, the (username) email address of the account
+ * @param {string} params.code, the code from the email used to verify the account
+ * @param {done} done, the function to execute when done
+ * @returns {undefined}
+ */
+export function verifyForgotPassword(params, done) {
+  const authConfig = {
+    method: 'POST',
+    headers: {
+      'X-Parse-Application-Id': Settings.parse.appId,
+      'X-Parse-Master-Key': Settings.parse.masterKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(params),
+  };
+  const url = `${Settings.parse.serverUrl}/functions/verifyForgotPassword`;
+  doFetch(url, authConfig, done);
+}

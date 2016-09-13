@@ -6,10 +6,13 @@ import {
   BackAndroid,
   Alert,
   AppState,
+  Linking,
 } from 'react-native';
 
 import Drawer from 'react-native-drawer';
 import CodePush from 'react-native-code-push';
+import URL from 'url';
+import async from 'async';
 
 import Settings from '../settings';
 
@@ -40,6 +43,8 @@ import RegistrationPages from '../views/RegistrationPages';
 import FormPage from '../views/FormPage';
 import ControlPanel from '../views/ControlPanel';
 import ProfilePage from '../views/ProfilePage';
+import ForgotPasswordPage from '../views/ForgotPasswordPage';
+import VerifyForgotPasswordPage from '../views/VerifyForgotPasswordPage';
 
 import { checkTimeTriggers } from '../api/Triggers';
 import { initializeNotifications } from '../api/Notifications';
@@ -88,50 +93,82 @@ const SharedNavigator = React.createClass({
   },
 
   componentWillMount() {
-    // see if we have an authenticated user
-    isAuthenticated((authenticated, user) => {
-      if (authenticated) {
-
-        checkTimeTriggers();
-        checkDirtyObjects((err) => {
-          if (err) {
-            console.warn(err);
+    // flow-control
+    async.auto({
+      deepLinking: (cb) => {
+        Linking.getInitialURL().then((url) => {
+          if (url) {
+            const parsed = URL.parse(url, true);
+            if (parsed.protocol === 'gq:' && parsed.pathname === '/verifyForgotPassword') {
+              const path = parsed.pathname.replace('/', '');
+              const email = parsed.query.email;
+              const code = parsed.query.code;
+              const unsecured = true;
+              cb(null, {path, email, code, unsecured});
+              return;
+            }
           }
-          // set state after the check is complete
-          this.setState({
-            isAuthenticated: authenticated,
-            isLoading: false,
-            currentUser: user,
-          });
+          cb(null, null);
         });
-      } else {
+      },
+      isAuthenticated: (cb) => {
+        isAuthenticated((authenticated, user) => {
+          cb(null, {authenticated, user});
+        });
+      },
+      initializeUserServices: ['isAuthenticated', (cb, res) => {
+        if (res.isAuthenticated.authenticated) {
+          this.initializeUserServices();
+        }
+        cb(null, true);
+      }],
+      checkTriggers: ['isAuthenticated', (cb, res) => {
+        if (res.isAuthenticated.authenticated) {
+          checkTimeTriggers();
+        }
+        cb(null, true);
+      }],
+      checkDirty: ['isAuthenticated', (cb, res) => {
+        if (res.isAuthenticated.authenticated) {
+          checkDirtyObjects((err) => {
+            if (err) {
+              console.warn(err);
+            }
+            cb(null, true);
+          });
+          // note: the return so we wait for the cb() within the async method
+          return;
+        }
+        cb(null, false);
+      }],
+    }, (err, res) => {
+      // if we have deepLinking url, set the state, push the route and return
+      if (res.deepLinking) {
         this.setState({
-          isAuthenticated: authenticated,
+          isAuthenticated: res.isAuthenticated.authenticated,
           isLoading: false,
           currentUser: null,
+        }, () => {
+          navigator.push(res.deepLinking);
         });
+        return;
       }
+      // otherwise return
+      this.setState({
+        isAuthenticated: res.isAuthenticated.authenticated,
+        isLoading: false,
+        currentUser: res.isAuthenticated.currentUser,
+      });
     });
   },
 
   componentDidMount() {
-    // check for hot code push updates
+    // Check if CodePush should sync when app state changes.
     CodePush.sync();
     AppState.addEventListener('change', (newState) => {
       if (newState === 'active') {
         CodePush.sync();
       }
-    });
-
-    isAuthenticated((authenticated, user) => {
-      if (authenticated) {
-        this.initializeUserServices();
-      }
-      this.setState({
-        isAuthenticated: authenticated,
-        isLoading: false,
-        currentUser: user,
-      });
     });
 
     // Handle changes on AppState to minimize impact on batery life.
@@ -260,6 +297,12 @@ const SharedNavigator = React.createClass({
       case 'survey-details':
         viewComponent = <SurveyDetailsPage {...sharedProps} survey={route.survey} formCount={route.formCount} questionCount={route.questionCount} />;
         break;
+      case 'forgotPassword':
+        viewComponent = <ForgotPasswordPage {...sharedProps} email={route.email} />;
+        break;
+      case 'verifyForgotPassword':
+        viewComponent = <VerifyForgotPasswordPage {...sharedProps} code={route.code} email={route.email} />;
+        break;
       default:
         viewComponent = <SurveyListPage {...sharedProps} />;
         break;
@@ -269,6 +312,8 @@ const SharedNavigator = React.createClass({
     switch (route.path) {
       case 'login':
       case 'registration':
+      case 'forgotPassword':
+      case 'verifyForgotPassword':
         wrapperStyles = Styles.container.wrapperClearHeader;
         break;
       default:
