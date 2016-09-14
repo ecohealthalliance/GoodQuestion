@@ -42,7 +42,7 @@ import SurveyFormNavigator from '../components/SurveyFormNavigator';
 // API
 import { ToastChannels, ToastMessage } from '../models/messages/Toast';
 import { loadCachedTriggers } from '../api/Triggers';
-import { validateUser } from '../api/Account';
+import { validateUser, currentUser } from '../api/Account';
 import { loadCachedForms, loadActiveGeofenceFormsInRange } from '../api/Forms';
 import { loadCachedSubmissions, saveSubmission, saveIncompleteSubmission } from '../api/Submissions';
 import { loadCachedQuestions } from '../api/Questions';
@@ -129,73 +129,80 @@ const FormPage = React.createClass({
   },
 
   componentWillMount() {
-    const index = this.state.index;
-    const type = this.props.type;
-    let answers = {};
-    let forms = this.state.forms;
-    let allForms = [];
-
-    if (!forms || forms.length === 0) {
-      if (type === 'geofence') {
-        forms = loadActiveGeofenceFormsInRange(this.props.survey.id);
-      } else if (type === 'datetime') {
-        forms = this.formsWithTriggers();
-        allForms = forms;
-        forms = this.filterForms(forms);
-        forms = this.sortForms(forms);
+    currentUser((err, user) => {
+      if (err || typeof user === 'undefined') {
+        this.props.logout();
+        return;
       }
-    }
 
-    if (!forms || forms.length === 0) {
-      const futureForms = _.filter(allForms, (form) => {
-        return form.trigger > new Date();
+      const index = this.state.index;
+      const type = this.props.type;
+      let answers = {};
+      let forms = this.state.forms;
+      let allForms = [];
+
+      if (!forms || forms.length === 0) {
+        if (type === 'geofence') {
+          forms = loadActiveGeofenceFormsInRange(this.props.survey.id);
+        } else if (type === 'datetime') {
+          forms = this.formsWithTriggers();
+          allForms = forms;
+          forms = this.filterForms(forms);
+          forms = this.sortForms(forms);
+        }
+      }
+
+      if (!forms || forms.length === 0) {
+        const futureForms = _.filter(allForms, (form) => {
+          return form.trigger > new Date();
+        });
+        this.setState({isLoading: false, futureForms: futureForms, futureFormCount: futureForms.length});
+        return;
+      }
+
+      this.form = forms[index];
+      this.nextForm = forms[index + 1];
+      const submissions = loadCachedSubmissions({userId: user.id, formId: this.form.id});
+      const questions = loadCachedQuestions(this.form.id);
+      if (submissions && submissions.length > 0) {
+        answers = JSON.parse(submissions.slice(-1)[0].answers);
+      } else {
+        // Set default values
+        questions.forEach((question) => {
+          const properties = JSON.parse(question.properties);
+          answers[question.id] = (() => {
+            switch (question.type) {
+              case 'shortAnswer':
+                return '';
+              case 'checkboxes':
+                return [];
+              case 'multipleChoice':
+                return properties.choices[0];
+              case 'longAnswer':
+                return '';
+              case 'number':
+                return properties.min || 0;
+              case 'scale':
+                return properties.min || 0;
+              case 'date':
+                return new Date();
+              case 'datetime':
+                return new Date();
+              default:
+                return null;
+            }
+          })();
+        });
+      }
+
+      this.setState({
+        questions: questions,
+        answers: answers,
+        forms: forms,
+        formId: this.form.id,
+        isLoading: false,
+        formsInQueue: true,
       });
-      this.setState({isLoading: false, futureForms: futureForms, futureFormCount: futureForms.length});
-      return;
-    }
-
-    this.form = forms[index];
-    this.nextForm = forms[index + 1];
-    const submissions = loadCachedSubmissions({userId: this.props.currentUser.id, formId: this.form.id});
-    const questions = loadCachedQuestions(this.form.id);
-    if (submissions && submissions.length > 0) {
-      answers = JSON.parse(submissions.slice(-1)[0].answers);
-    } else {
-      // Set default values
-      questions.forEach((question) => {
-        const properties = JSON.parse(question.properties);
-        answers[question.id] = (() => {
-          switch (question.type) {
-            case 'shortAnswer':
-              return '';
-            case 'checkboxes':
-              return [];
-            case 'multipleChoice':
-              return properties.choices[0];
-            case 'longAnswer':
-              return '';
-            case 'number':
-              return properties.min || 0;
-            case 'scale':
-              return properties.min || 0;
-            case 'date':
-              return new Date();
-            case 'datetime':
-              return new Date();
-            default:
-              return null;
-          }
-        })();
-      });
-    }
-
-    this.setState({
-      questions: questions,
-      answers: answers,
-      forms: forms,
-      formId: this.form.id,
-      isLoading: false,
-      formsInQueue: true,
     });
   },
 
@@ -262,14 +269,16 @@ const FormPage = React.createClass({
     if (!this._formComplete) {
       const answers = this.state.answers;
       const form = this.form;
-      saveIncompleteSubmission(form, answers, (err) => {
-        if (err) {
-          if (err === 'Invalid User') {
-            this.props.logout();
-            return;
+      if (this.form) {
+        saveIncompleteSubmission(form, answers, (err) => {
+          if (err) {
+            if (err === 'Invalid User') {
+              this.props.logout();
+              return;
+            }
           }
-        }
-      });
+        });
+      }
     }
   },
 

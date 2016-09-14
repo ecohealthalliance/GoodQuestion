@@ -20,6 +20,7 @@ import FormListPage from './FormListPage';
 import MapPage from './MapPage';
 import CalendarPage from './CalendarPage';
 
+import { currentUser } from '../api/Account';
 import { acceptSurvey, declineSurvey } from '../api/Surveys';
 import { getFormAvailability, loadCachedForms, loadCachedFormDataById, loadCachedFormDataByTriggerId } from '../api/Forms';
 import { loadCachedQuestionsFromForms } from '../api/Questions';
@@ -36,18 +37,25 @@ const SurveyDetailsPage = React.createClass({
   },
 
   getInitialState() {
-    if (this.props.currentUser) {
-      const cachedSubmissions = loadCachedSubmissions({userId: this.props.currentUser.id, surveyId: this.props.survey.id});
-      if (cachedSubmissions && cachedSubmissions.length > 0) {
-        this._incompleteSubmissions = cachedSubmissions.filtered('inProgress == true');
-      }
-    }
     return {
       loading: true,
       status: InvitationStatus.PENDING,
       acceptText: 'Accept',
       declineText: 'Decline',
     };
+  },
+
+  componentWillMount() {
+    currentUser((err, user) => {
+      if (err || typeof user === 'undefined') {
+        this.props.logout();
+        return;
+      }
+      const cachedSubmissions = loadCachedSubmissions({userId: user.id, surveyId: this.props.survey.id});
+      if (cachedSubmissions && cachedSubmissions.length > 0) {
+        this._incompleteSubmissions = cachedSubmissions.filtered('inProgress == true');
+      }
+    });
   },
 
   componentDidMount() {
