@@ -29,11 +29,13 @@ cd GoodQuestion/ && npm install
 
 #### 3) Create settings files
 
-GoodQuestion uses two different settings files to store private information outside of version control. The location and format for each is as follows:
+GoodQuestion uses three different settings files to store private information outside of version control. The location and format for each is as follows:
 
-##### a. `ios/Settings.xcconfig`
+##### a. IOS `ios/Settings.xcconfig`
 
-*Note: this file may have blank keys*
+*Note: This file may have blank keys but must be present to compile. The keys are only necessary if you will be using CodePush for publishing releases.*
+
+On iOS, the file `Settings.xcconfig` (its a text file that has the following format) needs added to `ios/` directory.
 
 ```
 //
@@ -42,7 +44,20 @@ CODE_PUSH_KEY[config=Staging]=
 CODE_PUSH_KEY[config=Release]=
 ```
 
-##### b. `js/settings.js`
+##### b. Android `~/.gradle/gradle.properties`
+
+*Note: This file is optional. The keys are only necessary if you will be using CodePush for publishing releases.*
+
+On Android, the file `gradle.properties` (its a text file that has the following format) needs added to a hidden folder on your home directory `~/.gradle/gradle.properties`.
+
+```
+#
+# gradle.properties
+CODE_PUSH_STAGING_KEY=
+CODE_PUSH_PRODUCTION_KEY=
+```
+
+##### c. `js/settings.js`
 
 ```
 const Settings = {
@@ -151,5 +166,18 @@ We have included a command line tool to help local development with Parse server
     -c, --clearSubmissions  Clears submissions
 ```
 
+## CodePush
+[PR #144](https://github.com/ecohealthalliance/GoodQuestion/pull/144) implemented [react-native-code-push](https://microsoft.github.io/code-push/docs/react-native.html)
 
+> CodePush is a cloud service that enables Cordova and React Native developers to deploy mobile app updates directly to their users’ devices. It works by acting as a central repository that developers can publish certain updates to (e.g. JS, HTML, CSS and image changes), and that apps can query for updates from (using our provided client SDKs). This allows you to have a more deterministic and direct engagement model with your end-users, while addressing bugs and/or adding small features that don’t require you to re-build a binary and/or re-distribute it through any public app stores.
 
+### Install CodePush and register
+
+```
+npm install -g code-push-cli
+code-push register
+```
+
+### Push updates
+
+You'll need to be added as a [collaborator](https://github.com/Microsoft/code-push/tree/master/cli#app-collaboration) to the GoodQuestion-iOS and GoodQuestion-Android Code Push apps. Once this has been completed, you'll get the keys for `ios/Settings.xconfig` and `~/.gradle/gradle.properties`. 
